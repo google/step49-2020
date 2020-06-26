@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>Ishani Santurkar</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://www.gstatic.com/charts/loader.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="comments.js"></script>
+  <script src="script.js"></script>
+</head>
+
+<body id="content" onload="loadComments()">
+  <header>
+    <a class="headerelem" href="index.html">About Me</a>
+    <a class="headerelem" href="education.html">Education</a>
+    <a class="headerelem" href="projects.html">Projects</a>
+    <a class="headerelem" href="gallery.html">Gallery</a>
+    <a class="headerelem current" href="comments.html">Comments</a>
+  </header>
+  <div id="loginbar">Login <a id="loginlink">here</a> to post and view comments</div>
+  <section id="comment-sec">
+    <div class="logoutbar">
+      <p id="curremail"></p>
+    </div>
+    <div class="logoutbar">
+      <a id="logout">Logout</a>
+    </div>
+    <h1>Comments</h1>
+    I'm still in the process of building this website and would love your feedback on it!
+    <div id="commentform">
+      <h2>Submit a new comment</h2>
+      <form id="newcommentform" onsubmit="submitForm(this); return false">
+        <label for="user_name">Name:</label>
+        <br /><br />
+        <input type="text" id="user_name" name="name">
+        <br /><br />
+        <input type="hidden" id="user_time" name="timestamp">
+        <br /><br />
+        <label for="user_comment">Comment:</label>
+        <br /><br />
+        <textarea id="user_comment" name="comment" placeholder="Type your comment here"></textarea>
+        <br /><br />
+        <input type="submit" id="submitform">
+      </form>
+    </div>
+    <div id="commenthistory">
+      <h2>Comment History</h2>
+      <span class="commentparam">
+        <label for="numcomments">Displaying:</label>
+        <select name="numcomments" id="numcomments" onchange="loadComments()">
+          <option value="5">5</option>
+          <option value="10">10</option>
+          <option value="15">15</option>
+          <option value="20">20</option>
+        </select>
+      </span>
+      <span class="commentparam">
+        <label for="sortby">Sort By:</label>
+        <select name="sortby" id="sortby" onchange="loadComments()">
+          <option value="name">Author</option>
+          <option value="email">Email ID</option>
+          <option value="time" selected>Submission Time</option>
+          <option value="score">Net Votes</option>
+        </select>
+        <button id="sortorder" class="desc material-icons" onclick="changeSortOrder()">arrow_drop_down</button>
+      </span>
+      <span class="commentparam">
+        <label for="lang">Comment Language:</label>
+        <select name="lang" id="lang" onchange="changeCommentLang()">
+          <option value="ar">Arabic</option>
+          <option value="zh">Chinese</option>
+          <option value="en" selected>English</option>
+          <option value="hi">Hindi</option>
+          <option value="es">Spanish</option>
+        </select>
+      </span>
+      <span class="commentparam">
+        <button id="clearcomments" onclick="clearComments()">Clear</button>
+      </span>
+      <div id="filterdiv">
+        <label for="filterby">Filter By:</label>
+        <select name="filterby" id="filterby" onchange="loadComments()">
+          <option value="name">Author</option>
+          <option value="email">Email ID</option>
+          <option value="comment" selected>Comment</option>
+        </select>
+        <input type="text" id="filtertext" placeholder="Filter Text" onchange="loadComments()">
+      </div>
+      <ul id="toplevelcomments" class="comments"></ul>
+    </div>
+    <br /><br /><br /><br />
+    <h2>Some Visualizations</h2>
+    <div class="row">
+      <div id="numcommentchartdiv" class="column"></div>
+      <div id="replytreechartdiv" class="column"></div>
+    </div>
+    <div class="row">
+      <div id="commentlangchartdiv" class="column"></div>
+    </div>
+  </section>
+  <footer>
+    <a href="https://www.linkedin.com/in/ishani-s-126b27143/"><img src="/images/linkedin.jpg" class="footerelem"></a>
+    <a href="http://github.com/IshaniSanturkar"><img src="/images/github.png" class="footerelem"></a>
+    <a href="mailto:ishani.santurkar@gmail.com"><img src="/images/gmail.png" class="footerelem"></a>
+    <a href="tel:+16692729041"><img src="/images/phone.png" class="footerelem"></a>
+  </footer>
+</body>
+
+</html>
