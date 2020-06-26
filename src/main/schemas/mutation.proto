@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package proto;
+import "graph.proto";
+
+option java_outer_classname = "MutationProtos";
+
+/** An object representing a single mutation to a list of tokens */
+message TokenMutation {
+  enum Type {
+    ADD_TOKEN = 0;
+    DELETE_TOKEN = 1;
+  }
+  Type type = 1;
+  string token_name = 2;
+}
+
+/** An object representing a single mutation to a DAG */
+message Mutation {
+  enum Type {
+    ADD_NODE = 0;
+    ADD_EDGE = 1;  
+    DELETE_NODE = 2;
+    DELETE_EDGE = 3;
+    CHANGE_TOKEN = 4;
+  }
+
+  /** The type of change made by this mutation */
+  Type type = 1;
+
+  /**
+   * The node modified by this mutation if the type is 
+   * ADD_NODE, DELETE_NODE, or CHANGE_TOKEN. If the type
+   * is ADD_EDGE/DELETE_EDGE, this is the start of the
+   * directed edge.
+   */
+  Node startNode = 2;
+
+  /**
+   * Not specified if the type is ADD_NODE, DELETE_NODE,
+   * or CHANGE_TOKEN. If the type is ADD_EDGE/DELETE_EDGE,
+   * this is the end of the directed edge
+   */
+  Node endNode = 3;
+
+  /**
+   * If the type of the mutation is CHANGE_TOKEN, the 
+   * change to the list of tokens of the node
+   */
+  TokenMutation tokenChange = 4;
+  
+  /** Reason the mutation happened */
+  string reason = 5;
+}
+
+message MutationList {
+  repeated Mutation mutation = 1;
+}

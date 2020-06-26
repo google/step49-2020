@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package proto;
+import "google/protobuf/struct.proto";
+
+option java_outer_classname = "GraphProtos";
+
+/** A node in the initial graph */
+message Node {
+  /** Node name, internal human readable name */
+  string name = 1;
+
+  /** 
+   *  Includes node id (public identifier) and any other
+   *  data such as source code location
+   */
+  google.protobuf.Struct metadata = 2;
+
+  /** list of children ids */
+  repeated string children = 3;
+  repeated string token = 4;
+}
+
+/** A representation of the graph */
+message Graph {
+
+  /** Each DAG will have at least one root. */
+  repeated string root_name = 1;
+
+  /** A map of Node name --> Node. */
+  map<string, Node> nodes_map = 2;
+}
