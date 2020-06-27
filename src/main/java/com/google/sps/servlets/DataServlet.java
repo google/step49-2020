@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Map;
 import proto.GraphProtos.Graph;
 import proto.GraphProtos.Node;
+import proto.MutationProtos.MutationList;
+import proto.MutationProtos.Mutation;
 import java.io.FileInputStream;
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
@@ -35,10 +37,11 @@ public class DataServlet extends HttpServlet {
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     /*
-     * Code to read graph from test.txt file in same directory and print it
-     * to the console
+     * Code to read graph from graph.txt file in same directory and print it
+     * to the console, read mutations from mutations.txt and print it to
+     * console
      */
-    Graph graph = Graph.parseFrom(new FileInputStream("test.txt"));
+    Graph graph = Graph.parseFrom(new FileInputStream("graph.txt"));
     List<String> roots = graph.getRootNameList();
     System.out.println("Roots " + roots.toString());
     Map<String, Node> nodesMap = graph.getNodesMap();
@@ -47,8 +50,16 @@ public class DataServlet extends HttpServlet {
       Node thisNode = nodesMap.get(nodeName);
       System.out.println(" has children: " + thisNode.getChildrenList().toString());
     }
+
+    List<Mutation> mutList = MutationList.parseFrom(new FileInputStream("mutations.txt")).getMutationList();
+    for(Mutation m : mutList) {
+      System.out.println("Type " + m.getType());
+      System.out.println("Start Node " + m.getStartNode());
+      System.out.println("End Node " + m.getEndNode());
+    }
     /*
-     * Code to build graph and write it to test.txt file in target directory
+     * Code to build graph and write it to graph.txt file in target directory
+     * and build graph and write it to mutations.txt in the target directory
      */
     // Node.Builder nodeA = Node.newBuilder();
     // nodeA.setName("A");
@@ -59,17 +70,23 @@ public class DataServlet extends HttpServlet {
     // nodeB.addChildren("D");
 
     // Node.Builder nodeC = Node.newBuilder();
-    // nodeB.setName("C");
+    // nodeC.setName("C");
 
     // Node.Builder nodeD = Node.newBuilder();
-    // nodeB.setName("D");
+    // nodeD.setName("D");
 
     // Node.Builder nodeE = Node.newBuilder();
     // nodeE.setName("E");
     // nodeE.addChildren("F");
 
     // Node.Builder nodeF = Node.newBuilder();
-    // nodeB.setName("F");
+    // nodeF.setName("F");
+
+    // Node.Builder nodeG = Node.newBuilder();
+    // nodeG.setName("G");
+
+    // Node.Builder nodeH = Node.newBuilder();
+    // nodeH.setName("H");
 
     // Graph.Builder graph = Graph.newBuilder();
     // graph.addRootName("A");
@@ -81,9 +98,42 @@ public class DataServlet extends HttpServlet {
     // graph.putNodesMap("E", nodeE.build());
     // graph.putNodesMap("F", nodeF.build());
 
-    // FileOutputStream output = new FileOutputStream("test.txt");
+    // Mutation.Builder mutationA = Mutation.newBuilder();
+    // // Delete node 
+    // mutationA.setTypeValue(2);
+    // mutationA.setStartNode(nodeF.build());
+
+    // Mutation.Builder mutationB = Mutation.newBuilder();
+    // // Add node 
+    // mutationB.setTypeValue(0);
+    // mutationB.setStartNode(nodeG.build());
+    // mutationB.setEndNode(nodeE.build());
+
+    // Mutation.Builder mutationC = Mutation.newBuilder();
+    // // Add node 
+    // mutationC.setTypeValue(0);
+    // mutationC.setStartNode(nodeH.build());
+    // mutationC.setEndNode(nodeG.build());
+
+    // Mutation.Builder mutationD = Mutation.newBuilder();
+    // // Add edge 
+    // mutationD.setTypeValue(1);
+    // mutationD.setStartNode(nodeD.build());
+    // mutationD.setEndNode(nodeG.build());
+
+    // MutationList.Builder mutationList = MutationList.newBuilder();
+    // mutationList.addMutation(mutationA.build());
+    // mutationList.addMutation(mutationB.build());
+    // mutationList.addMutation(mutationC.build());
+    // mutationList.addMutation(mutationD.build());
+
+    // FileOutputStream output = new FileOutputStream("graph.txt");
     // graph.build().writeTo(output);
     // output.close();
+
+    // FileOutputStream output1 = new FileOutputStream("mutations.txt");
+    // mutationList.build().writeTo(output1);
+    // output1.close();
   }
 
 
