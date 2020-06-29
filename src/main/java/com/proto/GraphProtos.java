@@ -5,40 +5,44 @@ package proto;
 
 public final class GraphProtos {
   private GraphProtos() {}
-  public static void registerAllExtensions(
-      com.google.protobuf.ExtensionRegistryLite registry) {
+
+  public static void registerAllExtensions(com.google.protobuf.ExtensionRegistryLite registry) {}
+
+  public static void registerAllExtensions(com.google.protobuf.ExtensionRegistry registry) {
+    registerAllExtensions((com.google.protobuf.ExtensionRegistryLite) registry);
   }
 
-  public static void registerAllExtensions(
-      com.google.protobuf.ExtensionRegistry registry) {
-    registerAllExtensions(
-        (com.google.protobuf.ExtensionRegistryLite) registry);
-  }
-  public interface NodeOrBuilder extends
+  public interface NodeOrBuilder
+      extends
       // @@protoc_insertion_point(interface_extends:proto.Node)
       com.google.protobuf.MessageOrBuilder {
 
     /**
+     *
+     *
      * <pre>
-     ** Node name, internal human readable name 
+     * * Node name, internal human readable name
      * </pre>
      *
      * <code>string name = 1;</code>
      */
     java.lang.String getName();
     /**
+     *
+     *
      * <pre>
-     ** Node name, internal human readable name 
+     * * Node name, internal human readable name
      * </pre>
      *
      * <code>string name = 1;</code>
      */
-    com.google.protobuf.ByteString
-        getNameBytes();
+    com.google.protobuf.ByteString getNameBytes();
 
     /**
+     *
+     *
      * <pre>
-     ** 
+     * *
      *  Includes node id (public identifier) and any other
      *  data such as source code location
      * </pre>
@@ -47,8 +51,10 @@ public final class GraphProtos {
      */
     boolean hasMetadata();
     /**
+     *
+     *
      * <pre>
-     ** 
+     * *
      *  Includes node id (public identifier) and any other
      *  data such as source code location
      * </pre>
@@ -57,8 +63,10 @@ public final class GraphProtos {
      */
     com.google.protobuf.Struct getMetadata();
     /**
+     *
+     *
      * <pre>
-     ** 
+     * *
      *  Includes node id (public identifier) and any other
      *  data such as source code location
      * </pre>
@@ -68,75 +76,74 @@ public final class GraphProtos {
     com.google.protobuf.StructOrBuilder getMetadataOrBuilder();
 
     /**
+     *
+     *
      * <pre>
-     ** list of children ids 
+     * * list of children ids
      * </pre>
      *
      * <code>repeated string children = 3;</code>
      */
-    java.util.List<java.lang.String>
-        getChildrenList();
+    java.util.List<java.lang.String> getChildrenList();
     /**
+     *
+     *
      * <pre>
-     ** list of children ids 
+     * * list of children ids
      * </pre>
      *
      * <code>repeated string children = 3;</code>
      */
     int getChildrenCount();
     /**
+     *
+     *
      * <pre>
-     ** list of children ids 
+     * * list of children ids
      * </pre>
      *
      * <code>repeated string children = 3;</code>
      */
     java.lang.String getChildren(int index);
     /**
+     *
+     *
      * <pre>
-     ** list of children ids 
+     * * list of children ids
      * </pre>
      *
      * <code>repeated string children = 3;</code>
      */
-    com.google.protobuf.ByteString
-        getChildrenBytes(int index);
+    com.google.protobuf.ByteString getChildrenBytes(int index);
 
-    /**
-     * <code>repeated string token = 4;</code>
-     */
-    java.util.List<java.lang.String>
-        getTokenList();
-    /**
-     * <code>repeated string token = 4;</code>
-     */
+    /** <code>repeated string token = 4;</code> */
+    java.util.List<java.lang.String> getTokenList();
+    /** <code>repeated string token = 4;</code> */
     int getTokenCount();
-    /**
-     * <code>repeated string token = 4;</code>
-     */
+    /** <code>repeated string token = 4;</code> */
     java.lang.String getToken(int index);
-    /**
-     * <code>repeated string token = 4;</code>
-     */
-    com.google.protobuf.ByteString
-        getTokenBytes(int index);
+    /** <code>repeated string token = 4;</code> */
+    com.google.protobuf.ByteString getTokenBytes(int index);
   }
   /**
+   *
+   *
    * <pre>
-   ** A node in the initial graph 
+   * * A node in the initial graph
    * </pre>
    *
    * Protobuf type {@code proto.Node}
    */
-  public  static final class Node extends
-      com.google.protobuf.GeneratedMessageV3 implements
+  public static final class Node extends com.google.protobuf.GeneratedMessageV3
+      implements
       // @@protoc_insertion_point(message_implements:proto.Node)
       NodeOrBuilder {
-  private static final long serialVersionUID = 0L;
+    private static final long serialVersionUID = 0L;
     // Use Node.newBuilder() to construct.
     private Node(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
+
     private Node() {
       name_ = "";
       children_ = com.google.protobuf.LazyStringArrayList.EMPTY;
@@ -144,10 +151,10 @@ public final class GraphProtos {
     }
 
     @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
+    public final com.google.protobuf.UnknownFieldSet getUnknownFields() {
       return this.unknownFields;
     }
+
     private Node(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -167,57 +174,61 @@ public final class GraphProtos {
             case 0:
               done = true;
               break;
-            case 10: {
-              java.lang.String s = input.readStringRequireUtf8();
+            case 10:
+              {
+                java.lang.String s = input.readStringRequireUtf8();
 
-              name_ = s;
-              break;
-            }
-            case 18: {
-              com.google.protobuf.Struct.Builder subBuilder = null;
-              if (metadata_ != null) {
-                subBuilder = metadata_.toBuilder();
+                name_ = s;
+                break;
               }
-              metadata_ = input.readMessage(com.google.protobuf.Struct.parser(), extensionRegistry);
-              if (subBuilder != null) {
-                subBuilder.mergeFrom(metadata_);
-                metadata_ = subBuilder.buildPartial();
-              }
+            case 18:
+              {
+                com.google.protobuf.Struct.Builder subBuilder = null;
+                if (metadata_ != null) {
+                  subBuilder = metadata_.toBuilder();
+                }
+                metadata_ =
+                    input.readMessage(com.google.protobuf.Struct.parser(), extensionRegistry);
+                if (subBuilder != null) {
+                  subBuilder.mergeFrom(metadata_);
+                  metadata_ = subBuilder.buildPartial();
+                }
 
-              break;
-            }
-            case 26: {
-              java.lang.String s = input.readStringRequireUtf8();
-              if (!((mutable_bitField0_ & 0x00000004) != 0)) {
-                children_ = new com.google.protobuf.LazyStringArrayList();
-                mutable_bitField0_ |= 0x00000004;
+                break;
               }
-              children_.add(s);
-              break;
-            }
-            case 34: {
-              java.lang.String s = input.readStringRequireUtf8();
-              if (!((mutable_bitField0_ & 0x00000008) != 0)) {
-                token_ = new com.google.protobuf.LazyStringArrayList();
-                mutable_bitField0_ |= 0x00000008;
+            case 26:
+              {
+                java.lang.String s = input.readStringRequireUtf8();
+                if (!((mutable_bitField0_ & 0x00000004) != 0)) {
+                  children_ = new com.google.protobuf.LazyStringArrayList();
+                  mutable_bitField0_ |= 0x00000004;
+                }
+                children_.add(s);
+                break;
               }
-              token_.add(s);
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
+            case 34:
+              {
+                java.lang.String s = input.readStringRequireUtf8();
+                if (!((mutable_bitField0_ & 0x00000008) != 0)) {
+                  token_ = new com.google.protobuf.LazyStringArrayList();
+                  mutable_bitField0_ |= 0x00000008;
+                }
+                token_.add(s);
+                break;
               }
-              break;
-            }
+            default:
+              {
+                if (!parseUnknownField(input, unknownFields, extensionRegistry, tag)) {
+                  done = true;
+                }
+                break;
+              }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
         throw e.setUnfinishedMessage(this);
       } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
+        throw new com.google.protobuf.InvalidProtocolBufferException(e).setUnfinishedMessage(this);
       } finally {
         if (((mutable_bitField0_ & 0x00000004) != 0)) {
           children_ = children_.getUnmodifiableView();
@@ -229,8 +240,8 @@ public final class GraphProtos {
         makeExtensionsImmutable();
       }
     }
-    public static final com.google.protobuf.Descriptors.Descriptor
-        getDescriptor() {
+
+    public static final com.google.protobuf.Descriptors.Descriptor getDescriptor() {
       return proto.GraphProtos.internal_static_proto_Node_descriptor;
     }
 
@@ -246,8 +257,10 @@ public final class GraphProtos {
     public static final int NAME_FIELD_NUMBER = 1;
     private volatile java.lang.Object name_;
     /**
+     *
+     *
      * <pre>
-     ** Node name, internal human readable name 
+     * * Node name, internal human readable name
      * </pre>
      *
      * <code>string name = 1;</code>
@@ -257,27 +270,26 @@ public final class GraphProtos {
       if (ref instanceof java.lang.String) {
         return (java.lang.String) ref;
       } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
+        com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
         name_ = s;
         return s;
       }
     }
     /**
+     *
+     *
      * <pre>
-     ** Node name, internal human readable name 
+     * * Node name, internal human readable name
      * </pre>
      *
      * <code>string name = 1;</code>
      */
-    public com.google.protobuf.ByteString
-        getNameBytes() {
+    public com.google.protobuf.ByteString getNameBytes() {
       java.lang.Object ref = name_;
       if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
+        com.google.protobuf.ByteString b =
+            com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
         name_ = b;
         return b;
       } else {
@@ -288,8 +300,10 @@ public final class GraphProtos {
     public static final int METADATA_FIELD_NUMBER = 2;
     private com.google.protobuf.Struct metadata_;
     /**
+     *
+     *
      * <pre>
-     ** 
+     * *
      *  Includes node id (public identifier) and any other
      *  data such as source code location
      * </pre>
@@ -300,8 +314,10 @@ public final class GraphProtos {
       return metadata_ != null;
     }
     /**
+     *
+     *
      * <pre>
-     ** 
+     * *
      *  Includes node id (public identifier) and any other
      *  data such as source code location
      * </pre>
@@ -312,8 +328,10 @@ public final class GraphProtos {
       return metadata_ == null ? com.google.protobuf.Struct.getDefaultInstance() : metadata_;
     }
     /**
+     *
+     *
      * <pre>
-     ** 
+     * *
      *  Includes node id (public identifier) and any other
      *  data such as source code location
      * </pre>
@@ -327,19 +345,22 @@ public final class GraphProtos {
     public static final int CHILDREN_FIELD_NUMBER = 3;
     private com.google.protobuf.LazyStringList children_;
     /**
+     *
+     *
      * <pre>
-     ** list of children ids 
+     * * list of children ids
      * </pre>
      *
      * <code>repeated string children = 3;</code>
      */
-    public com.google.protobuf.ProtocolStringList
-        getChildrenList() {
+    public com.google.protobuf.ProtocolStringList getChildrenList() {
       return children_;
     }
     /**
+     *
+     *
      * <pre>
-     ** list of children ids 
+     * * list of children ids
      * </pre>
      *
      * <code>repeated string children = 3;</code>
@@ -348,8 +369,10 @@ public final class GraphProtos {
       return children_.size();
     }
     /**
+     *
+     *
      * <pre>
-     ** list of children ids 
+     * * list of children ids
      * </pre>
      *
      * <code>repeated string children = 3;</code>
@@ -358,47 +381,39 @@ public final class GraphProtos {
       return children_.get(index);
     }
     /**
+     *
+     *
      * <pre>
-     ** list of children ids 
+     * * list of children ids
      * </pre>
      *
      * <code>repeated string children = 3;</code>
      */
-    public com.google.protobuf.ByteString
-        getChildrenBytes(int index) {
+    public com.google.protobuf.ByteString getChildrenBytes(int index) {
       return children_.getByteString(index);
     }
 
     public static final int TOKEN_FIELD_NUMBER = 4;
     private com.google.protobuf.LazyStringList token_;
-    /**
-     * <code>repeated string token = 4;</code>
-     */
-    public com.google.protobuf.ProtocolStringList
-        getTokenList() {
+    /** <code>repeated string token = 4;</code> */
+    public com.google.protobuf.ProtocolStringList getTokenList() {
       return token_;
     }
-    /**
-     * <code>repeated string token = 4;</code>
-     */
+    /** <code>repeated string token = 4;</code> */
     public int getTokenCount() {
       return token_.size();
     }
-    /**
-     * <code>repeated string token = 4;</code>
-     */
+    /** <code>repeated string token = 4;</code> */
     public java.lang.String getToken(int index) {
       return token_.get(index);
     }
-    /**
-     * <code>repeated string token = 4;</code>
-     */
-    public com.google.protobuf.ByteString
-        getTokenBytes(int index) {
+    /** <code>repeated string token = 4;</code> */
+    public com.google.protobuf.ByteString getTokenBytes(int index) {
       return token_.getByteString(index);
     }
 
     private byte memoizedIsInitialized = -1;
+
     @java.lang.Override
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
@@ -410,8 +425,7 @@ public final class GraphProtos {
     }
 
     @java.lang.Override
-    public void writeTo(com.google.protobuf.CodedOutputStream output)
-                        throws java.io.IOException {
+    public void writeTo(com.google.protobuf.CodedOutputStream output) throws java.io.IOException {
       if (!getNameBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 1, name_);
       }
@@ -437,8 +451,7 @@ public final class GraphProtos {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, name_);
       }
       if (metadata_ != null) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(2, getMetadata());
+        size += com.google.protobuf.CodedOutputStream.computeMessageSize(2, getMetadata());
       }
       {
         int dataSize = 0;
@@ -464,24 +477,20 @@ public final class GraphProtos {
     @java.lang.Override
     public boolean equals(final java.lang.Object obj) {
       if (obj == this) {
-       return true;
+        return true;
       }
       if (!(obj instanceof proto.GraphProtos.Node)) {
         return super.equals(obj);
       }
       proto.GraphProtos.Node other = (proto.GraphProtos.Node) obj;
 
-      if (!getName()
-          .equals(other.getName())) return false;
+      if (!getName().equals(other.getName())) return false;
       if (hasMetadata() != other.hasMetadata()) return false;
       if (hasMetadata()) {
-        if (!getMetadata()
-            .equals(other.getMetadata())) return false;
+        if (!getMetadata().equals(other.getMetadata())) return false;
       }
-      if (!getChildrenList()
-          .equals(other.getChildrenList())) return false;
-      if (!getTokenList()
-          .equals(other.getTokenList())) return false;
+      if (!getChildrenList().equals(other.getChildrenList())) return false;
+      if (!getTokenList().equals(other.getTokenList())) return false;
       if (!unknownFields.equals(other.unknownFields)) return false;
       return true;
     }
@@ -512,88 +521,93 @@ public final class GraphProtos {
       return hash;
     }
 
-    public static proto.GraphProtos.Node parseFrom(
-        java.nio.ByteBuffer data)
+    public static proto.GraphProtos.Node parseFrom(java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
+
     public static proto.GraphProtos.Node parseFrom(
-        java.nio.ByteBuffer data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        java.nio.ByteBuffer data, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static proto.GraphProtos.Node parseFrom(
-        com.google.protobuf.ByteString data)
+
+    public static proto.GraphProtos.Node parseFrom(com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
+
     public static proto.GraphProtos.Node parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
+
     public static proto.GraphProtos.Node parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
+
     public static proto.GraphProtos.Node parseFrom(
-        byte[] data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        byte[] data, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
+
     public static proto.GraphProtos.Node parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input);
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input);
     }
+
     public static proto.GraphProtos.Node parseFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        java.io.InputStream input, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(
+          PARSER, input, extensionRegistry);
     }
+
     public static proto.GraphProtos.Node parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseDelimitedWithIOException(PARSER, input);
+      return com.google.protobuf.GeneratedMessageV3.parseDelimitedWithIOException(PARSER, input);
     }
+
     public static proto.GraphProtos.Node parseDelimitedFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        java.io.InputStream input, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3.parseDelimitedWithIOException(
+          PARSER, input, extensionRegistry);
     }
-    public static proto.GraphProtos.Node parseFrom(
-        com.google.protobuf.CodedInputStream input)
+
+    public static proto.GraphProtos.Node parseFrom(com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input);
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input);
     }
+
     public static proto.GraphProtos.Node parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(
+          PARSER, input, extensionRegistry);
     }
 
     @java.lang.Override
-    public Builder newBuilderForType() { return newBuilder(); }
+    public Builder newBuilderForType() {
+      return newBuilder();
+    }
+
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
+
     public static Builder newBuilder(proto.GraphProtos.Node prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
+
     @java.lang.Override
     public Builder toBuilder() {
-      return this == DEFAULT_INSTANCE
-          ? new Builder() : new Builder().mergeFrom(this);
+      return this == DEFAULT_INSTANCE ? new Builder() : new Builder().mergeFrom(this);
     }
 
     @java.lang.Override
@@ -603,18 +617,20 @@ public final class GraphProtos {
       return builder;
     }
     /**
+     *
+     *
      * <pre>
-     ** A node in the initial graph 
+     * * A node in the initial graph
      * </pre>
      *
      * Protobuf type {@code proto.Node}
      */
-    public static final class Builder extends
-        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+    public static final class Builder
+        extends com.google.protobuf.GeneratedMessageV3.Builder<Builder>
+        implements
         // @@protoc_insertion_point(builder_implements:proto.Node)
         proto.GraphProtos.NodeOrBuilder {
-      public static final com.google.protobuf.Descriptors.Descriptor
-          getDescriptor() {
+      public static final com.google.protobuf.Descriptors.Descriptor getDescriptor() {
         return proto.GraphProtos.internal_static_proto_Node_descriptor;
       }
 
@@ -631,16 +647,15 @@ public final class GraphProtos {
         maybeForceBuilderInitialization();
       }
 
-      private Builder(
-          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      private Builder(com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
+
       private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
+        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {}
       }
+
       @java.lang.Override
       public Builder clear() {
         super.clear();
@@ -660,8 +675,7 @@ public final class GraphProtos {
       }
 
       @java.lang.Override
-      public com.google.protobuf.Descriptors.Descriptor
-          getDescriptorForType() {
+      public com.google.protobuf.Descriptors.Descriptor getDescriptorForType() {
         return proto.GraphProtos.internal_static_proto_Node_descriptor;
       }
 
@@ -709,38 +723,41 @@ public final class GraphProtos {
       public Builder clone() {
         return super.clone();
       }
+
       @java.lang.Override
       public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
+          com.google.protobuf.Descriptors.FieldDescriptor field, java.lang.Object value) {
         return super.setField(field, value);
       }
+
       @java.lang.Override
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
+      public Builder clearField(com.google.protobuf.Descriptors.FieldDescriptor field) {
         return super.clearField(field);
       }
+
       @java.lang.Override
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+      public Builder clearOneof(com.google.protobuf.Descriptors.OneofDescriptor oneof) {
         return super.clearOneof(oneof);
       }
+
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
+          int index,
+          java.lang.Object value) {
         return super.setRepeatedField(field, index, value);
       }
+
       @java.lang.Override
       public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
+          com.google.protobuf.Descriptors.FieldDescriptor field, java.lang.Object value) {
         return super.addRepeatedField(field, value);
       }
+
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof proto.GraphProtos.Node) {
-          return mergeFrom((proto.GraphProtos.Node)other);
+          return mergeFrom((proto.GraphProtos.Node) other);
         } else {
           super.mergeFrom(other);
           return this;
@@ -804,12 +821,15 @@ public final class GraphProtos {
         }
         return this;
       }
+
       private int bitField0_;
 
       private java.lang.Object name_ = "";
       /**
+       *
+       *
        * <pre>
-       ** Node name, internal human readable name 
+       * * Node name, internal human readable name
        * </pre>
        *
        * <code>string name = 1;</code>
@@ -817,8 +837,7 @@ public final class GraphProtos {
       public java.lang.String getName() {
         java.lang.Object ref = name_;
         if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
+          com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
           java.lang.String s = bs.toStringUtf8();
           name_ = s;
           return s;
@@ -827,19 +846,19 @@ public final class GraphProtos {
         }
       }
       /**
+       *
+       *
        * <pre>
-       ** Node name, internal human readable name 
+       * * Node name, internal human readable name
        * </pre>
        *
        * <code>string name = 1;</code>
        */
-      public com.google.protobuf.ByteString
-          getNameBytes() {
+      public com.google.protobuf.ByteString getNameBytes() {
         java.lang.Object ref = name_;
         if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
+          com.google.protobuf.ByteString b =
+              com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
           name_ = b;
           return b;
         } else {
@@ -847,49 +866,53 @@ public final class GraphProtos {
         }
       }
       /**
+       *
+       *
        * <pre>
-       ** Node name, internal human readable name 
+       * * Node name, internal human readable name
        * </pre>
        *
        * <code>string name = 1;</code>
        */
-      public Builder setName(
-          java.lang.String value) {
+      public Builder setName(java.lang.String value) {
         if (value == null) {
-    throw new NullPointerException();
-  }
-  
+          throw new NullPointerException();
+        }
+
         name_ = value;
         onChanged();
         return this;
       }
       /**
+       *
+       *
        * <pre>
-       ** Node name, internal human readable name 
+       * * Node name, internal human readable name
        * </pre>
        *
        * <code>string name = 1;</code>
        */
       public Builder clearName() {
-        
+
         name_ = getDefaultInstance().getName();
         onChanged();
         return this;
       }
       /**
+       *
+       *
        * <pre>
-       ** Node name, internal human readable name 
+       * * Node name, internal human readable name
        * </pre>
        *
        * <code>string name = 1;</code>
        */
-      public Builder setNameBytes(
-          com.google.protobuf.ByteString value) {
+      public Builder setNameBytes(com.google.protobuf.ByteString value) {
         if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+          throw new NullPointerException();
+        }
+        checkByteStringIsUtf8(value);
+
         name_ = value;
         onChanged();
         return this;
@@ -897,10 +920,15 @@ public final class GraphProtos {
 
       private com.google.protobuf.Struct metadata_;
       private com.google.protobuf.SingleFieldBuilderV3<
-          com.google.protobuf.Struct, com.google.protobuf.Struct.Builder, com.google.protobuf.StructOrBuilder> metadataBuilder_;
+              com.google.protobuf.Struct,
+              com.google.protobuf.Struct.Builder,
+              com.google.protobuf.StructOrBuilder>
+          metadataBuilder_;
       /**
+       *
+       *
        * <pre>
-       ** 
+       * *
        *  Includes node id (public identifier) and any other
        *  data such as source code location
        * </pre>
@@ -911,8 +939,10 @@ public final class GraphProtos {
         return metadataBuilder_ != null || metadata_ != null;
       }
       /**
+       *
+       *
        * <pre>
-       ** 
+       * *
        *  Includes node id (public identifier) and any other
        *  data such as source code location
        * </pre>
@@ -927,8 +957,10 @@ public final class GraphProtos {
         }
       }
       /**
+       *
+       *
        * <pre>
-       ** 
+       * *
        *  Includes node id (public identifier) and any other
        *  data such as source code location
        * </pre>
@@ -949,16 +981,17 @@ public final class GraphProtos {
         return this;
       }
       /**
+       *
+       *
        * <pre>
-       ** 
+       * *
        *  Includes node id (public identifier) and any other
        *  data such as source code location
        * </pre>
        *
        * <code>.google.protobuf.Struct metadata = 2;</code>
        */
-      public Builder setMetadata(
-          com.google.protobuf.Struct.Builder builderForValue) {
+      public Builder setMetadata(com.google.protobuf.Struct.Builder builderForValue) {
         if (metadataBuilder_ == null) {
           metadata_ = builderForValue.build();
           onChanged();
@@ -969,8 +1002,10 @@ public final class GraphProtos {
         return this;
       }
       /**
+       *
+       *
        * <pre>
-       ** 
+       * *
        *  Includes node id (public identifier) and any other
        *  data such as source code location
        * </pre>
@@ -981,7 +1016,7 @@ public final class GraphProtos {
         if (metadataBuilder_ == null) {
           if (metadata_ != null) {
             metadata_ =
-              com.google.protobuf.Struct.newBuilder(metadata_).mergeFrom(value).buildPartial();
+                com.google.protobuf.Struct.newBuilder(metadata_).mergeFrom(value).buildPartial();
           } else {
             metadata_ = value;
           }
@@ -993,8 +1028,10 @@ public final class GraphProtos {
         return this;
       }
       /**
+       *
+       *
        * <pre>
-       ** 
+       * *
        *  Includes node id (public identifier) and any other
        *  data such as source code location
        * </pre>
@@ -1013,8 +1050,10 @@ public final class GraphProtos {
         return this;
       }
       /**
+       *
+       *
        * <pre>
-       ** 
+       * *
        *  Includes node id (public identifier) and any other
        *  data such as source code location
        * </pre>
@@ -1022,13 +1061,15 @@ public final class GraphProtos {
        * <code>.google.protobuf.Struct metadata = 2;</code>
        */
       public com.google.protobuf.Struct.Builder getMetadataBuilder() {
-        
+
         onChanged();
         return getMetadataFieldBuilder().getBuilder();
       }
       /**
+       *
+       *
        * <pre>
-       ** 
+       * *
        *  Includes node id (public identifier) and any other
        *  data such as source code location
        * </pre>
@@ -1039,13 +1080,14 @@ public final class GraphProtos {
         if (metadataBuilder_ != null) {
           return metadataBuilder_.getMessageOrBuilder();
         } else {
-          return metadata_ == null ?
-              com.google.protobuf.Struct.getDefaultInstance() : metadata_;
+          return metadata_ == null ? com.google.protobuf.Struct.getDefaultInstance() : metadata_;
         }
       }
       /**
+       *
+       *
        * <pre>
-       ** 
+       * *
        *  Includes node id (public identifier) and any other
        *  data such as source code location
        * </pre>
@@ -1053,40 +1095,48 @@ public final class GraphProtos {
        * <code>.google.protobuf.Struct metadata = 2;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
-          com.google.protobuf.Struct, com.google.protobuf.Struct.Builder, com.google.protobuf.StructOrBuilder> 
+              com.google.protobuf.Struct,
+              com.google.protobuf.Struct.Builder,
+              com.google.protobuf.StructOrBuilder>
           getMetadataFieldBuilder() {
         if (metadataBuilder_ == null) {
-          metadataBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-              com.google.protobuf.Struct, com.google.protobuf.Struct.Builder, com.google.protobuf.StructOrBuilder>(
-                  getMetadata(),
-                  getParentForChildren(),
-                  isClean());
+          metadataBuilder_ =
+              new com.google.protobuf.SingleFieldBuilderV3<
+                  com.google.protobuf.Struct,
+                  com.google.protobuf.Struct.Builder,
+                  com.google.protobuf.StructOrBuilder>(
+                  getMetadata(), getParentForChildren(), isClean());
           metadata_ = null;
         }
         return metadataBuilder_;
       }
 
-      private com.google.protobuf.LazyStringList children_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      private com.google.protobuf.LazyStringList children_ =
+          com.google.protobuf.LazyStringArrayList.EMPTY;
+
       private void ensureChildrenIsMutable() {
         if (!((bitField0_ & 0x00000004) != 0)) {
           children_ = new com.google.protobuf.LazyStringArrayList(children_);
           bitField0_ |= 0x00000004;
-         }
+        }
       }
       /**
+       *
+       *
        * <pre>
-       ** list of children ids 
+       * * list of children ids
        * </pre>
        *
        * <code>repeated string children = 3;</code>
        */
-      public com.google.protobuf.ProtocolStringList
-          getChildrenList() {
+      public com.google.protobuf.ProtocolStringList getChildrenList() {
         return children_.getUnmodifiableView();
       }
       /**
+       *
+       *
        * <pre>
-       ** list of children ids 
+       * * list of children ids
        * </pre>
        *
        * <code>repeated string children = 3;</code>
@@ -1095,8 +1145,10 @@ public final class GraphProtos {
         return children_.size();
       }
       /**
+       *
+       *
        * <pre>
-       ** list of children ids 
+       * * list of children ids
        * </pre>
        *
        * <code>repeated string children = 3;</code>
@@ -1105,68 +1157,73 @@ public final class GraphProtos {
         return children_.get(index);
       }
       /**
+       *
+       *
        * <pre>
-       ** list of children ids 
+       * * list of children ids
        * </pre>
        *
        * <code>repeated string children = 3;</code>
        */
-      public com.google.protobuf.ByteString
-          getChildrenBytes(int index) {
+      public com.google.protobuf.ByteString getChildrenBytes(int index) {
         return children_.getByteString(index);
       }
       /**
+       *
+       *
        * <pre>
-       ** list of children ids 
+       * * list of children ids
        * </pre>
        *
        * <code>repeated string children = 3;</code>
        */
-      public Builder setChildren(
-          int index, java.lang.String value) {
+      public Builder setChildren(int index, java.lang.String value) {
         if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureChildrenIsMutable();
+          throw new NullPointerException();
+        }
+        ensureChildrenIsMutable();
         children_.set(index, value);
         onChanged();
         return this;
       }
       /**
+       *
+       *
        * <pre>
-       ** list of children ids 
+       * * list of children ids
        * </pre>
        *
        * <code>repeated string children = 3;</code>
        */
-      public Builder addChildren(
-          java.lang.String value) {
+      public Builder addChildren(java.lang.String value) {
         if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureChildrenIsMutable();
+          throw new NullPointerException();
+        }
+        ensureChildrenIsMutable();
         children_.add(value);
         onChanged();
         return this;
       }
       /**
+       *
+       *
        * <pre>
-       ** list of children ids 
+       * * list of children ids
        * </pre>
        *
        * <code>repeated string children = 3;</code>
        */
-      public Builder addAllChildren(
-          java.lang.Iterable<java.lang.String> values) {
+      public Builder addAllChildren(java.lang.Iterable<java.lang.String> values) {
         ensureChildrenIsMutable();
-        com.google.protobuf.AbstractMessageLite.Builder.addAll(
-            values, children_);
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(values, children_);
         onChanged();
         return this;
       }
       /**
+       *
+       *
        * <pre>
-       ** list of children ids 
+       * * list of children ids
        * </pre>
        *
        * <code>repeated string children = 3;</code>
@@ -1178,117 +1235,96 @@ public final class GraphProtos {
         return this;
       }
       /**
+       *
+       *
        * <pre>
-       ** list of children ids 
+       * * list of children ids
        * </pre>
        *
        * <code>repeated string children = 3;</code>
        */
-      public Builder addChildrenBytes(
-          com.google.protobuf.ByteString value) {
+      public Builder addChildrenBytes(com.google.protobuf.ByteString value) {
         if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
+          throw new NullPointerException();
+        }
+        checkByteStringIsUtf8(value);
         ensureChildrenIsMutable();
         children_.add(value);
         onChanged();
         return this;
       }
 
-      private com.google.protobuf.LazyStringList token_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      private com.google.protobuf.LazyStringList token_ =
+          com.google.protobuf.LazyStringArrayList.EMPTY;
+
       private void ensureTokenIsMutable() {
         if (!((bitField0_ & 0x00000008) != 0)) {
           token_ = new com.google.protobuf.LazyStringArrayList(token_);
           bitField0_ |= 0x00000008;
-         }
+        }
       }
-      /**
-       * <code>repeated string token = 4;</code>
-       */
-      public com.google.protobuf.ProtocolStringList
-          getTokenList() {
+      /** <code>repeated string token = 4;</code> */
+      public com.google.protobuf.ProtocolStringList getTokenList() {
         return token_.getUnmodifiableView();
       }
-      /**
-       * <code>repeated string token = 4;</code>
-       */
+      /** <code>repeated string token = 4;</code> */
       public int getTokenCount() {
         return token_.size();
       }
-      /**
-       * <code>repeated string token = 4;</code>
-       */
+      /** <code>repeated string token = 4;</code> */
       public java.lang.String getToken(int index) {
         return token_.get(index);
       }
-      /**
-       * <code>repeated string token = 4;</code>
-       */
-      public com.google.protobuf.ByteString
-          getTokenBytes(int index) {
+      /** <code>repeated string token = 4;</code> */
+      public com.google.protobuf.ByteString getTokenBytes(int index) {
         return token_.getByteString(index);
       }
-      /**
-       * <code>repeated string token = 4;</code>
-       */
-      public Builder setToken(
-          int index, java.lang.String value) {
+      /** <code>repeated string token = 4;</code> */
+      public Builder setToken(int index, java.lang.String value) {
         if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureTokenIsMutable();
+          throw new NullPointerException();
+        }
+        ensureTokenIsMutable();
         token_.set(index, value);
         onChanged();
         return this;
       }
-      /**
-       * <code>repeated string token = 4;</code>
-       */
-      public Builder addToken(
-          java.lang.String value) {
+      /** <code>repeated string token = 4;</code> */
+      public Builder addToken(java.lang.String value) {
         if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureTokenIsMutable();
+          throw new NullPointerException();
+        }
+        ensureTokenIsMutable();
         token_.add(value);
         onChanged();
         return this;
       }
-      /**
-       * <code>repeated string token = 4;</code>
-       */
-      public Builder addAllToken(
-          java.lang.Iterable<java.lang.String> values) {
+      /** <code>repeated string token = 4;</code> */
+      public Builder addAllToken(java.lang.Iterable<java.lang.String> values) {
         ensureTokenIsMutable();
-        com.google.protobuf.AbstractMessageLite.Builder.addAll(
-            values, token_);
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(values, token_);
         onChanged();
         return this;
       }
-      /**
-       * <code>repeated string token = 4;</code>
-       */
+      /** <code>repeated string token = 4;</code> */
       public Builder clearToken() {
         token_ = com.google.protobuf.LazyStringArrayList.EMPTY;
         bitField0_ = (bitField0_ & ~0x00000008);
         onChanged();
         return this;
       }
-      /**
-       * <code>repeated string token = 4;</code>
-       */
-      public Builder addTokenBytes(
-          com.google.protobuf.ByteString value) {
+      /** <code>repeated string token = 4;</code> */
+      public Builder addTokenBytes(com.google.protobuf.ByteString value) {
         if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
+          throw new NullPointerException();
+        }
+        checkByteStringIsUtf8(value);
         ensureTokenIsMutable();
         token_.add(value);
         onChanged();
         return this;
       }
+
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
@@ -1301,12 +1337,12 @@ public final class GraphProtos {
         return super.mergeUnknownFields(unknownFields);
       }
 
-
       // @@protoc_insertion_point(builder_scope:proto.Node)
     }
 
     // @@protoc_insertion_point(class_scope:proto.Node)
     private static final proto.GraphProtos.Node DEFAULT_INSTANCE;
+
     static {
       DEFAULT_INSTANCE = new proto.GraphProtos.Node();
     }
@@ -1315,16 +1351,16 @@ public final class GraphProtos {
       return DEFAULT_INSTANCE;
     }
 
-    private static final com.google.protobuf.Parser<Node>
-        PARSER = new com.google.protobuf.AbstractParser<Node>() {
-      @java.lang.Override
-      public Node parsePartialFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return new Node(input, extensionRegistry);
-      }
-    };
+    private static final com.google.protobuf.Parser<Node> PARSER =
+        new com.google.protobuf.AbstractParser<Node>() {
+          @java.lang.Override
+          public Node parsePartialFrom(
+              com.google.protobuf.CodedInputStream input,
+              com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+              throws com.google.protobuf.InvalidProtocolBufferException {
+            return new Node(input, extensionRegistry);
+          }
+        };
 
     public static com.google.protobuf.Parser<Node> parser() {
       return PARSER;
@@ -1339,127 +1375,137 @@ public final class GraphProtos {
     public proto.GraphProtos.Node getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
-
   }
 
-  public interface GraphOrBuilder extends
+  public interface GraphOrBuilder
+      extends
       // @@protoc_insertion_point(interface_extends:proto.Graph)
       com.google.protobuf.MessageOrBuilder {
 
     /**
+     *
+     *
      * <pre>
-     ** Each DAG will have at least one root. 
+     * * Each DAG will have at least one root.
      * </pre>
      *
      * <code>repeated string root_name = 1;</code>
      */
-    java.util.List<java.lang.String>
-        getRootNameList();
+    java.util.List<java.lang.String> getRootNameList();
     /**
+     *
+     *
      * <pre>
-     ** Each DAG will have at least one root. 
+     * * Each DAG will have at least one root.
      * </pre>
      *
      * <code>repeated string root_name = 1;</code>
      */
     int getRootNameCount();
     /**
+     *
+     *
      * <pre>
-     ** Each DAG will have at least one root. 
+     * * Each DAG will have at least one root.
      * </pre>
      *
      * <code>repeated string root_name = 1;</code>
      */
     java.lang.String getRootName(int index);
     /**
+     *
+     *
      * <pre>
-     ** Each DAG will have at least one root. 
+     * * Each DAG will have at least one root.
      * </pre>
      *
      * <code>repeated string root_name = 1;</code>
      */
-    com.google.protobuf.ByteString
-        getRootNameBytes(int index);
+    com.google.protobuf.ByteString getRootNameBytes(int index);
 
     /**
+     *
+     *
      * <pre>
-     ** A map of Node name --&gt; Node. 
+     * * A map of Node name --&gt; Node.
      * </pre>
      *
      * <code>map&lt;string, .proto.Node&gt; nodes_map = 2;</code>
      */
     int getNodesMapCount();
     /**
+     *
+     *
      * <pre>
-     ** A map of Node name --&gt; Node. 
+     * * A map of Node name --&gt; Node.
      * </pre>
      *
      * <code>map&lt;string, .proto.Node&gt; nodes_map = 2;</code>
      */
-    boolean containsNodesMap(
-        java.lang.String key);
-    /**
-     * Use {@link #getNodesMapMap()} instead.
-     */
+    boolean containsNodesMap(java.lang.String key);
+    /** Use {@link #getNodesMapMap()} instead. */
     @java.lang.Deprecated
-    java.util.Map<java.lang.String, proto.GraphProtos.Node>
-    getNodesMap();
+    java.util.Map<java.lang.String, proto.GraphProtos.Node> getNodesMap();
     /**
+     *
+     *
      * <pre>
-     ** A map of Node name --&gt; Node. 
+     * * A map of Node name --&gt; Node.
      * </pre>
      *
      * <code>map&lt;string, .proto.Node&gt; nodes_map = 2;</code>
      */
-    java.util.Map<java.lang.String, proto.GraphProtos.Node>
-    getNodesMapMap();
+    java.util.Map<java.lang.String, proto.GraphProtos.Node> getNodesMapMap();
     /**
+     *
+     *
      * <pre>
-     ** A map of Node name --&gt; Node. 
+     * * A map of Node name --&gt; Node.
      * </pre>
      *
      * <code>map&lt;string, .proto.Node&gt; nodes_map = 2;</code>
      */
-
     proto.GraphProtos.Node getNodesMapOrDefault(
-        java.lang.String key,
-        proto.GraphProtos.Node defaultValue);
+        java.lang.String key, proto.GraphProtos.Node defaultValue);
     /**
+     *
+     *
      * <pre>
-     ** A map of Node name --&gt; Node. 
+     * * A map of Node name --&gt; Node.
      * </pre>
      *
      * <code>map&lt;string, .proto.Node&gt; nodes_map = 2;</code>
      */
-
-    proto.GraphProtos.Node getNodesMapOrThrow(
-        java.lang.String key);
+    proto.GraphProtos.Node getNodesMapOrThrow(java.lang.String key);
   }
   /**
+   *
+   *
    * <pre>
-   ** A representation of the graph 
+   * * A representation of the graph
    * </pre>
    *
    * Protobuf type {@code proto.Graph}
    */
-  public  static final class Graph extends
-      com.google.protobuf.GeneratedMessageV3 implements
+  public static final class Graph extends com.google.protobuf.GeneratedMessageV3
+      implements
       // @@protoc_insertion_point(message_implements:proto.Graph)
       GraphOrBuilder {
-  private static final long serialVersionUID = 0L;
+    private static final long serialVersionUID = 0L;
     // Use Graph.newBuilder() to construct.
     private Graph(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
+
     private Graph() {
       rootName_ = com.google.protobuf.LazyStringArrayList.EMPTY;
     }
 
     @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
+    public final com.google.protobuf.UnknownFieldSet getUnknownFields() {
       return this.unknownFields;
     }
+
     private Graph(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -1479,42 +1525,44 @@ public final class GraphProtos {
             case 0:
               done = true;
               break;
-            case 10: {
-              java.lang.String s = input.readStringRequireUtf8();
-              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
-                rootName_ = new com.google.protobuf.LazyStringArrayList();
-                mutable_bitField0_ |= 0x00000001;
+            case 10:
+              {
+                java.lang.String s = input.readStringRequireUtf8();
+                if (!((mutable_bitField0_ & 0x00000001) != 0)) {
+                  rootName_ = new com.google.protobuf.LazyStringArrayList();
+                  mutable_bitField0_ |= 0x00000001;
+                }
+                rootName_.add(s);
+                break;
               }
-              rootName_.add(s);
-              break;
-            }
-            case 18: {
-              if (!((mutable_bitField0_ & 0x00000002) != 0)) {
-                nodesMap_ = com.google.protobuf.MapField.newMapField(
-                    NodesMapDefaultEntryHolder.defaultEntry);
-                mutable_bitField0_ |= 0x00000002;
+            case 18:
+              {
+                if (!((mutable_bitField0_ & 0x00000002) != 0)) {
+                  nodesMap_ =
+                      com.google.protobuf.MapField.newMapField(
+                          NodesMapDefaultEntryHolder.defaultEntry);
+                  mutable_bitField0_ |= 0x00000002;
+                }
+                com.google.protobuf.MapEntry<java.lang.String, proto.GraphProtos.Node> nodesMap__ =
+                    input.readMessage(
+                        NodesMapDefaultEntryHolder.defaultEntry.getParserForType(),
+                        extensionRegistry);
+                nodesMap_.getMutableMap().put(nodesMap__.getKey(), nodesMap__.getValue());
+                break;
               }
-              com.google.protobuf.MapEntry<java.lang.String, proto.GraphProtos.Node>
-              nodesMap__ = input.readMessage(
-                  NodesMapDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
-              nodesMap_.getMutableMap().put(
-                  nodesMap__.getKey(), nodesMap__.getValue());
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
+            default:
+              {
+                if (!parseUnknownField(input, unknownFields, extensionRegistry, tag)) {
+                  done = true;
+                }
+                break;
               }
-              break;
-            }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
         throw e.setUnfinishedMessage(this);
       } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
+        throw new com.google.protobuf.InvalidProtocolBufferException(e).setUnfinishedMessage(this);
       } finally {
         if (((mutable_bitField0_ & 0x00000001) != 0)) {
           rootName_ = rootName_.getUnmodifiableView();
@@ -1523,23 +1571,22 @@ public final class GraphProtos {
         makeExtensionsImmutable();
       }
     }
-    public static final com.google.protobuf.Descriptors.Descriptor
-        getDescriptor() {
+
+    public static final com.google.protobuf.Descriptors.Descriptor getDescriptor() {
       return proto.GraphProtos.internal_static_proto_Graph_descriptor;
     }
 
     @SuppressWarnings({"rawtypes"})
     @java.lang.Override
-    protected com.google.protobuf.MapField internalGetMapField(
-        int number) {
+    protected com.google.protobuf.MapField internalGetMapField(int number) {
       switch (number) {
         case 2:
           return internalGetNodesMap();
         default:
-          throw new RuntimeException(
-              "Invalid map field number: " + number);
+          throw new RuntimeException("Invalid map field number: " + number);
       }
     }
+
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
@@ -1551,19 +1598,22 @@ public final class GraphProtos {
     public static final int ROOT_NAME_FIELD_NUMBER = 1;
     private com.google.protobuf.LazyStringList rootName_;
     /**
+     *
+     *
      * <pre>
-     ** Each DAG will have at least one root. 
+     * * Each DAG will have at least one root.
      * </pre>
      *
      * <code>repeated string root_name = 1;</code>
      */
-    public com.google.protobuf.ProtocolStringList
-        getRootNameList() {
+    public com.google.protobuf.ProtocolStringList getRootNameList() {
       return rootName_;
     }
     /**
+     *
+     *
      * <pre>
-     ** Each DAG will have at least one root. 
+     * * Each DAG will have at least one root.
      * </pre>
      *
      * <code>repeated string root_name = 1;</code>
@@ -1572,8 +1622,10 @@ public final class GraphProtos {
       return rootName_.size();
     }
     /**
+     *
+     *
      * <pre>
-     ** Each DAG will have at least one root. 
+     * * Each DAG will have at least one root.
      * </pre>
      *
      * <code>repeated string root_name = 1;</code>
@@ -1582,36 +1634,38 @@ public final class GraphProtos {
       return rootName_.get(index);
     }
     /**
+     *
+     *
      * <pre>
-     ** Each DAG will have at least one root. 
+     * * Each DAG will have at least one root.
      * </pre>
      *
      * <code>repeated string root_name = 1;</code>
      */
-    public com.google.protobuf.ByteString
-        getRootNameBytes(int index) {
+    public com.google.protobuf.ByteString getRootNameBytes(int index) {
       return rootName_.getByteString(index);
     }
 
     public static final int NODES_MAP_FIELD_NUMBER = 2;
+
     private static final class NodesMapDefaultEntryHolder {
-      static final com.google.protobuf.MapEntry<
-          java.lang.String, proto.GraphProtos.Node> defaultEntry =
+      static final com.google.protobuf.MapEntry<java.lang.String, proto.GraphProtos.Node>
+          defaultEntry =
               com.google.protobuf.MapEntry
-              .<java.lang.String, proto.GraphProtos.Node>newDefaultInstance(
-                  proto.GraphProtos.internal_static_proto_Graph_NodesMapEntry_descriptor, 
-                  com.google.protobuf.WireFormat.FieldType.STRING,
-                  "",
-                  com.google.protobuf.WireFormat.FieldType.MESSAGE,
-                  proto.GraphProtos.Node.getDefaultInstance());
+                  .<java.lang.String, proto.GraphProtos.Node>newDefaultInstance(
+                      proto.GraphProtos.internal_static_proto_Graph_NodesMapEntry_descriptor,
+                      com.google.protobuf.WireFormat.FieldType.STRING,
+                      "",
+                      com.google.protobuf.WireFormat.FieldType.MESSAGE,
+                      proto.GraphProtos.Node.getDefaultInstance());
     }
-    private com.google.protobuf.MapField<
-        java.lang.String, proto.GraphProtos.Node> nodesMap_;
+
+    private com.google.protobuf.MapField<java.lang.String, proto.GraphProtos.Node> nodesMap_;
+
     private com.google.protobuf.MapField<java.lang.String, proto.GraphProtos.Node>
-    internalGetNodesMap() {
+        internalGetNodesMap() {
       if (nodesMap_ == null) {
-        return com.google.protobuf.MapField.emptyMapField(
-            NodesMapDefaultEntryHolder.defaultEntry);
+        return com.google.protobuf.MapField.emptyMapField(NodesMapDefaultEntryHolder.defaultEntry);
       }
       return nodesMap_;
     }
@@ -1620,65 +1674,68 @@ public final class GraphProtos {
       return internalGetNodesMap().getMap().size();
     }
     /**
+     *
+     *
      * <pre>
-     ** A map of Node name --&gt; Node. 
+     * * A map of Node name --&gt; Node.
      * </pre>
      *
      * <code>map&lt;string, .proto.Node&gt; nodes_map = 2;</code>
      */
-
-    public boolean containsNodesMap(
-        java.lang.String key) {
-      if (key == null) { throw new java.lang.NullPointerException(); }
+    public boolean containsNodesMap(java.lang.String key) {
+      if (key == null) {
+        throw new java.lang.NullPointerException();
+      }
       return internalGetNodesMap().getMap().containsKey(key);
     }
-    /**
-     * Use {@link #getNodesMapMap()} instead.
-     */
+    /** Use {@link #getNodesMapMap()} instead. */
     @java.lang.Deprecated
     public java.util.Map<java.lang.String, proto.GraphProtos.Node> getNodesMap() {
       return getNodesMapMap();
     }
     /**
+     *
+     *
      * <pre>
-     ** A map of Node name --&gt; Node. 
+     * * A map of Node name --&gt; Node.
      * </pre>
      *
      * <code>map&lt;string, .proto.Node&gt; nodes_map = 2;</code>
      */
-
     public java.util.Map<java.lang.String, proto.GraphProtos.Node> getNodesMapMap() {
       return internalGetNodesMap().getMap();
     }
     /**
+     *
+     *
      * <pre>
-     ** A map of Node name --&gt; Node. 
+     * * A map of Node name --&gt; Node.
      * </pre>
      *
      * <code>map&lt;string, .proto.Node&gt; nodes_map = 2;</code>
      */
-
     public proto.GraphProtos.Node getNodesMapOrDefault(
-        java.lang.String key,
-        proto.GraphProtos.Node defaultValue) {
-      if (key == null) { throw new java.lang.NullPointerException(); }
-      java.util.Map<java.lang.String, proto.GraphProtos.Node> map =
-          internalGetNodesMap().getMap();
+        java.lang.String key, proto.GraphProtos.Node defaultValue) {
+      if (key == null) {
+        throw new java.lang.NullPointerException();
+      }
+      java.util.Map<java.lang.String, proto.GraphProtos.Node> map = internalGetNodesMap().getMap();
       return map.containsKey(key) ? map.get(key) : defaultValue;
     }
     /**
+     *
+     *
      * <pre>
-     ** A map of Node name --&gt; Node. 
+     * * A map of Node name --&gt; Node.
      * </pre>
      *
      * <code>map&lt;string, .proto.Node&gt; nodes_map = 2;</code>
      */
-
-    public proto.GraphProtos.Node getNodesMapOrThrow(
-        java.lang.String key) {
-      if (key == null) { throw new java.lang.NullPointerException(); }
-      java.util.Map<java.lang.String, proto.GraphProtos.Node> map =
-          internalGetNodesMap().getMap();
+    public proto.GraphProtos.Node getNodesMapOrThrow(java.lang.String key) {
+      if (key == null) {
+        throw new java.lang.NullPointerException();
+      }
+      java.util.Map<java.lang.String, proto.GraphProtos.Node> map = internalGetNodesMap().getMap();
       if (!map.containsKey(key)) {
         throw new java.lang.IllegalArgumentException();
       }
@@ -1686,6 +1743,7 @@ public final class GraphProtos {
     }
 
     private byte memoizedIsInitialized = -1;
+
     @java.lang.Override
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
@@ -1697,17 +1755,12 @@ public final class GraphProtos {
     }
 
     @java.lang.Override
-    public void writeTo(com.google.protobuf.CodedOutputStream output)
-                        throws java.io.IOException {
+    public void writeTo(com.google.protobuf.CodedOutputStream output) throws java.io.IOException {
       for (int i = 0; i < rootName_.size(); i++) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 1, rootName_.getRaw(i));
       }
-      com.google.protobuf.GeneratedMessageV3
-        .serializeStringMapTo(
-          output,
-          internalGetNodesMap(),
-          NodesMapDefaultEntryHolder.defaultEntry,
-          2);
+      com.google.protobuf.GeneratedMessageV3.serializeStringMapTo(
+          output, internalGetNodesMap(), NodesMapDefaultEntryHolder.defaultEntry, 2);
       unknownFields.writeTo(output);
     }
 
@@ -1725,15 +1778,15 @@ public final class GraphProtos {
         size += dataSize;
         size += 1 * getRootNameList().size();
       }
-      for (java.util.Map.Entry<java.lang.String, proto.GraphProtos.Node> entry
-           : internalGetNodesMap().getMap().entrySet()) {
-        com.google.protobuf.MapEntry<java.lang.String, proto.GraphProtos.Node>
-        nodesMap__ = NodesMapDefaultEntryHolder.defaultEntry.newBuilderForType()
-            .setKey(entry.getKey())
-            .setValue(entry.getValue())
-            .build();
-        size += com.google.protobuf.CodedOutputStream
-            .computeMessageSize(2, nodesMap__);
+      for (java.util.Map.Entry<java.lang.String, proto.GraphProtos.Node> entry :
+          internalGetNodesMap().getMap().entrySet()) {
+        com.google.protobuf.MapEntry<java.lang.String, proto.GraphProtos.Node> nodesMap__ =
+            NodesMapDefaultEntryHolder.defaultEntry
+                .newBuilderForType()
+                .setKey(entry.getKey())
+                .setValue(entry.getValue())
+                .build();
+        size += com.google.protobuf.CodedOutputStream.computeMessageSize(2, nodesMap__);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -1743,17 +1796,15 @@ public final class GraphProtos {
     @java.lang.Override
     public boolean equals(final java.lang.Object obj) {
       if (obj == this) {
-       return true;
+        return true;
       }
       if (!(obj instanceof proto.GraphProtos.Graph)) {
         return super.equals(obj);
       }
       proto.GraphProtos.Graph other = (proto.GraphProtos.Graph) obj;
 
-      if (!getRootNameList()
-          .equals(other.getRootNameList())) return false;
-      if (!internalGetNodesMap().equals(
-          other.internalGetNodesMap())) return false;
+      if (!getRootNameList().equals(other.getRootNameList())) return false;
+      if (!internalGetNodesMap().equals(other.internalGetNodesMap())) return false;
       if (!unknownFields.equals(other.unknownFields)) return false;
       return true;
     }
@@ -1778,88 +1829,93 @@ public final class GraphProtos {
       return hash;
     }
 
-    public static proto.GraphProtos.Graph parseFrom(
-        java.nio.ByteBuffer data)
+    public static proto.GraphProtos.Graph parseFrom(java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
+
     public static proto.GraphProtos.Graph parseFrom(
-        java.nio.ByteBuffer data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        java.nio.ByteBuffer data, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static proto.GraphProtos.Graph parseFrom(
-        com.google.protobuf.ByteString data)
+
+    public static proto.GraphProtos.Graph parseFrom(com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
+
     public static proto.GraphProtos.Graph parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
+
     public static proto.GraphProtos.Graph parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
+
     public static proto.GraphProtos.Graph parseFrom(
-        byte[] data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        byte[] data, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
+
     public static proto.GraphProtos.Graph parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input);
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input);
     }
+
     public static proto.GraphProtos.Graph parseFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        java.io.InputStream input, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(
+          PARSER, input, extensionRegistry);
     }
+
     public static proto.GraphProtos.Graph parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseDelimitedWithIOException(PARSER, input);
+      return com.google.protobuf.GeneratedMessageV3.parseDelimitedWithIOException(PARSER, input);
     }
+
     public static proto.GraphProtos.Graph parseDelimitedFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        java.io.InputStream input, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3.parseDelimitedWithIOException(
+          PARSER, input, extensionRegistry);
     }
-    public static proto.GraphProtos.Graph parseFrom(
-        com.google.protobuf.CodedInputStream input)
+
+    public static proto.GraphProtos.Graph parseFrom(com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input);
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input);
     }
+
     public static proto.GraphProtos.Graph parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(
+          PARSER, input, extensionRegistry);
     }
 
     @java.lang.Override
-    public Builder newBuilderForType() { return newBuilder(); }
+    public Builder newBuilderForType() {
+      return newBuilder();
+    }
+
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
+
     public static Builder newBuilder(proto.GraphProtos.Graph prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
+
     @java.lang.Override
     public Builder toBuilder() {
-      return this == DEFAULT_INSTANCE
-          ? new Builder() : new Builder().mergeFrom(this);
+      return this == DEFAULT_INSTANCE ? new Builder() : new Builder().mergeFrom(this);
     }
 
     @java.lang.Override
@@ -1869,43 +1925,43 @@ public final class GraphProtos {
       return builder;
     }
     /**
+     *
+     *
      * <pre>
-     ** A representation of the graph 
+     * * A representation of the graph
      * </pre>
      *
      * Protobuf type {@code proto.Graph}
      */
-    public static final class Builder extends
-        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+    public static final class Builder
+        extends com.google.protobuf.GeneratedMessageV3.Builder<Builder>
+        implements
         // @@protoc_insertion_point(builder_implements:proto.Graph)
         proto.GraphProtos.GraphOrBuilder {
-      public static final com.google.protobuf.Descriptors.Descriptor
-          getDescriptor() {
+      public static final com.google.protobuf.Descriptors.Descriptor getDescriptor() {
         return proto.GraphProtos.internal_static_proto_Graph_descriptor;
       }
 
       @SuppressWarnings({"rawtypes"})
-      protected com.google.protobuf.MapField internalGetMapField(
-          int number) {
+      protected com.google.protobuf.MapField internalGetMapField(int number) {
         switch (number) {
           case 2:
             return internalGetNodesMap();
           default:
-            throw new RuntimeException(
-                "Invalid map field number: " + number);
+            throw new RuntimeException("Invalid map field number: " + number);
         }
       }
+
       @SuppressWarnings({"rawtypes"})
-      protected com.google.protobuf.MapField internalGetMutableMapField(
-          int number) {
+      protected com.google.protobuf.MapField internalGetMutableMapField(int number) {
         switch (number) {
           case 2:
             return internalGetMutableNodesMap();
           default:
-            throw new RuntimeException(
-                "Invalid map field number: " + number);
+            throw new RuntimeException("Invalid map field number: " + number);
         }
       }
+
       @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
@@ -1919,16 +1975,15 @@ public final class GraphProtos {
         maybeForceBuilderInitialization();
       }
 
-      private Builder(
-          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      private Builder(com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
+
       private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
+        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {}
       }
+
       @java.lang.Override
       public Builder clear() {
         super.clear();
@@ -1939,8 +1994,7 @@ public final class GraphProtos {
       }
 
       @java.lang.Override
-      public com.google.protobuf.Descriptors.Descriptor
-          getDescriptorForType() {
+      public com.google.protobuf.Descriptors.Descriptor getDescriptorForType() {
         return proto.GraphProtos.internal_static_proto_Graph_descriptor;
       }
 
@@ -1977,38 +2031,41 @@ public final class GraphProtos {
       public Builder clone() {
         return super.clone();
       }
+
       @java.lang.Override
       public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
+          com.google.protobuf.Descriptors.FieldDescriptor field, java.lang.Object value) {
         return super.setField(field, value);
       }
+
       @java.lang.Override
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
+      public Builder clearField(com.google.protobuf.Descriptors.FieldDescriptor field) {
         return super.clearField(field);
       }
+
       @java.lang.Override
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+      public Builder clearOneof(com.google.protobuf.Descriptors.OneofDescriptor oneof) {
         return super.clearOneof(oneof);
       }
+
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
+          int index,
+          java.lang.Object value) {
         return super.setRepeatedField(field, index, value);
       }
+
       @java.lang.Override
       public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
+          com.google.protobuf.Descriptors.FieldDescriptor field, java.lang.Object value) {
         return super.addRepeatedField(field, value);
       }
+
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof proto.GraphProtos.Graph) {
-          return mergeFrom((proto.GraphProtos.Graph)other);
+          return mergeFrom((proto.GraphProtos.Graph) other);
         } else {
           super.mergeFrom(other);
           return this;
@@ -2027,8 +2084,7 @@ public final class GraphProtos {
           }
           onChanged();
         }
-        internalGetMutableNodesMap().mergeFrom(
-            other.internalGetNodesMap());
+        internalGetMutableNodesMap().mergeFrom(other.internalGetNodesMap());
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
@@ -2057,29 +2113,35 @@ public final class GraphProtos {
         }
         return this;
       }
+
       private int bitField0_;
 
-      private com.google.protobuf.LazyStringList rootName_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      private com.google.protobuf.LazyStringList rootName_ =
+          com.google.protobuf.LazyStringArrayList.EMPTY;
+
       private void ensureRootNameIsMutable() {
         if (!((bitField0_ & 0x00000001) != 0)) {
           rootName_ = new com.google.protobuf.LazyStringArrayList(rootName_);
           bitField0_ |= 0x00000001;
-         }
+        }
       }
       /**
+       *
+       *
        * <pre>
-       ** Each DAG will have at least one root. 
+       * * Each DAG will have at least one root.
        * </pre>
        *
        * <code>repeated string root_name = 1;</code>
        */
-      public com.google.protobuf.ProtocolStringList
-          getRootNameList() {
+      public com.google.protobuf.ProtocolStringList getRootNameList() {
         return rootName_.getUnmodifiableView();
       }
       /**
+       *
+       *
        * <pre>
-       ** Each DAG will have at least one root. 
+       * * Each DAG will have at least one root.
        * </pre>
        *
        * <code>repeated string root_name = 1;</code>
@@ -2088,8 +2150,10 @@ public final class GraphProtos {
         return rootName_.size();
       }
       /**
+       *
+       *
        * <pre>
-       ** Each DAG will have at least one root. 
+       * * Each DAG will have at least one root.
        * </pre>
        *
        * <code>repeated string root_name = 1;</code>
@@ -2098,68 +2162,73 @@ public final class GraphProtos {
         return rootName_.get(index);
       }
       /**
+       *
+       *
        * <pre>
-       ** Each DAG will have at least one root. 
+       * * Each DAG will have at least one root.
        * </pre>
        *
        * <code>repeated string root_name = 1;</code>
        */
-      public com.google.protobuf.ByteString
-          getRootNameBytes(int index) {
+      public com.google.protobuf.ByteString getRootNameBytes(int index) {
         return rootName_.getByteString(index);
       }
       /**
+       *
+       *
        * <pre>
-       ** Each DAG will have at least one root. 
+       * * Each DAG will have at least one root.
        * </pre>
        *
        * <code>repeated string root_name = 1;</code>
        */
-      public Builder setRootName(
-          int index, java.lang.String value) {
+      public Builder setRootName(int index, java.lang.String value) {
         if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureRootNameIsMutable();
+          throw new NullPointerException();
+        }
+        ensureRootNameIsMutable();
         rootName_.set(index, value);
         onChanged();
         return this;
       }
       /**
+       *
+       *
        * <pre>
-       ** Each DAG will have at least one root. 
+       * * Each DAG will have at least one root.
        * </pre>
        *
        * <code>repeated string root_name = 1;</code>
        */
-      public Builder addRootName(
-          java.lang.String value) {
+      public Builder addRootName(java.lang.String value) {
         if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureRootNameIsMutable();
+          throw new NullPointerException();
+        }
+        ensureRootNameIsMutable();
         rootName_.add(value);
         onChanged();
         return this;
       }
       /**
+       *
+       *
        * <pre>
-       ** Each DAG will have at least one root. 
+       * * Each DAG will have at least one root.
        * </pre>
        *
        * <code>repeated string root_name = 1;</code>
        */
-      public Builder addAllRootName(
-          java.lang.Iterable<java.lang.String> values) {
+      public Builder addAllRootName(java.lang.Iterable<java.lang.String> values) {
         ensureRootNameIsMutable();
-        com.google.protobuf.AbstractMessageLite.Builder.addAll(
-            values, rootName_);
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(values, rootName_);
         onChanged();
         return this;
       }
       /**
+       *
+       *
        * <pre>
-       ** Each DAG will have at least one root. 
+       * * Each DAG will have at least one root.
        * </pre>
        *
        * <code>repeated string root_name = 1;</code>
@@ -2171,40 +2240,43 @@ public final class GraphProtos {
         return this;
       }
       /**
+       *
+       *
        * <pre>
-       ** Each DAG will have at least one root. 
+       * * Each DAG will have at least one root.
        * </pre>
        *
        * <code>repeated string root_name = 1;</code>
        */
-      public Builder addRootNameBytes(
-          com.google.protobuf.ByteString value) {
+      public Builder addRootNameBytes(com.google.protobuf.ByteString value) {
         if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
+          throw new NullPointerException();
+        }
+        checkByteStringIsUtf8(value);
         ensureRootNameIsMutable();
         rootName_.add(value);
         onChanged();
         return this;
       }
 
-      private com.google.protobuf.MapField<
-          java.lang.String, proto.GraphProtos.Node> nodesMap_;
+      private com.google.protobuf.MapField<java.lang.String, proto.GraphProtos.Node> nodesMap_;
+
       private com.google.protobuf.MapField<java.lang.String, proto.GraphProtos.Node>
-      internalGetNodesMap() {
+          internalGetNodesMap() {
         if (nodesMap_ == null) {
           return com.google.protobuf.MapField.emptyMapField(
               NodesMapDefaultEntryHolder.defaultEntry);
         }
         return nodesMap_;
       }
+
       private com.google.protobuf.MapField<java.lang.String, proto.GraphProtos.Node>
-      internalGetMutableNodesMap() {
-        onChanged();;
+          internalGetMutableNodesMap() {
+        onChanged();
+        ;
         if (nodesMap_ == null) {
-          nodesMap_ = com.google.protobuf.MapField.newMapField(
-              NodesMapDefaultEntryHolder.defaultEntry);
+          nodesMap_ =
+              com.google.protobuf.MapField.newMapField(NodesMapDefaultEntryHolder.defaultEntry);
         }
         if (!nodesMap_.isMutable()) {
           nodesMap_ = nodesMap_.copy();
@@ -2216,63 +2288,68 @@ public final class GraphProtos {
         return internalGetNodesMap().getMap().size();
       }
       /**
+       *
+       *
        * <pre>
-       ** A map of Node name --&gt; Node. 
+       * * A map of Node name --&gt; Node.
        * </pre>
        *
        * <code>map&lt;string, .proto.Node&gt; nodes_map = 2;</code>
        */
-
-      public boolean containsNodesMap(
-          java.lang.String key) {
-        if (key == null) { throw new java.lang.NullPointerException(); }
+      public boolean containsNodesMap(java.lang.String key) {
+        if (key == null) {
+          throw new java.lang.NullPointerException();
+        }
         return internalGetNodesMap().getMap().containsKey(key);
       }
-      /**
-       * Use {@link #getNodesMapMap()} instead.
-       */
+      /** Use {@link #getNodesMapMap()} instead. */
       @java.lang.Deprecated
       public java.util.Map<java.lang.String, proto.GraphProtos.Node> getNodesMap() {
         return getNodesMapMap();
       }
       /**
+       *
+       *
        * <pre>
-       ** A map of Node name --&gt; Node. 
+       * * A map of Node name --&gt; Node.
        * </pre>
        *
        * <code>map&lt;string, .proto.Node&gt; nodes_map = 2;</code>
        */
-
       public java.util.Map<java.lang.String, proto.GraphProtos.Node> getNodesMapMap() {
         return internalGetNodesMap().getMap();
       }
       /**
+       *
+       *
        * <pre>
-       ** A map of Node name --&gt; Node. 
+       * * A map of Node name --&gt; Node.
        * </pre>
        *
        * <code>map&lt;string, .proto.Node&gt; nodes_map = 2;</code>
        */
-
       public proto.GraphProtos.Node getNodesMapOrDefault(
-          java.lang.String key,
-          proto.GraphProtos.Node defaultValue) {
-        if (key == null) { throw new java.lang.NullPointerException(); }
+          java.lang.String key, proto.GraphProtos.Node defaultValue) {
+        if (key == null) {
+          throw new java.lang.NullPointerException();
+        }
         java.util.Map<java.lang.String, proto.GraphProtos.Node> map =
             internalGetNodesMap().getMap();
         return map.containsKey(key) ? map.get(key) : defaultValue;
       }
       /**
+       *
+       *
        * <pre>
-       ** A map of Node name --&gt; Node. 
+       * * A map of Node name --&gt; Node.
        * </pre>
        *
        * <code>map&lt;string, .proto.Node&gt; nodes_map = 2;</code>
        */
-
-      public proto.GraphProtos.Node getNodesMapOrThrow(
-          java.lang.String key) {
-        if (key == null) { throw new java.lang.NullPointerException(); }
+      public proto.GraphProtos.Node getNodesMapOrThrow(java.lang.String key) {
+        if (key == null) {
+          throw new java.lang.NullPointerException();
+        }
         java.util.Map<java.lang.String, proto.GraphProtos.Node> map =
             internalGetNodesMap().getMap();
         if (!map.containsKey(key)) {
@@ -2282,63 +2359,64 @@ public final class GraphProtos {
       }
 
       public Builder clearNodesMap() {
-        internalGetMutableNodesMap().getMutableMap()
-            .clear();
+        internalGetMutableNodesMap().getMutableMap().clear();
         return this;
       }
       /**
+       *
+       *
        * <pre>
-       ** A map of Node name --&gt; Node. 
+       * * A map of Node name --&gt; Node.
        * </pre>
        *
        * <code>map&lt;string, .proto.Node&gt; nodes_map = 2;</code>
        */
-
-      public Builder removeNodesMap(
-          java.lang.String key) {
-        if (key == null) { throw new java.lang.NullPointerException(); }
-        internalGetMutableNodesMap().getMutableMap()
-            .remove(key);
+      public Builder removeNodesMap(java.lang.String key) {
+        if (key == null) {
+          throw new java.lang.NullPointerException();
+        }
+        internalGetMutableNodesMap().getMutableMap().remove(key);
         return this;
       }
-      /**
-       * Use alternate mutation accessors instead.
-       */
+      /** Use alternate mutation accessors instead. */
       @java.lang.Deprecated
-      public java.util.Map<java.lang.String, proto.GraphProtos.Node>
-      getMutableNodesMap() {
+      public java.util.Map<java.lang.String, proto.GraphProtos.Node> getMutableNodesMap() {
         return internalGetMutableNodesMap().getMutableMap();
       }
       /**
+       *
+       *
        * <pre>
-       ** A map of Node name --&gt; Node. 
+       * * A map of Node name --&gt; Node.
        * </pre>
        *
        * <code>map&lt;string, .proto.Node&gt; nodes_map = 2;</code>
        */
-      public Builder putNodesMap(
-          java.lang.String key,
-          proto.GraphProtos.Node value) {
-        if (key == null) { throw new java.lang.NullPointerException(); }
-        if (value == null) { throw new java.lang.NullPointerException(); }
-        internalGetMutableNodesMap().getMutableMap()
-            .put(key, value);
+      public Builder putNodesMap(java.lang.String key, proto.GraphProtos.Node value) {
+        if (key == null) {
+          throw new java.lang.NullPointerException();
+        }
+        if (value == null) {
+          throw new java.lang.NullPointerException();
+        }
+        internalGetMutableNodesMap().getMutableMap().put(key, value);
         return this;
       }
       /**
+       *
+       *
        * <pre>
-       ** A map of Node name --&gt; Node. 
+       * * A map of Node name --&gt; Node.
        * </pre>
        *
        * <code>map&lt;string, .proto.Node&gt; nodes_map = 2;</code>
        */
-
       public Builder putAllNodesMap(
           java.util.Map<java.lang.String, proto.GraphProtos.Node> values) {
-        internalGetMutableNodesMap().getMutableMap()
-            .putAll(values);
+        internalGetMutableNodesMap().getMutableMap().putAll(values);
         return this;
       }
+
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
@@ -2351,12 +2429,12 @@ public final class GraphProtos {
         return super.mergeUnknownFields(unknownFields);
       }
 
-
       // @@protoc_insertion_point(builder_scope:proto.Graph)
     }
 
     // @@protoc_insertion_point(class_scope:proto.Graph)
     private static final proto.GraphProtos.Graph DEFAULT_INSTANCE;
+
     static {
       DEFAULT_INSTANCE = new proto.GraphProtos.Graph();
     }
@@ -2365,16 +2443,16 @@ public final class GraphProtos {
       return DEFAULT_INSTANCE;
     }
 
-    private static final com.google.protobuf.Parser<Graph>
-        PARSER = new com.google.protobuf.AbstractParser<Graph>() {
-      @java.lang.Override
-      public Graph parsePartialFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return new Graph(input, extensionRegistry);
-      }
-    };
+    private static final com.google.protobuf.Parser<Graph> PARSER =
+        new com.google.protobuf.AbstractParser<Graph>() {
+          @java.lang.Override
+          public Graph parsePartialFrom(
+              com.google.protobuf.CodedInputStream input,
+              com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+              throws com.google.protobuf.InvalidProtocolBufferException {
+            return new Graph(input, extensionRegistry);
+          }
+        };
 
     public static com.google.protobuf.Parser<Graph> parser() {
       return PARSER;
@@ -2389,73 +2467,74 @@ public final class GraphProtos {
     public proto.GraphProtos.Graph getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
-
   }
 
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_proto_Node_descriptor;
-  private static final 
-    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_proto_Node_descriptor;
+  private static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_proto_Node_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_proto_Graph_descriptor;
-  private static final 
-    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_proto_Graph_descriptor;
+  private static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_proto_Graph_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_proto_Graph_NodesMapEntry_descriptor;
-  private static final 
-    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_proto_Graph_NodesMapEntry_descriptor;
+  private static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_proto_Graph_NodesMapEntry_fieldAccessorTable;
 
-  public static com.google.protobuf.Descriptors.FileDescriptor
-      getDescriptor() {
+  public static com.google.protobuf.Descriptors.FileDescriptor getDescriptor() {
     return descriptor;
   }
-  private static  com.google.protobuf.Descriptors.FileDescriptor
-      descriptor;
+
+  private static com.google.protobuf.Descriptors.FileDescriptor descriptor;
+
   static {
     java.lang.String[] descriptorData = {
-      "\n\013graph.proto\022\005proto\032\034google/protobuf/st" +
-      "ruct.proto\"`\n\004Node\022\014\n\004name\030\001 \001(\t\022)\n\010meta" +
-      "data\030\002 \001(\0132\027.google.protobuf.Struct\022\020\n\010c" +
-      "hildren\030\003 \003(\t\022\r\n\005token\030\004 \003(\t\"\207\001\n\005Graph\022\021" +
-      "\n\troot_name\030\001 \003(\t\022-\n\tnodes_map\030\002 \003(\0132\032.p" +
-      "roto.Graph.NodesMapEntry\032<\n\rNodesMapEntr" +
-      "y\022\013\n\003key\030\001 \001(\t\022\032\n\005value\030\002 \001(\0132\013.proto.No" +
-      "de:\0028\001B\rB\013GraphProtosb\006proto3"
+      "\n\013graph.proto\022\005proto\032\034google/protobuf/st"
+          + "ruct.proto\"`\n\004Node\022\014\n\004name\030\001 \001(\t\022)\n\010meta"
+          + "data\030\002 \001(\0132\027.google.protobuf.Struct\022\020\n\010c"
+          + "hildren\030\003 \003(\t\022\r\n\005token\030\004 \003(\t\"\207\001\n\005Graph\022\021"
+          + "\n\troot_name\030\001 \003(\t\022-\n\tnodes_map\030\002 \003(\0132\032.p"
+          + "roto.Graph.NodesMapEntry\032<\n\rNodesMapEntr"
+          + "y\022\013\n\003key\030\001 \001(\t\022\032\n\005value\030\002 \001(\0132\013.proto.No"
+          + "de:\0028\001B\rB\013GraphProtosb\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
-        new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
+        new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
           public com.google.protobuf.ExtensionRegistry assignDescriptors(
               com.google.protobuf.Descriptors.FileDescriptor root) {
             descriptor = root;
             return null;
           }
         };
-    com.google.protobuf.Descriptors.FileDescriptor
-      .internalBuildGeneratedFileFrom(descriptorData,
+    com.google.protobuf.Descriptors.FileDescriptor.internalBuildGeneratedFileFrom(
+        descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
           com.google.protobuf.StructProto.getDescriptor(),
-        }, assigner);
-    internal_static_proto_Node_descriptor =
-      getDescriptor().getMessageTypes().get(0);
-    internal_static_proto_Node_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_proto_Node_descriptor,
-        new java.lang.String[] { "Name", "Metadata", "Children", "Token", });
-    internal_static_proto_Graph_descriptor =
-      getDescriptor().getMessageTypes().get(1);
-    internal_static_proto_Graph_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_proto_Graph_descriptor,
-        new java.lang.String[] { "RootName", "NodesMap", });
+        },
+        assigner);
+    internal_static_proto_Node_descriptor = getDescriptor().getMessageTypes().get(0);
+    internal_static_proto_Node_fieldAccessorTable =
+        new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+            internal_static_proto_Node_descriptor,
+            new java.lang.String[] {
+              "Name", "Metadata", "Children", "Token",
+            });
+    internal_static_proto_Graph_descriptor = getDescriptor().getMessageTypes().get(1);
+    internal_static_proto_Graph_fieldAccessorTable =
+        new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+            internal_static_proto_Graph_descriptor,
+            new java.lang.String[] {
+              "RootName", "NodesMap",
+            });
     internal_static_proto_Graph_NodesMapEntry_descriptor =
-      internal_static_proto_Graph_descriptor.getNestedTypes().get(0);
-    internal_static_proto_Graph_NodesMapEntry_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_proto_Graph_NodesMapEntry_descriptor,
-        new java.lang.String[] { "Key", "Value", });
+        internal_static_proto_Graph_descriptor.getNestedTypes().get(0);
+    internal_static_proto_Graph_NodesMapEntry_fieldAccessorTable =
+        new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+            internal_static_proto_Graph_NodesMapEntry_descriptor,
+            new java.lang.String[] {
+              "Key", "Value",
+            });
     com.google.protobuf.StructProto.getDescriptor();
   }
 

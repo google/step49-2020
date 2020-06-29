@@ -122,17 +122,38 @@ final class AutoValue_UserComment extends UserComment {
   @Override
   public String toString() {
     return "UserComment{"
-        + "name=" + name + ", "
-        + "email=" + email + ", "
-        + "comment=" + comment + ", "
-        + "timestamp=" + timestamp + ", "
-        + "id=" + id + ", "
-        + "parentId=" + parentId + ", "
-        + "rootId=" + rootId + ", "
-        + "upvotes=" + upvotes + ", "
-        + "downvotes=" + downvotes + ", "
-        + "isEditable=" + isEditable + ", "
-        + "votingStatus=" + votingStatus
+        + "name="
+        + name
+        + ", "
+        + "email="
+        + email
+        + ", "
+        + "comment="
+        + comment
+        + ", "
+        + "timestamp="
+        + timestamp
+        + ", "
+        + "id="
+        + id
+        + ", "
+        + "parentId="
+        + parentId
+        + ", "
+        + "rootId="
+        + rootId
+        + ", "
+        + "upvotes="
+        + upvotes
+        + ", "
+        + "downvotes="
+        + downvotes
+        + ", "
+        + "isEditable="
+        + isEditable
+        + ", "
+        + "votingStatus="
+        + votingStatus
         + "}";
   }
 
@@ -185,5 +206,4 @@ final class AutoValue_UserComment extends UserComment {
     h$ ^= votingStatus.hashCode();
     return h$;
   }
-
 }
