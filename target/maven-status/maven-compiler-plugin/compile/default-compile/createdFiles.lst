@@ -4,10 +4,10 @@ proto/GraphProtos$NodeOrBuilder.class
 proto/GraphProtos$Node$Builder.class
 proto/GraphProtos$Graph$NodesMapDefaultEntryHolder.class
 proto/MutationProtos$MutationListOrBuilder.class
-proto/GraphProtos$1.class
 proto/MutationProtos.class
-proto/GraphProtos.class
+proto/GraphProtos$1.class
 proto/MutationProtos$Mutation$1.class
+proto/GraphProtos.class
 proto/MutationProtos$Mutation.class
 proto/MutationProtos$Mutation$Builder.class
 proto/GraphProtos$Graph$1.class
