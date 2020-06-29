@@ -14,6 +14,7 @@
 
 package com.google.sps.servlets;
 
+import com.google.common.graph.*;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.ServletContext;
@@ -32,35 +33,47 @@ import javax.servlet.http.HttpServletResponse;
 public class DataServlet extends HttpServlet {
 
   /*
-   * Called when a client submits a GET request to the /data URL
-   * Displays all recorded user comments on page
+   * Called when a client submits a GET request to the /data URL Displays all
+   * recorded user comments on page
    */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     /*
-     * Code to read graph from graph.txt file in same directory and print it
-     * to the console, read mutations from mutations.txt and print it to
-     * console
+     * Code to read graph from graph.txt file in same directory and print it to the
+     * console, read mutations from mutations.txt and print it to console
      */
-    Graph graph = Graph.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/graph.txt"));
-    List<String> roots = graph.getRootNameList();
+    Graph inputGraph = Graph.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/inputGraph.txt"));
+
+    // Guava Graph
+    MutableGraph<Node> graph = GraphBuilder.directed().build();
+
+    List<String> roots = inputGraph.getRootNameList();
     System.out.println("Roots " + roots.toString());
-    Map<String, Node> nodesMap = graph.getNodesMap();
-    for(String nodeName : nodesMap.keySet()) {
+    Map<String, Node> nodesMap = inputGraph.getNodesMapMap();
+    for (String nodeName : nodesMap.keySet()) {
+      
+      // Guava graph
+      graph.addNode(nodesMap.get(nodeName));
       System.out.print("Node " + nodeName);
       Node thisNode = nodesMap.get(nodeName);
-      System.out.println(" has children: " + thisNode.getChildrenList().toString());
-    }
 
-    List<Mutation> mutList = MutationList.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/mutations.txt")).getMutationList();
-    for(Mutation m : mutList) {
+      // Add edges to the guava Graph
+      for (String child : thisNode.getChildrenList()) {
+        graph.putEdge(thisNode, nodesMap.get(child));
+      }
+    }
+    System.out.println(graph.toString());
+
+    List<Mutation> mutList = MutationList.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/mutations.txt"))
+        .getMutationList();
+    for (Mutation m : mutList) {
       System.out.println("Type " + m.getType());
       System.out.println("Start Node " + m.getStartNode());
       System.out.println("End Node " + m.getEndNode());
     }
     /*
-     * Code to build graph and write it to graph.txt file in target directory
-     * and build graph and write it to mutations.txt in the target directory
+     * Code to build graph and write it to graph.txt file in target directory and
+     * build graph and write it to mutations.txt in the target directory
      */
     // Node.Builder nodeA = Node.newBuilder();
     // nodeA.setName("A");
@@ -101,12 +114,12 @@ public class DataServlet extends HttpServlet {
     // graph.putNodesMap("F", nodeF.build());
 
     // Mutation.Builder mutationA = Mutation.newBuilder();
-    // // Delete node 
+    // // Delete node
     // mutationA.setTypeValue(2);
     // mutationA.setStartNode(nodeF.build());
 
     // Mutation.Builder mutationB = Mutation.newBuilder();
-    // // Add node 
+    // // Add node
     // mutationB.setTypeValue(0);
     // mutationB.setStartNode(nodeG.build());
 
@@ -116,9 +129,8 @@ public class DataServlet extends HttpServlet {
     // mutationB1.setStartNode(nodeE.build());
     // mutationB1.setEndNode(nodeG.build());
 
-
     // Mutation.Builder mutationC = Mutation.newBuilder();
-    // // Add node 
+    // // Add node
     // mutationC.setTypeValue(0);
     // mutationC.setStartNode(nodeH.build());
 
@@ -127,9 +139,8 @@ public class DataServlet extends HttpServlet {
     // mutationC1.setStartNode(nodeH.build());
     // mutationC1.setEndNode(nodeG.build());
 
-
     // Mutation.Builder mutationD = Mutation.newBuilder();
-    // // Add edge 
+    // // Add edge
     // mutationD.setTypeValue(1);
     // mutationD.setStartNode(nodeD.build());
     // mutationD.setEndNode(nodeG.build());
@@ -151,11 +162,9 @@ public class DataServlet extends HttpServlet {
     // output1.close();
   }
 
-
   /*
-   * Called when a client submits a POST request to the /data URL
-   * Adds submitted comment to internal record if the comment is
-   * non-empty.
+   * Called when a client submits a POST request to the /data URL Adds submitted
+   * comment to internal record if the comment is non-empty.
    */
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
