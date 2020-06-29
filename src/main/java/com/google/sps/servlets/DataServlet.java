@@ -16,11 +16,12 @@ package com.google.sps.servlets;
 
 import java.util.List;
 import java.util.Map;
+import javax.servlet.ServletContext;
 import proto.GraphProtos.Graph;
 import proto.GraphProtos.Node;
 import proto.MutationProtos.MutationList;
 import proto.MutationProtos.Mutation;
-import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -41,7 +42,7 @@ public class DataServlet extends HttpServlet {
      * to the console, read mutations from mutations.txt and print it to
      * console
      */
-    Graph graph = Graph.parseFrom(new FileInputStream("graph.txt"));
+    Graph graph = Graph.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/graph.txt"));
     List<String> roots = graph.getRootNameList();
     System.out.println("Roots " + roots.toString());
     Map<String, Node> nodesMap = graph.getNodesMap();
@@ -51,7 +52,7 @@ public class DataServlet extends HttpServlet {
       System.out.println(" has children: " + thisNode.getChildrenList().toString());
     }
 
-    List<Mutation> mutList = MutationList.parseFrom(new FileInputStream("mutations.txt")).getMutationList();
+    List<Mutation> mutList = MutationList.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/mutations.txt")).getMutationList();
     for(Mutation m : mutList) {
       System.out.println("Type " + m.getType());
       System.out.println("Start Node " + m.getStartNode());
@@ -64,6 +65,7 @@ public class DataServlet extends HttpServlet {
     // Node.Builder nodeA = Node.newBuilder();
     // nodeA.setName("A");
     // nodeA.addChildren("B");
+    // nodeA.addChildren("C");
 
     // Node.Builder nodeB = Node.newBuilder();
     // nodeB.setName("B");
@@ -107,13 +109,24 @@ public class DataServlet extends HttpServlet {
     // // Add node 
     // mutationB.setTypeValue(0);
     // mutationB.setStartNode(nodeG.build());
-    // mutationB.setEndNode(nodeE.build());
+
+    // Mutation.Builder mutationB1 = Mutation.newBuilder();
+    // // Add edge from E to G
+    // mutationB1.setTypeValue(1);
+    // mutationB1.setStartNode(nodeE.build());
+    // mutationB1.setEndNode(nodeG.build());
+
 
     // Mutation.Builder mutationC = Mutation.newBuilder();
     // // Add node 
     // mutationC.setTypeValue(0);
     // mutationC.setStartNode(nodeH.build());
-    // mutationC.setEndNode(nodeG.build());
+
+    // Mutation.Builder mutationC1 = Mutation.newBuilder();
+    // mutationC1.setTypeValue(1);
+    // mutationC1.setStartNode(nodeH.build());
+    // mutationC1.setEndNode(nodeG.build());
+
 
     // Mutation.Builder mutationD = Mutation.newBuilder();
     // // Add edge 
@@ -124,7 +137,9 @@ public class DataServlet extends HttpServlet {
     // MutationList.Builder mutationList = MutationList.newBuilder();
     // mutationList.addMutation(mutationA.build());
     // mutationList.addMutation(mutationB.build());
+    // mutationList.addMutation(mutationB1.build());
     // mutationList.addMutation(mutationC.build());
+    // mutationList.addMutation(mutationC1.build());
     // mutationList.addMutation(mutationD.build());
 
     // FileOutputStream output = new FileOutputStream("graph.txt");
