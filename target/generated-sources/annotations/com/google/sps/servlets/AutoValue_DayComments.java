@@ -9,9 +9,7 @@ final class AutoValue_DayComments extends DayComments {
 
   private final int replies;
 
-  AutoValue_DayComments(
-      int rootComments,
-      int replies) {
+  AutoValue_DayComments(int rootComments, int replies) {
     this.rootComments = rootComments;
     this.replies = replies;
   }
@@ -28,10 +26,7 @@ final class AutoValue_DayComments extends DayComments {
 
   @Override
   public String toString() {
-    return "DayComments{"
-        + "rootComments=" + rootComments + ", "
-        + "replies=" + replies
-        + "}";
+    return "DayComments{" + "rootComments=" + rootComments + ", " + "replies=" + replies + "}";
   }
 
   @Override
@@ -41,8 +36,7 @@ final class AutoValue_DayComments extends DayComments {
     }
     if (o instanceof DayComments) {
       DayComments that = (DayComments) o;
-      return this.rootComments == that.rootComments()
-          && this.replies == that.replies();
+      return this.rootComments == that.rootComments() && this.replies == that.replies();
     }
     return false;
   }
@@ -56,5 +50,4 @@ final class AutoValue_DayComments extends DayComments {
     h$ ^= replies;
     return h$;
   }
-
 }

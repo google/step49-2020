@@ -28,10 +28,7 @@ public class DataServlet extends HttpServlet {
    * Displays all recorded user comments on page
    */
   @Override
-  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    
-  }
-
+  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {}
 
   /*
    * Called when a client submits a POST request to the /data URL
@@ -39,7 +36,5 @@ public class DataServlet extends HttpServlet {
    * non-empty.
    */
   @Override
-  public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-
-  }
+  public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {}
 }

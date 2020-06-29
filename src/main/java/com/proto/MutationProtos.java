@@ -5,64 +5,57 @@ package proto;
 
 public final class MutationProtos {
   private MutationProtos() {}
-  public static void registerAllExtensions(
-      com.google.protobuf.ExtensionRegistryLite registry) {
+
+  public static void registerAllExtensions(com.google.protobuf.ExtensionRegistryLite registry) {}
+
+  public static void registerAllExtensions(com.google.protobuf.ExtensionRegistry registry) {
+    registerAllExtensions((com.google.protobuf.ExtensionRegistryLite) registry);
   }
 
-  public static void registerAllExtensions(
-      com.google.protobuf.ExtensionRegistry registry) {
-    registerAllExtensions(
-        (com.google.protobuf.ExtensionRegistryLite) registry);
-  }
-  public interface TokenMutationOrBuilder extends
+  public interface TokenMutationOrBuilder
+      extends
       // @@protoc_insertion_point(interface_extends:proto.TokenMutation)
       com.google.protobuf.MessageOrBuilder {
 
-    /**
-     * <code>.proto.TokenMutation.Type type = 1;</code>
-     */
+    /** <code>.proto.TokenMutation.Type type = 1;</code> */
     int getTypeValue();
-    /**
-     * <code>.proto.TokenMutation.Type type = 1;</code>
-     */
+    /** <code>.proto.TokenMutation.Type type = 1;</code> */
     proto.MutationProtos.TokenMutation.Type getType();
 
-    /**
-     * <code>string token_name = 2;</code>
-     */
+    /** <code>string token_name = 2;</code> */
     java.lang.String getTokenName();
-    /**
-     * <code>string token_name = 2;</code>
-     */
-    com.google.protobuf.ByteString
-        getTokenNameBytes();
+    /** <code>string token_name = 2;</code> */
+    com.google.protobuf.ByteString getTokenNameBytes();
   }
   /**
+   *
+   *
    * <pre>
-   ** An object representing a single mutation to a list of tokens 
+   * * An object representing a single mutation to a list of tokens
    * </pre>
    *
    * Protobuf type {@code proto.TokenMutation}
    */
-  public  static final class TokenMutation extends
-      com.google.protobuf.GeneratedMessageV3 implements
+  public static final class TokenMutation extends com.google.protobuf.GeneratedMessageV3
+      implements
       // @@protoc_insertion_point(message_implements:proto.TokenMutation)
       TokenMutationOrBuilder {
-  private static final long serialVersionUID = 0L;
+    private static final long serialVersionUID = 0L;
     // Use TokenMutation.newBuilder() to construct.
     private TokenMutation(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
+
     private TokenMutation() {
       type_ = 0;
       tokenName_ = "";
     }
 
     @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
+    public final com.google.protobuf.UnknownFieldSet getUnknownFields() {
       return this.unknownFields;
     }
+
     private TokenMutation(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -82,39 +75,40 @@ public final class MutationProtos {
             case 0:
               done = true;
               break;
-            case 8: {
-              int rawValue = input.readEnum();
+            case 8:
+              {
+                int rawValue = input.readEnum();
 
-              type_ = rawValue;
-              break;
-            }
-            case 18: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              tokenName_ = s;
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
+                type_ = rawValue;
+                break;
               }
-              break;
-            }
+            case 18:
+              {
+                java.lang.String s = input.readStringRequireUtf8();
+
+                tokenName_ = s;
+                break;
+              }
+            default:
+              {
+                if (!parseUnknownField(input, unknownFields, extensionRegistry, tag)) {
+                  done = true;
+                }
+                break;
+              }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
         throw e.setUnfinishedMessage(this);
       } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
+        throw new com.google.protobuf.InvalidProtocolBufferException(e).setUnfinishedMessage(this);
       } finally {
         this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
     }
-    public static final com.google.protobuf.Descriptors.Descriptor
-        getDescriptor() {
+
+    public static final com.google.protobuf.Descriptors.Descriptor getDescriptor() {
       return proto.MutationProtos.internal_static_proto_TokenMutation_descriptor;
     }
 
@@ -123,34 +117,23 @@ public final class MutationProtos {
         internalGetFieldAccessorTable() {
       return proto.MutationProtos.internal_static_proto_TokenMutation_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              proto.MutationProtos.TokenMutation.class, proto.MutationProtos.TokenMutation.Builder.class);
+              proto.MutationProtos.TokenMutation.class,
+              proto.MutationProtos.TokenMutation.Builder.class);
     }
 
-    /**
-     * Protobuf enum {@code proto.TokenMutation.Type}
-     */
-    public enum Type
-        implements com.google.protobuf.ProtocolMessageEnum {
-      /**
-       * <code>ADD_TOKEN = 0;</code>
-       */
+    /** Protobuf enum {@code proto.TokenMutation.Type} */
+    public enum Type implements com.google.protobuf.ProtocolMessageEnum {
+      /** <code>ADD_TOKEN = 0;</code> */
       ADD_TOKEN(0),
-      /**
-       * <code>DELETE_TOKEN = 1;</code>
-       */
+      /** <code>DELETE_TOKEN = 1;</code> */
       DELETE_TOKEN(1),
       UNRECOGNIZED(-1),
       ;
 
-      /**
-       * <code>ADD_TOKEN = 0;</code>
-       */
+      /** <code>ADD_TOKEN = 0;</code> */
       public static final int ADD_TOKEN_VALUE = 0;
-      /**
-       * <code>DELETE_TOKEN = 1;</code>
-       */
+      /** <code>DELETE_TOKEN = 1;</code> */
       public static final int DELETE_TOKEN_VALUE = 1;
-
 
       public final int getNumber() {
         if (this == UNRECOGNIZED) {
@@ -160,9 +143,7 @@ public final class MutationProtos {
         return value;
       }
 
-      /**
-       * @deprecated Use {@link #forNumber(int)} instead.
-       */
+      /** @deprecated Use {@link #forNumber(int)} instead. */
       @java.lang.Deprecated
       public static Type valueOf(int value) {
         return forNumber(value);
@@ -170,44 +151,43 @@ public final class MutationProtos {
 
       public static Type forNumber(int value) {
         switch (value) {
-          case 0: return ADD_TOKEN;
-          case 1: return DELETE_TOKEN;
-          default: return null;
+          case 0:
+            return ADD_TOKEN;
+          case 1:
+            return DELETE_TOKEN;
+          default:
+            return null;
         }
       }
 
-      public static com.google.protobuf.Internal.EnumLiteMap<Type>
-          internalGetValueMap() {
+      public static com.google.protobuf.Internal.EnumLiteMap<Type> internalGetValueMap() {
         return internalValueMap;
       }
-      private static final com.google.protobuf.Internal.EnumLiteMap<
-          Type> internalValueMap =
-            new com.google.protobuf.Internal.EnumLiteMap<Type>() {
-              public Type findValueByNumber(int number) {
-                return Type.forNumber(number);
-              }
-            };
 
-      public final com.google.protobuf.Descriptors.EnumValueDescriptor
-          getValueDescriptor() {
+      private static final com.google.protobuf.Internal.EnumLiteMap<Type> internalValueMap =
+          new com.google.protobuf.Internal.EnumLiteMap<Type>() {
+            public Type findValueByNumber(int number) {
+              return Type.forNumber(number);
+            }
+          };
+
+      public final com.google.protobuf.Descriptors.EnumValueDescriptor getValueDescriptor() {
         return getDescriptor().getValues().get(ordinal());
       }
-      public final com.google.protobuf.Descriptors.EnumDescriptor
-          getDescriptorForType() {
+
+      public final com.google.protobuf.Descriptors.EnumDescriptor getDescriptorForType() {
         return getDescriptor();
       }
-      public static final com.google.protobuf.Descriptors.EnumDescriptor
-          getDescriptor() {
+
+      public static final com.google.protobuf.Descriptors.EnumDescriptor getDescriptor() {
         return proto.MutationProtos.TokenMutation.getDescriptor().getEnumTypes().get(0);
       }
 
       private static final Type[] VALUES = values();
 
-      public static Type valueOf(
-          com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+      public static Type valueOf(com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
         if (desc.getType() != getDescriptor()) {
-          throw new java.lang.IllegalArgumentException(
-            "EnumValueDescriptor is not for this type.");
+          throw new java.lang.IllegalArgumentException("EnumValueDescriptor is not for this type.");
         }
         if (desc.getIndex() == -1) {
           return UNRECOGNIZED;
@@ -226,48 +206,38 @@ public final class MutationProtos {
 
     public static final int TYPE_FIELD_NUMBER = 1;
     private int type_;
-    /**
-     * <code>.proto.TokenMutation.Type type = 1;</code>
-     */
+    /** <code>.proto.TokenMutation.Type type = 1;</code> */
     public int getTypeValue() {
       return type_;
     }
-    /**
-     * <code>.proto.TokenMutation.Type type = 1;</code>
-     */
+    /** <code>.proto.TokenMutation.Type type = 1;</code> */
     public proto.MutationProtos.TokenMutation.Type getType() {
       @SuppressWarnings("deprecation")
-      proto.MutationProtos.TokenMutation.Type result = proto.MutationProtos.TokenMutation.Type.valueOf(type_);
+      proto.MutationProtos.TokenMutation.Type result =
+          proto.MutationProtos.TokenMutation.Type.valueOf(type_);
       return result == null ? proto.MutationProtos.TokenMutation.Type.UNRECOGNIZED : result;
     }
 
     public static final int TOKEN_NAME_FIELD_NUMBER = 2;
     private volatile java.lang.Object tokenName_;
-    /**
-     * <code>string token_name = 2;</code>
-     */
+    /** <code>string token_name = 2;</code> */
     public java.lang.String getTokenName() {
       java.lang.Object ref = tokenName_;
       if (ref instanceof java.lang.String) {
         return (java.lang.String) ref;
       } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
+        com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
         tokenName_ = s;
         return s;
       }
     }
-    /**
-     * <code>string token_name = 2;</code>
-     */
-    public com.google.protobuf.ByteString
-        getTokenNameBytes() {
+    /** <code>string token_name = 2;</code> */
+    public com.google.protobuf.ByteString getTokenNameBytes() {
       java.lang.Object ref = tokenName_;
       if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
+        com.google.protobuf.ByteString b =
+            com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
         tokenName_ = b;
         return b;
       } else {
@@ -276,6 +246,7 @@ public final class MutationProtos {
     }
 
     private byte memoizedIsInitialized = -1;
+
     @java.lang.Override
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
@@ -287,8 +258,7 @@ public final class MutationProtos {
     }
 
     @java.lang.Override
-    public void writeTo(com.google.protobuf.CodedOutputStream output)
-                        throws java.io.IOException {
+    public void writeTo(com.google.protobuf.CodedOutputStream output) throws java.io.IOException {
       if (type_ != proto.MutationProtos.TokenMutation.Type.ADD_TOKEN.getNumber()) {
         output.writeEnum(1, type_);
       }
@@ -305,8 +275,7 @@ public final class MutationProtos {
 
       size = 0;
       if (type_ != proto.MutationProtos.TokenMutation.Type.ADD_TOKEN.getNumber()) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeEnumSize(1, type_);
+        size += com.google.protobuf.CodedOutputStream.computeEnumSize(1, type_);
       }
       if (!getTokenNameBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, tokenName_);
@@ -319,7 +288,7 @@ public final class MutationProtos {
     @java.lang.Override
     public boolean equals(final java.lang.Object obj) {
       if (obj == this) {
-       return true;
+        return true;
       }
       if (!(obj instanceof proto.MutationProtos.TokenMutation)) {
         return super.equals(obj);
@@ -327,8 +296,7 @@ public final class MutationProtos {
       proto.MutationProtos.TokenMutation other = (proto.MutationProtos.TokenMutation) obj;
 
       if (type_ != other.type_) return false;
-      if (!getTokenName()
-          .equals(other.getTokenName())) return false;
+      if (!getTokenName().equals(other.getTokenName())) return false;
       if (!unknownFields.equals(other.unknownFields)) return false;
       return true;
     }
@@ -349,88 +317,93 @@ public final class MutationProtos {
       return hash;
     }
 
-    public static proto.MutationProtos.TokenMutation parseFrom(
-        java.nio.ByteBuffer data)
+    public static proto.MutationProtos.TokenMutation parseFrom(java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
+
     public static proto.MutationProtos.TokenMutation parseFrom(
-        java.nio.ByteBuffer data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        java.nio.ByteBuffer data, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static proto.MutationProtos.TokenMutation parseFrom(
-        com.google.protobuf.ByteString data)
+
+    public static proto.MutationProtos.TokenMutation parseFrom(com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
+
     public static proto.MutationProtos.TokenMutation parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
+
     public static proto.MutationProtos.TokenMutation parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
+
     public static proto.MutationProtos.TokenMutation parseFrom(
-        byte[] data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        byte[] data, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
+
     public static proto.MutationProtos.TokenMutation parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input);
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input);
     }
+
     public static proto.MutationProtos.TokenMutation parseFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        java.io.InputStream input, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(
+          PARSER, input, extensionRegistry);
     }
+
     public static proto.MutationProtos.TokenMutation parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseDelimitedWithIOException(PARSER, input);
+      return com.google.protobuf.GeneratedMessageV3.parseDelimitedWithIOException(PARSER, input);
     }
+
     public static proto.MutationProtos.TokenMutation parseDelimitedFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        java.io.InputStream input, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3.parseDelimitedWithIOException(
+          PARSER, input, extensionRegistry);
     }
+
     public static proto.MutationProtos.TokenMutation parseFrom(
-        com.google.protobuf.CodedInputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input);
+        com.google.protobuf.CodedInputStream input) throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input);
     }
+
     public static proto.MutationProtos.TokenMutation parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(
+          PARSER, input, extensionRegistry);
     }
 
     @java.lang.Override
-    public Builder newBuilderForType() { return newBuilder(); }
+    public Builder newBuilderForType() {
+      return newBuilder();
+    }
+
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
+
     public static Builder newBuilder(proto.MutationProtos.TokenMutation prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
+
     @java.lang.Override
     public Builder toBuilder() {
-      return this == DEFAULT_INSTANCE
-          ? new Builder() : new Builder().mergeFrom(this);
+      return this == DEFAULT_INSTANCE ? new Builder() : new Builder().mergeFrom(this);
     }
 
     @java.lang.Override
@@ -440,18 +413,20 @@ public final class MutationProtos {
       return builder;
     }
     /**
+     *
+     *
      * <pre>
-     ** An object representing a single mutation to a list of tokens 
+     * * An object representing a single mutation to a list of tokens
      * </pre>
      *
      * Protobuf type {@code proto.TokenMutation}
      */
-    public static final class Builder extends
-        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+    public static final class Builder
+        extends com.google.protobuf.GeneratedMessageV3.Builder<Builder>
+        implements
         // @@protoc_insertion_point(builder_implements:proto.TokenMutation)
         proto.MutationProtos.TokenMutationOrBuilder {
-      public static final com.google.protobuf.Descriptors.Descriptor
-          getDescriptor() {
+      public static final com.google.protobuf.Descriptors.Descriptor getDescriptor() {
         return proto.MutationProtos.internal_static_proto_TokenMutation_descriptor;
       }
 
@@ -460,7 +435,8 @@ public final class MutationProtos {
           internalGetFieldAccessorTable() {
         return proto.MutationProtos.internal_static_proto_TokenMutation_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                proto.MutationProtos.TokenMutation.class, proto.MutationProtos.TokenMutation.Builder.class);
+                proto.MutationProtos.TokenMutation.class,
+                proto.MutationProtos.TokenMutation.Builder.class);
       }
 
       // Construct using proto.MutationProtos.TokenMutation.newBuilder()
@@ -468,16 +444,15 @@ public final class MutationProtos {
         maybeForceBuilderInitialization();
       }
 
-      private Builder(
-          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      private Builder(com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
+
       private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
+        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {}
       }
+
       @java.lang.Override
       public Builder clear() {
         super.clear();
@@ -489,8 +464,7 @@ public final class MutationProtos {
       }
 
       @java.lang.Override
-      public com.google.protobuf.Descriptors.Descriptor
-          getDescriptorForType() {
+      public com.google.protobuf.Descriptors.Descriptor getDescriptorForType() {
         return proto.MutationProtos.internal_static_proto_TokenMutation_descriptor;
       }
 
@@ -521,38 +495,41 @@ public final class MutationProtos {
       public Builder clone() {
         return super.clone();
       }
+
       @java.lang.Override
       public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
+          com.google.protobuf.Descriptors.FieldDescriptor field, java.lang.Object value) {
         return super.setField(field, value);
       }
+
       @java.lang.Override
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
+      public Builder clearField(com.google.protobuf.Descriptors.FieldDescriptor field) {
         return super.clearField(field);
       }
+
       @java.lang.Override
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+      public Builder clearOneof(com.google.protobuf.Descriptors.OneofDescriptor oneof) {
         return super.clearOneof(oneof);
       }
+
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
+          int index,
+          java.lang.Object value) {
         return super.setRepeatedField(field, index, value);
       }
+
       @java.lang.Override
       public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
+          com.google.protobuf.Descriptors.FieldDescriptor field, java.lang.Object value) {
         return super.addRepeatedField(field, value);
       }
+
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof proto.MutationProtos.TokenMutation) {
-          return mergeFrom((proto.MutationProtos.TokenMutation)other);
+          return mergeFrom((proto.MutationProtos.TokenMutation) other);
         } else {
           super.mergeFrom(other);
           return this;
@@ -598,59 +575,47 @@ public final class MutationProtos {
       }
 
       private int type_ = 0;
-      /**
-       * <code>.proto.TokenMutation.Type type = 1;</code>
-       */
+      /** <code>.proto.TokenMutation.Type type = 1;</code> */
       public int getTypeValue() {
         return type_;
       }
-      /**
-       * <code>.proto.TokenMutation.Type type = 1;</code>
-       */
+      /** <code>.proto.TokenMutation.Type type = 1;</code> */
       public Builder setTypeValue(int value) {
         type_ = value;
         onChanged();
         return this;
       }
-      /**
-       * <code>.proto.TokenMutation.Type type = 1;</code>
-       */
+      /** <code>.proto.TokenMutation.Type type = 1;</code> */
       public proto.MutationProtos.TokenMutation.Type getType() {
         @SuppressWarnings("deprecation")
-        proto.MutationProtos.TokenMutation.Type result = proto.MutationProtos.TokenMutation.Type.valueOf(type_);
+        proto.MutationProtos.TokenMutation.Type result =
+            proto.MutationProtos.TokenMutation.Type.valueOf(type_);
         return result == null ? proto.MutationProtos.TokenMutation.Type.UNRECOGNIZED : result;
       }
-      /**
-       * <code>.proto.TokenMutation.Type type = 1;</code>
-       */
+      /** <code>.proto.TokenMutation.Type type = 1;</code> */
       public Builder setType(proto.MutationProtos.TokenMutation.Type value) {
         if (value == null) {
           throw new NullPointerException();
         }
-        
+
         type_ = value.getNumber();
         onChanged();
         return this;
       }
-      /**
-       * <code>.proto.TokenMutation.Type type = 1;</code>
-       */
+      /** <code>.proto.TokenMutation.Type type = 1;</code> */
       public Builder clearType() {
-        
+
         type_ = 0;
         onChanged();
         return this;
       }
 
       private java.lang.Object tokenName_ = "";
-      /**
-       * <code>string token_name = 2;</code>
-       */
+      /** <code>string token_name = 2;</code> */
       public java.lang.String getTokenName() {
         java.lang.Object ref = tokenName_;
         if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
+          com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
           java.lang.String s = bs.toStringUtf8();
           tokenName_ = s;
           return s;
@@ -658,58 +623,47 @@ public final class MutationProtos {
           return (java.lang.String) ref;
         }
       }
-      /**
-       * <code>string token_name = 2;</code>
-       */
-      public com.google.protobuf.ByteString
-          getTokenNameBytes() {
+      /** <code>string token_name = 2;</code> */
+      public com.google.protobuf.ByteString getTokenNameBytes() {
         java.lang.Object ref = tokenName_;
         if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
+          com.google.protobuf.ByteString b =
+              com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
           tokenName_ = b;
           return b;
         } else {
           return (com.google.protobuf.ByteString) ref;
         }
       }
-      /**
-       * <code>string token_name = 2;</code>
-       */
-      public Builder setTokenName(
-          java.lang.String value) {
+      /** <code>string token_name = 2;</code> */
+      public Builder setTokenName(java.lang.String value) {
         if (value == null) {
-    throw new NullPointerException();
-  }
-  
+          throw new NullPointerException();
+        }
+
         tokenName_ = value;
         onChanged();
         return this;
       }
-      /**
-       * <code>string token_name = 2;</code>
-       */
+      /** <code>string token_name = 2;</code> */
       public Builder clearTokenName() {
-        
+
         tokenName_ = getDefaultInstance().getTokenName();
         onChanged();
         return this;
       }
-      /**
-       * <code>string token_name = 2;</code>
-       */
-      public Builder setTokenNameBytes(
-          com.google.protobuf.ByteString value) {
+      /** <code>string token_name = 2;</code> */
+      public Builder setTokenNameBytes(com.google.protobuf.ByteString value) {
         if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+          throw new NullPointerException();
+        }
+        checkByteStringIsUtf8(value);
+
         tokenName_ = value;
         onChanged();
         return this;
       }
+
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
@@ -722,12 +676,12 @@ public final class MutationProtos {
         return super.mergeUnknownFields(unknownFields);
       }
 
-
       // @@protoc_insertion_point(builder_scope:proto.TokenMutation)
     }
 
     // @@protoc_insertion_point(class_scope:proto.TokenMutation)
     private static final proto.MutationProtos.TokenMutation DEFAULT_INSTANCE;
+
     static {
       DEFAULT_INSTANCE = new proto.MutationProtos.TokenMutation();
     }
@@ -736,16 +690,16 @@ public final class MutationProtos {
       return DEFAULT_INSTANCE;
     }
 
-    private static final com.google.protobuf.Parser<TokenMutation>
-        PARSER = new com.google.protobuf.AbstractParser<TokenMutation>() {
-      @java.lang.Override
-      public TokenMutation parsePartialFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return new TokenMutation(input, extensionRegistry);
-      }
-    };
+    private static final com.google.protobuf.Parser<TokenMutation> PARSER =
+        new com.google.protobuf.AbstractParser<TokenMutation>() {
+          @java.lang.Override
+          public TokenMutation parsePartialFrom(
+              com.google.protobuf.CodedInputStream input,
+              com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+              throws com.google.protobuf.InvalidProtocolBufferException {
+            return new TokenMutation(input, extensionRegistry);
+          }
+        };
 
     public static com.google.protobuf.Parser<TokenMutation> parser() {
       return PARSER;
@@ -760,24 +714,28 @@ public final class MutationProtos {
     public proto.MutationProtos.TokenMutation getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
-
   }
 
-  public interface MutationOrBuilder extends
+  public interface MutationOrBuilder
+      extends
       // @@protoc_insertion_point(interface_extends:proto.Mutation)
       com.google.protobuf.MessageOrBuilder {
 
     /**
+     *
+     *
      * <pre>
-     ** The type of change made by this mutation 
+     * * The type of change made by this mutation
      * </pre>
      *
      * <code>.proto.Mutation.Type type = 1;</code>
      */
     int getTypeValue();
     /**
+     *
+     *
      * <pre>
-     ** The type of change made by this mutation 
+     * * The type of change made by this mutation
      * </pre>
      *
      * <code>.proto.Mutation.Type type = 1;</code>
@@ -785,9 +743,11 @@ public final class MutationProtos {
     proto.MutationProtos.Mutation.Type getType();
 
     /**
+     *
+     *
      * <pre>
-     **
-     * The node modified by this mutation if the type is 
+     * *
+     * The node modified by this mutation if the type is
      * ADD_NODE, DELETE_NODE, or CHANGE_TOKEN. If the type
      * is ADD_EDGE/DELETE_EDGE, this is the start of the
      * directed edge.
@@ -797,9 +757,11 @@ public final class MutationProtos {
      */
     boolean hasStartNode();
     /**
+     *
+     *
      * <pre>
-     **
-     * The node modified by this mutation if the type is 
+     * *
+     * The node modified by this mutation if the type is
      * ADD_NODE, DELETE_NODE, or CHANGE_TOKEN. If the type
      * is ADD_EDGE/DELETE_EDGE, this is the start of the
      * directed edge.
@@ -809,9 +771,11 @@ public final class MutationProtos {
      */
     proto.GraphProtos.Node getStartNode();
     /**
+     *
+     *
      * <pre>
-     **
-     * The node modified by this mutation if the type is 
+     * *
+     * The node modified by this mutation if the type is
      * ADD_NODE, DELETE_NODE, or CHANGE_TOKEN. If the type
      * is ADD_EDGE/DELETE_EDGE, this is the start of the
      * directed edge.
@@ -822,8 +786,10 @@ public final class MutationProtos {
     proto.GraphProtos.NodeOrBuilder getStartNodeOrBuilder();
 
     /**
+     *
+     *
      * <pre>
-     **
+     * *
      * Not specified if the type is ADD_NODE, DELETE_NODE,
      * or CHANGE_TOKEN. If the type is ADD_EDGE/DELETE_EDGE,
      * this is the end of the directed edge
@@ -833,8 +799,10 @@ public final class MutationProtos {
      */
     boolean hasEndNode();
     /**
+     *
+     *
      * <pre>
-     **
+     * *
      * Not specified if the type is ADD_NODE, DELETE_NODE,
      * or CHANGE_TOKEN. If the type is ADD_EDGE/DELETE_EDGE,
      * this is the end of the directed edge
@@ -844,8 +812,10 @@ public final class MutationProtos {
      */
     proto.GraphProtos.Node getEndNode();
     /**
+     *
+     *
      * <pre>
-     **
+     * *
      * Not specified if the type is ADD_NODE, DELETE_NODE,
      * or CHANGE_TOKEN. If the type is ADD_EDGE/DELETE_EDGE,
      * this is the end of the directed edge
@@ -856,9 +826,11 @@ public final class MutationProtos {
     proto.GraphProtos.NodeOrBuilder getEndNodeOrBuilder();
 
     /**
+     *
+     *
      * <pre>
-     **
-     * If the type of the mutation is CHANGE_TOKEN, the 
+     * *
+     * If the type of the mutation is CHANGE_TOKEN, the
      * change to the list of tokens of the node
      * </pre>
      *
@@ -866,9 +838,11 @@ public final class MutationProtos {
      */
     boolean hasTokenChange();
     /**
+     *
+     *
      * <pre>
-     **
-     * If the type of the mutation is CHANGE_TOKEN, the 
+     * *
+     * If the type of the mutation is CHANGE_TOKEN, the
      * change to the list of tokens of the node
      * </pre>
      *
@@ -876,9 +850,11 @@ public final class MutationProtos {
      */
     proto.MutationProtos.TokenMutation getTokenChange();
     /**
+     *
+     *
      * <pre>
-     **
-     * If the type of the mutation is CHANGE_TOKEN, the 
+     * *
+     * If the type of the mutation is CHANGE_TOKEN, the
      * change to the list of tokens of the node
      * </pre>
      *
@@ -887,49 +863,55 @@ public final class MutationProtos {
     proto.MutationProtos.TokenMutationOrBuilder getTokenChangeOrBuilder();
 
     /**
+     *
+     *
      * <pre>
-     ** Reason the mutation happened 
+     * * Reason the mutation happened
      * </pre>
      *
      * <code>string reason = 5;</code>
      */
     java.lang.String getReason();
     /**
+     *
+     *
      * <pre>
-     ** Reason the mutation happened 
+     * * Reason the mutation happened
      * </pre>
      *
      * <code>string reason = 5;</code>
      */
-    com.google.protobuf.ByteString
-        getReasonBytes();
+    com.google.protobuf.ByteString getReasonBytes();
   }
   /**
+   *
+   *
    * <pre>
-   ** An object representing a single mutation to a DAG 
+   * * An object representing a single mutation to a DAG
    * </pre>
    *
    * Protobuf type {@code proto.Mutation}
    */
-  public  static final class Mutation extends
-      com.google.protobuf.GeneratedMessageV3 implements
+  public static final class Mutation extends com.google.protobuf.GeneratedMessageV3
+      implements
       // @@protoc_insertion_point(message_implements:proto.Mutation)
       MutationOrBuilder {
-  private static final long serialVersionUID = 0L;
+    private static final long serialVersionUID = 0L;
     // Use Mutation.newBuilder() to construct.
     private Mutation(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
+
     private Mutation() {
       type_ = 0;
       reason_ = "";
     }
 
     @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
+    public final com.google.protobuf.UnknownFieldSet getUnknownFields() {
       return this.unknownFields;
     }
+
     private Mutation(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -949,78 +931,84 @@ public final class MutationProtos {
             case 0:
               done = true;
               break;
-            case 8: {
-              int rawValue = input.readEnum();
+            case 8:
+              {
+                int rawValue = input.readEnum();
 
-              type_ = rawValue;
-              break;
-            }
-            case 18: {
-              proto.GraphProtos.Node.Builder subBuilder = null;
-              if (startNode_ != null) {
-                subBuilder = startNode_.toBuilder();
+                type_ = rawValue;
+                break;
               }
-              startNode_ = input.readMessage(proto.GraphProtos.Node.parser(), extensionRegistry);
-              if (subBuilder != null) {
-                subBuilder.mergeFrom(startNode_);
-                startNode_ = subBuilder.buildPartial();
-              }
+            case 18:
+              {
+                proto.GraphProtos.Node.Builder subBuilder = null;
+                if (startNode_ != null) {
+                  subBuilder = startNode_.toBuilder();
+                }
+                startNode_ = input.readMessage(proto.GraphProtos.Node.parser(), extensionRegistry);
+                if (subBuilder != null) {
+                  subBuilder.mergeFrom(startNode_);
+                  startNode_ = subBuilder.buildPartial();
+                }
 
-              break;
-            }
-            case 26: {
-              proto.GraphProtos.Node.Builder subBuilder = null;
-              if (endNode_ != null) {
-                subBuilder = endNode_.toBuilder();
+                break;
               }
-              endNode_ = input.readMessage(proto.GraphProtos.Node.parser(), extensionRegistry);
-              if (subBuilder != null) {
-                subBuilder.mergeFrom(endNode_);
-                endNode_ = subBuilder.buildPartial();
-              }
+            case 26:
+              {
+                proto.GraphProtos.Node.Builder subBuilder = null;
+                if (endNode_ != null) {
+                  subBuilder = endNode_.toBuilder();
+                }
+                endNode_ = input.readMessage(proto.GraphProtos.Node.parser(), extensionRegistry);
+                if (subBuilder != null) {
+                  subBuilder.mergeFrom(endNode_);
+                  endNode_ = subBuilder.buildPartial();
+                }
 
-              break;
-            }
-            case 34: {
-              proto.MutationProtos.TokenMutation.Builder subBuilder = null;
-              if (tokenChange_ != null) {
-                subBuilder = tokenChange_.toBuilder();
+                break;
               }
-              tokenChange_ = input.readMessage(proto.MutationProtos.TokenMutation.parser(), extensionRegistry);
-              if (subBuilder != null) {
-                subBuilder.mergeFrom(tokenChange_);
-                tokenChange_ = subBuilder.buildPartial();
-              }
+            case 34:
+              {
+                proto.MutationProtos.TokenMutation.Builder subBuilder = null;
+                if (tokenChange_ != null) {
+                  subBuilder = tokenChange_.toBuilder();
+                }
+                tokenChange_ =
+                    input.readMessage(
+                        proto.MutationProtos.TokenMutation.parser(), extensionRegistry);
+                if (subBuilder != null) {
+                  subBuilder.mergeFrom(tokenChange_);
+                  tokenChange_ = subBuilder.buildPartial();
+                }
 
-              break;
-            }
-            case 42: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              reason_ = s;
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
+                break;
               }
-              break;
-            }
+            case 42:
+              {
+                java.lang.String s = input.readStringRequireUtf8();
+
+                reason_ = s;
+                break;
+              }
+            default:
+              {
+                if (!parseUnknownField(input, unknownFields, extensionRegistry, tag)) {
+                  done = true;
+                }
+                break;
+              }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
         throw e.setUnfinishedMessage(this);
       } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
+        throw new com.google.protobuf.InvalidProtocolBufferException(e).setUnfinishedMessage(this);
       } finally {
         this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
     }
-    public static final com.google.protobuf.Descriptors.Descriptor
-        getDescriptor() {
+
+    public static final com.google.protobuf.Descriptors.Descriptor getDescriptor() {
       return proto.MutationProtos.internal_static_proto_Mutation_descriptor;
     }
 
@@ -1032,55 +1020,31 @@ public final class MutationProtos {
               proto.MutationProtos.Mutation.class, proto.MutationProtos.Mutation.Builder.class);
     }
 
-    /**
-     * Protobuf enum {@code proto.Mutation.Type}
-     */
-    public enum Type
-        implements com.google.protobuf.ProtocolMessageEnum {
-      /**
-       * <code>ADD_NODE = 0;</code>
-       */
+    /** Protobuf enum {@code proto.Mutation.Type} */
+    public enum Type implements com.google.protobuf.ProtocolMessageEnum {
+      /** <code>ADD_NODE = 0;</code> */
       ADD_NODE(0),
-      /**
-       * <code>ADD_EDGE = 1;</code>
-       */
+      /** <code>ADD_EDGE = 1;</code> */
       ADD_EDGE(1),
-      /**
-       * <code>DELETE_NODE = 2;</code>
-       */
+      /** <code>DELETE_NODE = 2;</code> */
       DELETE_NODE(2),
-      /**
-       * <code>DELETE_EDGE = 3;</code>
-       */
+      /** <code>DELETE_EDGE = 3;</code> */
       DELETE_EDGE(3),
-      /**
-       * <code>CHANGE_TOKEN = 4;</code>
-       */
+      /** <code>CHANGE_TOKEN = 4;</code> */
       CHANGE_TOKEN(4),
       UNRECOGNIZED(-1),
       ;
 
-      /**
-       * <code>ADD_NODE = 0;</code>
-       */
+      /** <code>ADD_NODE = 0;</code> */
       public static final int ADD_NODE_VALUE = 0;
-      /**
-       * <code>ADD_EDGE = 1;</code>
-       */
+      /** <code>ADD_EDGE = 1;</code> */
       public static final int ADD_EDGE_VALUE = 1;
-      /**
-       * <code>DELETE_NODE = 2;</code>
-       */
+      /** <code>DELETE_NODE = 2;</code> */
       public static final int DELETE_NODE_VALUE = 2;
-      /**
-       * <code>DELETE_EDGE = 3;</code>
-       */
+      /** <code>DELETE_EDGE = 3;</code> */
       public static final int DELETE_EDGE_VALUE = 3;
-      /**
-       * <code>CHANGE_TOKEN = 4;</code>
-       */
+      /** <code>CHANGE_TOKEN = 4;</code> */
       public static final int CHANGE_TOKEN_VALUE = 4;
-
 
       public final int getNumber() {
         if (this == UNRECOGNIZED) {
@@ -1090,9 +1054,7 @@ public final class MutationProtos {
         return value;
       }
 
-      /**
-       * @deprecated Use {@link #forNumber(int)} instead.
-       */
+      /** @deprecated Use {@link #forNumber(int)} instead. */
       @java.lang.Deprecated
       public static Type valueOf(int value) {
         return forNumber(value);
@@ -1100,47 +1062,49 @@ public final class MutationProtos {
 
       public static Type forNumber(int value) {
         switch (value) {
-          case 0: return ADD_NODE;
-          case 1: return ADD_EDGE;
-          case 2: return DELETE_NODE;
-          case 3: return DELETE_EDGE;
-          case 4: return CHANGE_TOKEN;
-          default: return null;
+          case 0:
+            return ADD_NODE;
+          case 1:
+            return ADD_EDGE;
+          case 2:
+            return DELETE_NODE;
+          case 3:
+            return DELETE_EDGE;
+          case 4:
+            return CHANGE_TOKEN;
+          default:
+            return null;
         }
       }
 
-      public static com.google.protobuf.Internal.EnumLiteMap<Type>
-          internalGetValueMap() {
+      public static com.google.protobuf.Internal.EnumLiteMap<Type> internalGetValueMap() {
         return internalValueMap;
       }
-      private static final com.google.protobuf.Internal.EnumLiteMap<
-          Type> internalValueMap =
-            new com.google.protobuf.Internal.EnumLiteMap<Type>() {
-              public Type findValueByNumber(int number) {
-                return Type.forNumber(number);
-              }
-            };
 
-      public final com.google.protobuf.Descriptors.EnumValueDescriptor
-          getValueDescriptor() {
+      private static final com.google.protobuf.Internal.EnumLiteMap<Type> internalValueMap =
+          new com.google.protobuf.Internal.EnumLiteMap<Type>() {
+            public Type findValueByNumber(int number) {
+              return Type.forNumber(number);
+            }
+          };
+
+      public final com.google.protobuf.Descriptors.EnumValueDescriptor getValueDescriptor() {
         return getDescriptor().getValues().get(ordinal());
       }
-      public final com.google.protobuf.Descriptors.EnumDescriptor
-          getDescriptorForType() {
+
+      public final com.google.protobuf.Descriptors.EnumDescriptor getDescriptorForType() {
         return getDescriptor();
       }
-      public static final com.google.protobuf.Descriptors.EnumDescriptor
-          getDescriptor() {
+
+      public static final com.google.protobuf.Descriptors.EnumDescriptor getDescriptor() {
         return proto.MutationProtos.Mutation.getDescriptor().getEnumTypes().get(0);
       }
 
       private static final Type[] VALUES = values();
 
-      public static Type valueOf(
-          com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+      public static Type valueOf(com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
         if (desc.getType() != getDescriptor()) {
-          throw new java.lang.IllegalArgumentException(
-            "EnumValueDescriptor is not for this type.");
+          throw new java.lang.IllegalArgumentException("EnumValueDescriptor is not for this type.");
         }
         if (desc.getIndex() == -1) {
           return UNRECOGNIZED;
@@ -1160,8 +1124,10 @@ public final class MutationProtos {
     public static final int TYPE_FIELD_NUMBER = 1;
     private int type_;
     /**
+     *
+     *
      * <pre>
-     ** The type of change made by this mutation 
+     * * The type of change made by this mutation
      * </pre>
      *
      * <code>.proto.Mutation.Type type = 1;</code>
@@ -1170,8 +1136,10 @@ public final class MutationProtos {
       return type_;
     }
     /**
+     *
+     *
      * <pre>
-     ** The type of change made by this mutation 
+     * * The type of change made by this mutation
      * </pre>
      *
      * <code>.proto.Mutation.Type type = 1;</code>
@@ -1185,9 +1153,11 @@ public final class MutationProtos {
     public static final int STARTNODE_FIELD_NUMBER = 2;
     private proto.GraphProtos.Node startNode_;
     /**
+     *
+     *
      * <pre>
-     **
-     * The node modified by this mutation if the type is 
+     * *
+     * The node modified by this mutation if the type is
      * ADD_NODE, DELETE_NODE, or CHANGE_TOKEN. If the type
      * is ADD_EDGE/DELETE_EDGE, this is the start of the
      * directed edge.
@@ -1199,9 +1169,11 @@ public final class MutationProtos {
       return startNode_ != null;
     }
     /**
+     *
+     *
      * <pre>
-     **
-     * The node modified by this mutation if the type is 
+     * *
+     * The node modified by this mutation if the type is
      * ADD_NODE, DELETE_NODE, or CHANGE_TOKEN. If the type
      * is ADD_EDGE/DELETE_EDGE, this is the start of the
      * directed edge.
@@ -1213,9 +1185,11 @@ public final class MutationProtos {
       return startNode_ == null ? proto.GraphProtos.Node.getDefaultInstance() : startNode_;
     }
     /**
+     *
+     *
      * <pre>
-     **
-     * The node modified by this mutation if the type is 
+     * *
+     * The node modified by this mutation if the type is
      * ADD_NODE, DELETE_NODE, or CHANGE_TOKEN. If the type
      * is ADD_EDGE/DELETE_EDGE, this is the start of the
      * directed edge.
@@ -1230,8 +1204,10 @@ public final class MutationProtos {
     public static final int ENDNODE_FIELD_NUMBER = 3;
     private proto.GraphProtos.Node endNode_;
     /**
+     *
+     *
      * <pre>
-     **
+     * *
      * Not specified if the type is ADD_NODE, DELETE_NODE,
      * or CHANGE_TOKEN. If the type is ADD_EDGE/DELETE_EDGE,
      * this is the end of the directed edge
@@ -1243,8 +1219,10 @@ public final class MutationProtos {
       return endNode_ != null;
     }
     /**
+     *
+     *
      * <pre>
-     **
+     * *
      * Not specified if the type is ADD_NODE, DELETE_NODE,
      * or CHANGE_TOKEN. If the type is ADD_EDGE/DELETE_EDGE,
      * this is the end of the directed edge
@@ -1256,8 +1234,10 @@ public final class MutationProtos {
       return endNode_ == null ? proto.GraphProtos.Node.getDefaultInstance() : endNode_;
     }
     /**
+     *
+     *
      * <pre>
-     **
+     * *
      * Not specified if the type is ADD_NODE, DELETE_NODE,
      * or CHANGE_TOKEN. If the type is ADD_EDGE/DELETE_EDGE,
      * this is the end of the directed edge
@@ -1272,9 +1252,11 @@ public final class MutationProtos {
     public static final int TOKENCHANGE_FIELD_NUMBER = 4;
     private proto.MutationProtos.TokenMutation tokenChange_;
     /**
+     *
+     *
      * <pre>
-     **
-     * If the type of the mutation is CHANGE_TOKEN, the 
+     * *
+     * If the type of the mutation is CHANGE_TOKEN, the
      * change to the list of tokens of the node
      * </pre>
      *
@@ -1284,21 +1266,27 @@ public final class MutationProtos {
       return tokenChange_ != null;
     }
     /**
+     *
+     *
      * <pre>
-     **
-     * If the type of the mutation is CHANGE_TOKEN, the 
+     * *
+     * If the type of the mutation is CHANGE_TOKEN, the
      * change to the list of tokens of the node
      * </pre>
      *
      * <code>.proto.TokenMutation tokenChange = 4;</code>
      */
     public proto.MutationProtos.TokenMutation getTokenChange() {
-      return tokenChange_ == null ? proto.MutationProtos.TokenMutation.getDefaultInstance() : tokenChange_;
+      return tokenChange_ == null
+          ? proto.MutationProtos.TokenMutation.getDefaultInstance()
+          : tokenChange_;
     }
     /**
+     *
+     *
      * <pre>
-     **
-     * If the type of the mutation is CHANGE_TOKEN, the 
+     * *
+     * If the type of the mutation is CHANGE_TOKEN, the
      * change to the list of tokens of the node
      * </pre>
      *
@@ -1311,8 +1299,10 @@ public final class MutationProtos {
     public static final int REASON_FIELD_NUMBER = 5;
     private volatile java.lang.Object reason_;
     /**
+     *
+     *
      * <pre>
-     ** Reason the mutation happened 
+     * * Reason the mutation happened
      * </pre>
      *
      * <code>string reason = 5;</code>
@@ -1322,27 +1312,26 @@ public final class MutationProtos {
       if (ref instanceof java.lang.String) {
         return (java.lang.String) ref;
       } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
+        com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
         reason_ = s;
         return s;
       }
     }
     /**
+     *
+     *
      * <pre>
-     ** Reason the mutation happened 
+     * * Reason the mutation happened
      * </pre>
      *
      * <code>string reason = 5;</code>
      */
-    public com.google.protobuf.ByteString
-        getReasonBytes() {
+    public com.google.protobuf.ByteString getReasonBytes() {
       java.lang.Object ref = reason_;
       if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
+        com.google.protobuf.ByteString b =
+            com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
         reason_ = b;
         return b;
       } else {
@@ -1351,6 +1340,7 @@ public final class MutationProtos {
     }
 
     private byte memoizedIsInitialized = -1;
+
     @java.lang.Override
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
@@ -1362,8 +1352,7 @@ public final class MutationProtos {
     }
 
     @java.lang.Override
-    public void writeTo(com.google.protobuf.CodedOutputStream output)
-                        throws java.io.IOException {
+    public void writeTo(com.google.protobuf.CodedOutputStream output) throws java.io.IOException {
       if (type_ != proto.MutationProtos.Mutation.Type.ADD_NODE.getNumber()) {
         output.writeEnum(1, type_);
       }
@@ -1389,20 +1378,16 @@ public final class MutationProtos {
 
       size = 0;
       if (type_ != proto.MutationProtos.Mutation.Type.ADD_NODE.getNumber()) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeEnumSize(1, type_);
+        size += com.google.protobuf.CodedOutputStream.computeEnumSize(1, type_);
       }
       if (startNode_ != null) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(2, getStartNode());
+        size += com.google.protobuf.CodedOutputStream.computeMessageSize(2, getStartNode());
       }
       if (endNode_ != null) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(3, getEndNode());
+        size += com.google.protobuf.CodedOutputStream.computeMessageSize(3, getEndNode());
       }
       if (tokenChange_ != null) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(4, getTokenChange());
+        size += com.google.protobuf.CodedOutputStream.computeMessageSize(4, getTokenChange());
       }
       if (!getReasonBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(5, reason_);
@@ -1415,7 +1400,7 @@ public final class MutationProtos {
     @java.lang.Override
     public boolean equals(final java.lang.Object obj) {
       if (obj == this) {
-       return true;
+        return true;
       }
       if (!(obj instanceof proto.MutationProtos.Mutation)) {
         return super.equals(obj);
@@ -1425,21 +1410,17 @@ public final class MutationProtos {
       if (type_ != other.type_) return false;
       if (hasStartNode() != other.hasStartNode()) return false;
       if (hasStartNode()) {
-        if (!getStartNode()
-            .equals(other.getStartNode())) return false;
+        if (!getStartNode().equals(other.getStartNode())) return false;
       }
       if (hasEndNode() != other.hasEndNode()) return false;
       if (hasEndNode()) {
-        if (!getEndNode()
-            .equals(other.getEndNode())) return false;
+        if (!getEndNode().equals(other.getEndNode())) return false;
       }
       if (hasTokenChange() != other.hasTokenChange()) return false;
       if (hasTokenChange()) {
-        if (!getTokenChange()
-            .equals(other.getTokenChange())) return false;
+        if (!getTokenChange().equals(other.getTokenChange())) return false;
       }
-      if (!getReason()
-          .equals(other.getReason())) return false;
+      if (!getReason().equals(other.getReason())) return false;
       if (!unknownFields.equals(other.unknownFields)) return false;
       return true;
     }
@@ -1472,88 +1453,93 @@ public final class MutationProtos {
       return hash;
     }
 
-    public static proto.MutationProtos.Mutation parseFrom(
-        java.nio.ByteBuffer data)
+    public static proto.MutationProtos.Mutation parseFrom(java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
+
     public static proto.MutationProtos.Mutation parseFrom(
-        java.nio.ByteBuffer data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        java.nio.ByteBuffer data, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static proto.MutationProtos.Mutation parseFrom(
-        com.google.protobuf.ByteString data)
+
+    public static proto.MutationProtos.Mutation parseFrom(com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
+
     public static proto.MutationProtos.Mutation parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
+
     public static proto.MutationProtos.Mutation parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
+
     public static proto.MutationProtos.Mutation parseFrom(
-        byte[] data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        byte[] data, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
+
     public static proto.MutationProtos.Mutation parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input);
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input);
     }
+
     public static proto.MutationProtos.Mutation parseFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        java.io.InputStream input, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(
+          PARSER, input, extensionRegistry);
     }
+
     public static proto.MutationProtos.Mutation parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseDelimitedWithIOException(PARSER, input);
+      return com.google.protobuf.GeneratedMessageV3.parseDelimitedWithIOException(PARSER, input);
     }
+
     public static proto.MutationProtos.Mutation parseDelimitedFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        java.io.InputStream input, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3.parseDelimitedWithIOException(
+          PARSER, input, extensionRegistry);
     }
+
     public static proto.MutationProtos.Mutation parseFrom(
-        com.google.protobuf.CodedInputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input);
+        com.google.protobuf.CodedInputStream input) throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input);
     }
+
     public static proto.MutationProtos.Mutation parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(
+          PARSER, input, extensionRegistry);
     }
 
     @java.lang.Override
-    public Builder newBuilderForType() { return newBuilder(); }
+    public Builder newBuilderForType() {
+      return newBuilder();
+    }
+
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
+
     public static Builder newBuilder(proto.MutationProtos.Mutation prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
+
     @java.lang.Override
     public Builder toBuilder() {
-      return this == DEFAULT_INSTANCE
-          ? new Builder() : new Builder().mergeFrom(this);
+      return this == DEFAULT_INSTANCE ? new Builder() : new Builder().mergeFrom(this);
     }
 
     @java.lang.Override
@@ -1563,18 +1549,20 @@ public final class MutationProtos {
       return builder;
     }
     /**
+     *
+     *
      * <pre>
-     ** An object representing a single mutation to a DAG 
+     * * An object representing a single mutation to a DAG
      * </pre>
      *
      * Protobuf type {@code proto.Mutation}
      */
-    public static final class Builder extends
-        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+    public static final class Builder
+        extends com.google.protobuf.GeneratedMessageV3.Builder<Builder>
+        implements
         // @@protoc_insertion_point(builder_implements:proto.Mutation)
         proto.MutationProtos.MutationOrBuilder {
-      public static final com.google.protobuf.Descriptors.Descriptor
-          getDescriptor() {
+      public static final com.google.protobuf.Descriptors.Descriptor getDescriptor() {
         return proto.MutationProtos.internal_static_proto_Mutation_descriptor;
       }
 
@@ -1591,16 +1579,15 @@ public final class MutationProtos {
         maybeForceBuilderInitialization();
       }
 
-      private Builder(
-          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      private Builder(com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
+
       private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
+        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {}
       }
+
       @java.lang.Override
       public Builder clear() {
         super.clear();
@@ -1630,8 +1617,7 @@ public final class MutationProtos {
       }
 
       @java.lang.Override
-      public com.google.protobuf.Descriptors.Descriptor
-          getDescriptorForType() {
+      public com.google.protobuf.Descriptors.Descriptor getDescriptorForType() {
         return proto.MutationProtos.internal_static_proto_Mutation_descriptor;
       }
 
@@ -1677,38 +1663,41 @@ public final class MutationProtos {
       public Builder clone() {
         return super.clone();
       }
+
       @java.lang.Override
       public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
+          com.google.protobuf.Descriptors.FieldDescriptor field, java.lang.Object value) {
         return super.setField(field, value);
       }
+
       @java.lang.Override
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
+      public Builder clearField(com.google.protobuf.Descriptors.FieldDescriptor field) {
         return super.clearField(field);
       }
+
       @java.lang.Override
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+      public Builder clearOneof(com.google.protobuf.Descriptors.OneofDescriptor oneof) {
         return super.clearOneof(oneof);
       }
+
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
+          int index,
+          java.lang.Object value) {
         return super.setRepeatedField(field, index, value);
       }
+
       @java.lang.Override
       public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
+          com.google.protobuf.Descriptors.FieldDescriptor field, java.lang.Object value) {
         return super.addRepeatedField(field, value);
       }
+
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof proto.MutationProtos.Mutation) {
-          return mergeFrom((proto.MutationProtos.Mutation)other);
+          return mergeFrom((proto.MutationProtos.Mutation) other);
         } else {
           super.mergeFrom(other);
           return this;
@@ -1764,8 +1753,10 @@ public final class MutationProtos {
 
       private int type_ = 0;
       /**
+       *
+       *
        * <pre>
-       ** The type of change made by this mutation 
+       * * The type of change made by this mutation
        * </pre>
        *
        * <code>.proto.Mutation.Type type = 1;</code>
@@ -1774,8 +1765,10 @@ public final class MutationProtos {
         return type_;
       }
       /**
+       *
+       *
        * <pre>
-       ** The type of change made by this mutation 
+       * * The type of change made by this mutation
        * </pre>
        *
        * <code>.proto.Mutation.Type type = 1;</code>
@@ -1786,20 +1779,25 @@ public final class MutationProtos {
         return this;
       }
       /**
+       *
+       *
        * <pre>
-       ** The type of change made by this mutation 
+       * * The type of change made by this mutation
        * </pre>
        *
        * <code>.proto.Mutation.Type type = 1;</code>
        */
       public proto.MutationProtos.Mutation.Type getType() {
         @SuppressWarnings("deprecation")
-        proto.MutationProtos.Mutation.Type result = proto.MutationProtos.Mutation.Type.valueOf(type_);
+        proto.MutationProtos.Mutation.Type result =
+            proto.MutationProtos.Mutation.Type.valueOf(type_);
         return result == null ? proto.MutationProtos.Mutation.Type.UNRECOGNIZED : result;
       }
       /**
+       *
+       *
        * <pre>
-       ** The type of change made by this mutation 
+       * * The type of change made by this mutation
        * </pre>
        *
        * <code>.proto.Mutation.Type type = 1;</code>
@@ -1808,20 +1806,22 @@ public final class MutationProtos {
         if (value == null) {
           throw new NullPointerException();
         }
-        
+
         type_ = value.getNumber();
         onChanged();
         return this;
       }
       /**
+       *
+       *
        * <pre>
-       ** The type of change made by this mutation 
+       * * The type of change made by this mutation
        * </pre>
        *
        * <code>.proto.Mutation.Type type = 1;</code>
        */
       public Builder clearType() {
-        
+
         type_ = 0;
         onChanged();
         return this;
@@ -1829,11 +1829,16 @@ public final class MutationProtos {
 
       private proto.GraphProtos.Node startNode_;
       private com.google.protobuf.SingleFieldBuilderV3<
-          proto.GraphProtos.Node, proto.GraphProtos.Node.Builder, proto.GraphProtos.NodeOrBuilder> startNodeBuilder_;
+              proto.GraphProtos.Node,
+              proto.GraphProtos.Node.Builder,
+              proto.GraphProtos.NodeOrBuilder>
+          startNodeBuilder_;
       /**
+       *
+       *
        * <pre>
-       **
-       * The node modified by this mutation if the type is 
+       * *
+       * The node modified by this mutation if the type is
        * ADD_NODE, DELETE_NODE, or CHANGE_TOKEN. If the type
        * is ADD_EDGE/DELETE_EDGE, this is the start of the
        * directed edge.
@@ -1845,9 +1850,11 @@ public final class MutationProtos {
         return startNodeBuilder_ != null || startNode_ != null;
       }
       /**
+       *
+       *
        * <pre>
-       **
-       * The node modified by this mutation if the type is 
+       * *
+       * The node modified by this mutation if the type is
        * ADD_NODE, DELETE_NODE, or CHANGE_TOKEN. If the type
        * is ADD_EDGE/DELETE_EDGE, this is the start of the
        * directed edge.
@@ -1863,9 +1870,11 @@ public final class MutationProtos {
         }
       }
       /**
+       *
+       *
        * <pre>
-       **
-       * The node modified by this mutation if the type is 
+       * *
+       * The node modified by this mutation if the type is
        * ADD_NODE, DELETE_NODE, or CHANGE_TOKEN. If the type
        * is ADD_EDGE/DELETE_EDGE, this is the start of the
        * directed edge.
@@ -1887,9 +1896,11 @@ public final class MutationProtos {
         return this;
       }
       /**
+       *
+       *
        * <pre>
-       **
-       * The node modified by this mutation if the type is 
+       * *
+       * The node modified by this mutation if the type is
        * ADD_NODE, DELETE_NODE, or CHANGE_TOKEN. If the type
        * is ADD_EDGE/DELETE_EDGE, this is the start of the
        * directed edge.
@@ -1897,8 +1908,7 @@ public final class MutationProtos {
        *
        * <code>.proto.Node startNode = 2;</code>
        */
-      public Builder setStartNode(
-          proto.GraphProtos.Node.Builder builderForValue) {
+      public Builder setStartNode(proto.GraphProtos.Node.Builder builderForValue) {
         if (startNodeBuilder_ == null) {
           startNode_ = builderForValue.build();
           onChanged();
@@ -1909,9 +1919,11 @@ public final class MutationProtos {
         return this;
       }
       /**
+       *
+       *
        * <pre>
-       **
-       * The node modified by this mutation if the type is 
+       * *
+       * The node modified by this mutation if the type is
        * ADD_NODE, DELETE_NODE, or CHANGE_TOKEN. If the type
        * is ADD_EDGE/DELETE_EDGE, this is the start of the
        * directed edge.
@@ -1923,7 +1935,7 @@ public final class MutationProtos {
         if (startNodeBuilder_ == null) {
           if (startNode_ != null) {
             startNode_ =
-              proto.GraphProtos.Node.newBuilder(startNode_).mergeFrom(value).buildPartial();
+                proto.GraphProtos.Node.newBuilder(startNode_).mergeFrom(value).buildPartial();
           } else {
             startNode_ = value;
           }
@@ -1935,9 +1947,11 @@ public final class MutationProtos {
         return this;
       }
       /**
+       *
+       *
        * <pre>
-       **
-       * The node modified by this mutation if the type is 
+       * *
+       * The node modified by this mutation if the type is
        * ADD_NODE, DELETE_NODE, or CHANGE_TOKEN. If the type
        * is ADD_EDGE/DELETE_EDGE, this is the start of the
        * directed edge.
@@ -1957,9 +1971,11 @@ public final class MutationProtos {
         return this;
       }
       /**
+       *
+       *
        * <pre>
-       **
-       * The node modified by this mutation if the type is 
+       * *
+       * The node modified by this mutation if the type is
        * ADD_NODE, DELETE_NODE, or CHANGE_TOKEN. If the type
        * is ADD_EDGE/DELETE_EDGE, this is the start of the
        * directed edge.
@@ -1968,14 +1984,16 @@ public final class MutationProtos {
        * <code>.proto.Node startNode = 2;</code>
        */
       public proto.GraphProtos.Node.Builder getStartNodeBuilder() {
-        
+
         onChanged();
         return getStartNodeFieldBuilder().getBuilder();
       }
       /**
+       *
+       *
        * <pre>
-       **
-       * The node modified by this mutation if the type is 
+       * *
+       * The node modified by this mutation if the type is
        * ADD_NODE, DELETE_NODE, or CHANGE_TOKEN. If the type
        * is ADD_EDGE/DELETE_EDGE, this is the start of the
        * directed edge.
@@ -1987,14 +2005,15 @@ public final class MutationProtos {
         if (startNodeBuilder_ != null) {
           return startNodeBuilder_.getMessageOrBuilder();
         } else {
-          return startNode_ == null ?
-              proto.GraphProtos.Node.getDefaultInstance() : startNode_;
+          return startNode_ == null ? proto.GraphProtos.Node.getDefaultInstance() : startNode_;
         }
       }
       /**
+       *
+       *
        * <pre>
-       **
-       * The node modified by this mutation if the type is 
+       * *
+       * The node modified by this mutation if the type is
        * ADD_NODE, DELETE_NODE, or CHANGE_TOKEN. If the type
        * is ADD_EDGE/DELETE_EDGE, this is the start of the
        * directed edge.
@@ -2003,14 +2022,17 @@ public final class MutationProtos {
        * <code>.proto.Node startNode = 2;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
-          proto.GraphProtos.Node, proto.GraphProtos.Node.Builder, proto.GraphProtos.NodeOrBuilder> 
+              proto.GraphProtos.Node,
+              proto.GraphProtos.Node.Builder,
+              proto.GraphProtos.NodeOrBuilder>
           getStartNodeFieldBuilder() {
         if (startNodeBuilder_ == null) {
-          startNodeBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-              proto.GraphProtos.Node, proto.GraphProtos.Node.Builder, proto.GraphProtos.NodeOrBuilder>(
-                  getStartNode(),
-                  getParentForChildren(),
-                  isClean());
+          startNodeBuilder_ =
+              new com.google.protobuf.SingleFieldBuilderV3<
+                  proto.GraphProtos.Node,
+                  proto.GraphProtos.Node.Builder,
+                  proto.GraphProtos.NodeOrBuilder>(
+                  getStartNode(), getParentForChildren(), isClean());
           startNode_ = null;
         }
         return startNodeBuilder_;
@@ -2018,10 +2040,15 @@ public final class MutationProtos {
 
       private proto.GraphProtos.Node endNode_;
       private com.google.protobuf.SingleFieldBuilderV3<
-          proto.GraphProtos.Node, proto.GraphProtos.Node.Builder, proto.GraphProtos.NodeOrBuilder> endNodeBuilder_;
+              proto.GraphProtos.Node,
+              proto.GraphProtos.Node.Builder,
+              proto.GraphProtos.NodeOrBuilder>
+          endNodeBuilder_;
       /**
+       *
+       *
        * <pre>
-       **
+       * *
        * Not specified if the type is ADD_NODE, DELETE_NODE,
        * or CHANGE_TOKEN. If the type is ADD_EDGE/DELETE_EDGE,
        * this is the end of the directed edge
@@ -2033,8 +2060,10 @@ public final class MutationProtos {
         return endNodeBuilder_ != null || endNode_ != null;
       }
       /**
+       *
+       *
        * <pre>
-       **
+       * *
        * Not specified if the type is ADD_NODE, DELETE_NODE,
        * or CHANGE_TOKEN. If the type is ADD_EDGE/DELETE_EDGE,
        * this is the end of the directed edge
@@ -2050,8 +2079,10 @@ public final class MutationProtos {
         }
       }
       /**
+       *
+       *
        * <pre>
-       **
+       * *
        * Not specified if the type is ADD_NODE, DELETE_NODE,
        * or CHANGE_TOKEN. If the type is ADD_EDGE/DELETE_EDGE,
        * this is the end of the directed edge
@@ -2073,8 +2104,10 @@ public final class MutationProtos {
         return this;
       }
       /**
+       *
+       *
        * <pre>
-       **
+       * *
        * Not specified if the type is ADD_NODE, DELETE_NODE,
        * or CHANGE_TOKEN. If the type is ADD_EDGE/DELETE_EDGE,
        * this is the end of the directed edge
@@ -2082,8 +2115,7 @@ public final class MutationProtos {
        *
        * <code>.proto.Node endNode = 3;</code>
        */
-      public Builder setEndNode(
-          proto.GraphProtos.Node.Builder builderForValue) {
+      public Builder setEndNode(proto.GraphProtos.Node.Builder builderForValue) {
         if (endNodeBuilder_ == null) {
           endNode_ = builderForValue.build();
           onChanged();
@@ -2094,8 +2126,10 @@ public final class MutationProtos {
         return this;
       }
       /**
+       *
+       *
        * <pre>
-       **
+       * *
        * Not specified if the type is ADD_NODE, DELETE_NODE,
        * or CHANGE_TOKEN. If the type is ADD_EDGE/DELETE_EDGE,
        * this is the end of the directed edge
@@ -2106,8 +2140,7 @@ public final class MutationProtos {
       public Builder mergeEndNode(proto.GraphProtos.Node value) {
         if (endNodeBuilder_ == null) {
           if (endNode_ != null) {
-            endNode_ =
-              proto.GraphProtos.Node.newBuilder(endNode_).mergeFrom(value).buildPartial();
+            endNode_ = proto.GraphProtos.Node.newBuilder(endNode_).mergeFrom(value).buildPartial();
           } else {
             endNode_ = value;
           }
@@ -2119,8 +2152,10 @@ public final class MutationProtos {
         return this;
       }
       /**
+       *
+       *
        * <pre>
-       **
+       * *
        * Not specified if the type is ADD_NODE, DELETE_NODE,
        * or CHANGE_TOKEN. If the type is ADD_EDGE/DELETE_EDGE,
        * this is the end of the directed edge
@@ -2140,8 +2175,10 @@ public final class MutationProtos {
         return this;
       }
       /**
+       *
+       *
        * <pre>
-       **
+       * *
        * Not specified if the type is ADD_NODE, DELETE_NODE,
        * or CHANGE_TOKEN. If the type is ADD_EDGE/DELETE_EDGE,
        * this is the end of the directed edge
@@ -2150,13 +2187,15 @@ public final class MutationProtos {
        * <code>.proto.Node endNode = 3;</code>
        */
       public proto.GraphProtos.Node.Builder getEndNodeBuilder() {
-        
+
         onChanged();
         return getEndNodeFieldBuilder().getBuilder();
       }
       /**
+       *
+       *
        * <pre>
-       **
+       * *
        * Not specified if the type is ADD_NODE, DELETE_NODE,
        * or CHANGE_TOKEN. If the type is ADD_EDGE/DELETE_EDGE,
        * this is the end of the directed edge
@@ -2168,13 +2207,14 @@ public final class MutationProtos {
         if (endNodeBuilder_ != null) {
           return endNodeBuilder_.getMessageOrBuilder();
         } else {
-          return endNode_ == null ?
-              proto.GraphProtos.Node.getDefaultInstance() : endNode_;
+          return endNode_ == null ? proto.GraphProtos.Node.getDefaultInstance() : endNode_;
         }
       }
       /**
+       *
+       *
        * <pre>
-       **
+       * *
        * Not specified if the type is ADD_NODE, DELETE_NODE,
        * or CHANGE_TOKEN. If the type is ADD_EDGE/DELETE_EDGE,
        * this is the end of the directed edge
@@ -2183,14 +2223,16 @@ public final class MutationProtos {
        * <code>.proto.Node endNode = 3;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
-          proto.GraphProtos.Node, proto.GraphProtos.Node.Builder, proto.GraphProtos.NodeOrBuilder> 
+              proto.GraphProtos.Node,
+              proto.GraphProtos.Node.Builder,
+              proto.GraphProtos.NodeOrBuilder>
           getEndNodeFieldBuilder() {
         if (endNodeBuilder_ == null) {
-          endNodeBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-              proto.GraphProtos.Node, proto.GraphProtos.Node.Builder, proto.GraphProtos.NodeOrBuilder>(
-                  getEndNode(),
-                  getParentForChildren(),
-                  isClean());
+          endNodeBuilder_ =
+              new com.google.protobuf.SingleFieldBuilderV3<
+                  proto.GraphProtos.Node,
+                  proto.GraphProtos.Node.Builder,
+                  proto.GraphProtos.NodeOrBuilder>(getEndNode(), getParentForChildren(), isClean());
           endNode_ = null;
         }
         return endNodeBuilder_;
@@ -2198,11 +2240,16 @@ public final class MutationProtos {
 
       private proto.MutationProtos.TokenMutation tokenChange_;
       private com.google.protobuf.SingleFieldBuilderV3<
-          proto.MutationProtos.TokenMutation, proto.MutationProtos.TokenMutation.Builder, proto.MutationProtos.TokenMutationOrBuilder> tokenChangeBuilder_;
+              proto.MutationProtos.TokenMutation,
+              proto.MutationProtos.TokenMutation.Builder,
+              proto.MutationProtos.TokenMutationOrBuilder>
+          tokenChangeBuilder_;
       /**
+       *
+       *
        * <pre>
-       **
-       * If the type of the mutation is CHANGE_TOKEN, the 
+       * *
+       * If the type of the mutation is CHANGE_TOKEN, the
        * change to the list of tokens of the node
        * </pre>
        *
@@ -2212,9 +2259,11 @@ public final class MutationProtos {
         return tokenChangeBuilder_ != null || tokenChange_ != null;
       }
       /**
+       *
+       *
        * <pre>
-       **
-       * If the type of the mutation is CHANGE_TOKEN, the 
+       * *
+       * If the type of the mutation is CHANGE_TOKEN, the
        * change to the list of tokens of the node
        * </pre>
        *
@@ -2222,15 +2271,19 @@ public final class MutationProtos {
        */
       public proto.MutationProtos.TokenMutation getTokenChange() {
         if (tokenChangeBuilder_ == null) {
-          return tokenChange_ == null ? proto.MutationProtos.TokenMutation.getDefaultInstance() : tokenChange_;
+          return tokenChange_ == null
+              ? proto.MutationProtos.TokenMutation.getDefaultInstance()
+              : tokenChange_;
         } else {
           return tokenChangeBuilder_.getMessage();
         }
       }
       /**
+       *
+       *
        * <pre>
-       **
-       * If the type of the mutation is CHANGE_TOKEN, the 
+       * *
+       * If the type of the mutation is CHANGE_TOKEN, the
        * change to the list of tokens of the node
        * </pre>
        *
@@ -2250,16 +2303,17 @@ public final class MutationProtos {
         return this;
       }
       /**
+       *
+       *
        * <pre>
-       **
-       * If the type of the mutation is CHANGE_TOKEN, the 
+       * *
+       * If the type of the mutation is CHANGE_TOKEN, the
        * change to the list of tokens of the node
        * </pre>
        *
        * <code>.proto.TokenMutation tokenChange = 4;</code>
        */
-      public Builder setTokenChange(
-          proto.MutationProtos.TokenMutation.Builder builderForValue) {
+      public Builder setTokenChange(proto.MutationProtos.TokenMutation.Builder builderForValue) {
         if (tokenChangeBuilder_ == null) {
           tokenChange_ = builderForValue.build();
           onChanged();
@@ -2270,9 +2324,11 @@ public final class MutationProtos {
         return this;
       }
       /**
+       *
+       *
        * <pre>
-       **
-       * If the type of the mutation is CHANGE_TOKEN, the 
+       * *
+       * If the type of the mutation is CHANGE_TOKEN, the
        * change to the list of tokens of the node
        * </pre>
        *
@@ -2282,7 +2338,9 @@ public final class MutationProtos {
         if (tokenChangeBuilder_ == null) {
           if (tokenChange_ != null) {
             tokenChange_ =
-              proto.MutationProtos.TokenMutation.newBuilder(tokenChange_).mergeFrom(value).buildPartial();
+                proto.MutationProtos.TokenMutation.newBuilder(tokenChange_)
+                    .mergeFrom(value)
+                    .buildPartial();
           } else {
             tokenChange_ = value;
           }
@@ -2294,9 +2352,11 @@ public final class MutationProtos {
         return this;
       }
       /**
+       *
+       *
        * <pre>
-       **
-       * If the type of the mutation is CHANGE_TOKEN, the 
+       * *
+       * If the type of the mutation is CHANGE_TOKEN, the
        * change to the list of tokens of the node
        * </pre>
        *
@@ -2314,23 +2374,27 @@ public final class MutationProtos {
         return this;
       }
       /**
+       *
+       *
        * <pre>
-       **
-       * If the type of the mutation is CHANGE_TOKEN, the 
+       * *
+       * If the type of the mutation is CHANGE_TOKEN, the
        * change to the list of tokens of the node
        * </pre>
        *
        * <code>.proto.TokenMutation tokenChange = 4;</code>
        */
       public proto.MutationProtos.TokenMutation.Builder getTokenChangeBuilder() {
-        
+
         onChanged();
         return getTokenChangeFieldBuilder().getBuilder();
       }
       /**
+       *
+       *
        * <pre>
-       **
-       * If the type of the mutation is CHANGE_TOKEN, the 
+       * *
+       * If the type of the mutation is CHANGE_TOKEN, the
        * change to the list of tokens of the node
        * </pre>
        *
@@ -2340,28 +2404,34 @@ public final class MutationProtos {
         if (tokenChangeBuilder_ != null) {
           return tokenChangeBuilder_.getMessageOrBuilder();
         } else {
-          return tokenChange_ == null ?
-              proto.MutationProtos.TokenMutation.getDefaultInstance() : tokenChange_;
+          return tokenChange_ == null
+              ? proto.MutationProtos.TokenMutation.getDefaultInstance()
+              : tokenChange_;
         }
       }
       /**
+       *
+       *
        * <pre>
-       **
-       * If the type of the mutation is CHANGE_TOKEN, the 
+       * *
+       * If the type of the mutation is CHANGE_TOKEN, the
        * change to the list of tokens of the node
        * </pre>
        *
        * <code>.proto.TokenMutation tokenChange = 4;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
-          proto.MutationProtos.TokenMutation, proto.MutationProtos.TokenMutation.Builder, proto.MutationProtos.TokenMutationOrBuilder> 
+              proto.MutationProtos.TokenMutation,
+              proto.MutationProtos.TokenMutation.Builder,
+              proto.MutationProtos.TokenMutationOrBuilder>
           getTokenChangeFieldBuilder() {
         if (tokenChangeBuilder_ == null) {
-          tokenChangeBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-              proto.MutationProtos.TokenMutation, proto.MutationProtos.TokenMutation.Builder, proto.MutationProtos.TokenMutationOrBuilder>(
-                  getTokenChange(),
-                  getParentForChildren(),
-                  isClean());
+          tokenChangeBuilder_ =
+              new com.google.protobuf.SingleFieldBuilderV3<
+                  proto.MutationProtos.TokenMutation,
+                  proto.MutationProtos.TokenMutation.Builder,
+                  proto.MutationProtos.TokenMutationOrBuilder>(
+                  getTokenChange(), getParentForChildren(), isClean());
           tokenChange_ = null;
         }
         return tokenChangeBuilder_;
@@ -2369,8 +2439,10 @@ public final class MutationProtos {
 
       private java.lang.Object reason_ = "";
       /**
+       *
+       *
        * <pre>
-       ** Reason the mutation happened 
+       * * Reason the mutation happened
        * </pre>
        *
        * <code>string reason = 5;</code>
@@ -2378,8 +2450,7 @@ public final class MutationProtos {
       public java.lang.String getReason() {
         java.lang.Object ref = reason_;
         if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
+          com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
           java.lang.String s = bs.toStringUtf8();
           reason_ = s;
           return s;
@@ -2388,19 +2459,19 @@ public final class MutationProtos {
         }
       }
       /**
+       *
+       *
        * <pre>
-       ** Reason the mutation happened 
+       * * Reason the mutation happened
        * </pre>
        *
        * <code>string reason = 5;</code>
        */
-      public com.google.protobuf.ByteString
-          getReasonBytes() {
+      public com.google.protobuf.ByteString getReasonBytes() {
         java.lang.Object ref = reason_;
         if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
+          com.google.protobuf.ByteString b =
+              com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
           reason_ = b;
           return b;
         } else {
@@ -2408,53 +2479,58 @@ public final class MutationProtos {
         }
       }
       /**
+       *
+       *
        * <pre>
-       ** Reason the mutation happened 
+       * * Reason the mutation happened
        * </pre>
        *
        * <code>string reason = 5;</code>
        */
-      public Builder setReason(
-          java.lang.String value) {
+      public Builder setReason(java.lang.String value) {
         if (value == null) {
-    throw new NullPointerException();
-  }
-  
+          throw new NullPointerException();
+        }
+
         reason_ = value;
         onChanged();
         return this;
       }
       /**
+       *
+       *
        * <pre>
-       ** Reason the mutation happened 
+       * * Reason the mutation happened
        * </pre>
        *
        * <code>string reason = 5;</code>
        */
       public Builder clearReason() {
-        
+
         reason_ = getDefaultInstance().getReason();
         onChanged();
         return this;
       }
       /**
+       *
+       *
        * <pre>
-       ** Reason the mutation happened 
+       * * Reason the mutation happened
        * </pre>
        *
        * <code>string reason = 5;</code>
        */
-      public Builder setReasonBytes(
-          com.google.protobuf.ByteString value) {
+      public Builder setReasonBytes(com.google.protobuf.ByteString value) {
         if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+          throw new NullPointerException();
+        }
+        checkByteStringIsUtf8(value);
+
         reason_ = value;
         onChanged();
         return this;
       }
+
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
@@ -2467,12 +2543,12 @@ public final class MutationProtos {
         return super.mergeUnknownFields(unknownFields);
       }
 
-
       // @@protoc_insertion_point(builder_scope:proto.Mutation)
     }
 
     // @@protoc_insertion_point(class_scope:proto.Mutation)
     private static final proto.MutationProtos.Mutation DEFAULT_INSTANCE;
+
     static {
       DEFAULT_INSTANCE = new proto.MutationProtos.Mutation();
     }
@@ -2481,16 +2557,16 @@ public final class MutationProtos {
       return DEFAULT_INSTANCE;
     }
 
-    private static final com.google.protobuf.Parser<Mutation>
-        PARSER = new com.google.protobuf.AbstractParser<Mutation>() {
-      @java.lang.Override
-      public Mutation parsePartialFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return new Mutation(input, extensionRegistry);
-      }
-    };
+    private static final com.google.protobuf.Parser<Mutation> PARSER =
+        new com.google.protobuf.AbstractParser<Mutation>() {
+          @java.lang.Override
+          public Mutation parsePartialFrom(
+              com.google.protobuf.CodedInputStream input,
+              com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+              throws com.google.protobuf.InvalidProtocolBufferException {
+            return new Mutation(input, extensionRegistry);
+          }
+        };
 
     public static com.google.protobuf.Parser<Mutation> parser() {
       return PARSER;
@@ -2505,58 +2581,44 @@ public final class MutationProtos {
     public proto.MutationProtos.Mutation getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
-
   }
 
-  public interface MutationListOrBuilder extends
+  public interface MutationListOrBuilder
+      extends
       // @@protoc_insertion_point(interface_extends:proto.MutationList)
       com.google.protobuf.MessageOrBuilder {
 
-    /**
-     * <code>repeated .proto.Mutation mutation = 1;</code>
-     */
-    java.util.List<proto.MutationProtos.Mutation> 
-        getMutationList();
-    /**
-     * <code>repeated .proto.Mutation mutation = 1;</code>
-     */
+    /** <code>repeated .proto.Mutation mutation = 1;</code> */
+    java.util.List<proto.MutationProtos.Mutation> getMutationList();
+    /** <code>repeated .proto.Mutation mutation = 1;</code> */
     proto.MutationProtos.Mutation getMutation(int index);
-    /**
-     * <code>repeated .proto.Mutation mutation = 1;</code>
-     */
+    /** <code>repeated .proto.Mutation mutation = 1;</code> */
     int getMutationCount();
-    /**
-     * <code>repeated .proto.Mutation mutation = 1;</code>
-     */
-    java.util.List<? extends proto.MutationProtos.MutationOrBuilder> 
-        getMutationOrBuilderList();
-    /**
-     * <code>repeated .proto.Mutation mutation = 1;</code>
-     */
-    proto.MutationProtos.MutationOrBuilder getMutationOrBuilder(
-        int index);
+    /** <code>repeated .proto.Mutation mutation = 1;</code> */
+    java.util.List<? extends proto.MutationProtos.MutationOrBuilder> getMutationOrBuilderList();
+    /** <code>repeated .proto.Mutation mutation = 1;</code> */
+    proto.MutationProtos.MutationOrBuilder getMutationOrBuilder(int index);
   }
-  /**
-   * Protobuf type {@code proto.MutationList}
-   */
-  public  static final class MutationList extends
-      com.google.protobuf.GeneratedMessageV3 implements
+  /** Protobuf type {@code proto.MutationList} */
+  public static final class MutationList extends com.google.protobuf.GeneratedMessageV3
+      implements
       // @@protoc_insertion_point(message_implements:proto.MutationList)
       MutationListOrBuilder {
-  private static final long serialVersionUID = 0L;
+    private static final long serialVersionUID = 0L;
     // Use MutationList.newBuilder() to construct.
     private MutationList(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
+
     private MutationList() {
       mutation_ = java.util.Collections.emptyList();
     }
 
     @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
+    public final com.google.protobuf.UnknownFieldSet getUnknownFields() {
       return this.unknownFields;
     }
+
     private MutationList(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -2576,29 +2638,29 @@ public final class MutationProtos {
             case 0:
               done = true;
               break;
-            case 10: {
-              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
-                mutation_ = new java.util.ArrayList<proto.MutationProtos.Mutation>();
-                mutable_bitField0_ |= 0x00000001;
+            case 10:
+              {
+                if (!((mutable_bitField0_ & 0x00000001) != 0)) {
+                  mutation_ = new java.util.ArrayList<proto.MutationProtos.Mutation>();
+                  mutable_bitField0_ |= 0x00000001;
+                }
+                mutation_.add(
+                    input.readMessage(proto.MutationProtos.Mutation.parser(), extensionRegistry));
+                break;
               }
-              mutation_.add(
-                  input.readMessage(proto.MutationProtos.Mutation.parser(), extensionRegistry));
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
+            default:
+              {
+                if (!parseUnknownField(input, unknownFields, extensionRegistry, tag)) {
+                  done = true;
+                }
+                break;
               }
-              break;
-            }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
         throw e.setUnfinishedMessage(this);
       } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
+        throw new com.google.protobuf.InvalidProtocolBufferException(e).setUnfinishedMessage(this);
       } finally {
         if (((mutable_bitField0_ & 0x00000001) != 0)) {
           mutation_ = java.util.Collections.unmodifiableList(mutation_);
@@ -2607,8 +2669,8 @@ public final class MutationProtos {
         makeExtensionsImmutable();
       }
     }
-    public static final com.google.protobuf.Descriptors.Descriptor
-        getDescriptor() {
+
+    public static final com.google.protobuf.Descriptors.Descriptor getDescriptor() {
       return proto.MutationProtos.internal_static_proto_MutationList_descriptor;
     }
 
@@ -2617,45 +2679,36 @@ public final class MutationProtos {
         internalGetFieldAccessorTable() {
       return proto.MutationProtos.internal_static_proto_MutationList_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              proto.MutationProtos.MutationList.class, proto.MutationProtos.MutationList.Builder.class);
+              proto.MutationProtos.MutationList.class,
+              proto.MutationProtos.MutationList.Builder.class);
     }
 
     public static final int MUTATION_FIELD_NUMBER = 1;
     private java.util.List<proto.MutationProtos.Mutation> mutation_;
-    /**
-     * <code>repeated .proto.Mutation mutation = 1;</code>
-     */
+    /** <code>repeated .proto.Mutation mutation = 1;</code> */
     public java.util.List<proto.MutationProtos.Mutation> getMutationList() {
       return mutation_;
     }
-    /**
-     * <code>repeated .proto.Mutation mutation = 1;</code>
-     */
-    public java.util.List<? extends proto.MutationProtos.MutationOrBuilder> 
+    /** <code>repeated .proto.Mutation mutation = 1;</code> */
+    public java.util.List<? extends proto.MutationProtos.MutationOrBuilder>
         getMutationOrBuilderList() {
       return mutation_;
     }
-    /**
-     * <code>repeated .proto.Mutation mutation = 1;</code>
-     */
+    /** <code>repeated .proto.Mutation mutation = 1;</code> */
     public int getMutationCount() {
       return mutation_.size();
     }
-    /**
-     * <code>repeated .proto.Mutation mutation = 1;</code>
-     */
+    /** <code>repeated .proto.Mutation mutation = 1;</code> */
     public proto.MutationProtos.Mutation getMutation(int index) {
       return mutation_.get(index);
     }
-    /**
-     * <code>repeated .proto.Mutation mutation = 1;</code>
-     */
-    public proto.MutationProtos.MutationOrBuilder getMutationOrBuilder(
-        int index) {
+    /** <code>repeated .proto.Mutation mutation = 1;</code> */
+    public proto.MutationProtos.MutationOrBuilder getMutationOrBuilder(int index) {
       return mutation_.get(index);
     }
 
     private byte memoizedIsInitialized = -1;
+
     @java.lang.Override
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
@@ -2667,8 +2720,7 @@ public final class MutationProtos {
     }
 
     @java.lang.Override
-    public void writeTo(com.google.protobuf.CodedOutputStream output)
-                        throws java.io.IOException {
+    public void writeTo(com.google.protobuf.CodedOutputStream output) throws java.io.IOException {
       for (int i = 0; i < mutation_.size(); i++) {
         output.writeMessage(1, mutation_.get(i));
       }
@@ -2682,8 +2734,7 @@ public final class MutationProtos {
 
       size = 0;
       for (int i = 0; i < mutation_.size(); i++) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(1, mutation_.get(i));
+        size += com.google.protobuf.CodedOutputStream.computeMessageSize(1, mutation_.get(i));
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -2693,15 +2744,14 @@ public final class MutationProtos {
     @java.lang.Override
     public boolean equals(final java.lang.Object obj) {
       if (obj == this) {
-       return true;
+        return true;
       }
       if (!(obj instanceof proto.MutationProtos.MutationList)) {
         return super.equals(obj);
       }
       proto.MutationProtos.MutationList other = (proto.MutationProtos.MutationList) obj;
 
-      if (!getMutationList()
-          .equals(other.getMutationList())) return false;
+      if (!getMutationList().equals(other.getMutationList())) return false;
       if (!unknownFields.equals(other.unknownFields)) return false;
       return true;
     }
@@ -2722,88 +2772,93 @@ public final class MutationProtos {
       return hash;
     }
 
-    public static proto.MutationProtos.MutationList parseFrom(
-        java.nio.ByteBuffer data)
+    public static proto.MutationProtos.MutationList parseFrom(java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
+
     public static proto.MutationProtos.MutationList parseFrom(
-        java.nio.ByteBuffer data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        java.nio.ByteBuffer data, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static proto.MutationProtos.MutationList parseFrom(
-        com.google.protobuf.ByteString data)
+
+    public static proto.MutationProtos.MutationList parseFrom(com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
+
     public static proto.MutationProtos.MutationList parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
+
     public static proto.MutationProtos.MutationList parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
+
     public static proto.MutationProtos.MutationList parseFrom(
-        byte[] data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        byte[] data, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
+
     public static proto.MutationProtos.MutationList parseFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input);
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input);
     }
+
     public static proto.MutationProtos.MutationList parseFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        java.io.InputStream input, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(
+          PARSER, input, extensionRegistry);
     }
+
     public static proto.MutationProtos.MutationList parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseDelimitedWithIOException(PARSER, input);
+      return com.google.protobuf.GeneratedMessageV3.parseDelimitedWithIOException(PARSER, input);
     }
+
     public static proto.MutationProtos.MutationList parseDelimitedFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        java.io.InputStream input, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3.parseDelimitedWithIOException(
+          PARSER, input, extensionRegistry);
     }
+
     public static proto.MutationProtos.MutationList parseFrom(
-        com.google.protobuf.CodedInputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input);
+        com.google.protobuf.CodedInputStream input) throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input);
     }
+
     public static proto.MutationProtos.MutationList parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input, extensionRegistry);
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(
+          PARSER, input, extensionRegistry);
     }
 
     @java.lang.Override
-    public Builder newBuilderForType() { return newBuilder(); }
+    public Builder newBuilderForType() {
+      return newBuilder();
+    }
+
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
+
     public static Builder newBuilder(proto.MutationProtos.MutationList prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
+
     @java.lang.Override
     public Builder toBuilder() {
-      return this == DEFAULT_INSTANCE
-          ? new Builder() : new Builder().mergeFrom(this);
+      return this == DEFAULT_INSTANCE ? new Builder() : new Builder().mergeFrom(this);
     }
 
     @java.lang.Override
@@ -2812,15 +2867,13 @@ public final class MutationProtos {
       Builder builder = new Builder(parent);
       return builder;
     }
-    /**
-     * Protobuf type {@code proto.MutationList}
-     */
-    public static final class Builder extends
-        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+    /** Protobuf type {@code proto.MutationList} */
+    public static final class Builder
+        extends com.google.protobuf.GeneratedMessageV3.Builder<Builder>
+        implements
         // @@protoc_insertion_point(builder_implements:proto.MutationList)
         proto.MutationProtos.MutationListOrBuilder {
-      public static final com.google.protobuf.Descriptors.Descriptor
-          getDescriptor() {
+      public static final com.google.protobuf.Descriptors.Descriptor getDescriptor() {
         return proto.MutationProtos.internal_static_proto_MutationList_descriptor;
       }
 
@@ -2829,7 +2882,8 @@ public final class MutationProtos {
           internalGetFieldAccessorTable() {
         return proto.MutationProtos.internal_static_proto_MutationList_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                proto.MutationProtos.MutationList.class, proto.MutationProtos.MutationList.Builder.class);
+                proto.MutationProtos.MutationList.class,
+                proto.MutationProtos.MutationList.Builder.class);
       }
 
       // Construct using proto.MutationProtos.MutationList.newBuilder()
@@ -2837,17 +2891,17 @@ public final class MutationProtos {
         maybeForceBuilderInitialization();
       }
 
-      private Builder(
-          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      private Builder(com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
+
       private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
+        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
           getMutationFieldBuilder();
         }
       }
+
       @java.lang.Override
       public Builder clear() {
         super.clear();
@@ -2861,8 +2915,7 @@ public final class MutationProtos {
       }
 
       @java.lang.Override
-      public com.google.protobuf.Descriptors.Descriptor
-          getDescriptorForType() {
+      public com.google.protobuf.Descriptors.Descriptor getDescriptorForType() {
         return proto.MutationProtos.internal_static_proto_MutationList_descriptor;
       }
 
@@ -2901,38 +2954,41 @@ public final class MutationProtos {
       public Builder clone() {
         return super.clone();
       }
+
       @java.lang.Override
       public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
+          com.google.protobuf.Descriptors.FieldDescriptor field, java.lang.Object value) {
         return super.setField(field, value);
       }
+
       @java.lang.Override
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
+      public Builder clearField(com.google.protobuf.Descriptors.FieldDescriptor field) {
         return super.clearField(field);
       }
+
       @java.lang.Override
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+      public Builder clearOneof(com.google.protobuf.Descriptors.OneofDescriptor oneof) {
         return super.clearOneof(oneof);
       }
+
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
+          int index,
+          java.lang.Object value) {
         return super.setRepeatedField(field, index, value);
       }
+
       @java.lang.Override
       public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
+          com.google.protobuf.Descriptors.FieldDescriptor field, java.lang.Object value) {
         return super.addRepeatedField(field, value);
       }
+
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof proto.MutationProtos.MutationList) {
-          return mergeFrom((proto.MutationProtos.MutationList)other);
+          return mergeFrom((proto.MutationProtos.MutationList) other);
         } else {
           super.mergeFrom(other);
           return this;
@@ -2959,9 +3015,10 @@ public final class MutationProtos {
               mutationBuilder_ = null;
               mutation_ = other.mutation_;
               bitField0_ = (bitField0_ & ~0x00000001);
-              mutationBuilder_ = 
-                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
-                   getMutationFieldBuilder() : null;
+              mutationBuilder_ =
+                  com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders
+                      ? getMutationFieldBuilder()
+                      : null;
             } else {
               mutationBuilder_.addAllMessages(other.mutation_);
             }
@@ -2995,23 +3052,26 @@ public final class MutationProtos {
         }
         return this;
       }
+
       private int bitField0_;
 
       private java.util.List<proto.MutationProtos.Mutation> mutation_ =
-        java.util.Collections.emptyList();
+          java.util.Collections.emptyList();
+
       private void ensureMutationIsMutable() {
         if (!((bitField0_ & 0x00000001) != 0)) {
           mutation_ = new java.util.ArrayList<proto.MutationProtos.Mutation>(mutation_);
           bitField0_ |= 0x00000001;
-         }
+        }
       }
 
       private com.google.protobuf.RepeatedFieldBuilderV3<
-          proto.MutationProtos.Mutation, proto.MutationProtos.Mutation.Builder, proto.MutationProtos.MutationOrBuilder> mutationBuilder_;
+              proto.MutationProtos.Mutation,
+              proto.MutationProtos.Mutation.Builder,
+              proto.MutationProtos.MutationOrBuilder>
+          mutationBuilder_;
 
-      /**
-       * <code>repeated .proto.Mutation mutation = 1;</code>
-       */
+      /** <code>repeated .proto.Mutation mutation = 1;</code> */
       public java.util.List<proto.MutationProtos.Mutation> getMutationList() {
         if (mutationBuilder_ == null) {
           return java.util.Collections.unmodifiableList(mutation_);
@@ -3019,9 +3079,7 @@ public final class MutationProtos {
           return mutationBuilder_.getMessageList();
         }
       }
-      /**
-       * <code>repeated .proto.Mutation mutation = 1;</code>
-       */
+      /** <code>repeated .proto.Mutation mutation = 1;</code> */
       public int getMutationCount() {
         if (mutationBuilder_ == null) {
           return mutation_.size();
@@ -3029,9 +3087,7 @@ public final class MutationProtos {
           return mutationBuilder_.getCount();
         }
       }
-      /**
-       * <code>repeated .proto.Mutation mutation = 1;</code>
-       */
+      /** <code>repeated .proto.Mutation mutation = 1;</code> */
       public proto.MutationProtos.Mutation getMutation(int index) {
         if (mutationBuilder_ == null) {
           return mutation_.get(index);
@@ -3039,11 +3095,8 @@ public final class MutationProtos {
           return mutationBuilder_.getMessage(index);
         }
       }
-      /**
-       * <code>repeated .proto.Mutation mutation = 1;</code>
-       */
-      public Builder setMutation(
-          int index, proto.MutationProtos.Mutation value) {
+      /** <code>repeated .proto.Mutation mutation = 1;</code> */
+      public Builder setMutation(int index, proto.MutationProtos.Mutation value) {
         if (mutationBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -3056,11 +3109,8 @@ public final class MutationProtos {
         }
         return this;
       }
-      /**
-       * <code>repeated .proto.Mutation mutation = 1;</code>
-       */
-      public Builder setMutation(
-          int index, proto.MutationProtos.Mutation.Builder builderForValue) {
+      /** <code>repeated .proto.Mutation mutation = 1;</code> */
+      public Builder setMutation(int index, proto.MutationProtos.Mutation.Builder builderForValue) {
         if (mutationBuilder_ == null) {
           ensureMutationIsMutable();
           mutation_.set(index, builderForValue.build());
@@ -3070,9 +3120,7 @@ public final class MutationProtos {
         }
         return this;
       }
-      /**
-       * <code>repeated .proto.Mutation mutation = 1;</code>
-       */
+      /** <code>repeated .proto.Mutation mutation = 1;</code> */
       public Builder addMutation(proto.MutationProtos.Mutation value) {
         if (mutationBuilder_ == null) {
           if (value == null) {
@@ -3086,11 +3134,8 @@ public final class MutationProtos {
         }
         return this;
       }
-      /**
-       * <code>repeated .proto.Mutation mutation = 1;</code>
-       */
-      public Builder addMutation(
-          int index, proto.MutationProtos.Mutation value) {
+      /** <code>repeated .proto.Mutation mutation = 1;</code> */
+      public Builder addMutation(int index, proto.MutationProtos.Mutation value) {
         if (mutationBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -3103,11 +3148,8 @@ public final class MutationProtos {
         }
         return this;
       }
-      /**
-       * <code>repeated .proto.Mutation mutation = 1;</code>
-       */
-      public Builder addMutation(
-          proto.MutationProtos.Mutation.Builder builderForValue) {
+      /** <code>repeated .proto.Mutation mutation = 1;</code> */
+      public Builder addMutation(proto.MutationProtos.Mutation.Builder builderForValue) {
         if (mutationBuilder_ == null) {
           ensureMutationIsMutable();
           mutation_.add(builderForValue.build());
@@ -3117,11 +3159,8 @@ public final class MutationProtos {
         }
         return this;
       }
-      /**
-       * <code>repeated .proto.Mutation mutation = 1;</code>
-       */
-      public Builder addMutation(
-          int index, proto.MutationProtos.Mutation.Builder builderForValue) {
+      /** <code>repeated .proto.Mutation mutation = 1;</code> */
+      public Builder addMutation(int index, proto.MutationProtos.Mutation.Builder builderForValue) {
         if (mutationBuilder_ == null) {
           ensureMutationIsMutable();
           mutation_.add(index, builderForValue.build());
@@ -3131,24 +3170,19 @@ public final class MutationProtos {
         }
         return this;
       }
-      /**
-       * <code>repeated .proto.Mutation mutation = 1;</code>
-       */
+      /** <code>repeated .proto.Mutation mutation = 1;</code> */
       public Builder addAllMutation(
           java.lang.Iterable<? extends proto.MutationProtos.Mutation> values) {
         if (mutationBuilder_ == null) {
           ensureMutationIsMutable();
-          com.google.protobuf.AbstractMessageLite.Builder.addAll(
-              values, mutation_);
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(values, mutation_);
           onChanged();
         } else {
           mutationBuilder_.addAllMessages(values);
         }
         return this;
       }
-      /**
-       * <code>repeated .proto.Mutation mutation = 1;</code>
-       */
+      /** <code>repeated .proto.Mutation mutation = 1;</code> */
       public Builder clearMutation() {
         if (mutationBuilder_ == null) {
           mutation_ = java.util.Collections.emptyList();
@@ -3159,9 +3193,7 @@ public final class MutationProtos {
         }
         return this;
       }
-      /**
-       * <code>repeated .proto.Mutation mutation = 1;</code>
-       */
+      /** <code>repeated .proto.Mutation mutation = 1;</code> */
       public Builder removeMutation(int index) {
         if (mutationBuilder_ == null) {
           ensureMutationIsMutable();
@@ -3172,70 +3204,59 @@ public final class MutationProtos {
         }
         return this;
       }
-      /**
-       * <code>repeated .proto.Mutation mutation = 1;</code>
-       */
-      public proto.MutationProtos.Mutation.Builder getMutationBuilder(
-          int index) {
+      /** <code>repeated .proto.Mutation mutation = 1;</code> */
+      public proto.MutationProtos.Mutation.Builder getMutationBuilder(int index) {
         return getMutationFieldBuilder().getBuilder(index);
       }
-      /**
-       * <code>repeated .proto.Mutation mutation = 1;</code>
-       */
-      public proto.MutationProtos.MutationOrBuilder getMutationOrBuilder(
-          int index) {
+      /** <code>repeated .proto.Mutation mutation = 1;</code> */
+      public proto.MutationProtos.MutationOrBuilder getMutationOrBuilder(int index) {
         if (mutationBuilder_ == null) {
-          return mutation_.get(index);  } else {
+          return mutation_.get(index);
+        } else {
           return mutationBuilder_.getMessageOrBuilder(index);
         }
       }
-      /**
-       * <code>repeated .proto.Mutation mutation = 1;</code>
-       */
-      public java.util.List<? extends proto.MutationProtos.MutationOrBuilder> 
-           getMutationOrBuilderList() {
+      /** <code>repeated .proto.Mutation mutation = 1;</code> */
+      public java.util.List<? extends proto.MutationProtos.MutationOrBuilder>
+          getMutationOrBuilderList() {
         if (mutationBuilder_ != null) {
           return mutationBuilder_.getMessageOrBuilderList();
         } else {
           return java.util.Collections.unmodifiableList(mutation_);
         }
       }
-      /**
-       * <code>repeated .proto.Mutation mutation = 1;</code>
-       */
+      /** <code>repeated .proto.Mutation mutation = 1;</code> */
       public proto.MutationProtos.Mutation.Builder addMutationBuilder() {
-        return getMutationFieldBuilder().addBuilder(
-            proto.MutationProtos.Mutation.getDefaultInstance());
+        return getMutationFieldBuilder()
+            .addBuilder(proto.MutationProtos.Mutation.getDefaultInstance());
       }
-      /**
-       * <code>repeated .proto.Mutation mutation = 1;</code>
-       */
-      public proto.MutationProtos.Mutation.Builder addMutationBuilder(
-          int index) {
-        return getMutationFieldBuilder().addBuilder(
-            index, proto.MutationProtos.Mutation.getDefaultInstance());
+      /** <code>repeated .proto.Mutation mutation = 1;</code> */
+      public proto.MutationProtos.Mutation.Builder addMutationBuilder(int index) {
+        return getMutationFieldBuilder()
+            .addBuilder(index, proto.MutationProtos.Mutation.getDefaultInstance());
       }
-      /**
-       * <code>repeated .proto.Mutation mutation = 1;</code>
-       */
-      public java.util.List<proto.MutationProtos.Mutation.Builder> 
-           getMutationBuilderList() {
+      /** <code>repeated .proto.Mutation mutation = 1;</code> */
+      public java.util.List<proto.MutationProtos.Mutation.Builder> getMutationBuilderList() {
         return getMutationFieldBuilder().getBuilderList();
       }
+
       private com.google.protobuf.RepeatedFieldBuilderV3<
-          proto.MutationProtos.Mutation, proto.MutationProtos.Mutation.Builder, proto.MutationProtos.MutationOrBuilder> 
+              proto.MutationProtos.Mutation,
+              proto.MutationProtos.Mutation.Builder,
+              proto.MutationProtos.MutationOrBuilder>
           getMutationFieldBuilder() {
         if (mutationBuilder_ == null) {
-          mutationBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
-              proto.MutationProtos.Mutation, proto.MutationProtos.Mutation.Builder, proto.MutationProtos.MutationOrBuilder>(
-                  mutation_,
-                  ((bitField0_ & 0x00000001) != 0),
-                  getParentForChildren(),
-                  isClean());
+          mutationBuilder_ =
+              new com.google.protobuf.RepeatedFieldBuilderV3<
+                  proto.MutationProtos.Mutation,
+                  proto.MutationProtos.Mutation.Builder,
+                  proto.MutationProtos.MutationOrBuilder>(
+                  mutation_, ((bitField0_ & 0x00000001) != 0), getParentForChildren(), isClean());
           mutation_ = null;
         }
         return mutationBuilder_;
       }
+
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
@@ -3248,12 +3269,12 @@ public final class MutationProtos {
         return super.mergeUnknownFields(unknownFields);
       }
 
-
       // @@protoc_insertion_point(builder_scope:proto.MutationList)
     }
 
     // @@protoc_insertion_point(class_scope:proto.MutationList)
     private static final proto.MutationProtos.MutationList DEFAULT_INSTANCE;
+
     static {
       DEFAULT_INSTANCE = new proto.MutationProtos.MutationList();
     }
@@ -3262,16 +3283,16 @@ public final class MutationProtos {
       return DEFAULT_INSTANCE;
     }
 
-    private static final com.google.protobuf.Parser<MutationList>
-        PARSER = new com.google.protobuf.AbstractParser<MutationList>() {
-      @java.lang.Override
-      public MutationList parsePartialFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return new MutationList(input, extensionRegistry);
-      }
-    };
+    private static final com.google.protobuf.Parser<MutationList> PARSER =
+        new com.google.protobuf.AbstractParser<MutationList>() {
+          @java.lang.Override
+          public MutationList parsePartialFrom(
+              com.google.protobuf.CodedInputStream input,
+              com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+              throws com.google.protobuf.InvalidProtocolBufferException {
+            return new MutationList(input, extensionRegistry);
+          }
+        };
 
     public static com.google.protobuf.Parser<MutationList> parser() {
       return PARSER;
@@ -3286,79 +3307,78 @@ public final class MutationProtos {
     public proto.MutationProtos.MutationList getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
-
   }
 
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_proto_TokenMutation_descriptor;
-  private static final 
-    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_proto_TokenMutation_descriptor;
+  private static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_proto_TokenMutation_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_proto_Mutation_descriptor;
-  private static final 
-    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_proto_Mutation_descriptor;
+  private static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_proto_Mutation_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_proto_MutationList_descriptor;
-  private static final 
-    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_proto_MutationList_descriptor;
+  private static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_proto_MutationList_fieldAccessorTable;
 
-  public static com.google.protobuf.Descriptors.FileDescriptor
-      getDescriptor() {
+  public static com.google.protobuf.Descriptors.FileDescriptor getDescriptor() {
     return descriptor;
   }
-  private static  com.google.protobuf.Descriptors.FileDescriptor
-      descriptor;
+
+  private static com.google.protobuf.Descriptors.FileDescriptor descriptor;
+
   static {
     java.lang.String[] descriptorData = {
-      "\n\016mutation.proto\022\005proto\032\034google/protobuf" +
-      "/struct.proto\032\013graph.proto\"u\n\rTokenMutat" +
-      "ion\022\'\n\004type\030\001 \001(\0162\031.proto.TokenMutation." +
-      "Type\022\022\n\ntoken_name\030\002 \001(\t\"\'\n\004Type\022\r\n\tADD_" +
-      "TOKEN\020\000\022\020\n\014DELETE_TOKEN\020\001\"\377\001\n\010Mutation\022\"" +
-      "\n\004type\030\001 \001(\0162\024.proto.Mutation.Type\022\036\n\tst" +
-      "artNode\030\002 \001(\0132\013.proto.Node\022\034\n\007endNode\030\003 " +
-      "\001(\0132\013.proto.Node\022)\n\013tokenChange\030\004 \001(\0132\024." +
-      "proto.TokenMutation\022\016\n\006reason\030\005 \001(\t\"V\n\004T" +
-      "ype\022\014\n\010ADD_NODE\020\000\022\014\n\010ADD_EDGE\020\001\022\017\n\013DELET" +
-      "E_NODE\020\002\022\017\n\013DELETE_EDGE\020\003\022\020\n\014CHANGE_TOKE" +
-      "N\020\004\"1\n\014MutationList\022!\n\010mutation\030\001 \003(\0132\017." +
-      "proto.MutationB\020B\016MutationProtosb\006proto3"
+      "\n\016mutation.proto\022\005proto\032\034google/protobuf"
+          + "/struct.proto\032\013graph.proto\"u\n\rTokenMutat"
+          + "ion\022\'\n\004type\030\001 \001(\0162\031.proto.TokenMutation."
+          + "Type\022\022\n\ntoken_name\030\002 \001(\t\"\'\n\004Type\022\r\n\tADD_"
+          + "TOKEN\020\000\022\020\n\014DELETE_TOKEN\020\001\"\377\001\n\010Mutation\022\""
+          + "\n\004type\030\001 \001(\0162\024.proto.Mutation.Type\022\036\n\tst"
+          + "artNode\030\002 \001(\0132\013.proto.Node\022\034\n\007endNode\030\003 "
+          + "\001(\0132\013.proto.Node\022)\n\013tokenChange\030\004 \001(\0132\024."
+          + "proto.TokenMutation\022\016\n\006reason\030\005 \001(\t\"V\n\004T"
+          + "ype\022\014\n\010ADD_NODE\020\000\022\014\n\010ADD_EDGE\020\001\022\017\n\013DELET"
+          + "E_NODE\020\002\022\017\n\013DELETE_EDGE\020\003\022\020\n\014CHANGE_TOKE"
+          + "N\020\004\"1\n\014MutationList\022!\n\010mutation\030\001 \003(\0132\017."
+          + "proto.MutationB\020B\016MutationProtosb\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
-        new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
+        new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
           public com.google.protobuf.ExtensionRegistry assignDescriptors(
               com.google.protobuf.Descriptors.FileDescriptor root) {
             descriptor = root;
             return null;
           }
         };
-    com.google.protobuf.Descriptors.FileDescriptor
-      .internalBuildGeneratedFileFrom(descriptorData,
+    com.google.protobuf.Descriptors.FileDescriptor.internalBuildGeneratedFileFrom(
+        descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
-          com.google.protobuf.StructProto.getDescriptor(),
-          proto.GraphProtos.getDescriptor(),
-        }, assigner);
-    internal_static_proto_TokenMutation_descriptor =
-      getDescriptor().getMessageTypes().get(0);
-    internal_static_proto_TokenMutation_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_proto_TokenMutation_descriptor,
-        new java.lang.String[] { "Type", "TokenName", });
-    internal_static_proto_Mutation_descriptor =
-      getDescriptor().getMessageTypes().get(1);
-    internal_static_proto_Mutation_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_proto_Mutation_descriptor,
-        new java.lang.String[] { "Type", "StartNode", "EndNode", "TokenChange", "Reason", });
-    internal_static_proto_MutationList_descriptor =
-      getDescriptor().getMessageTypes().get(2);
-    internal_static_proto_MutationList_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_proto_MutationList_descriptor,
-        new java.lang.String[] { "Mutation", });
+          com.google.protobuf.StructProto.getDescriptor(), proto.GraphProtos.getDescriptor(),
+        },
+        assigner);
+    internal_static_proto_TokenMutation_descriptor = getDescriptor().getMessageTypes().get(0);
+    internal_static_proto_TokenMutation_fieldAccessorTable =
+        new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+            internal_static_proto_TokenMutation_descriptor,
+            new java.lang.String[] {
+              "Type", "TokenName",
+            });
+    internal_static_proto_Mutation_descriptor = getDescriptor().getMessageTypes().get(1);
+    internal_static_proto_Mutation_fieldAccessorTable =
+        new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+            internal_static_proto_Mutation_descriptor,
+            new java.lang.String[] {
+              "Type", "StartNode", "EndNode", "TokenChange", "Reason",
+            });
+    internal_static_proto_MutationList_descriptor = getDescriptor().getMessageTypes().get(2);
+    internal_static_proto_MutationList_fieldAccessorTable =
+        new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+            internal_static_proto_MutationList_descriptor,
+            new java.lang.String[] {
+              "Mutation",
+            });
     com.google.protobuf.StructProto.getDescriptor();
     proto.GraphProtos.getDescriptor();
   }

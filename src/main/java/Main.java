@@ -17,4 +17,3 @@ class Main {
     output.close();
   }
 }
-
