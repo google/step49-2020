@@ -9,7 +9,7 @@ class Main {
     node.addChildren("B");
 
     Graph.Builder graph = Graph.newBuilder();
-    graph.addRootName("A");
+        graph.addRootName("A");
     graph.putNodesMap("A", node);
 
     FileOutputStream output = new FileOutputStream("test.txt");

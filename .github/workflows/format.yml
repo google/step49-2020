@@ -16,4 +16,5 @@ jobs:
           java-version: "11"
       - uses: axel-op/googlejavaformat-action@v3
         with:
+          skipCommit: true
           args: "--skip-sorting-imports --replace"
