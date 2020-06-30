@@ -47,7 +47,7 @@ public class DataServlet extends HttpServlet {
         Graph.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/graph.txt"));
     Map<String, Node> protoNodesMap = protoGraph.getNodesMapMap();
     
-    // GRAPH data structures:
+    // GRAPH Data structures:
     // Create an undirected graph data structure to store the information, and 
     // map each node name in the graph to the GraphNode objects. This is the graph & map
     // we update with mutations
@@ -96,21 +96,18 @@ public class DataServlet extends HttpServlet {
           graphNodesMap.put(startName, newGraphNode);
           break;
         case ADD_EDGE:
-          // If the specified nodes exist in the graph, add an edge between them
-          if (startNode != null && endNode != null) {
+          if (startNode != null && endNode != null) { // Check nodes exist before adding an edge
             graph.putEdge(startNode, endNode);
           }
           break;
         case DELETE_NODE:
-          // If the specified node exists in the graph, remove it from the graph and the map
-          if (startNode != null) {
-            graph.removeNode(startNode);
+          if (startNode != null) { // Check node exists before removing
+            graph.removeNode(startNode); // This will remove all edges associated with startNode
             graphNodesMap.remove(startName);
           }
           break;
         case DELETE_EDGE:
-          // If the specified nodes exist in the graph, remove the edge between them
-          if (startNode != null && endNode != null) {
+          if (startNode != null && endNode != null) { // Check nodes exist before removing edge
             graph.removeEdge(startNode, endNode);
           }
           break;
@@ -146,11 +143,10 @@ public class DataServlet extends HttpServlet {
     List<String> tokenNames = tokenMut.getTokenNameList();
     List<String> tokenList = node.tokenList();
     int tokenMutType = tokenMut.getTypeValue();
-    if (tokenMutType == 1) {
-      // Add tokens
+    // 1 is enum for adding, 2 is enum for removing
+    if (tokenMutType == 1) { 
       tokenList.addAll(tokenNames);
     } else if (tokenMutType == 2) {
-      // Remove tokens
       tokenList.removeAll(tokenNames);
     }
   }
