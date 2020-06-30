@@ -12,76 +12,68 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
-
-
-
-
-
-
-
-function generateGraph() {
+async function generateGraph() {
   let graphNodes = [];
   let graphEdges = [];
-  fetch("/data").then(response => response.json()).then(jsonResponse => {
-      let nodes = jsonResponse[0];
-      let edges = jsonResponse[1];
-      nodes.forEach(node => 
-        graphNodes.push({
-        group: "nodes",
-        data: { id: node["name"] }
-      }))
-      edges.forEach(edge => {
-        let start = edge["nodeU"]["name"];
-        let end = edge["nodeV"]["name"];
-        graphEdges.push({
-          group: "edges",
-          data: {
-            id: `edge${start}${end}`,
-            target: end,
-            source: start
-          }
-        });
-      })
-      const cy = cytoscape({
-      container: document.getElementById("graph"),
-      elements: {
-        nodes: graphNodes,
-        edges: graphEdges
-      },
-      style: [
-        {
-          selector: 'node',
-          style: {
-            width: '50px',
-            height: '50px',
-            shape: 'square',
-            'background-color': 'red',
-            'label': 'data(id)',
-            'text-halign': 'center',
-            'text-valign': 'center',
-          }
-        },
-        {
-          selector: 'edge',
-          style: {
-            'width': 3,
-            'line-color': '#ccc',
-            'target-arrow-color': '#ccc',
-            'target-arrow-shape': 'triangle',
-            'curve-style': 'bezier'
-          }
-        }],
-        layout: {
-          name: 'breadthfirst',
-          maximal: true,
-          grid: true,
-          directed: true,
-          roots: "#A, #E, #H",
-          padding: 10,
-          avoidOverlap: true,
+  const response = await fetch("/data");
+  const jsonResponse = await response.json();
+  let nodes = jsonResponse[0];
+  let edges = jsonResponse[1];
+  nodes.forEach(node =>
+    graphNodes.push({
+      group: "nodes",
+      data: { id: node["name"] }
+    }))
+  edges.forEach(edge => {
+    let start = edge["nodeU"]["name"];
+    let end = edge["nodeV"]["name"];
+    graphEdges.push({
+      group: "edges",
+      data: {
+        id: `edge${start}${end}`,
+        target: end,
+        source: start
       }
     });
   })
+  const cy = cytoscape({
+    container: document.getElementById("graph"),
+    elements: {
+      nodes: graphNodes,
+      edges: graphEdges
+    },
+    style: [
+      {
+        selector: 'node',
+        style: {
+          width: '50px',
+          height: '50px',
+          shape: 'square',
+          'background-color': 'red',
+          'label': 'data(id)',
+          'text-halign': 'center',
+          'text-valign': 'center',
+        }
+      },
+      {
+        selector: 'edge',
+        style: {
+          'width': 3,
+          'line-color': '#ccc',
+          'target-arrow-color': '#ccc',
+          'target-arrow-shape': 'triangle',
+          'curve-style': 'bezier'
+        }
+      }],
+    layout: {
+      name: 'breadthfirst',
+      maximal: true,
+      grid: true,
+      directed: true,
+      roots: "#A, #E, #H",
+      padding: 10,
+      avoidOverlap: true,
+    }
+  });
 }
-    
+
