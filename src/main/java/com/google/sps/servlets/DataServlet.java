@@ -24,7 +24,6 @@ import com.proto.MutationProtos.MutationList;
 import com.proto.MutationProtos.TokenMutation;
 import com.google.common.graph.EndpointPair;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -125,17 +124,17 @@ public class DataServlet extends HttpServlet {
       }
     }
     String graphJson = graphToJson(graph);
-    response.setContentType("application/json");    
+    response.setContentType("application/json");
     response.getWriter().println(graphJson);
   }
 
   private String graphToJson(MutableGraph<GraphNode> graph) {
-    Type typeOfNode = new TypeToken<Set<GraphNode>>(){}.getType();
-    Type typeOfEdge = new TypeToken<Set<EndpointPair<GraphNode>>>(){}.getType();
+    Type typeOfNode = new TypeToken<Set<GraphNode>>() {}.getType();
+    Type typeOfEdge = new TypeToken<Set<EndpointPair<GraphNode>>>() {}.getType();
     Gson gson = new Gson();
     String nodeJson = gson.toJson(graph.nodes(), typeOfNode);
     String edgeJson = gson.toJson(graph.edges(), typeOfEdge);
-    String bothJson = "["+nodeJson+","+edgeJson+"]";
+    String bothJson = "[" + nodeJson + "," + edgeJson + "]";
     return bothJson;
   }
 
