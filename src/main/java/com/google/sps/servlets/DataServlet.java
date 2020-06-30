@@ -38,17 +38,17 @@ public class DataServlet extends HttpServlet {
    */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    
-    // PROTO Data structure: 
-    // Parse the contents  of graph.txt into a proto Graph object, and extract information 
+
+    // PROTO Data structure:
+    // Parse the contents  of graph.txt into a proto Graph object, and extract information
     // from the proto object into a map. This is used to store the proto input and isn't updated
     // with mutations.
     Graph protoGraph =
         Graph.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/graph.txt"));
     Map<String, Node> protoNodesMap = protoGraph.getNodesMapMap();
-    
+
     // GRAPH Data structures:
-    // Create an undirected graph data structure to store the information, and 
+    // Create an undirected graph data structure to store the information, and
     // map each node name in the graph to the GraphNode objects. This is the graph & map
     // we update with mutations
     MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
@@ -146,7 +146,7 @@ public class DataServlet extends HttpServlet {
     List<String> tokenList = node.tokenList();
     int tokenMutType = tokenMut.getTypeValue();
     // 1 is enum value for adding, 2 is enum value for removing
-    if (tokenMutType == 1) { 
+    if (tokenMutType == 1) {
       tokenList.addAll(tokenNames);
     } else if (tokenMutType == 2) {
       tokenList.removeAll(tokenNames);
