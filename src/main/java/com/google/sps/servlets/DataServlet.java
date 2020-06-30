@@ -15,16 +15,22 @@
 package com.google.sps.servlets;
 
 import com.google.common.graph.*;
+import com.google.gson.Gson;
 import com.google.sps.data.GraphNode;
 import com.proto.GraphProtos.Graph;
 import com.proto.GraphProtos.Node;
 import com.proto.MutationProtos.Mutation;
 import com.proto.MutationProtos.MutationList;
 import com.proto.MutationProtos.TokenMutation;
+import com.google.common.graph.EndpointPair;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import com.google.common.reflect.TypeToken;
+import java.lang.reflect.Type;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -118,6 +124,19 @@ public class DataServlet extends HttpServlet {
           break;
       }
     }
+    String graphJson = graphToJson(graph);
+    response.setContentType("application/json");    
+    response.getWriter().println(graphJson);
+  }
+
+  private String graphToJson(MutableGraph<GraphNode> graph) {
+    Type typeOfNode = new TypeToken<Set<GraphNode>>(){}.getType();
+    Type typeOfEdge = new TypeToken<Set<EndpointPair<GraphNode>>>(){}.getType();
+    Gson gson = new Gson();
+    String nodeJson = gson.toJson(graph.nodes(), typeOfNode);
+    String edgeJson = gson.toJson(graph.edges(), typeOfEdge);
+    String bothJson = "["+nodeJson+","+edgeJson+"]";
+    return bothJson;
   }
 
   /*
