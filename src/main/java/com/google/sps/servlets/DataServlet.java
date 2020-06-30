@@ -68,7 +68,6 @@ public class DataServlet extends HttpServlet {
         graph.putEdge(graphNode, protoNodeToGraphNode(nodesMap.get(child)));
       }
     }
-    System.out.println(graph.toString());
 
     // Parse the contents of mutation.txt into a list of mutations
     List<Mutation> mutList =
@@ -119,97 +118,6 @@ public class DataServlet extends HttpServlet {
           break;
       }
     }
-    System.out.println(graph.toString());
-    // Node.Builder nodeA = Node.newBuilder();
-    //   nodeA.setName("A");
-    //   nodeA.addChildren("B");
-    //   nodeA.addChildren("C");
-
-    //   Node.Builder nodeB = Node.newBuilder();
-    //   nodeB.setName("B");
-    //   nodeB.addChildren("D");
-
-    //   Node.Builder nodeC = Node.newBuilder();
-    //   nodeC.setName("C");
-
-    //   Node.Builder nodeD = Node.newBuilder();
-    //   nodeD.setName("D");
-
-    //   Node.Builder nodeE = Node.newBuilder();
-    //   nodeE.setName("E");
-    //   nodeE.addChildren("F");
-
-    //   Node.Builder nodeF = Node.newBuilder();
-    //   nodeF.setName("F");
-
-    //   Node.Builder nodeG = Node.newBuilder();
-    //   nodeG.setName("G");
-
-    //   Node.Builder nodeH = Node.newBuilder();
-    //   nodeH.setName("H");
-
-    //   Graph.Builder graph = Graph.newBuilder();
-    //   graph.putNodesMap("A", nodeA.build());
-    //   graph.putNodesMap("B", nodeB.build());
-    //   graph.putNodesMap("C", nodeC.build());
-    //   graph.putNodesMap("D", nodeD.build());
-    //   graph.putNodesMap("E", nodeE.build());
-    //   graph.putNodesMap("F", nodeF.build());
-
-    //   Mutation.Builder mutationA1 = Mutation.newBuilder();
-    //   // Delete edge
-    //   mutationA1.setTypeValue(4);
-    //   mutationA1.setStartNode("E");
-    //   mutationA1.setEndNode("F");
-
-    //   Mutation.Builder mutationA = Mutation.newBuilder();
-    //   // Delete node
-    //   mutationA.setTypeValue(3);
-    //   mutationA.setStartNode("F");
-
-    //   Mutation.Builder mutationB = Mutation.newBuilder();
-    //   // Add node
-    //   mutationB.setTypeValue(1);
-    //   mutationB.setStartNode("G");
-
-    //   Mutation.Builder mutationB1 = Mutation.newBuilder();
-    //   // Add edge from E to G
-    //   mutationB1.setTypeValue(2);
-    //   mutationB1.setStartNode("E");
-    //   mutationB1.setEndNode("G");
-
-    //   Mutation.Builder mutationC = Mutation.newBuilder();
-    //   // Add node
-    //   mutationC.setTypeValue(1);
-    //   mutationC.setStartNode("H");
-
-    //   Mutation.Builder mutationC1 = Mutation.newBuilder();
-    //   mutationC1.setTypeValue(2);
-    //   mutationC1.setStartNode("H");
-    //   mutationC1.setEndNode("G");
-
-    //   Mutation.Builder mutationD = Mutation.newBuilder();
-    //   // Add edge
-    //   mutationD.setTypeValue(2);
-    //   mutationD.setStartNode("D");
-    //   mutationD.setEndNode("G");
-
-    //   MutationList.Builder mutationList = MutationList.newBuilder();
-    //   mutationList.addMutation(mutationA1.build());
-    //   mutationList.addMutation(mutationA.build());
-    //   mutationList.addMutation(mutationB.build());
-    //   mutationList.addMutation(mutationB1.build());
-    //   mutationList.addMutation(mutationC.build());
-    //   mutationList.addMutation(mutationC1.build());
-    //   mutationList.addMutation(mutationD.build());
-
-    //   FileOutputStream output = new FileOutputStream("graph.txt");
-    //   graph.build().writeTo(output);
-    //   output.close();
-
-    //   FileOutputStream output1 = new FileOutputStream("mutations.txt");
-    //   mutationList.build().writeTo(output1);
-    //   output1.close();
   }
 
   /*
