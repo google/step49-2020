@@ -1,8 +1,9 @@
 syntax = "proto3";
 
-package proto;
+package com.proto;
 import "google/protobuf/struct.proto";
 
+option java_package = "com.proto";
 option java_outer_classname = "GraphProtos";
 
 /** A node in the initial graph */
@@ -23,9 +24,6 @@ message Node {
 
 /** A representation of the graph */
 message Graph {
-
-  /** Each DAG will have at least one root. */
-  repeated string root_name = 1;
 
   /** A map of Node name --> Node. */
   map<string, Node> nodes_map = 2;

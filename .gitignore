@@ -1,1 +1,5 @@
 target/
+.vscode/
+bin/
+.settings/
+.factorypath
