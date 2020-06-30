@@ -140,10 +140,12 @@ public class DataServlet extends HttpServlet {
    */
   private void changeNodeToken(
       MutableGraph<GraphNode> graph, GraphNode node, TokenMutation tokenMut) {
+    // List of tokens to add/remove from the existing list
     List<String> tokenNames = tokenMut.getTokenNameList();
+    // The existing list of tokens in the node
     List<String> tokenList = node.tokenList();
     int tokenMutType = tokenMut.getTypeValue();
-    // 1 is enum for adding, 2 is enum for removing
+    // 1 is enum value for adding, 2 is enum value for removing
     if (tokenMutType == 1) { 
       tokenList.addAll(tokenNames);
     } else if (tokenMutType == 2) {
