@@ -19,6 +19,8 @@ async function generateGraph() {
   const jsonResponse = await response.json();
   let nodes = jsonResponse[0];
   let edges = jsonResponse[1];
+
+
   if (nodes && edges) {
     nodes.forEach(node =>
       graphNodes.push({
@@ -37,10 +39,10 @@ async function generateGraph() {
         }
       });
     })
+    getGraphDisplay(graphNodes, graphEdges);
+    return; 
   }
-
-  getGraphDisplay(graphNodes, graphEdges);
-
+  alert("Oh no, there's no graph to display") // TODO: Handle this??
 }
 
 function getGraphDisplay(graphNodes, graphEdges) {
