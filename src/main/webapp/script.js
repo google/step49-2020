@@ -13,6 +13,7 @@
 // limitations under the License.
 
 async function generateGraph() {
+  // hello
   let graphNodes = [];
   let graphEdges = [];
   const response = await fetch("/data");
