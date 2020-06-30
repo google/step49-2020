@@ -43,9 +43,9 @@ public class DataServlet extends HttpServlet {
     // Parse the contents  of graph.txt into a proto Graph object, and extract information 
     // from the proto object into a map. This is used to store the proto input and isn't updated
     // with mutations.
-    Graph inputGraph =
+    Graph protoGraph =
         Graph.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/graph.txt"));
-    Map<String, Node> nodesMap = inputGraph.getNodesMapMap();
+    Map<String, Node> protoNodesMap = protoGraph.getNodesMapMap();
     
     // GRAPH data structures:
     // Create an undirected graph data structure to store the information, and 
@@ -55,9 +55,9 @@ public class DataServlet extends HttpServlet {
     HashMap<String, GraphNode> graphNodesMap = new HashMap<>();
 
     // Create a graph (useable form) from proto data structures
-    for (String nodeName : nodesMap.keySet()) {
+    for (String nodeName : protoNodesMap.keySet()) {
 
-      Node thisNode = nodesMap.get(nodeName);
+      Node thisNode = protoNodesMap.get(nodeName);
 
       // Convert thisNode into a graph node that may store additional information
       GraphNode graphNode = protoNodeToGraphNode(thisNode);
@@ -68,7 +68,7 @@ public class DataServlet extends HttpServlet {
 
       // Add dependency edges to the graph
       for (String child : thisNode.getChildrenList()) {
-        graph.putEdge(graphNode, protoNodeToGraphNode(nodesMap.get(child)));
+        graph.putEdge(graphNode, protoNodeToGraphNode(protoNodesMap.get(child)));
       }
     }
 
@@ -83,7 +83,7 @@ public class DataServlet extends HttpServlet {
       // Name of the second node (only applicable for adding an edge and removing an edge)
       String endName = mut.getEndNode();
 
-      // Getting the corresponding graph nodes from the map
+      // Getting the corresponding graph nodes from the graph map
       GraphNode startNode = graphNodesMap.get(startName);
       GraphNode endNode = graphNodesMap.get(endName);
 
