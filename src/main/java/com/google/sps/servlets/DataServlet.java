@@ -38,18 +38,23 @@ public class DataServlet extends HttpServlet {
    */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    // Parse the contents  of graph.txt into a proto Graph object
+    
+    // PROTO Data structure: 
+    // Parse the contents  of graph.txt into a proto Graph object, and extract information 
+    // from the proto object into a map. This is used to store the proto input and isn't updated
+    // with mutations.
     Graph inputGraph =
         Graph.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/graph.txt"));
-    // Create a graph data structure to store the information
-    MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
-
-    // Extract the graph information from the proto object
     Map<String, Node> nodesMap = inputGraph.getNodesMapMap();
-
-    // Create an object that maps each node name in the current graph to the node object
+    
+    // GRAPH data structures:
+    // Create an undirected graph data structure to store the information, and 
+    // map each node name in the graph to the GraphNode objects. This is the graph & map
+    // we update with mutations
+    MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
     HashMap<String, GraphNode> graphNodesMap = new HashMap<>();
 
+    // Create a graph (useable form) from proto data structures
     for (String nodeName : nodesMap.keySet()) {
 
       Node thisNode = nodesMap.get(nodeName);
@@ -57,10 +62,8 @@ public class DataServlet extends HttpServlet {
       // Convert thisNode into a graph node that may store additional information
       GraphNode graphNode = protoNodeToGraphNode(thisNode);
 
-      // Add node to graph DS
+      // Update graph data structures to include the node
       graph.addNode(graphNode);
-
-      // Add link between node name and node in the map
       graphNodesMap.put(nodeName, graphNode);
 
       // Add dependency edges to the graph
@@ -123,6 +126,8 @@ public class DataServlet extends HttpServlet {
   /*
    * Converts a proto node object into a graph node object that does not store the names of
    * the child nodes but may store additional information.
+   * @param thisNode the input data Node object
+   * @return a useful node used to construct the Guava Graph
    */
   private GraphNode protoNodeToGraphNode(Node thisNode) {
     return GraphNode.create(thisNode.getName(), thisNode.getTokenList(), thisNode.getMetadata());
@@ -132,6 +137,9 @@ public class DataServlet extends HttpServlet {
    * Modify the list of tokens for graph node 'node' in 'graph' to accomodate
    * the mutation 'tokenMut'. This could involve adding or removing tokens
    * from the list.
+   * @param graph the dependency graph the node belongs to
+   * @param node the node in the graph to change the tokens of
+   * @param tokenMut the kind of mutation to perform on node of the graph
    */
   private void changeNodeToken(
       MutableGraph<GraphNode> graph, GraphNode node, TokenMutation tokenMut) {
