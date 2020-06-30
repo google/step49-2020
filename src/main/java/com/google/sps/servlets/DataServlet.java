@@ -78,9 +78,9 @@ public class DataServlet extends HttpServlet {
             .getMutationList();
 
     for (Mutation mut : mutList) {
-      // Name of the first node
+      // Nodes affected by the mutation
+      // second node only applicable for adding an edge and removing an edge
       String startName = mut.getStartNode();
-      // Name of the second node (only applicable for adding an edge and removing an edge)
       String endName = mut.getEndNode();
 
       // Getting the corresponding graph nodes from the graph map
