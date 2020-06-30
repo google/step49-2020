@@ -3,3 +3,6 @@ target/
 bin/
 .settings/
 .factorypath
+build.xml
+maven-build.properties
+maven-build.xml
