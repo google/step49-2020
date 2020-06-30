@@ -19,23 +19,31 @@ async function generateGraph() {
   const jsonResponse = await response.json();
   let nodes = jsonResponse[0];
   let edges = jsonResponse[1];
-  nodes.forEach(node =>
-    graphNodes.push({
-      group: "nodes",
-      data: { id: node["name"] }
-    }))
-  edges.forEach(edge => {
-    let start = edge["nodeU"]["name"];
-    let end = edge["nodeV"]["name"];
-    graphEdges.push({
-      group: "edges",
-      data: {
-        id: `edge${start}${end}`,
-        target: end,
-        source: start
-      }
-    });
-  })
+  if (nodes && edges) {
+    nodes.forEach(node =>
+      graphNodes.push({
+        group: "nodes",
+        data: { id: node["name"] }
+      }))
+    edges.forEach(edge => {
+      let start = edge["nodeU"]["name"];
+      let end = edge["nodeV"]["name"];
+      graphEdges.push({
+        group: "edges",
+        data: {
+          id: `edge${start}${end}`,
+          target: end,
+          source: start
+        }
+      });
+    })
+  }
+
+  getGraphDisplay(graphNodes, graphEdges);
+
+}
+
+function getGraphDisplay(graphNodes, graphEdges) {
   const cy = cytoscape({
     container: document.getElementById("graph"),
     elements: {
