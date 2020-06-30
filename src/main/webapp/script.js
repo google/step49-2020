@@ -44,7 +44,7 @@ async function generateGraph() {
 }
 
 function getGraphDisplay(graphNodes, graphEdges) {
-  const cy = cytoscape({
+  cytoscape({
     container: document.getElementById("graph"),
     elements: {
       nodes: graphNodes,
@@ -57,8 +57,10 @@ function getGraphDisplay(graphNodes, graphEdges) {
           width: '50px',
           height: '50px',
           shape: 'square',
-          'background-color': 'red',
+          'background-color': 'blue',
           'label': 'data(id)',
+          'color': 'white',
+          'font-size': '20px',
           'text-halign': 'center',
           'text-valign': 'center',
         }
@@ -76,12 +78,13 @@ function getGraphDisplay(graphNodes, graphEdges) {
     layout: {
       name: 'breadthfirst',
       maximal: true,
-      grid: true,
       directed: true,
-      roots: "#A, #E, #H",
       padding: 10,
       avoidOverlap: true,
+      spacingFactor: 2
     }
   });
 }
 
+
+generateGraph();
