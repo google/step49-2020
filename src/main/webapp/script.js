@@ -23,11 +23,9 @@
 function generateGraph() {
   let graphNodes = [];
   let graphEdges = [];
-  let nodes = [{"name" : "A"}, {"name" : "B"}, {"name" : "C"}];
-  let edges = [{"nodeU" : {"name" : "A"}, "nodeV" : {"name" : "B"}}, {"nodeU" : {"name" : "A"}, "nodeV" : {"name" : "C"}}, {"nodeU" : {"name" : "B"}, "nodeV" : {"name" : "C"}}]
   fetch("/data").then(response => response.json()).then(jsonResponse => {
-      // let nodes = jsonResponse[0];
-      // let edges = jsonResponse[1];
+      let nodes = jsonResponse[0];
+      let edges = jsonResponse[1];
       nodes.forEach(node => 
         graphNodes.push({
         group: "nodes",
@@ -50,7 +48,7 @@ function generateGraph() {
       elements: {
         nodes: graphNodes,
         edges: graphEdges
-      }
+      },
       style: [
         {
           selector: 'node',
@@ -73,41 +71,17 @@ function generateGraph() {
             'target-arrow-shape': 'triangle',
             'curve-style': 'bezier'
           }
-        }]
+        }],
+        layout: {
+          name: 'breadthfirst',
+          maximal: true,
+          grid: true,
+          directed: true,
+          roots: "#A, #E, #H",
+          padding: 10,
+          avoidOverlap: true,
+      }
     });
-
-
-
-let options = {
-    name: 'breadthfirst',
-    directed: true,
-    padding: 10
-};
-  cy.layout(options);
-  });
-  // cy.add({data : {id: "A"}});
-  // cy.add({data : {id: "B"}});
-  // cy.add({data : {id: "C"}});
-  // cy.add({
-  // data: {
-  //   id: 'edge1',
-  //   target: 'B',
-  //   source: 'A'
-  // }
-  // });
-  // cy.add({
-  // data: {
-  //   id: 'edge2',
-  //   target: 'C',
-  //   source: 'A'
-  // }
-  // });
-  // cy.add({
-  // data: {
-  //   id: 'edge3',
-  //   target: 'C',
-  //   source: 'B'
-  // }
-  // });
+  })
 }
     
