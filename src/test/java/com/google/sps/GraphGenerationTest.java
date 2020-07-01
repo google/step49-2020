@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 import com.google.sps.data.GraphNode;
-import com.proto.GraphProtos.Graph;
 import com.proto.GraphProtos.Node;
 import com.proto.GraphProtos.Node.Builder;
 import org.junit.Assert;
@@ -46,15 +45,12 @@ public final class GraphGenerationTest {
   Builder nodeE = Node.newBuilder().setName("E");
   Builder nodeF = Node.newBuilder().setName("F");
 
-
   GraphNode gNodeA;
   GraphNode gNodeB;
   GraphNode gNodeC;
   GraphNode gNodeD;
   GraphNode gNodeE;
   GraphNode gNodeF;
-
-
 
   @Before
   public void setUp() {
@@ -67,7 +63,7 @@ public final class GraphGenerationTest {
     gNodeF = servlet.protoNodeToGraphNode(nodeF.build());
   }
 
-  /* 
+  /*
    * Tests that a proto node with no tokens and metadata is correctly converted
    * into an empty graph node with the same name
    */
@@ -79,7 +75,7 @@ public final class GraphGenerationTest {
     Assert.assertEquals(graphNode.metadata().getFieldsCount(), 0);
   }
 
-  /* 
+  /*
    * Tests that a proto node with tokens and no metadata is correctly converted
    * into an graph node with the same name, same token list and empty metadata
    */
@@ -100,7 +96,7 @@ public final class GraphGenerationTest {
     Assert.assertEquals(graphNode.metadata().getFieldsCount(), 0);
   }
 
-  /* 
+  /*
    * Tests that a proto node with tokens and metadata is correctly converted
    * into an graph node with the same name, same token list and same metadata
    */
@@ -113,11 +109,8 @@ public final class GraphGenerationTest {
     Value rowValue = Value.newBuilder().setStringValue("10").build();
     Value colValue = Value.newBuilder().setStringValue("17").build();
 
-
-    Struct metadata = Struct.newBuilder()
-                          .putFields("row", rowValue)
-                          .putFields("column", colValue)
-                          .build();
+    Struct metadata =
+        Struct.newBuilder().putFields("row", rowValue).putFields("column", colValue).build();
     nodeA.setMetadata(metadata);
 
     GraphNode graphNode = servlet.protoNodeToGraphNode(nodeA.build());
@@ -152,7 +145,6 @@ public final class GraphGenerationTest {
 
     nodeB.addChildren("C");
 
-
     protoNodesMap.put("A", nodeA.build());
     protoNodesMap.put("B", nodeB.build());
     protoNodesMap.put("C", nodeC.build());
@@ -182,7 +174,7 @@ public final class GraphGenerationTest {
   }
 
   /*
-   * Check that a cyclic graph is detected and an error is returned. 
+   * Check that a cyclic graph is detected and an error is returned.
    */
   @Test
   public void notDAG() {
@@ -191,7 +183,6 @@ public final class GraphGenerationTest {
     nodeA.addChildren("B");
 
     nodeB.addChildren("A");
-
 
     protoNodesMap.put("A", nodeA.build());
     protoNodesMap.put("B", nodeB.build());
