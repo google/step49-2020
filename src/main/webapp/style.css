@@ -7,3 +7,8 @@
     margin: 100px;
     border: solid 1px black;
 }
+
+#errortext {
+  color: red;
+  font-size: 40px;
+}

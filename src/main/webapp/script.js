@@ -12,21 +12,37 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+/**
+ * Submits a fetch request to the /data url. Upon receiving a JSON encoding of the
+ * nodes and edges of the graph, renders the graph in a container on the page using
+ * the cytoscape.js library
+ */
 async function generateGraph() {
+  // Arrays to store the cytoscape graph node and edge objects
   let graphNodes = [];
   let graphEdges = [];
   const response = await fetch("/data");
+
+  const serverErrorStatus = response.headers.get("serverError");
+
+  // Error on server side
+  if (serverErrorStatus !== null) {
+    displayError(serverErrorStatus);
+  }
+
   const jsonResponse = await response.json();
+  // Graph nodes and edges received from server
   let nodes = jsonResponse[0];
   let edges = jsonResponse[1];
 
-
   if (nodes && edges) {
+    // Add node to array of cytoscape nodes
     nodes.forEach(node =>
       graphNodes.push({
         group: "nodes",
         data: { id: node["name"] }
       }))
+    // and edge to array of cytoscape edges
     edges.forEach(edge => {
       let start = edge["nodeU"]["name"];
       let end = edge["nodeV"]["name"];
@@ -40,11 +56,32 @@ async function generateGraph() {
       });
     })
     getGraphDisplay(graphNodes, graphEdges);
-    return; 
+    return;
   }
-  alert("Oh no, there's no graph to display") // TODO: Handle this??
+  displayError("Malformed graph received from server - edges or nodes are empty");
 }
 
+/**
+ * Takes an error message and creates a text element on the page to display this message
+ */
+function displayError(errorMsg) {
+  // Create text to display the error
+  const errorText = document.createElement("p");
+  errorText.innerText = errorMsg;
+  errorText.id = "errortext";
+
+  const graphDiv = document.getElementById("graph");
+  while (graphDiv.lastChild) {
+    graphDiv.removeChild(graphDiv.lastChild);
+  }
+  graphDiv.appendChild(errorText);
+  return;
+}
+
+/**
+ * Takes in graph nodes and edges and creates a cytoscape graph with this
+ * data. Assumes that the graph is a DAG to display it in the optimal layout.
+ */
 function getGraphDisplay(graphNodes, graphEdges) {
   cytoscape({
     container: document.getElementById("graph"),

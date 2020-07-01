@@ -24,4 +24,8 @@ public abstract class GraphNode {
 
   // A structured object representing the node's metadata, for eg. source code location
   public abstract Struct metadata();
+
+  public int hashCode() {
+    return name().hashCode();
+  }
 }
