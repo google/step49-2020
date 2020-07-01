@@ -157,32 +157,29 @@ public class DataServlet extends HttpServlet {
         graphNodesMap.put(startName, newGraphNode);
         break;
       case ADD_EDGE:
-        if (startNode != null && endNode != null) { // Check nodes exist before adding an edge
-          graph.putEdge(startNode, endNode);
-        } else {
+        if (startNode == null || endNode == null) { // Check nodes exist before adding an edge
           return false;
         }
+        graph.putEdge(startNode, endNode);
         break;
       case DELETE_NODE:
-        if (startNode != null) { // Check node exists before removing
-          graph.removeNode(startNode); // This will remove all edges associated with startNode
-          graphNodesMap.remove(startName);
-        } else {
+        if (startNode == null) { // Check node exists before removing
           return false;
         }
+        graph.removeNode(startNode); // This will remove all edges associated with startNode
+        graphNodesMap.remove(startName);
         break;
       case DELETE_EDGE:
-        if (startNode != null && endNode != null) { // Check nodes exist before removing edge
-          graph.removeEdge(startNode, endNode);
-        } else {
+        if (startNode == null || endNode == null) { // Check nodes exist before removing edge
           return false;
         }
+        graph.removeEdge(startNode, endNode);
         break;
       case CHANGE_TOKEN:
-        if (startNode != null) {
-          boolean success = changeNodeToken(startNode, mut.getTokenChange());
-          return success;
+        if (startNode == null) {
+          return false;
         }
+        return changeNodeToken(startNode, mut.getTokenChange());
       default:
         // unrecognized mutation type
         return false;
