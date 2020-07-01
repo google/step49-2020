@@ -65,7 +65,7 @@ public class DataServlet extends HttpServlet {
     // Generate graph data structures from proto data structure
     boolean success = graphFromProtoNodes(protoNodesMap, graph, graphNodesMap);
 
-    if(!success) {
+    if (!success) {
       String error = "Failed to parse input graph into Guava graph - not a DAG!";
       response.setHeader("serverError", error);
       return;
@@ -78,7 +78,7 @@ public class DataServlet extends HttpServlet {
 
     for (Mutation mut : mutList) {
       success = mutateGraph(mut, graph, graphNodesMap);
-      if(!success) {
+      if (!success) {
         String error = "Failed to apply mutation " + mut.toString() + " to graph";
         response.setHeader("serverError", error);
         return;
