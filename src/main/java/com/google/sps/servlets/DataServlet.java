@@ -24,7 +24,6 @@ import com.proto.MutationProtos.TokenMutation;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 import java.util.ArrayList;
 import com.google.protobuf.Struct;
 import java.util.Map;
@@ -127,7 +126,6 @@ public class DataServlet extends HttpServlet {
     return GraphNode.create(thisNode.getName(), newTokenList, newMetadata);
   }
 
-
   /*
    * Changes the graph according to the given mutation object
    * @param mut the mutation to affect
@@ -181,7 +179,7 @@ public class DataServlet extends HttpServlet {
         }
         break;
       case CHANGE_TOKEN:
-        if(startNode != null) {
+        if (startNode != null) {
           boolean success = changeNodeToken(startNode, mut.getTokenChange());
           return success;
         }
