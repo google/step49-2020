@@ -153,7 +153,6 @@ public final class GraphGenerationTest {
     protoNodesMap.put("B", pNodeB);
     protoNodesMap.put("C", pNodeC);
 
-
     gNodeA = servlet.protoNodeToGraphNode(pNodeA);
     gNodeB = servlet.protoNodeToGraphNode(pNodeB);
     gNodeC = servlet.protoNodeToGraphNode(pNodeC);
