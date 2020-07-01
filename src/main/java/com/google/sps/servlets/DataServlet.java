@@ -24,6 +24,9 @@ import com.proto.MutationProtos.TokenMutation;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
+import java.util.ArrayList;
+import com.google.protobuf.Struct;
 import java.util.Map;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -65,46 +68,95 @@ public class DataServlet extends HttpServlet {
             .getMutationList();
 
     for (Mutation mut : mutList) {
-      // Nodes affected by the mutation
-      // second node only applicable for adding an edge and removing an edge
-      String startName = mut.getStartNode();
-      String endName = mut.getEndNode();
-
-      // Getting the corresponding graph nodes from the graph map
-      GraphNode startNode = graphNodesMap.get(startName);
-      GraphNode endNode = graphNodesMap.get(endName);
-
-      switch (mut.getType()) {
-        case ADD_NODE:
-          // Create a new node with the given name and add it to the graph and the map
-          Node newNode = Node.newBuilder().setName(startName).build();
-          GraphNode newGraphNode = protoNodeToGraphNode(newNode);
-          graph.addNode(newGraphNode);
-          graphNodesMap.put(startName, newGraphNode);
-          break;
-        case ADD_EDGE:
-          if (startNode != null && endNode != null) { // Check nodes exist before adding an edge
-            graph.putEdge(startNode, endNode);
-          }
-          break;
-        case DELETE_NODE:
-          if (startNode != null) { // Check node exists before removing
-            graph.removeNode(startNode); // This will remove all edges associated with startNode
-            graphNodesMap.remove(startName);
-          }
-          break;
-        case DELETE_EDGE:
-          if (startNode != null && endNode != null) { // Check nodes exist before removing edge
-            graph.removeEdge(startNode, endNode);
-          }
-          break;
-        case CHANGE_TOKEN:
-          changeNodeToken(graph, startNode, mut.getTokenChange());
-          break;
-        default:
-          break;
-      }
+      boolean mutSuccess = mutateGraph(mut, graph, graphNodesMap);
+      // TODO: add code if mutSuccess is false
     }
+  }
+
+  /*
+   * Changes the graph according to the given mutation object
+   * @param mut the mutation to affect
+   * @param graph the Guava graph to mutate
+   * @param graphNodesMap a reference of existing nodes, also to be mutated
+   * @return true if the mutation was successful, false otherwise
+   */
+  public boolean mutateGraph(
+        Mutation mut,
+        MutableGraph<GraphNode> graph,
+        Map<String, GraphNode> graphNodesMap) {
+    // Nodes affected by the mutation
+    // second node only applicable for adding an edge and removing an edge
+    String startName = mut.getStartNode();
+    String endName = mut.getEndNode();
+
+    // Getting the corresponding graph nodes from the graph map
+    GraphNode startNode = graphNodesMap.get(startName);
+    GraphNode endNode = graphNodesMap.get(endName);
+
+    switch (mut.getType()) {
+      case ADD_NODE:
+        if(graphNodesMap.containsKey(startName)) {
+          // adding a duplicate node
+          return false;
+        }
+        // Create a new node with the given name and add it to the graph and the map
+        GraphNode newGraphNode = GraphNode.create(
+            startName, new ArrayList<>(), Struct.newBuilder().build());
+        graph.addNode(newGraphNode);
+        graphNodesMap.put(startName, newGraphNode);
+        break;
+      case ADD_EDGE:
+        if (startNode != null && endNode != null) { // Check nodes exist before adding an edge
+          graph.putEdge(startNode, endNode);
+        } else {
+          return false;
+        }
+        break;
+      case DELETE_NODE:
+        if (startNode != null) { // Check node exists before removing
+          graph.removeNode(startNode); // This will remove all edges associated with startNode
+          graphNodesMap.remove(startName);
+        } else {
+          return false;
+        }
+        break;
+      case DELETE_EDGE:
+        if (startNode != null && endNode != null) { // Check nodes exist before removing edge
+          graph.removeEdge(startNode, endNode);
+        } else {
+          return false;
+        }
+        break;
+      case CHANGE_TOKEN:
+        if(startNode != null) {
+          /*
+           * Removing and readding the node to the graph is necessary because
+           * the hash value of the node is mutated by this change so it 
+           * must be reinserted
+           */
+          Set<GraphNode> predecessors = graph.predecessors(startNode);
+          Set<GraphNode> successors = graph.successors(startNode);
+          graph.removeNode(startNode);
+          boolean success = changeNodeToken(startNode, mut.getTokenChange());
+          graph.addNode(startNode);
+          for(GraphNode node : predecessors) {
+            graph.putEdge(node, startNode);
+          }
+          for(GraphNode node : successors) {
+            graph.putEdge(startNode, node);
+          }
+          if(!success) {
+            return false;
+          }
+        } else {
+          return false;
+        }
+        break;
+      default:
+        // unrecognized mutation type
+        return false;
+    }
+    return true;
   }
 
   /*
@@ -155,19 +207,23 @@ public class DataServlet extends HttpServlet {
    * @return a useful node used to construct the Guava Graph
    */
   public GraphNode protoNodeToGraphNode(Node thisNode) {
-    return GraphNode.create(thisNode.getName(), thisNode.getTokenList(), thisNode.getMetadata());
+    List<String> newTokenList = new ArrayList<>();
+    newTokenList.addAll(thisNode.getTokenList());
+    Struct newMetadata = Struct.newBuilder()
+                               .mergeFrom(thisNode.getMetadata())
+                               .build();
+    return GraphNode.create(thisNode.getName(), newTokenList, newMetadata);
   }
 
   /*
-   * Modify the list of tokens for graph node 'node' in 'graph' to accomodate
+   * Modify the list of tokens for graph node 'node' to accomodate
    * the mutation 'tokenMut'. This could involve adding or removing tokens
    * from the list.
-   * @param graph the dependency graph the node belongs to
    * @param node the node in the graph to change the tokens of
    * @param tokenMut the kind of mutation to perform on node of the graph
+   * @return true if the change is successful, false otherwise
    */
-  private void changeNodeToken(
-      MutableGraph<GraphNode> graph, GraphNode node, TokenMutation tokenMut) {
+  private boolean changeNodeToken(GraphNode node, TokenMutation tokenMut) {
     // List of tokens to add/remove from the existing list
     List<String> tokenNames = tokenMut.getTokenNameList();
     // The existing list of tokens in the node
@@ -177,6 +233,10 @@ public class DataServlet extends HttpServlet {
       tokenList.addAll(tokenNames);
     } else if (tokenMutType == TokenMutation.Type.DELETE_TOKEN) {
       tokenList.removeAll(tokenNames);
+    } else {
+      // unrecognized mutation
+      return false;
     }
+    return true;
   }
 }
