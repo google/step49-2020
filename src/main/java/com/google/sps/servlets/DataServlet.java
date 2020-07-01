@@ -54,23 +54,10 @@ public class DataServlet extends HttpServlet {
     MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
     HashMap<String, GraphNode> graphNodesMap = new HashMap<>();
 
-    // Create a graph (useable form) from proto data structures
-    for (String nodeName : protoNodesMap.keySet()) {
+    // Generate graph data structures from proto data structure 
+    boolean success = graphFromProtoNodes(protoNodesMap, graph, graphNodesMap);
 
-      Node thisNode = protoNodesMap.get(nodeName);
-
-      // Convert thisNode into a graph node that may store additional information
-      GraphNode graphNode = protoNodeToGraphNode(thisNode);
-
-      // Update graph data structures to include the node
-      graph.addNode(graphNode);
-      graphNodesMap.put(nodeName, graphNode);
-
-      // Add dependency edges to the graph
-      for (String child : thisNode.getChildrenList()) {
-        graph.putEdge(graphNode, protoNodeToGraphNode(protoNodesMap.get(child)));
-      }
-    }
+    // TODO: add code if success is false
 
     // Parse the contents of mutation.txt into a list of mutations
     List<Mutation> mutList =
@@ -121,12 +108,53 @@ public class DataServlet extends HttpServlet {
   }
 
   /*
+   * Takes in a map from node name to proto-parsed node object. Populates graph with node and edge 
+   * information and graphNodesMap with links from node names to graph node objects.
+   * @param protNodesMap map from node name to proto Node object parsed from input
+   * @param graph Guava graph to fill with node and edge information
+   * @param graphNodesMap map object to fill with node-name -> graph node object links
+   * @return false if an error occurred, true otherwise
+   */
+  public boolean graphFromProtoNodes(
+        Map<String, Node> protoNodesMap,
+        MutableGraph<GraphNode> graph,
+        Map<String, GraphNode> graphNodesMap) {
+
+    for (String nodeName : protoNodesMap.keySet()) {
+
+      Node thisNode = protoNodesMap.get(nodeName);
+
+      // Convert thisNode into a graph node that may store additional information
+      GraphNode graphNode = protoNodeToGraphNode(thisNode);
+
+      // Update graph data structures to include the node
+      graph.addNode(graphNode);
+      graphNodesMap.put(nodeName, graphNode);
+
+      // Add dependency edges to the graph
+      for (String child : thisNode.getChildrenList()) {
+        GraphNode childNode = protoNodeToGraphNode(protoNodesMap.get(child));
+        if(!graphNodesMap.containsKey(child)) {
+          // If child node is not already in the graph, add it 
+          graph.addNode(childNode);
+          graphNodesMap.put(child, childNode);
+        } else if(graph.hasEdgeConnecting(childNode, graphNode)) {
+          // the graph is not a DAG, so we error out
+          return false;
+        }
+        graph.putEdge(graphNode, childNode);
+      }
+    }
+    return true;
+  }
+
+  /*
    * Converts a proto node object into a graph node object that does not store the names of
    * the child nodes but may store additional information.
    * @param thisNode the input data Node object
    * @return a useful node used to construct the Guava Graph
    */
-  private GraphNode protoNodeToGraphNode(Node thisNode) {
+  public GraphNode protoNodeToGraphNode(Node thisNode) {
     return GraphNode.create(thisNode.getName(), thisNode.getTokenList(), thisNode.getMetadata());
   }
 
@@ -144,11 +172,10 @@ public class DataServlet extends HttpServlet {
     List<String> tokenNames = tokenMut.getTokenNameList();
     // The existing list of tokens in the node
     List<String> tokenList = node.tokenList();
-    int tokenMutType = tokenMut.getTypeValue();
-    // 1 is enum value for adding, 2 is enum value for removing
-    if (tokenMutType == 1) {
+    TokenMutation.Type tokenMutType = tokenMut.getType();
+    if (tokenMutType == TokenMutation.Type.ADD_TOKEN) {
       tokenList.addAll(tokenNames);
-    } else if (tokenMutType == 2) {
+    } else if (tokenMutType == TokenMutation.Type.DELETE_TOKEN) {
       tokenList.removeAll(tokenNames);
     }
   }
