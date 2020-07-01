@@ -57,7 +57,7 @@ public class DataServlet extends HttpServlet {
     MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
     HashMap<String, GraphNode> graphNodesMap = new HashMap<>();
 
-    // Generate graph data structures from proto data structure 
+    // Generate graph data structures from proto data structure
     boolean success = graphFromProtoNodes(protoNodesMap, graph, graphNodesMap);
 
     // TODO: add code if success is false
@@ -81,9 +81,7 @@ public class DataServlet extends HttpServlet {
    * @return true if the mutation was successful, false otherwise
    */
   public boolean mutateGraph(
-        Mutation mut,
-        MutableGraph<GraphNode> graph,
-        Map<String, GraphNode> graphNodesMap) {
+      Mutation mut, MutableGraph<GraphNode> graph, Map<String, GraphNode> graphNodesMap) {
     // Nodes affected by the mutation
     // second node only applicable for adding an edge and removing an edge
     String startName = mut.getStartNode();
@@ -95,13 +93,13 @@ public class DataServlet extends HttpServlet {
 
     switch (mut.getType()) {
       case ADD_NODE:
-        if(graphNodesMap.containsKey(startName)) {
+        if (graphNodesMap.containsKey(startName)) {
           // adding a duplicate node
           return false;
         }
         // Create a new node with the given name and add it to the graph and the map
-        GraphNode newGraphNode = GraphNode.create(
-            startName, new ArrayList<>(), Struct.newBuilder().build());
+        GraphNode newGraphNode =
+            GraphNode.create(startName, new ArrayList<>(), Struct.newBuilder().build());
         graph.addNode(newGraphNode);
         graphNodesMap.put(startName, newGraphNode);
         break;
@@ -128,10 +126,10 @@ public class DataServlet extends HttpServlet {
         }
         break;
       case CHANGE_TOKEN:
-        if(startNode != null) {
+        if (startNode != null) {
           /*
            * Removing and readding the node to the graph is necessary because
-           * the hash value of the node is mutated by this change so it 
+           * the hash value of the node is mutated by this change so it
            * must be reinserted
            */
           Set<GraphNode> predecessors = graph.predecessors(startNode);
@@ -139,13 +137,13 @@ public class DataServlet extends HttpServlet {
           graph.removeNode(startNode);
           boolean success = changeNodeToken(startNode, mut.getTokenChange());
           graph.addNode(startNode);
-          for(GraphNode node : predecessors) {
+          for (GraphNode node : predecessors) {
             graph.putEdge(node, startNode);
           }
-          for(GraphNode node : successors) {
+          for (GraphNode node : successors) {
             graph.putEdge(startNode, node);
           }
-          if(!success) {
+          if (!success) {
             return false;
           }
         } else {
@@ -160,7 +158,7 @@ public class DataServlet extends HttpServlet {
   }
 
   /*
-   * Takes in a map from node name to proto-parsed node object. Populates graph with node and edge 
+   * Takes in a map from node name to proto-parsed node object. Populates graph with node and edge
    * information and graphNodesMap with links from node names to graph node objects.
    * @param protNodesMap map from node name to proto Node object parsed from input
    * @param graph Guava graph to fill with node and edge information
@@ -168,9 +166,9 @@ public class DataServlet extends HttpServlet {
    * @return false if an error occurred, true otherwise
    */
   public boolean graphFromProtoNodes(
-        Map<String, Node> protoNodesMap,
-        MutableGraph<GraphNode> graph,
-        Map<String, GraphNode> graphNodesMap) {
+      Map<String, Node> protoNodesMap,
+      MutableGraph<GraphNode> graph,
+      Map<String, GraphNode> graphNodesMap) {
 
     for (String nodeName : protoNodesMap.keySet()) {
 
@@ -186,11 +184,11 @@ public class DataServlet extends HttpServlet {
       // Add dependency edges to the graph
       for (String child : thisNode.getChildrenList()) {
         GraphNode childNode = protoNodeToGraphNode(protoNodesMap.get(child));
-        if(!graphNodesMap.containsKey(child)) {
-          // If child node is not already in the graph, add it 
+        if (!graphNodesMap.containsKey(child)) {
+          // If child node is not already in the graph, add it
           graph.addNode(childNode);
           graphNodesMap.put(child, childNode);
-        } else if(graph.hasEdgeConnecting(childNode, graphNode)) {
+        } else if (graph.hasEdgeConnecting(childNode, graphNode)) {
           // the graph is not a DAG, so we error out
           return false;
         }
@@ -209,9 +207,7 @@ public class DataServlet extends HttpServlet {
   public GraphNode protoNodeToGraphNode(Node thisNode) {
     List<String> newTokenList = new ArrayList<>();
     newTokenList.addAll(thisNode.getTokenList());
-    Struct newMetadata = Struct.newBuilder()
-                               .mergeFrom(thisNode.getMetadata())
-                               .build();
+    Struct newMetadata = Struct.newBuilder().mergeFrom(thisNode.getMetadata()).build();
     return GraphNode.create(thisNode.getName(), newTokenList, newMetadata);
   }
 
