@@ -73,6 +73,64 @@ public class DataServlet extends HttpServlet {
     }
   }
 
+
+  /*
+   * Takes in a map from node name to proto-parsed node object. Populates graph with node and edge 
+   * information and graphNodesMap with links from node names to graph node objects.
+   * @param protNodesMap map from node name to proto Node object parsed from input
+   * @param graph Guava graph to fill with node and edge information
+   * @param graphNodesMap map object to fill with node-name -> graph node object links
+   * @return false if an error occurred, true otherwise
+   */
+  public boolean graphFromProtoNodes(
+        Map<String, Node> protoNodesMap,
+        MutableGraph<GraphNode> graph,
+        Map<String, GraphNode> graphNodesMap) {
+
+    for (String nodeName : protoNodesMap.keySet()) {
+
+      Node thisNode = protoNodesMap.get(nodeName);
+
+      // Convert thisNode into a graph node that may store additional information
+      GraphNode graphNode = protoNodeToGraphNode(thisNode);
+
+      // Update graph data structures to include the node
+      graph.addNode(graphNode);
+      graphNodesMap.put(nodeName, graphNode);
+
+      // Add dependency edges to the graph
+      for (String child : thisNode.getChildrenList()) {
+        GraphNode childNode = protoNodeToGraphNode(protoNodesMap.get(child));
+        if(!graphNodesMap.containsKey(child)) {
+          // If child node is not already in the graph, add it 
+          graph.addNode(childNode);
+          graphNodesMap.put(child, childNode);
+        } else if(graph.hasEdgeConnecting(childNode, graphNode)) {
+          // the graph is not a DAG, so we error out
+          return false;
+        }
+        graph.putEdge(graphNode, childNode);
+      }
+    }
+    return true;
+  }
+
+  /*
+   * Converts a proto node object into a graph node object that does not store the names of
+   * the child nodes but may store additional information.
+   * @param thisNode the input data Node object
+   * @return a useful node used to construct the Guava Graph
+   */
+  public GraphNode protoNodeToGraphNode(Node thisNode) {
+    // We need to duplicate these since the ones in the proto object are immutable
+    List<String> newTokenList = new ArrayList<>();
+    newTokenList.addAll(thisNode.getTokenList());
+    Struct newMetadata = Struct.newBuilder()
+                               .mergeFrom(thisNode.getMetadata())
+                               .build();
+    return GraphNode.create(thisNode.getName(), newTokenList, newMetadata);
+  }
+
   /*
    * Changes the graph according to the given mutation object
    * @param mut the mutation to affect
@@ -129,29 +187,9 @@ public class DataServlet extends HttpServlet {
         break;
       case CHANGE_TOKEN:
         if(startNode != null) {
-          /*
-           * Removing and readding the node to the graph is necessary because
-           * the hash value of the node is mutated by this change so it 
-           * must be reinserted
-           */
-          Set<GraphNode> predecessors = graph.predecessors(startNode);
-          Set<GraphNode> successors = graph.successors(startNode);
-          graph.removeNode(startNode);
           boolean success = changeNodeToken(startNode, mut.getTokenChange());
-          graph.addNode(startNode);
-          for(GraphNode node : predecessors) {
-            graph.putEdge(node, startNode);
-          }
-          for(GraphNode node : successors) {
-            graph.putEdge(startNode, node);
-          }
-          if(!success) {
-            return false;
-          }
-        } else {
-          return false;
+          return success;
         }
-        break;
       default:
         // unrecognized mutation type
         return false;
@@ -159,61 +197,6 @@ public class DataServlet extends HttpServlet {
     return true;
   }
 
-  /*
-   * Takes in a map from node name to proto-parsed node object. Populates graph with node and edge 
-   * information and graphNodesMap with links from node names to graph node objects.
-   * @param protNodesMap map from node name to proto Node object parsed from input
-   * @param graph Guava graph to fill with node and edge information
-   * @param graphNodesMap map object to fill with node-name -> graph node object links
-   * @return false if an error occurred, true otherwise
-   */
-  public boolean graphFromProtoNodes(
-        Map<String, Node> protoNodesMap,
-        MutableGraph<GraphNode> graph,
-        Map<String, GraphNode> graphNodesMap) {
-
-    for (String nodeName : protoNodesMap.keySet()) {
-
-      Node thisNode = protoNodesMap.get(nodeName);
-
-      // Convert thisNode into a graph node that may store additional information
-      GraphNode graphNode = protoNodeToGraphNode(thisNode);
-
-      // Update graph data structures to include the node
-      graph.addNode(graphNode);
-      graphNodesMap.put(nodeName, graphNode);
-
-      // Add dependency edges to the graph
-      for (String child : thisNode.getChildrenList()) {
-        GraphNode childNode = protoNodeToGraphNode(protoNodesMap.get(child));
-        if(!graphNodesMap.containsKey(child)) {
-          // If child node is not already in the graph, add it 
-          graph.addNode(childNode);
-          graphNodesMap.put(child, childNode);
-        } else if(graph.hasEdgeConnecting(childNode, graphNode)) {
-          // the graph is not a DAG, so we error out
-          return false;
-        }
-        graph.putEdge(graphNode, childNode);
-      }
-    }
-    return true;
-  }
-
-  /*
-   * Converts a proto node object into a graph node object that does not store the names of
-   * the child nodes but may store additional information.
-   * @param thisNode the input data Node object
-   * @return a useful node used to construct the Guava Graph
-   */
-  public GraphNode protoNodeToGraphNode(Node thisNode) {
-    List<String> newTokenList = new ArrayList<>();
-    newTokenList.addAll(thisNode.getTokenList());
-    Struct newMetadata = Struct.newBuilder()
-                               .mergeFrom(thisNode.getMetadata())
-                               .build();
-    return GraphNode.create(thisNode.getName(), newTokenList, newMetadata);
-  }
 
   /*
    * Modify the list of tokens for graph node 'node' to accomodate
