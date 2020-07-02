@@ -41,7 +41,7 @@ async function generateGraph() {
     nodes.forEach(node =>
       graphNodes.push({
         group: "nodes",
-        data: { id: node["name"], metadata: node["metadata"], tokens: node["tokenList"] }
+        data: { id: node["name"], metadata: node["metadata"], tokens: node["tokenList"] }, 
       }))
     // and edge to array of cytoscape edges
     edges.forEach(edge => {
@@ -124,13 +124,29 @@ function getGraphDisplay(graphNodes, graphEdges) {
       spacingFactor: 2
     }
   });
+
+  // When the user clicks on a node, want to display some text in the area designated for node display
   cy.on('tap', 'node', function(evt){
     const node = evt.target;
     const position = node.position();
     const data = node.data();
     console.log( data.metadata);
     console.log(position);
+    showMetadata(cy, node.id(), data.metadata);
   });
+}
+
+/**
+ * Displays text at a node
+ * TODO: nodeId seems to not be needed, need to parse textToShow
+ */
+function showMetadata(cy, nodeId, textToShow) {
+  cy.$id(nodeId)
+  const element = document.getElementById("metadata");
+  const myText = document.createTextNode( textToShow );
+  element.appendChild(myText);
+  console.log(textToShow)
+
 }
 
 
