@@ -34,6 +34,7 @@ async function generateGraph() {
   // Graph nodes and edges received from server
   let nodes = jsonResponse[0];
   let edges = jsonResponse[1];
+  let roots = jsonResponse[2];
 
   if (nodes && edges) {
     // Add node to array of cytoscape nodes
