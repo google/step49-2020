@@ -34,13 +34,14 @@ async function generateGraph() {
   // Graph nodes and edges received from server
   let nodes = jsonResponse[0];
   let edges = jsonResponse[1];
+  console.log(nodes[0])
 
   if (nodes && edges) {
     // Add node to array of cytoscape nodes
     nodes.forEach(node =>
       graphNodes.push({
         group: "nodes",
-        data: { id: node["name"] }
+        data: { id: node["name"], metadata: node["metadata"] }
       }))
     // and edge to array of cytoscape edges
     edges.forEach(edge => {
@@ -83,7 +84,7 @@ function displayError(errorMsg) {
  * data. Assumes that the graph is a DAG to display it in the optimal layout.
  */
 function getGraphDisplay(graphNodes, graphEdges) {
-  cytoscape({
+  const cy = cytoscape({
     container: document.getElementById("graph"),
     elements: {
       nodes: graphNodes,
@@ -122,6 +123,13 @@ function getGraphDisplay(graphNodes, graphEdges) {
       avoidOverlap: true,
       spacingFactor: 2
     }
+  });
+  cy.on('tap', 'node', function(evt){
+    const node = evt.target;
+    const position = node.position();
+    const data = node.data();
+    console.log( data.metadata);
+    console.log(position);
   });
 }
 
