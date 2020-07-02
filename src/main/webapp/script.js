@@ -141,31 +141,44 @@ function getGraphDisplay(graphNodes, graphEdges) {
 
 /**
  * Toggles the displaying of metadata where a node is positioned
- *
+ * If a node(say, A)'s metadata is showing and A is clicked again, no metadata will be displayed.
+ * If A's metadata is showing and B is clicked, then B's data should be displayed instead of A's.
  */
 function toggleMetadata(cy, textToShow, node) {
   const element = document.getElementById("metadata");
   // Already some metadata showing
   if (element.firstChild) {
     const oldChildId = element.firstChild.id
+    console.log(oldChildId)
     while (element.firstChild ) {
         element.removeChild(element.firstChild);
     } 
     
-    // Clicked on SAME node as the one showing
+    // Clicked on SAME node as the one showing -> just hide the metadata
     if (oldChildId === node.id()+"metadata") {
-      cy.panningEnabled(true); // Allow panning again since no metadata is being shown
+      // cy.userPanningEnabled(true); // Allow panning again since no metadata is being shown
       return;
     } 
   }
-  element.style.position = "relative";
-  element.style.left = node.position().x+'px';
-  element.style.top = node.position().y+'px';
-  const textElement = document.createTextNode( textToShow );
+  // element.style.position = "absolute";
+  // element.style.left = node.position().x+'px';
+  // element.style.top = node.position().y+'px';
+
+  // We make 3 elements: a title that displays the name of the element clicked, a p tag with the
+  // metadata itself, and a div that contains both of the text elements
+  const nodeName = document.createElement("h4")                
+  const nameText = document.createTextNode("Namespace: " + node.id());     
+  nodeName.appendChild(nameText);  
+  const nodeMD = document.createElement("p")   
+  const metaText = document.createTextNode("Metadata goes here"); 
+  nodeMD.append(metaText); 
+
+  const textElement = document.createElement( "div" );
   textElement.id = node.id()+"metadata";
-  element.appendChild(textElement);
-  cy.panningEnabled(false); // Panning disabled when metadata is shown
-  
+  textElement.appendChild(nodeName);
+  textElement.appendChild(nodeMD);
+  element.append(textElement);
+  // cy.userPanningEnabled(false); // Panning disabled when metadata is shown - makes sense only with positioning
 }
 
 
