@@ -96,7 +96,7 @@ function getGraphDisplay(graphNodes, graphEdges) {
         style: {
           width: '50px',
           height: '50px',
-          shape: 'square',
+          shape: 'circle',
           'background-color': 'blue',
           'label': 'data(id)',
           'color': 'white',
@@ -122,7 +122,11 @@ function getGraphDisplay(graphNodes, graphEdges) {
       padding: 10,
       avoidOverlap: true,
       spacingFactor: 2
-    }
+    }, 
+    zoom: 1,
+    pan: { x: 0, y: 0 },
+    minZoom: .25,
+    maxZoom: 3
   });
 
   // When the user clicks on a node, want to display some text in the area designated for node display
@@ -130,8 +134,6 @@ function getGraphDisplay(graphNodes, graphEdges) {
     const node = evt.target;
     const position = node.position();
     const data = node.data();
-    console.log( data.metadata);
-    console.log(position);
     toggleMetadata(cy, node.id() + " Yeehaw", node);
   });
 }
