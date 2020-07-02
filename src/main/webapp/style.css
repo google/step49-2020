@@ -1,10 +1,14 @@
+body {
+  margin: 50px;
+}
+
 #graph {
     width: 90vw;
-    height: 90vh;
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    margin: 100px;
+    height: 80vh;
+    /* position: absolute; */
+    /* top: 0px;
+    left: 0px; */
+    /* margin: 100px; */
     border: solid 1px black;
 }
 
