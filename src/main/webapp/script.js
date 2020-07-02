@@ -34,7 +34,6 @@ async function generateGraph() {
   // Graph nodes and edges received from server
   let nodes = jsonResponse[0];
   let edges = jsonResponse[1];
-  console.log(nodes[0])
 
   if (nodes && edges) {
     // Add node to array of cytoscape nodes
@@ -133,8 +132,6 @@ function getGraphDisplay(graphNodes, graphEdges) {
   // TODO: fix positioning, style the display, figure out which parts of the metadata is interesting to show
   cy.on('tap', 'node', function(evt){
     const node = evt.target;
-    const position = node.position();
-    const data = node.data();
     toggleMetadata(cy, node.id() + " Yeehaw", node);
   });
 }
