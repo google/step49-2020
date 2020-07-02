@@ -149,7 +149,7 @@ public class DataServlet extends HttpServlet {
   private String graphToJson(MutableGraph<GraphNode> graph) {
     Type typeOfNode = new TypeToken<Set<GraphNode>>() {}.getType();
     Type typeOfEdge = new TypeToken<Set<EndpointPair<GraphNode>>>() {}.getType();
-    Type typeOfRoots = new TypeToken<Set<String>>(){}.getType();
+    Type typeOfRoots = new TypeToken<Set<String>>() {}.getType();
     Gson gson = new Gson();
     String nodeJson = gson.toJson(graph.nodes(), typeOfNode);
     String edgeJson = gson.toJson(graph.edges(), typeOfEdge);
@@ -275,9 +275,10 @@ public class DataServlet extends HttpServlet {
   }
 
   /**
-   * Given an input graph, roots (as strings), a node map (from string to Graph Nodes), 
-   * and a maximum depth, the function returns a graph with only nodes up to a max depth.
-   * Edges that don't contain nodes both reachable up until the max depth are discarded.
+   * Given an input graph, roots (as strings), a node map (from string to Graph Nodes), and a
+   * maximum depth, the function returns a graph with only nodes up to a max depth. Edges that don't
+   * contain nodes both reachable up until the max depth are discarded.
+   *
    * @param graphInput the input graph, as a Mutatable Graph
    * @param roots the name (string) of the roots
    * @param graphNodesMap a mapping of strings to GraphNodes
@@ -285,10 +286,12 @@ public class DataServlet extends HttpServlet {
    * @return a graph with nodes only a certain distance from a root
    */
   private MutableGraph<GraphNode> breadthFirstMaxDepth(
-    MutableGraph<GraphNode> graphInput, Set<String> roots, 
-    HashMap<String, GraphNode> graphNodesMap, int maxDepth) {
+      MutableGraph<GraphNode> graphInput,
+      Set<String> roots,
+      HashMap<String, GraphNode> graphNodesMap,
+      int maxDepth) {
     MutableGraph<GraphNode> graphToReturn = GraphBuilder.directed().build();
-    if(maxDepth < 0) {
+    if (maxDepth < 0) {
       return graphToReturn; // TODO: change to an error
     }
     // MutableGraph<GraphNode> graphToReturn = GraphBuilder.directed().build();
@@ -304,29 +307,32 @@ public class DataServlet extends HttpServlet {
       int nextDepthElements = 0;
 
       while (!queue.isEmpty()) {
-        GraphNode curr = queue.poll(); // Add node first, worry about edges after we have all the nodes we need
-          graphToReturn.addNode(curr); 
+        GraphNode curr =
+            queue.poll(); // Add node first, worry about edges after we have all the nodes we need
+        graphToReturn.addNode(curr);
 
-          // The number of outgoing edges from the current node, number of nodes in the next layer
-          nextDepthElements += graphInput.successors(curr).size();
-          elementsInThisDepth --; // Decrement elements in depth since we've looked at the node
-          // If the current layer has been entirely processed (we decrement since we processed the node)
-          if (elementsInThisDepth == 0) {
-            currentDepth++;
-            if (currentDepth > maxDepth) {
-              break;
-            }
-            elementsInThisDepth = nextDepthElements;
-            nextDepthElements = 0;
+        // The number of outgoing edges from the current node, number of nodes in the next layer
+        nextDepthElements += graphInput.successors(curr).size();
+        elementsInThisDepth--; // Decrement elements in depth since we've looked at the node
+        // If the current layer has been entirely processed (we decrement since we processed the
+        // node)
+        if (elementsInThisDepth == 0) {
+          currentDepth++;
+          if (currentDepth > maxDepth) {
+            break;
           }
-          for (GraphNode child : graphInput.successors(curr)) {
-            queue.add(child);
-          }
+          elementsInThisDepth = nextDepthElements;
+          nextDepthElements = 0;
+        }
+        for (GraphNode child : graphInput.successors(curr)) {
+          queue.add(child);
+        }
       }
-      
+
       // Add the edges that we need, edges are only relevant if they contain nodes in our graph
       for (EndpointPair<GraphNode> edge : graphInput.edges()) {
-        if (graphToReturn.nodes().contains(edge.nodeU()) && graphToReturn.nodes().contains(edge.nodeV())) {
+        if (graphToReturn.nodes().contains(edge.nodeU())
+            && graphToReturn.nodes().contains(edge.nodeV())) {
           graphToReturn.putEdge(edge.nodeU(), edge.nodeV());
         }
       }
