@@ -112,7 +112,7 @@ public class DataServlet extends HttpServlet {
       GraphNode graphNode = protoNodeToGraphNode(thisNode);
 
       // Update graph data structures to include the node
-      if(!graphNodesMap.containsKey(nodeName)) {
+      if (!graphNodesMap.containsKey(nodeName)) {
         graph.addNode(graphNode);
         graphNodesMap.put(nodeName, graphNode);
         // All nodes that haven't been visited before start out as roots
@@ -214,8 +214,8 @@ public class DataServlet extends HttpServlet {
         // Check whether any successor will have no in-edges after this node is removed
         // If so, make them roots
         Set<GraphNode> successors = graph.successors(startNode);
-        for(GraphNode succ : successors) {
-          if(graph.inDegree(succ) == 1) {
+        for (GraphNode succ : successors) {
+          if (graph.inDegree(succ) == 1) {
             roots.add(succ.name());
           }
         }
@@ -228,7 +228,7 @@ public class DataServlet extends HttpServlet {
           return false;
         }
         // If the target now has no in-edges, it becomes a root
-        if(graph.inDegree(endNode) == 1) {
+        if (graph.inDegree(endNode) == 1) {
           roots.add(endName);
         }
         graph.removeEdge(startNode, endNode);
