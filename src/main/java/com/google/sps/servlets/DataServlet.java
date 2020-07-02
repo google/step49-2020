@@ -26,6 +26,7 @@ import com.google.common.graph.EndpointPair;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import com.google.protobuf.Struct;
 import java.util.Map;
@@ -44,6 +45,7 @@ public class DataServlet extends HttpServlet {
   // Data structure that stores the roots of the graph across mutations
   // Roots are nodes with no in-edges
   private HashSet<String> roots = new HashSet<>();
+
   /*
    * Called when a client submits a GET request to the /data URL
    */
@@ -272,30 +274,63 @@ public class DataServlet extends HttpServlet {
     return true;
   }
 
-  // private void breadthFirstMaxDepth(Node parent, int maxDepth) {
-  //   if(maxDepth < 0) {
-  //     return;
-  //   }
+  /**
+   * Given an input graph, roots (as strings), a node map (from string to Graph Nodes), 
+   * and a maximum depth, the function returns a graph with only nodes up to a max depth.
+   * Edges that don't contain nodes both reachable up until the max depth are discarded.
+   * @param graphInput the input graph, as a Mutatable Graph
+   * @param roots the name (string) of the roots
+   * @param graphNodesMap a mapping of strings to GraphNodes
+   * @param maxDepth the maximum depth of a node from a root
+   * @return a graph with nodes only a certain distance from a root
+   */
+  private MutableGraph<GraphNode> breadthFirstMaxDepth(
+    MutableGraph<GraphNode> graphInput, Set<String> roots, 
+    HashMap<String, GraphNode> graphNodesMap, int maxDepth) {
+    MutableGraph<GraphNode> graphToReturn = GraphBuilder.directed().build();
+    if(maxDepth < 0) {
+      return graphToReturn; // TODO: change to an error
+    }
+    // MutableGraph<GraphNode> graphToReturn = GraphBuilder.directed().build();
+    ArrayDeque<GraphNode> queue = new ArrayDeque<GraphNode>();
 
-  //   Queue<Node> nodeQueue = new ArrayDeque<Node>();
-  //   nodeQueue.add(parent);
+    for (String rootName : roots) {
+      // Get the GraphNode object corresponding to the root name, add to the queue
+      GraphNode rootNode = graphNodesMap.get(rootName);
+      queue.add(rootNode);
 
-  //   int currentDepth = 0, 
-  //       elementsToDepthIncrease = 1, 
-  //       nextElementsToDepthIncrease = 0;
+      int currentDepth = 0;
+      int elementsInThisDepth = 1;
+      int nextDepthElements = 0;
 
-  //   while (!nodeQueue.isEmpty()) {
-  //     Node current = nodeQueue.poll();
-  //     process(current);
-  //     nextElementsToDepthIncrease += current.numberOfChildren();
-  //     if (--elementsToDepthIncrease == 0) {
-  //       if (++currentDepth > maxDepth) return;
-  //       elementsToDepthIncrease = nextElementsToDepthIncrease;
-  //       nextElementsToDepthIncrease = 0;
-  //     }
-  //     for (Node child : current.children()) {
-  //       nodeQueue.add(child);
-  //     }
-  //   }
-  // }
+      while (!queue.isEmpty()) {
+        GraphNode curr = queue.poll(); // Add node first, worry about edges after we have all the nodes we need
+          graphToReturn.addNode(curr); 
+
+          // The number of outgoing edges from the current node, number of nodes in the next layer
+          nextDepthElements += graphInput.successors(curr).size();
+          elementsInThisDepth --; // Decrement elements in depth since we've looked at the node
+          // If the current layer has been entirely processed (we decrement since we processed the node)
+          if (elementsInThisDepth == 0) {
+            currentDepth++;
+            if (currentDepth > maxDepth) {
+              break;
+            }
+            elementsInThisDepth = nextDepthElements;
+            nextDepthElements = 0;
+          }
+          for (GraphNode child : graphInput.successors(curr)) {
+            queue.add(child);
+          }
+      }
+      
+      // Add the edges that we need, edges are only relevant if they contain nodes in our graph
+      for (EndpointPair<GraphNode> edge : graphInput.edges()) {
+        if (graphToReturn.nodes().contains(edge.nodeU()) && graphToReturn.nodes().contains(edge.nodeV())) {
+          graphToReturn.putEdge(edge.nodeU(), edge.nodeV());
+        }
+      }
+    }
+    return graphToReturn;
+  }
 }
