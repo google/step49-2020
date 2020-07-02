@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.ArrayList;
 import com.google.protobuf.Struct;
 import java.util.Map;
+import java.util.HashSet;
 import java.util.Set;
 import com.google.common.reflect.TypeToken;
 import java.lang.reflect.Type;
@@ -40,6 +41,9 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
 
+  // Data structure that stores the roots of the graph across mutations
+  // Roots are nodes with no in-edges
+  private HashSet<String> roots = new HashSet<>();
   /*
    * Called when a client submits a GET request to the /data URL
    */
@@ -70,7 +74,6 @@ public class DataServlet extends HttpServlet {
       response.setHeader("serverError", error);
       return;
     }
-
     // Parse the contents of mutation.txt into a list of mutations
     List<Mutation> mutList =
         MutationList.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/mutations.txt"))
@@ -84,7 +87,6 @@ public class DataServlet extends HttpServlet {
         return;
       }
     }
-
     String graphJson = graphToJson(graph);
     response.getWriter().println(graphJson);
   }
@@ -110,11 +112,17 @@ public class DataServlet extends HttpServlet {
       GraphNode graphNode = protoNodeToGraphNode(thisNode);
 
       // Update graph data structures to include the node
-      graph.addNode(graphNode);
-      graphNodesMap.put(nodeName, graphNode);
+      if(!graphNodesMap.containsKey(nodeName)) {
+        graph.addNode(graphNode);
+        graphNodesMap.put(nodeName, graphNode);
+        // All nodes that haven't been visited before start out as roots
+        roots.add(nodeName);
+      }
 
       // Add dependency edges to the graph
       for (String child : thisNode.getChildrenList()) {
+        // This child can no longer be a root since it has an in-edge
+        roots.remove(child);
         GraphNode childNode = protoNodeToGraphNode(protoNodesMap.get(child));
         if (!graphNodesMap.containsKey(child)) {
           // If child node is not already in the graph, add it
@@ -183,6 +191,8 @@ public class DataServlet extends HttpServlet {
           // adding a duplicate node
           return false;
         }
+        // New lone node is a root
+        roots.add(startName);
         // Create a new node with the given name and add it to the graph and the map
         GraphNode newGraphNode =
             GraphNode.create(startName, new ArrayList<>(), Struct.newBuilder().build());
@@ -193,18 +203,33 @@ public class DataServlet extends HttpServlet {
         if (startNode == null || endNode == null) { // Check nodes exist before adding an edge
           return false;
         }
+        // The target cannot be a root since it has an in-edge
+        roots.remove(endName);
         graph.putEdge(startNode, endNode);
         break;
       case DELETE_NODE:
         if (startNode == null) { // Check node exists before removing
           return false;
         }
+        // Check whether any successor will have no in-edges after this node is removed
+        // If so, make them roots
+        Set<GraphNode> successors = graph.successors(startNode);
+        for(GraphNode succ : successors) {
+          if(graph.inDegree(succ) == 1) {
+            roots.add(succ.name());
+          }
+        }
+        roots.remove(startName);
         graph.removeNode(startNode); // This will remove all edges associated with startNode
         graphNodesMap.remove(startName);
         break;
       case DELETE_EDGE:
         if (startNode == null || endNode == null) { // Check nodes exist before removing edge
           return false;
+        }
+        // If the target now has no in-edges, it becomes a root
+        if(graph.inDegree(endNode) == 1) {
+          roots.add(endName);
         }
         graph.removeEdge(startNode, endNode);
         break;
