@@ -41,7 +41,7 @@ async function generateGraph() {
     nodes.forEach(node =>
       graphNodes.push({
         group: "nodes",
-        data: { id: node["name"], metadata: node["metadata"] }
+        data: { id: node["name"], metadata: node["metadata"], tokens: node["tokenList"] }
       }))
     // and edge to array of cytoscape edges
     edges.forEach(edge => {
