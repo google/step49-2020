@@ -17,6 +17,13 @@
  * nodes and edges of the graph, renders the graph in a container on the page using
  * the cytoscape.js library
  */
+
+let cytoscape = require('cytoscape');
+let dagre = require('cytoscape-dagre');
+
+cytoscape.use( dagre ); // register extension
+
+
 async function generateGraph() {
   // Arrays to store the cytoscape graph node and edge objects
   let graphNodes = [];
@@ -115,12 +122,13 @@ function getGraphDisplay(graphNodes, graphEdges) {
         }
       }],
     layout: {
-      name: 'breadthfirst',
-      maximal: true,
-      directed: true,
-      padding: 10,
-      avoidOverlap: true,
-      spacingFactor: 2
+      name: 'dagre'
+      //,
+      // maximal: true,
+      // directed: true,
+      // padding: 10,
+      // avoidOverlap: true,
+      // spacingFactor: 2
     }
   });
 }
