@@ -147,10 +147,12 @@ public class DataServlet extends HttpServlet {
   private String graphToJson(MutableGraph<GraphNode> graph) {
     Type typeOfNode = new TypeToken<Set<GraphNode>>() {}.getType();
     Type typeOfEdge = new TypeToken<Set<EndpointPair<GraphNode>>>() {}.getType();
+    Type typeOfRoots = new TypeToken<Set<String>>(){}.getType();
     Gson gson = new Gson();
     String nodeJson = gson.toJson(graph.nodes(), typeOfNode);
     String edgeJson = gson.toJson(graph.edges(), typeOfEdge);
-    String bothJson = "[" + nodeJson + "," + edgeJson + "]";
+    String rootsJson = gson.toJson(roots, typeOfRoots);
+    String bothJson = "[" + nodeJson + "," + edgeJson + "," + rootsJson + "]";
     return bothJson;
   }
 
@@ -269,4 +271,31 @@ public class DataServlet extends HttpServlet {
     }
     return true;
   }
+
+  // private void breadthFirstMaxDepth(Node parent, int maxDepth) {
+  //   if(maxDepth < 0) {
+  //     return;
+  //   }
+
+  //   Queue<Node> nodeQueue = new ArrayDeque<Node>();
+  //   nodeQueue.add(parent);
+
+  //   int currentDepth = 0, 
+  //       elementsToDepthIncrease = 1, 
+  //       nextElementsToDepthIncrease = 0;
+
+  //   while (!nodeQueue.isEmpty()) {
+  //     Node current = nodeQueue.poll();
+  //     process(current);
+  //     nextElementsToDepthIncrease += current.numberOfChildren();
+  //     if (--elementsToDepthIncrease == 0) {
+  //       if (++currentDepth > maxDepth) return;
+  //       elementsToDepthIncrease = nextElementsToDepthIncrease;
+  //       nextElementsToDepthIncrease = 0;
+  //     }
+  //     for (Node child : current.children()) {
+  //       nodeQueue.add(child);
+  //     }
+  //   }
+  // }
 }
