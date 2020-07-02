@@ -126,10 +126,11 @@ function getGraphDisplay(graphNodes, graphEdges) {
     zoom: 1,
     pan: { x: 0, y: 0 },
     minZoom: .25,
-    maxZoom: 3
+    maxZoom: 2.5
   });
 
   // When the user clicks on a node, want to display some text in the area designated for node display
+  // TODO: fix positioning, style the display, figure out which parts of the metadata is interesting to show
   cy.on('tap', 'node', function(evt){
     const node = evt.target;
     const position = node.position();
@@ -139,7 +140,7 @@ function getGraphDisplay(graphNodes, graphEdges) {
 }
 
 /**
- * Displays text at a node
+ * Toggles the displaying of metadata where a node is positioned
  *
  */
 function toggleMetadata(cy, textToShow, node) {
@@ -150,17 +151,20 @@ function toggleMetadata(cy, textToShow, node) {
     while (element.firstChild ) {
         element.removeChild(element.firstChild);
     } 
+    
     // Clicked on SAME node as the one showing
     if (oldChildId === node.id()+"metadata") {
-       return;
+      cy.panningEnabled(true); // Allow panning again since no metadata is being shown
+      return;
     } 
   }
-  element.style.position = "absolute";
+  element.style.position = "relative";
   element.style.left = node.position().x+'px';
   element.style.top = node.position().y+'px';
   const textElement = document.createTextNode( textToShow );
   textElement.id = node.id()+"metadata";
   element.appendChild(textElement);
+  cy.panningEnabled(false); // Panning disabled when metadata is shown
   
 }
 
