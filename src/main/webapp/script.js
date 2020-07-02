@@ -132,21 +132,34 @@ function getGraphDisplay(graphNodes, graphEdges) {
     const data = node.data();
     console.log( data.metadata);
     console.log(position);
-    showMetadata(cy, node.id(), data.metadata);
+    toggleMetadata(cy, node.id() + " Yeehaw", node);
   });
 }
 
 /**
  * Displays text at a node
- * TODO: nodeId seems to not be needed, need to parse textToShow
+ *
  */
-function showMetadata(cy, nodeId, textToShow) {
-  cy.$id(nodeId)
+function toggleMetadata(cy, textToShow, node) {
   const element = document.getElementById("metadata");
-  const myText = document.createTextNode( textToShow );
-  element.appendChild(myText);
-  console.log(textToShow)
-
+  // Already some metadata showing
+  if (element.firstChild) {
+    const oldChildId = element.firstChild.id
+    while (element.firstChild ) {
+        element.removeChild(element.firstChild);
+    } 
+    // Clicked on SAME node as the one showing
+    if (oldChildId === node.id()+"metadata") {
+       return;
+    } 
+  }
+  element.style.position = "absolute";
+  element.style.left = node.position().x+'px';
+  element.style.top = node.position().y+'px';
+  const textElement = document.createTextNode( textToShow );
+  textElement.id = node.id()+"metadata";
+  element.appendChild(textElement);
+  
 }
 
 
