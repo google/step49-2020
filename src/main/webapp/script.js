@@ -21,7 +21,8 @@ async function generateGraph() {
   // Arrays to store the cytoscape graph node and edge objects
   let graphNodes = [];
   let graphEdges = [];
-  const response = await fetch("/data");
+  const url = `/data?depth=${1}`
+  const response = await fetch(url);
 
   const serverErrorStatus = response.headers.get("serverError");
 
