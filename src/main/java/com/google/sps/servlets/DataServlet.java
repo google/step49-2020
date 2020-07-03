@@ -52,6 +52,8 @@ public class DataServlet extends HttpServlet {
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     response.setContentType("application/json");
+    String depthParam = request.getParameter("depth");
+    int depthNumber = Integer.parseInt(depthParam); 
 
     // PROTO Data structure:
     // Parse the contents  of graph.txt into a proto Graph object, and extract information
@@ -89,8 +91,12 @@ public class DataServlet extends HttpServlet {
         return;
       }
     }
-    String graphJson = graphToJson(graph);
+    MutableGraph<GraphNode> truncatedGraph = getGraphWithMaxDepth(graph, roots, graphNodesMap, depthNumber);
+    System.out.println(truncatedGraph);
+    String graphJson = graphToJson(truncatedGraph);
     response.getWriter().println(graphJson);
+    // String graphJson = graphToJson(graph);
+    // response.getWriter().println(graphJson);
   }
 
   /*
@@ -284,31 +290,39 @@ public class DataServlet extends HttpServlet {
    * @param maxDepth the maximum depth of a node from a root
    * @return a graph with nodes only a certain distance from a root
    */
-  private MutableGraph<GraphNode> breadthFirstMaxDepth(
+  private MutableGraph<GraphNode> getGraphWithMaxDepth(
     MutableGraph<GraphNode> graphInput, Set<String> roots, 
     HashMap<String, GraphNode> graphNodesMap, int maxDepth) {
     MutableGraph<GraphNode> graphToReturn = GraphBuilder.directed().build();
     if(maxDepth < 0) {
       return graphToReturn; // TODO: change to an error
     }
-    // MutableGraph<GraphNode> graphToReturn = GraphBuilder.directed().build();
     ArrayDeque<GraphNode> queue = new ArrayDeque<GraphNode>();
+    Map<GraphNode, Boolean> visited = new HashMap<>();
 
     for (String rootName : roots) {
       // Get the GraphNode object corresponding to the root name, add to the queue
       GraphNode rootNode = graphNodesMap.get(rootName);
       queue.add(rootNode);
-
+    }
       int currentDepth = 0;
-      int elementsInThisDepth = 1;
-      int nextDepthElements = 0;
+      int elementsInThisDepth = roots.size(); // Number of elements in current layer/depth
+      int nextDepthElements = 0; // Number of elements in the next layer/depth
 
       while (!queue.isEmpty()) {
         GraphNode curr = queue.poll(); // Add node first, worry about edges after we have all the nodes we need
+        System.out.println(curr);
+        
+        if (!visited.containsKey(curr)) {
           graphToReturn.addNode(curr); 
-
+          visited.put(curr, true);
+        }
           // The number of outgoing edges from the current node, number of nodes in the next layer
-          nextDepthElements += graphInput.successors(curr).size();
+          for (GraphNode gn : graphInput.successors(curr)) {
+            if (!visited.containsKey(gn)) {
+              nextDepthElements++;
+            }
+          }
           elementsInThisDepth --; // Decrement elements in depth since we've looked at the node
           // If the current layer has been entirely processed (we decrement since we processed the node)
           if (elementsInThisDepth == 0) {
@@ -323,14 +337,12 @@ public class DataServlet extends HttpServlet {
             queue.add(child);
           }
       }
-      
       // Add the edges that we need, edges are only relevant if they contain nodes in our graph
       for (EndpointPair<GraphNode> edge : graphInput.edges()) {
         if (graphToReturn.nodes().contains(edge.nodeU()) && graphToReturn.nodes().contains(edge.nodeV())) {
           graphToReturn.putEdge(edge.nodeU(), edge.nodeV());
         }
       }
-    }
     return graphToReturn;
   }
 }
