@@ -53,7 +53,7 @@ public class DataServlet extends HttpServlet {
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     response.setContentType("application/json");
     String depthParam = request.getParameter("depth");
-    int depthNumber = Integer.parseInt(depthParam); 
+    int depthNumber = Integer.parseInt(depthParam);
 
     // PROTO Data structure:
     // Parse the contents  of graph.txt into a proto Graph object, and extract information
@@ -91,7 +91,8 @@ public class DataServlet extends HttpServlet {
         return;
       }
     }
-    MutableGraph<GraphNode> truncatedGraph = getGraphWithMaxDepth(graph, roots, graphNodesMap, depthNumber);
+    MutableGraph<GraphNode> truncatedGraph =
+        getGraphWithMaxDepth(graph, roots, graphNodesMap, depthNumber);
     System.out.println(truncatedGraph);
     String graphJson = graphToJson(truncatedGraph);
     response.getWriter().println(graphJson);
@@ -309,48 +310,47 @@ public class DataServlet extends HttpServlet {
       GraphNode rootNode = graphNodesMap.get(rootName);
       queue.add(rootNode);
     }
-      int currentDepth = 0;
-      int elementsInThisDepth = roots.size(); // Number of elements in current layer/depth
-      int nextDepthElements = 0; // Number of elements in the next layer/depth
+    int currentDepth = 0;
+    int elementsInThisDepth = roots.size(); // Number of elements in current layer/depth
+    int nextDepthElements = 0; // Number of elements in the next layer/depth
 
-      while (!queue.isEmpty()) {
-        GraphNode curr = queue.poll(); // Add node first, worry about edges after we have all the nodes we need
-        System.out.println(curr);
-        
-        // Add to the graph to return, within the max depth height from root
-        if (!visited.containsKey(curr)) {
-          graphToReturn.addNode(curr); 
-          visited.put(curr, true);
-        }
-        // The number of outgoing edges from the current node, number of nodes in the next layer
-        for (GraphNode gn : graphInput.successors(curr)) {
-          if (!visited.containsKey(gn)) {
-            System.out.println("gn");
-            System.out.println(gn);
-            queue.add(gn);
-            nextDepthElements++;
-          }
-        }
-        elementsInThisDepth --; // Decrement elements in depth since we've looked at the node
-        // If the current layer has been entirely processed (we decrement since we processed the node)
-        if (elementsInThisDepth == 0) {
-          currentDepth++;
-          if (currentDepth > maxDepth) {
-             break;
-          }
-          elementsInThisDepth = nextDepthElements;
-          nextDepthElements = 0;
+    while (!queue.isEmpty()) {
+      GraphNode curr =
+          queue.poll(); // Add node first, worry about edges after we have all the nodes we need
+      System.out.println(curr);
+
+      // Add to the graph to return, within the max depth height from root
+      if (!visited.containsKey(curr)) {
+        graphToReturn.addNode(curr);
+        visited.put(curr, true);
+      }
+      // The number of outgoing edges from the current node, number of nodes in the next layer
+      for (GraphNode gn : graphInput.successors(curr)) {
+        if (!visited.containsKey(gn)) {
+          System.out.println("gn");
+          System.out.println(gn);
+          queue.add(gn);
+          nextDepthElements++;
         }
       }
-          // Add the edges that we need, edges are only relevant if they contain nodes in our graph
-      for (EndpointPair<GraphNode> edge : graphInput.edges()) {
-        if (graphToReturn.nodes().contains(edge.nodeU())
-            && graphToReturn.nodes().contains(edge.nodeV())) {
-          graphToReturn.putEdge(edge.nodeU(), edge.nodeV());
+      elementsInThisDepth--; // Decrement elements in depth since we've looked at the node
+      // If the current layer has been entirely processed (we decrement since we processed the node)
+      if (elementsInThisDepth == 0) {
+        currentDepth++;
+        if (currentDepth > maxDepth) {
+          break;
         }
+        elementsInThisDepth = nextDepthElements;
+        nextDepthElements = 0;
       }
+    }
+    // Add the edges that we need, edges are only relevant if they contain nodes in our graph
+    for (EndpointPair<GraphNode> edge : graphInput.edges()) {
+      if (graphToReturn.nodes().contains(edge.nodeU())
+          && graphToReturn.nodes().contains(edge.nodeV())) {
+        graphToReturn.putEdge(edge.nodeU(), edge.nodeV());
+      }
+    }
     return graphToReturn;
-        
-      }
-
+  }
 }
