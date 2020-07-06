@@ -50,11 +50,6 @@ public class RootsTest {
   }
 
   /**
-   * adding an edge -> is not root adding a node -> is root QUESTIONS: should I do
-   * it in terms of mutations or creating my own graph
-   */
-
-  /**
    * Add nodes without edges has all nodes as roots
    */
   @Test
