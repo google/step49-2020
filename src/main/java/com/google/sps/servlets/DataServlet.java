@@ -109,9 +109,11 @@ public class DataServlet extends HttpServlet {
       // Convert thisNode into a graph node that may store additional information
       GraphNode graphNode = protoNodeToGraphNode(thisNode);
 
-      // Update graph data structures to include the node
-      graph.addNode(graphNode);
-      graphNodesMap.put(nodeName, graphNode);
+      // Update graph data structures to include the node as long as it doesn't already exist
+      if(!graphNodesMap.containsKey(nodeName)) { 
+        graph.addNode(graphNode);
+        graphNodesMap.put(nodeName, graphNode);
+      }
 
       // Add dependency edges to the graph
       for (String child : thisNode.getChildrenList()) {
