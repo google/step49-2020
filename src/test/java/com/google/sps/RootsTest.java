@@ -49,9 +49,7 @@ public class RootsTest {
     gNodeC = servlet.protoNodeToGraphNode(nodeC.build());
   }
 
-  /**
-   * Add nodes without edges has all nodes as roots
-   */
+  /** Add nodes without edges has all nodes as roots */
   @Test
   public void allNodesAsRoots() {
     MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
@@ -73,9 +71,7 @@ public class RootsTest {
     Assert.assertTrue(roots.contains("B"));
   }
 
-  /**
-   * If there's an edge in the proto graph, the child will not be a root
-   */
+  /** If there's an edge in the proto graph, the child will not be a root */
   @Test
   public void singleEdgeChildNonRoot() {
     // A has a child, B
@@ -99,9 +95,7 @@ public class RootsTest {
     Assert.assertFalse(roots.contains("B"));
   }
 
-  /**
-   * Add edge mutation changes the root
-   */
+  /** Add edge mutation changes the root */
   @Test
   public void mutationAddEdgeChangesRoot() {
     MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
@@ -118,7 +112,12 @@ public class RootsTest {
 
     servlet.graphFromProtoNodes(protoNodesMap, graph, graphNodesMap, roots);
 
-    Mutation addAB = Mutation.newBuilder().setType(Mutation.Type.ADD_EDGE).setStartNode("A").setEndNode("B").build();
+    Mutation addAB =
+        Mutation.newBuilder()
+            .setType(Mutation.Type.ADD_EDGE)
+            .setStartNode("A")
+            .setEndNode("B")
+            .build();
 
     servlet.mutateGraph(addAB, graph, graphNodesMap, roots);
 
@@ -127,9 +126,7 @@ public class RootsTest {
     Assert.assertFalse(roots.contains("B"));
   }
 
-  /**
-   * Add node mutation adds to the root as well
-   */
+  /** Add node mutation adds to the root as well */
   @Test
   public void mutationAddNodeChangesRoot() {
     MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
@@ -151,9 +148,7 @@ public class RootsTest {
     Assert.assertTrue(roots.contains("B"));
   }
 
-  /**
-   * Removing an edge makes a node a root is reflected
-   */
+  /** Removing an edge makes a node a root is reflected */
   @Test
   public void mutationRemoveEdgeAddsRoot() {
     // A has a child, B
@@ -172,8 +167,12 @@ public class RootsTest {
 
     servlet.graphFromProtoNodes(protoNodesMap, graph, graphNodesMap, roots);
 
-    Mutation removeAB = Mutation.newBuilder().setType(Mutation.Type.DELETE_EDGE).setStartNode("A").setEndNode("B")
-        .build();
+    Mutation removeAB =
+        Mutation.newBuilder()
+            .setType(Mutation.Type.DELETE_EDGE)
+            .setStartNode("A")
+            .setEndNode("B")
+            .build();
     servlet.mutateGraph(removeAB, graph, graphNodesMap, roots);
 
     Assert.assertEquals(roots.size(), 2);
@@ -181,9 +180,7 @@ public class RootsTest {
     Assert.assertTrue(roots.contains("B"));
   }
 
-  /**
-   * Remhoving an edge that doesn't change the roots
-   */
+  /** Remhoving an edge that doesn't change the roots */
   @Test
   public void mutationRemoveEdgeNoChangeToRoot() {
     // A
@@ -213,8 +210,12 @@ public class RootsTest {
     Assert.assertEquals(roots.size(), 1);
     Assert.assertTrue(roots.contains("A"));
 
-    Mutation removeBC = Mutation.newBuilder().setType(Mutation.Type.DELETE_EDGE).setStartNode("B").setEndNode("C")
-        .build();
+    Mutation removeBC =
+        Mutation.newBuilder()
+            .setType(Mutation.Type.DELETE_EDGE)
+            .setStartNode("B")
+            .setEndNode("C")
+            .build();
     servlet.mutateGraph(removeBC, graph, graphNodesMap, roots);
 
     // After mutation
@@ -222,9 +223,7 @@ public class RootsTest {
     Assert.assertTrue(roots.contains("A"));
   }
 
-  /**
-   * Removing a nonroot node doesn't change the roots
-   */
+  /** Removing a nonroot node doesn't change the roots */
   @Test
   public void mutationDeleteNodeNoChangeToRoot() {
     nodeA.addChildren("B");
@@ -246,7 +245,8 @@ public class RootsTest {
     Assert.assertEquals(roots.size(), 1);
     Assert.assertTrue(roots.contains("A"));
 
-    Mutation removeB = Mutation.newBuilder().setType(Mutation.Type.DELETE_NODE).setStartNode("B").build();
+    Mutation removeB =
+        Mutation.newBuilder().setType(Mutation.Type.DELETE_NODE).setStartNode("B").build();
     servlet.mutateGraph(removeB, graph, graphNodesMap, roots);
 
     // After mutation
@@ -254,9 +254,7 @@ public class RootsTest {
     Assert.assertTrue(roots.contains("A"));
   }
 
-  /**
-   * Deleting the root node will make another node(s) the root
-   */
+  /** Deleting the root node will make another node(s) the root */
   @Test
   public void mutationDeleteRootNodeChangesNode() {
     nodeA.addChildren("B");
@@ -281,7 +279,8 @@ public class RootsTest {
     Assert.assertEquals(roots.size(), 1);
     Assert.assertTrue(roots.contains("A"));
 
-    Mutation removeA = Mutation.newBuilder().setType(Mutation.Type.DELETE_NODE).setStartNode("A").build();
+    Mutation removeA =
+        Mutation.newBuilder().setType(Mutation.Type.DELETE_NODE).setStartNode("A").build();
     servlet.mutateGraph(removeA, graph, graphNodesMap, roots);
 
     // After mutation
