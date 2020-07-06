@@ -313,7 +313,7 @@ public class DataServlet extends HttpServlet {
    * @param maxDepth      the maximum depth of a node from a root
    * @return a graph with nodes only a certain distance from a root
    */
-  private MutableGraph<GraphNode> getGraphWithMaxDepth(MutableGraph<GraphNode> graphInput, Set<String> roots,
+  public MutableGraph<GraphNode> getGraphWithMaxDepth(MutableGraph<GraphNode> graphInput, Set<String> roots,
       HashMap<String, GraphNode> graphNodesMap, int maxDepth) {
 
     MutableGraph<GraphNode> graphToReturn = GraphBuilder.directed().build();
@@ -334,7 +334,6 @@ public class DataServlet extends HttpServlet {
 
     while (!queue.isEmpty()) {
       GraphNode curr = queue.poll(); // Add node first, worry about edges after we have all the nodes we need
-      System.out.println(curr);
 
       // Add to the graph to return, within the max depth height from root
       if (!visited.containsKey(curr)) {
@@ -345,8 +344,6 @@ public class DataServlet extends HttpServlet {
       // next layer
       for (GraphNode gn : graphInput.successors(curr)) {
         if (!visited.containsKey(gn)) {
-          System.out.println("gn");
-          System.out.println(gn);
           queue.add(gn);
           nextDepthElements++;
         }
