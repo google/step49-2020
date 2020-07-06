@@ -26,4 +26,3 @@ Run
 npm start
 ```
 from the root directory and view the application on port 8080 of your localhost.
->>>>>>> ebb78c78202fafb0c42ad137178819398ee0bbb1
