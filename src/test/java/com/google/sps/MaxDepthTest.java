@@ -59,9 +59,7 @@ public class MaxDepthTest {
     gNodeF = servlet.protoNodeToGraphNode(nodeF.build());
   }
 
-  /**
-   * Max depth 0 should only return the roots
-   */
+  /** Max depth 0 should only return the roots */
   @Test
   public void maxDepthZero() {
     nodeA.addChildren("B");
@@ -83,16 +81,15 @@ public class MaxDepthTest {
 
     servlet.graphFromProtoNodes(protoNodesMap, graph, graphNodesMap, roots);
 
-    MutableGraph<GraphNode> truncatedGraph = servlet.getGraphWithMaxDepth(graph, roots, graphNodesMap, 0);
+    MutableGraph<GraphNode> truncatedGraph =
+        servlet.getGraphWithMaxDepth(graph, roots, graphNodesMap, 0);
     Set<GraphNode> graphNodes = truncatedGraph.nodes();
 
     Assert.assertEquals(graphNodes.size(), 1);
     Assert.assertTrue(graphNodes.contains(gNodeA));
   }
 
-  /**
-   * Invalid depth should not return anything
-   */
+  /** Invalid depth should not return anything */
   @Test
   public void invalidDepthEmptyGraph() {
     MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
@@ -109,16 +106,14 @@ public class MaxDepthTest {
 
     servlet.graphFromProtoNodes(protoNodesMap, graph, graphNodesMap, roots);
 
-    MutableGraph<GraphNode> truncatedGraph = servlet.getGraphWithMaxDepth(graph, roots, graphNodesMap, -2);
+    MutableGraph<GraphNode> truncatedGraph =
+        servlet.getGraphWithMaxDepth(graph, roots, graphNodesMap, -2);
     Set<GraphNode> graphNodes = truncatedGraph.nodes();
 
     Assert.assertTrue(graphNodes.isEmpty());
   }
 
-  /**
-   * Distance is equal to the max distance from root to a node, the entire graph
-   * is kept
-   */
+  /** Distance is equal to the max distance from root to a node, the entire graph is kept */
   @Test
   public void entireGraphIsKept() {
     nodeA.addChildren("B");
@@ -140,17 +135,15 @@ public class MaxDepthTest {
 
     servlet.graphFromProtoNodes(protoNodesMap, graph, graphNodesMap, roots);
 
-    MutableGraph<GraphNode> truncatedGraph = servlet.getGraphWithMaxDepth(graph, roots, graphNodesMap, 1);
+    MutableGraph<GraphNode> truncatedGraph =
+        servlet.getGraphWithMaxDepth(graph, roots, graphNodesMap, 1);
     Set<GraphNode> graphNodes = truncatedGraph.nodes();
 
     Assert.assertEquals(graphNodes.size(), 3);
     Assert.assertTrue(graphNodes.contains(gNodeA));
   }
 
-  /**
-   * Distance is greater than the max distance from root to a node, the entire
-   * graph is kept
-   */
+  /** Distance is greater than the max distance from root to a node, the entire graph is kept */
   @Test
   public void maxDepthIsGreaterThanMaxDistance() {
     nodeA.addChildren("B");
@@ -172,7 +165,8 @@ public class MaxDepthTest {
 
     servlet.graphFromProtoNodes(protoNodesMap, graph, graphNodesMap, roots);
 
-    MutableGraph<GraphNode> truncatedGraph = servlet.getGraphWithMaxDepth(graph, roots, graphNodesMap, 2);
+    MutableGraph<GraphNode> truncatedGraph =
+        servlet.getGraphWithMaxDepth(graph, roots, graphNodesMap, 2);
     Set<GraphNode> graphNodes = truncatedGraph.nodes();
 
     Assert.assertEquals(graphNodes.size(), 3);
@@ -180,8 +174,8 @@ public class MaxDepthTest {
   }
 
   /**
-   * two ways to get to node E. One way is depth 3 and the other is depth 2. Node
-   * E should be in the final graph
+   * two ways to get to node E. One way is depth 3 and the other is depth 2. Node E should be in the
+   * final graph
    */
   @Test
   public void testMultipleWaysToGetToNodeFindsShorter() {
@@ -213,11 +207,11 @@ public class MaxDepthTest {
 
     servlet.graphFromProtoNodes(protoNodesMap, graph, graphNodesMap, roots);
 
-    MutableGraph<GraphNode> truncatedGraph = servlet.getGraphWithMaxDepth(graph, roots, graphNodesMap, 2);
+    MutableGraph<GraphNode> truncatedGraph =
+        servlet.getGraphWithMaxDepth(graph, roots, graphNodesMap, 2);
     Set<GraphNode> graphNodes = truncatedGraph.nodes();
 
     Assert.assertEquals(graphNodes.size(), 5);
     Assert.assertTrue(graphNodes.contains(gNodeE));
   }
-
 }
