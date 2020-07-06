@@ -95,7 +95,7 @@ public final class MutationTest {
     Mutation addA = Mutation.newBuilder().setType(Mutation.Type.ADD_NODE).setStartNode("A").build();
 
     boolean success = servlet.mutateGraph(addA, graph, graphNodesMap);
-    Assert.assertFalse(success);
+    Assert.assertTrue(success);
   }
 
   /*

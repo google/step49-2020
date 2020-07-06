@@ -4,7 +4,7 @@ body {
 
 #graph {
     width: 90vw;
-    height: 80vh;
+    min-height: 80vh;
     border: solid 1px black;
 }
 
@@ -14,7 +14,6 @@ body {
 }
 
 .metadata {
-  max-height: 200px;
   overflow: scroll;
   
 }
