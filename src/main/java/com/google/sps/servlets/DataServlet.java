@@ -24,7 +24,6 @@ import com.proto.MutationProtos.MutationList;
 import com.proto.MutationProtos.TokenMutation;
 import com.google.common.graph.EndpointPair;
 import java.io.IOException;
-import java.io.FileOutputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
@@ -110,7 +109,7 @@ public class DataServlet extends HttpServlet {
       GraphNode graphNode = protoNodeToGraphNode(thisNode);
 
       // Update graph data structures to include the node
-      if(!graphNodesMap.containsKey(nodeName)) {
+      if (!graphNodesMap.containsKey(nodeName)) {
         graph.addNode(graphNode);
         graphNodesMap.put(nodeName, graphNode);
       }
