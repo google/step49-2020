@@ -2,17 +2,14 @@ package com.google.sps;
 
 import com.google.common.graph.*;
 import com.google.sps.servlets.DataServlet;
-import java.util.ArrayList;
 import java.util.Set;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.HashSet;
-import java.util.List;
 import com.google.sps.data.GraphNode;
 import com.proto.GraphProtos.Node;
 import com.proto.GraphProtos.Node.Builder;
 import com.proto.MutationProtos.Mutation;
-import com.proto.MutationProtos.TokenMutation;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -133,7 +130,7 @@ public class RootsTest {
   }
 
   /**
-   * Add node mutation adds to the root
+   * Add node mutation adds to the root as well
    */
   @Test
   public void mutationAddNodeChangesRoot() {
@@ -156,4 +153,142 @@ public class RootsTest {
     Assert.assertTrue(roots.contains("B"));
   }
 
+  /**
+   * Removing an edge makes a node a root is reflected
+   */
+  @Test
+  public void mutationRemoveEdgeAddsRoot() {
+    // A has a child, B
+    nodeA.addChildren("B");
+    MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
+    graph.addNode(gNodeA);
+    graph.addNode(gNodeB);
+
+    HashMap<String, Node> protoNodesMap = new HashMap<>();
+    protoNodesMap.put("A", nodeA.build());
+    protoNodesMap.put("B", nodeB.build());
+
+    HashMap<String, GraphNode> graphNodesMap = new HashMap<>();
+
+    HashSet<String> roots = new HashSet<>();
+
+    servlet.graphFromProtoNodes(protoNodesMap, graph, graphNodesMap, roots);
+
+    Mutation removeAB = Mutation.newBuilder().setType(Mutation.Type.DELETE_EDGE).setStartNode("A").setEndNode("B")
+        .build();
+    servlet.mutateGraph(removeAB, graph, graphNodesMap, roots);
+
+    Assert.assertEquals(roots.size(), 2);
+    Assert.assertTrue(roots.contains("A"));
+    Assert.assertTrue(roots.contains("B"));
+  }
+
+  /**
+   * Remhoving an edge that doesn't change the roots
+   */
+  @Test
+  public void mutationRemoveEdgeNoChangeToRoot() {
+    // A
+    // _/ \_
+    // B --> C
+    nodeA.addChildren("B");
+    nodeA.addChildren("C");
+    nodeB.addChildren("C");
+
+    MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
+    graph.addNode(gNodeA);
+    graph.addNode(gNodeB);
+    graph.addNode(gNodeC);
+
+    HashMap<String, Node> protoNodesMap = new HashMap<>();
+    protoNodesMap.put("A", nodeA.build());
+    protoNodesMap.put("B", nodeB.build());
+    protoNodesMap.put("C", nodeC.build());
+
+    HashMap<String, GraphNode> graphNodesMap = new HashMap<>();
+
+    HashSet<String> roots = new HashSet<>();
+
+    servlet.graphFromProtoNodes(protoNodesMap, graph, graphNodesMap, roots);
+
+    // Before mutation
+    Assert.assertEquals(roots.size(), 1);
+    Assert.assertTrue(roots.contains("A"));
+
+    Mutation removeBC = Mutation.newBuilder().setType(Mutation.Type.DELETE_EDGE).setStartNode("B").setEndNode("C")
+        .build();
+    servlet.mutateGraph(removeBC, graph, graphNodesMap, roots);
+
+    // After mutation
+    Assert.assertEquals(roots.size(), 1);
+    Assert.assertTrue(roots.contains("A"));
+  }
+
+  /**
+   * Removing a nonroot node doesn't change the roots
+   */
+  @Test
+  public void mutationDeleteNodeNoChangeToRoot() {
+    nodeA.addChildren("B");
+
+    MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
+    graph.addNode(gNodeA);
+    graph.addNode(gNodeB);
+
+    HashMap<String, Node> protoNodesMap = new HashMap<>();
+    protoNodesMap.put("A", nodeA.build());
+    protoNodesMap.put("B", nodeB.build());
+
+    HashMap<String, GraphNode> graphNodesMap = new HashMap<>();
+
+    HashSet<String> roots = new HashSet<>();
+
+    servlet.graphFromProtoNodes(protoNodesMap, graph, graphNodesMap, roots);
+    // Before mutation
+    Assert.assertEquals(roots.size(), 1);
+    Assert.assertTrue(roots.contains("A"));
+
+    Mutation removeB = Mutation.newBuilder().setType(Mutation.Type.DELETE_NODE).setStartNode("B").build();
+    servlet.mutateGraph(removeB, graph, graphNodesMap, roots);
+
+    // After mutation
+    Assert.assertEquals(roots.size(), 1);
+    Assert.assertTrue(roots.contains("A"));
+  }
+
+  /**
+   * Deleting the root node will make another node(s) the root
+   */
+  @Test
+  public void mutationDeleteRootNodeChangesNode() {
+    nodeA.addChildren("B");
+    nodeA.addChildren("C");
+
+    MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
+    graph.addNode(gNodeA);
+    graph.addNode(gNodeB);
+    graph.addNode(gNodeC);
+
+    HashMap<String, Node> protoNodesMap = new HashMap<>();
+    protoNodesMap.put("A", nodeA.build());
+    protoNodesMap.put("B", nodeB.build());
+    protoNodesMap.put("C", nodeC.build());
+
+    HashMap<String, GraphNode> graphNodesMap = new HashMap<>();
+
+    HashSet<String> roots = new HashSet<>();
+
+    servlet.graphFromProtoNodes(protoNodesMap, graph, graphNodesMap, roots);
+    // After mutation
+    Assert.assertEquals(roots.size(), 1);
+    Assert.assertTrue(roots.contains("A"));
+
+    Mutation removeA = Mutation.newBuilder().setType(Mutation.Type.DELETE_NODE).setStartNode("A").build();
+    servlet.mutateGraph(removeA, graph, graphNodesMap, roots);
+
+    // After mutation
+    Assert.assertEquals(roots.size(), 2);
+    Assert.assertTrue(roots.contains("B"));
+    Assert.assertTrue(roots.contains("C"));
+  }
 }
