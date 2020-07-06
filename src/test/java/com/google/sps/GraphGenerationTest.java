@@ -20,6 +20,7 @@ import com.google.protobuf.Value;
 import com.google.sps.servlets.DataServlet;
 import java.util.Set;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.List;
 import com.google.sps.data.GraphNode;
@@ -151,7 +152,8 @@ public final class GraphGenerationTest {
 
     MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
     HashMap<String, GraphNode> graphNodesMap = new HashMap<>();
-    boolean success = servlet.graphFromProtoNodes(protoNodesMap, graph, graphNodesMap);
+    HashSet<String> roots = new HashSet<>();
+    boolean success = servlet.graphFromProtoNodes(protoNodesMap, graph, graphNodesMap, roots);
     Assert.assertTrue(success);
 
     Set<GraphNode> graphNodes = graph.nodes();
@@ -189,7 +191,8 @@ public final class GraphGenerationTest {
 
     MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
     HashMap<String, GraphNode> graphNodesMap = new HashMap<>();
-    boolean success = servlet.graphFromProtoNodes(protoNodesMap, graph, graphNodesMap);
+    HashSet<String> roots = new HashSet<>();
+    boolean success = servlet.graphFromProtoNodes(protoNodesMap, graph, graphNodesMap, roots);
     Assert.assertFalse(success);
   }
 }
