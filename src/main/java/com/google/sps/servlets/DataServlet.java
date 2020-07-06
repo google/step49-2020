@@ -21,12 +21,9 @@ import com.proto.GraphProtos.Graph;
 import com.proto.GraphProtos.Node;
 import com.proto.MutationProtos.Mutation;
 import com.proto.MutationProtos.MutationList;
-import com.google.protobuf.TextFormat;
 import com.proto.MutationProtos.TokenMutation;
 import com.google.common.graph.EndpointPair;
 import java.io.IOException;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
@@ -54,14 +51,14 @@ public class DataServlet extends HttpServlet {
     // Parse the contents  of graph.txt into a proto Graph object, and extract information
     // from the proto object into a map. This is used to store the proto input and isn't updated
     // with mutations.
-    
+
     /*
      * The below code is used to read a graph specified in textproto form
      * InputStreamReader graphReader = new InputStreamReader(getServletContext().getResourceAsStream("/WEB-INF/initial_graph.textproto"));
      * Graph.Builder graphBuilder = Graph.newBuilder();
      * TextFormat.merge(graphReader, graphBuilder);
      * Graph protoGraph = graphBuilder.build();
-    */
+     */
     /*
      * This code is used to read a graph specified in proto binary format.
      */
@@ -69,8 +66,6 @@ public class DataServlet extends HttpServlet {
         Graph.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/graph.txt"));
 
     Map<String, Node> protoNodesMap = protoGraph.getNodesMapMap();
-
-    
 
     // GRAPH Data structures:
     // Create an undirected graph data structure to store the information, and
