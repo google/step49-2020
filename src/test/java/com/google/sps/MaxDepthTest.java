@@ -197,8 +197,8 @@ public class MaxDepthTest {
     graph.addNode(gNodeA);
     graph.addNode(gNodeB);
     graph.addNode(gNodeC);
+    graph.addNode(gNodeD);
     graph.addNode(gNodeE);
-    graph.addNode(gNodeF);
 
     HashMap<String, Node> protoNodesMap = new HashMap<>();
     protoNodesMap.put("A", nodeA.build());
@@ -218,6 +218,73 @@ public class MaxDepthTest {
 
     Assert.assertEquals(graphNodes.size(), 5);
     Assert.assertTrue(graphNodes.contains(gNodeE));
+  }
+
+  @Test
+  public void multipleRootsZero() {
+    nodeA.addChildren("B");
+    nodeC.addChildren("D");
+
+    MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
+    graph.addNode(gNodeA);
+    graph.addNode(gNodeB);
+    graph.addNode(gNodeC);
+    graph.addNode(gNodeD);
+
+    HashMap<String, Node> protoNodesMap = new HashMap<>();
+    protoNodesMap.put("A", nodeA.build());
+    protoNodesMap.put("B", nodeB.build());
+    protoNodesMap.put("C", nodeC.build());
+    protoNodesMap.put("D", nodeD.build());
+
+    HashMap<String, GraphNode> graphNodesMap = new HashMap<>();
+
+    HashSet<String> roots = new HashSet<>();
+
+    servlet.graphFromProtoNodes(protoNodesMap, graph, graphNodesMap, roots);
+
+    MutableGraph<GraphNode> truncatedGraph = servlet.getGraphWithMaxDepth(graph, roots, graphNodesMap, 0);
+    Set<GraphNode> graphNodes = truncatedGraph.nodes();
+
+    Assert.assertEquals(graphNodes.size(), 2);
+
+  }
+
+  /**
+   * More than one root node to calculate the depth from
+   */
+  @Test
+  public void multipleRoots() {
+    nodeA.addChildren("B");
+    nodeB.addChildren("C");
+    nodeC.addChildren("D");
+    nodeE.addChildren("D");
+
+    MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
+    graph.addNode(gNodeA);
+    graph.addNode(gNodeB);
+    graph.addNode(gNodeC);
+    graph.addNode(gNodeD);
+    graph.addNode(gNodeE);
+
+    HashMap<String, Node> protoNodesMap = new HashMap<>();
+    protoNodesMap.put("A", nodeA.build());
+    protoNodesMap.put("B", nodeB.build());
+    protoNodesMap.put("C", nodeC.build());
+    protoNodesMap.put("D", nodeD.build());
+    protoNodesMap.put("E", nodeE.build());
+
+    HashMap<String, GraphNode> graphNodesMap = new HashMap<>();
+
+    HashSet<String> roots = new HashSet<>();
+
+    servlet.graphFromProtoNodes(protoNodesMap, graph, graphNodesMap, roots);
+
+    MutableGraph<GraphNode> truncatedGraph = servlet.getGraphWithMaxDepth(graph, roots, graphNodesMap, 1);
+    Set<GraphNode> graphNodes = truncatedGraph.nodes();
+
+    Assert.assertEquals(graphNodes.size(), 4);
+    Assert.assertFalse(graphNodes.contains(gNodeC));
   }
 
 }

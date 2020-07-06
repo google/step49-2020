@@ -93,7 +93,6 @@ public class DataServlet extends HttpServlet {
       }
     }
     MutableGraph<GraphNode> truncatedGraph = getGraphWithMaxDepth(graph, roots, graphNodesMap, depthNumber);
-    System.out.println(truncatedGraph);
     String graphJson = graphToJson(truncatedGraph, roots);
     response.getWriter().println(graphJson);
     // String graphJson = graphToJson(graph);
@@ -318,7 +317,7 @@ public class DataServlet extends HttpServlet {
 
     MutableGraph<GraphNode> graphToReturn = GraphBuilder.directed().build();
     if (maxDepth < 0) {
-      return graphToReturn;
+      return graphToReturn; // If max depth below 0, then return an emtpy graph
     }
     ArrayDeque<GraphNode> queue = new ArrayDeque<GraphNode>();
     Map<GraphNode, Boolean> visited = new HashMap<>();
@@ -334,18 +333,18 @@ public class DataServlet extends HttpServlet {
 
     while (!queue.isEmpty()) {
       GraphNode curr = queue.poll(); // Add node first, worry about edges after we have all the nodes we need
-
-      // Add to the graph to return, within the max depth height from root
+      // Add to the graph to return, and adds children to the queue
       if (!visited.containsKey(curr)) {
         graphToReturn.addNode(curr);
         visited.put(curr, true);
-      }
-      // The number of outgoing edges from the current node, number of nodes in the
-      // next layer
-      for (GraphNode gn : graphInput.successors(curr)) {
-        if (!visited.containsKey(gn)) {
-          queue.add(gn);
-          nextDepthElements++;
+
+        // The number of outgoing edges from the current node, number of nodes in the
+        // next layer
+        for (GraphNode gn : graphInput.successors(curr)) {
+          if (!visited.containsKey(gn)) {
+            queue.add(gn);
+            nextDepthElements++;
+          }
         }
       }
       elementsInThisDepth--; // Decrement elements in depth since we've looked at the node
