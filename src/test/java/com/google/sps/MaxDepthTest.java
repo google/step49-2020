@@ -215,6 +215,9 @@ public class MaxDepthTest {
     Assert.assertTrue(graphNodes.contains(gNodeE));
   }
 
+  /**
+   * Multiple roots with max depth 0 should just return the roots
+   */
   @Test
   public void multipleRootsZero() {
     nodeA.addChildren("B");
