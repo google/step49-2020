@@ -4,7 +4,7 @@
   "description": "### Objective:  Create a generic graph visualization tool that makes debugging easier for developers by helping them track mutations in graph structures.",
   "main": "src/main/webapp/script.js",
   "scripts": {
-    "start": "mvn package appengine:run",
+    "start": "./node_modules/.bin/webpack; mvn package appengine:run",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

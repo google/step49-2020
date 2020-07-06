@@ -24,6 +24,7 @@ import com.proto.MutationProtos.MutationList;
 import com.proto.MutationProtos.TokenMutation;
 import com.google.common.graph.EndpointPair;
 import java.io.IOException;
+import java.io.FileOutputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
@@ -84,7 +85,6 @@ public class DataServlet extends HttpServlet {
         return;
       }
     }
-
     String graphJson = graphToJson(graph);
     response.getWriter().println(graphJson);
   }
@@ -110,8 +110,10 @@ public class DataServlet extends HttpServlet {
       GraphNode graphNode = protoNodeToGraphNode(thisNode);
 
       // Update graph data structures to include the node
-      graph.addNode(graphNode);
-      graphNodesMap.put(nodeName, graphNode);
+      if(!graphNodesMap.containsKey(nodeName)) {
+        graph.addNode(graphNode);
+        graphNodesMap.put(nodeName, graphNode);
+      }
 
       // Add dependency edges to the graph
       for (String child : thisNode.getChildrenList()) {
@@ -212,7 +214,8 @@ public class DataServlet extends HttpServlet {
         if (startNode == null) {
           return false;
         }
-        return changeNodeToken(startNode, mut.getTokenChange());
+        boolean succ = changeNodeToken(startNode, mut.getTokenChange());
+        return succ;
       default:
         // unrecognized mutation type
         return false;

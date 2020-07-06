@@ -142,7 +142,7 @@ function getGraphDisplay(graphNodes, graphEdges) {
   // TODO: fix positioning, style the display, figure out which parts of the metadata is interesting to show
   cy.on('tap', 'node', function(evt) {
     const node = evt.target;
-    toggleMetadata(node);
+    toggleMetadata(cy, node);
   });
 }
 
@@ -168,6 +168,7 @@ function initializeTippy(node) {
     content: () => {
       let content = document.createElement('div');
       let nodeTokens = node.data("tokens");
+      console.log(nodeTokens);
       content.innerHTML = (nodeTokens.length == 0) ? "No tokens" : nodeTokens;
       content.className = "metadata";
 
@@ -181,15 +182,18 @@ function initializeTippy(node) {
  * If a node(say, A)'s metadata is showing and A is clicked again, no metadata will be displayed.
  * If A's metadata is showing and B is clicked, then B's data should be displayed instead of A's.
  */
-function toggleMetadata(node) {
+function toggleMetadata(cy, node) {
   if (node.hasClass("show")) {
     node.tip.show();
     node.removeClass("show");
     node.addClass("hide");
+    // Prevent user from zooming as this is not compatible with the tooltip's positioning
+    cy.userPanningEnabled(false);
   } else {
     node.tip.hide();
     node.removeClass("hide");
     node.addClass("show");
+    cy.userPanningEnabled(true);
   }
 }
 
