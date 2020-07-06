@@ -110,7 +110,7 @@ public class DataServlet extends HttpServlet {
       GraphNode graphNode = protoNodeToGraphNode(thisNode);
 
       // Update graph data structures to include the node as long as it doesn't already exist
-      if(!graphNodesMap.containsKey(nodeName)) { 
+      if (!graphNodesMap.containsKey(nodeName)) {
         graph.addNode(graphNode);
         graphNodesMap.put(nodeName, graphNode);
       }
