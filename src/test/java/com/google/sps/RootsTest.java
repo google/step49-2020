@@ -112,6 +112,11 @@ public class RootsTest {
 
     servlet.graphFromProtoNodes(protoNodesMap, graph, graphNodesMap, roots);
 
+    // Before mutation
+    Assert.assertEquals(roots.size(), 2);
+    Assert.assertTrue(roots.contains("A"));
+    Assert.assertTrue(roots.contains("B"));
+
     Mutation addAB =
         Mutation.newBuilder()
             .setType(Mutation.Type.ADD_EDGE)
@@ -140,6 +145,10 @@ public class RootsTest {
     HashSet<String> roots = new HashSet<>();
     servlet.graphFromProtoNodes(protoNodesMap, graph, graphNodesMap, roots);
 
+    // Before mutation
+    Assert.assertEquals(roots.size(), 1);
+    Assert.assertTrue(roots.contains("A"));
+
     Mutation addB = Mutation.newBuilder().setType(Mutation.Type.ADD_NODE).setStartNode("B").build();
     servlet.mutateGraph(addB, graph, graphNodesMap, roots);
 
@@ -166,6 +175,10 @@ public class RootsTest {
     HashSet<String> roots = new HashSet<>();
 
     servlet.graphFromProtoNodes(protoNodesMap, graph, graphNodesMap, roots);
+
+    // Before mutation
+    Assert.assertEquals(roots.size(), 1);
+    Assert.assertTrue(roots.contains("A"));
 
     Mutation removeAB =
         Mutation.newBuilder()
