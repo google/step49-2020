@@ -162,14 +162,24 @@ function initializeTippy(node) {
     // mandatory:
     trigger: 'manual', // call show() and hide() yourself
     lazy: false, // needed for onCreate()
-    onCreate: instance => { instance.popperInstance.reference = tipPosition; }, 
+    onCreate: instance => { instance.popperInstance.reference = tipPosition; },
     // your custom options follow:
 
     content: () => {
       let content = document.createElement('div');
       let nodeTokens = node.data("tokens");
-      console.log(nodeTokens);
-      content.innerHTML = (nodeTokens.length == 0) ? "No tokens" : nodeTokens;
+      if (nodeTokens.length === 0) {
+        content.innerText = "No tokens";
+      } else {
+        let tokenList = document.createElement("ul");
+        nodeTokens.forEach(token => {
+          let tokenItem = document.createElement("li");
+          tokenItem.innerText = token;
+          tokenList.appendChild(tokenItem);
+        });
+        tokenList.className = "tokenlist";
+        content.appendChild(tokenList);
+      }
       content.className = "metadata";
 
       return content;
