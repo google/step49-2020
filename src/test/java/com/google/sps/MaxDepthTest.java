@@ -241,16 +241,14 @@ public class MaxDepthTest {
 
     servlet.graphFromProtoNodes(protoNodesMap, graph, graphNodesMap, roots);
 
-    MutableGraph<GraphNode> truncatedGraph = servlet.getGraphWithMaxDepth(graph, roots, graphNodesMap, 0);
+    MutableGraph<GraphNode> truncatedGraph =
+        servlet.getGraphWithMaxDepth(graph, roots, graphNodesMap, 0);
     Set<GraphNode> graphNodes = truncatedGraph.nodes();
 
     Assert.assertEquals(graphNodes.size(), 2);
-
   }
 
-  /**
-   * More than one root node to calculate the depth from
-   */
+  /** More than one root node to calculate the depth from */
   @Test
   public void multipleRoots() {
     nodeA.addChildren("B");
@@ -278,11 +276,11 @@ public class MaxDepthTest {
 
     servlet.graphFromProtoNodes(protoNodesMap, graph, graphNodesMap, roots);
 
-    MutableGraph<GraphNode> truncatedGraph = servlet.getGraphWithMaxDepth(graph, roots, graphNodesMap, 1);
+    MutableGraph<GraphNode> truncatedGraph =
+        servlet.getGraphWithMaxDepth(graph, roots, graphNodesMap, 1);
     Set<GraphNode> graphNodes = truncatedGraph.nodes();
 
     Assert.assertEquals(graphNodes.size(), 4);
     Assert.assertFalse(graphNodes.contains(gNodeC));
   }
-
 }
