@@ -24,16 +24,10 @@ public class RootsTest {
   Builder nodeA = Node.newBuilder().setName("A");
   Builder nodeB = Node.newBuilder().setName("B");
   Builder nodeC = Node.newBuilder().setName("C");
-  Builder nodeD = Node.newBuilder().setName("D");
-  Builder nodeE = Node.newBuilder().setName("E");
-  Builder nodeF = Node.newBuilder().setName("F");
 
   GraphNode gNodeA;
   GraphNode gNodeB;
   GraphNode gNodeC;
-  GraphNode gNodeD;
-  GraphNode gNodeE;
-  GraphNode gNodeF;
 
   @Before
   public void setUp() {
@@ -41,9 +35,6 @@ public class RootsTest {
     gNodeA = servlet.protoNodeToGraphNode(nodeA.build());
     gNodeB = servlet.protoNodeToGraphNode(nodeB.build());
     gNodeC = servlet.protoNodeToGraphNode(nodeC.build());
-    gNodeD = servlet.protoNodeToGraphNode(nodeD.build());
-    gNodeE = servlet.protoNodeToGraphNode(nodeE.build());
-    gNodeF = servlet.protoNodeToGraphNode(nodeF.build());
   }
 
   /**
