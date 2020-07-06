@@ -18,10 +18,15 @@
  * the cytoscape.js library
  */
 
-let cytoscape = require('cytoscape');
-let dagre = require('cytoscape-dagre');
+import cytoscape from 'cytoscape';
+import dagre from 'cytoscape-dagre';
+import popper from 'cytoscape-popper';
+import tippy from 'tippy.js';
+import 'tippy.js/dist/tippy.css';
 
-cytoscape.use( dagre ); // register extension
+
+cytoscape.use(popper); // register extension
+cytoscape.use(dagre); // register extension
 
 
 async function generateGraph() {
@@ -47,7 +52,7 @@ async function generateGraph() {
     nodes.forEach(node =>
       graphNodes.push({
         group: "nodes",
-        data: { id: node["name"], metadata: node["metadata"], tokens: node["tokenList"] }, 
+        data: { id: node["name"], metadata: node["metadata"], tokens: node["tokenList"] },
       }))
     // and edge to array of cytoscape edges
     edges.forEach(edge => {
@@ -123,18 +128,51 @@ function getGraphDisplay(graphNodes, graphEdges) {
       }],
     layout: {
       name: 'dagre'
-    }, 
+    },
     zoom: 1,
     pan: { x: 0, y: 0 },
     minZoom: .25,
     maxZoom: 2.5
   });
 
+  // Initialize content of node's metadata popup
+  cy.nodes().forEach(node => initializeTippy(node));
+
   // When the user clicks on a node, want to display some text in the area designated for node display
   // TODO: fix positioning, style the display, figure out which parts of the metadata is interesting to show
-  cy.on('tap', 'node', function(evt){
+  cy.on('tap', 'node', function(evt) {
     const node = evt.target;
-    toggleMetadata(cy, node.id() + " Yeehaw", node);
+    toggleMetadata(node);
+  });
+}
+
+/**
+ * Initializes a tooltip containing the node's token list which is
+ * toggled on click
+ */
+function initializeTippy(node) {
+  node.addClass("show");
+
+  let tipPosition = node.popperRef(); // used only for positioning
+
+  // unfortunately, a dummy element must be passed as tippy only accepts a dom element as the target
+  let dummyDomEle = document.createElement('div');
+
+  node.tip = tippy(dummyDomEle, { // tippy options:
+    // mandatory:
+    trigger: 'manual', // call show() and hide() yourself
+    lazy: false, // needed for onCreate()
+    onCreate: instance => { instance.popperInstance.reference = tipPosition; }, 
+    // your custom options follow:
+
+    content: () => {
+      let content = document.createElement('div');
+      let nodeTokens = node.data("tokens");
+      content.innerHTML = (nodeTokens.length == 0) ? "No tokens" : nodeTokens;
+      content.className = "metadata";
+
+      return content;
+    }
   });
 }
 
@@ -143,41 +181,16 @@ function getGraphDisplay(graphNodes, graphEdges) {
  * If a node(say, A)'s metadata is showing and A is clicked again, no metadata will be displayed.
  * If A's metadata is showing and B is clicked, then B's data should be displayed instead of A's.
  */
-function toggleMetadata(cy, textToShow, node) {
-  const element = document.getElementById("metadata");
-  // Already some metadata showing
-  if (element.firstChild) {
-    const oldChildId = element.firstChild.id
-    console.log(oldChildId)
-    while (element.firstChild ) {
-        element.removeChild(element.firstChild);
-    } 
-    
-    // Clicked on SAME node as the one showing -> just hide the metadata
-    if (oldChildId === node.id()+"metadata") {
-      // cy.userPanningEnabled(true); // Allow panning again since no metadata is being shown
-      return;
-    } 
+function toggleMetadata(node) {
+  if (node.hasClass("show")) {
+    node.tip.show();
+    node.removeClass("show");
+    node.addClass("hide");
+  } else {
+    node.tip.hide();
+    node.removeClass("hide");
+    node.addClass("show");
   }
-  // element.style.position = "absolute";
-  // element.style.left = node.position().x+'px';
-  // element.style.top = node.position().y+'px';
-
-  // We make 3 elements: a title that displays the name of the element clicked, a p tag with the
-  // metadata itself, and a div that contains both of the text elements
-  const nodeName = document.createElement("h4")                
-  const nameText = document.createTextNode("Namespace: " + node.id());     
-  nodeName.appendChild(nameText);  
-  const nodeMD = document.createElement("p")   
-  const metaText = document.createTextNode("Metadata goes here"); 
-  nodeMD.append(metaText); 
-
-  const textElement = document.createElement( "div" );
-  textElement.id = node.id()+"metadata";
-  textElement.appendChild(nodeName);
-  textElement.appendChild(nodeMD);
-  element.append(textElement);
-  // cy.userPanningEnabled(false); // Panning disabled when metadata is shown - makes sense only with positioning
 }
 
 

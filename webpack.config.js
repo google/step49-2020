@@ -7,5 +7,10 @@ module.exports = {
   output: {
     filename: 'main.js',
     path: path.join(__dirname, '/src/main/webapp/dist')
+  },
+  module: {
+    rules: [
+      { test: /\.css$/, loader: "style-loader!css-loader" }
+    ]
   }
 };

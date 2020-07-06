@@ -5,14 +5,15 @@ body {
 #graph {
     width: 90vw;
     height: 80vh;
-    /* position: absolute; */
-    /* top: 0px;
-    left: 0px; */
-    /* margin: 100px; */
     border: solid 1px black;
 }
 
 #errortext {
   color: red;
   font-size: 40px;
+}
+
+.metadata {
+  overflow: scroll;
+  
 }
