@@ -94,7 +94,7 @@ public class DataServlet extends HttpServlet {
     }
     MutableGraph<GraphNode> truncatedGraph = getGraphWithMaxDepth(graph, roots, graphNodesMap, depthNumber);
     System.out.println(truncatedGraph);
-    String graphJson = graphToJson(truncatedGraph);
+    String graphJson = graphToJson(truncatedGraph, roots);
     response.getWriter().println(graphJson);
     // String graphJson = graphToJson(graph);
     // response.getWriter().println(graphJson);
@@ -111,6 +111,8 @@ public class DataServlet extends HttpServlet {
    * 
    * @param graphNodesMap map object to fill with node-name -> graph node object
    * links
+   * 
+   * @param roots the roots of the graph
    * 
    * @return false if an error occurred, true otherwise
    */
@@ -158,7 +160,7 @@ public class DataServlet extends HttpServlet {
    * 
    * @param graph the graph to convert into a JSON String
    */
-  private String graphToJson(MutableGraph<GraphNode> graph) {
+  private String graphToJson(MutableGraph<GraphNode> graph, HashSet<String> roots) {
     Type typeOfNode = new TypeToken<Set<GraphNode>>() {
     }.getType();
     Type typeOfEdge = new TypeToken<Set<EndpointPair<GraphNode>>>() {
@@ -168,10 +170,10 @@ public class DataServlet extends HttpServlet {
     Gson gson = new Gson();
     String nodeJson = gson.toJson(graph.nodes(), typeOfNode);
     String edgeJson = gson.toJson(graph.edges(), typeOfEdge);
-    // String rootsJson = gson.toJson(roots, typeOfRoots);
-    // String bothJson = "[" + nodeJson + "," + edgeJson + "," + rootsJson + "]";
-    String bothJson = "[" + nodeJson + "," + edgeJson + "]";
-    return bothJson;
+    String rootsJson = gson.toJson(roots, typeOfRoots);
+    String allJson = "[" + nodeJson + "," + edgeJson + "," + rootsJson + "]";
+    // String bothJson = "[" + nodeJson + "," + edgeJson + "]";
+    return allJson;
   }
 
   /*
@@ -197,6 +199,8 @@ public class DataServlet extends HttpServlet {
    * @param graph the Guava graph to mutate
    * 
    * @param graphNodesMap a reference of existing nodes, also to be mutated
+   * 
+   * @param roots the roots of the graph before the mutation
    * 
    * @return true if the mutation was successful, false otherwise
    */
