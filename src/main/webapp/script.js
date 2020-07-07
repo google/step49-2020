@@ -18,15 +18,17 @@
  * the cytoscape.js library
  */
 
-import cytoscape from 'cytoscape';
-import dagre from 'cytoscape-dagre';
-import popper from 'cytoscape-popper';
-import tippy from 'tippy.js';
-import 'tippy.js/dist/tippy.css';
+let cytoscape = require('cytoscape');
+let dagre = require('cytoscape-dagre');
+let popper = require('cytoscape-popper');
+let tippy = require('tippy.js');
+//import 'tippy.js/dist/tippy.css';
 
 
 cytoscape.use(popper); // register extension
 cytoscape.use(dagre); // register extension
+
+module.exports = getContent;
 
 
 async function generateGraph() {
@@ -150,7 +152,7 @@ function getGraphDisplay(graphNodes, graphEdges) {
  * Initializes a tooltip containing the node's token list which is
  * toggled on click
  */
-function initializeTippy(node) {
+function initializeTippy(node, cy) {
   node.addClass("show");
 
   let tipPosition = node.popperRef(); // used only for positioning
@@ -165,26 +167,28 @@ function initializeTippy(node) {
     onCreate: instance => { instance.popperInstance.reference = tipPosition; },
     // your custom options follow:
 
-    content: () => {
-      let content = document.createElement('div');
-      let nodeTokens = node.data("tokens");
-      if (nodeTokens.length === 0) {
-        content.innerText = "No tokens";
-      } else {
-        let tokenList = document.createElement("ul");
-        nodeTokens.forEach(token => {
-          let tokenItem = document.createElement("li");
-          tokenItem.innerText = token;
-          tokenList.appendChild(tokenItem);
-        });
-        tokenList.className = "tokenlist";
-        content.appendChild(tokenList);
-      }
-      content.className = "metadata";
-
-      return content;
-    }
+    content: () => getContent(node)
   });
+}
+
+function getContent(node) {
+  let content = document.createElement('div');
+  let nodeTokens = node.data("tokens");
+  if (nodeTokens.length === 0) {
+    content.innerHTML = "No tokens";
+  } else {
+    let tokenList = document.createElement("ul");
+    nodeTokens.forEach(token => {
+      let tokenItem = document.createElement("li");
+      tokenItem.innerHTML = token;
+      tokenList.appendChild(tokenItem);
+    });
+    tokenList.className = "tokenlist";
+    content.appendChild(tokenList);
+  }
+  content.className = "metadata";
+
+  return content;
 }
 
 /**
@@ -206,6 +210,3 @@ function toggleMetadata(cy, node) {
     cy.userPanningEnabled(true);
   }
 }
-
-
-generateGraph();
