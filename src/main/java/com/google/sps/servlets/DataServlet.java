@@ -36,6 +36,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.json.JSONObject;
 
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
@@ -144,7 +145,10 @@ public class DataServlet extends HttpServlet {
     Gson gson = new Gson();
     String nodeJson = gson.toJson(graph.nodes(), typeOfNode);
     String edgeJson = gson.toJson(graph.edges(), typeOfEdge);
-    String bothJson = "[" + nodeJson + "," + edgeJson + "]";
+    String bothJson = new JSONObject()
+                  .put("nodes", nodeJson)
+                  .put("edges", edgeJson)
+                  .toString();
     return bothJson;
   }
 
