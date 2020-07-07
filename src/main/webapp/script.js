@@ -22,7 +22,7 @@ async function generateGraph() {
   let graphNodes = [];
   let graphEdges = [];
   let selectedDepth = document.getElementById('num-layers').value;
-  console.log("DEPTH", selectedDepth);
+
   const url = `/data?depth=${selectedDepth}`
   const response = await fetch(url);
 
@@ -125,7 +125,7 @@ function getGraphDisplay(graphNodes, graphEdges) {
       padding: 10,
       avoidOverlap: true,
       spacingFactor: 2,
-      zoom: 1
+      zoom: .75
     }
   });
 }
