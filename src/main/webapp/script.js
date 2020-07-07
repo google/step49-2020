@@ -18,18 +18,17 @@
  * the cytoscape.js library
  */
 
-let cytoscape = require('cytoscape');
-let dagre = require('cytoscape-dagre');
-let popper = require('cytoscape-popper');
-let tippy = require('tippy.js');
-//import 'tippy.js/dist/tippy.css';
+import cytoscape from 'cytoscape';
+import dagre from 'cytoscape-dagre';
+import popper from 'cytoscape-popper';
+import tippy, { sticky } from 'tippy.js';
+import 'tippy.js/dist/tippy.css';
+import 'tippy.js/dist/backdrop.css';
+import 'tippy.js/animations/shift-away.css';
 
 
 cytoscape.use(popper); // register extension
 cytoscape.use(dagre); // register extension
-
-module.exports = getContent;
-
 
 async function generateGraph() {
   // Arrays to store the cytoscape graph node and edge objects
@@ -137,50 +136,68 @@ function getGraphDisplay(graphNodes, graphEdges) {
     maxZoom: 2.5
   });
 
-  // Initialize content of node's metadata popup
+  // Initialize content of node's token list popup
   cy.nodes().forEach(node => initializeTippy(node));
 
-  // When the user clicks on a node, want to display some text in the area designated for node display
-  // TODO: fix positioning, style the display, figure out which parts of the metadata is interesting to show
+  // When the user clicks on a node, display the token list tooltip for the node
   cy.on('tap', 'node', function(evt) {
     const node = evt.target;
-    toggleMetadata(cy, node);
+    node.tip.show();
   });
 }
 
 /**
- * Initializes a tooltip containing the node's token list which is
- * toggled on click
+ * Initializes a tooltip containing the node's token list
  */
-function initializeTippy(node, cy) {
-  node.addClass("show");
-
+function initializeTippy(node) {
   let tipPosition = node.popperRef(); // used only for positioning
 
-  // unfortunately, a dummy element must be passed as tippy only accepts a dom element as the target
+  // a dummy element must be passed as tippy only accepts a dom element as the target
   let dummyDomEle = document.createElement('div');
 
-  node.tip = tippy(dummyDomEle, { // tippy options:
-    // mandatory:
-    trigger: 'manual', // call show() and hide() yourself
-    lazy: false, // needed for onCreate()
+  node.tip = tippy(dummyDomEle, { 
+    trigger: 'manual',
+    lazy: false, 
     onCreate: instance => { instance.popperInstance.reference = tipPosition; },
-    // your custom options follow:
 
-    content: () => getContent(node)
+    content: () => getTooltipContent(node),
+    interactive: true,
+    appendTo: document.body,
+    // the tooltip  adheres to the node if the graph is zoomed in on
+    sticky: true,
+    plugins: [sticky]
   });
 }
 
-function getContent(node) {
-  let content = document.createElement('div');
+/**
+ * Takes in a node and returns an HTML element containing the element's
+ * tokens formatted into an HTML unordered list witha  close button if
+ * the node has tokens and a message indicating so if it doesn't.
+ */
+function getTooltipContent(node) {
+  let content = document.createElement("div");
+
+  // Create button that will close the tooltip
+  let closeButton = document.createElement("button");
+  closeButton.innerText = "close";
+  closeButton.classList.add("material-icons", "close-button");
+  closeButton.addEventListener('click', function() {
+    node.tip.hide();
+  }, false);
+  content.appendChild(closeButton);
+
   let nodeTokens = node.data("tokens");
   if (nodeTokens.length === 0) {
-    content.innerHTML = "No tokens";
+    // The node has an empty token list
+    let noTokenMsg = document.createElement("p");
+    noTokenMsg.innerText = "No tokens";
+    content.appendChild(noTokenMsg);
   } else {
+    // The node has some tokens
     let tokenList = document.createElement("ul");
     nodeTokens.forEach(token => {
       let tokenItem = document.createElement("li");
-      tokenItem.innerHTML = token;
+      tokenItem.innerText = token;
       tokenList.appendChild(tokenItem);
     });
     tokenList.className = "tokenlist";
@@ -191,22 +208,4 @@ function getContent(node) {
   return content;
 }
 
-/**
- * Toggles the displaying of metadata where a node is positioned
- * If a node(say, A)'s metadata is showing and A is clicked again, no metadata will be displayed.
- * If A's metadata is showing and B is clicked, then B's data should be displayed instead of A's.
- */
-function toggleMetadata(cy, node) {
-  if (node.hasClass("show")) {
-    node.tip.show();
-    node.removeClass("show");
-    node.addClass("hide");
-    // Prevent user from zooming as this is not compatible with the tooltip's positioning
-    cy.userPanningEnabled(false);
-  } else {
-    node.tip.hide();
-    node.removeClass("hide");
-    node.addClass("show");
-    cy.userPanningEnabled(true);
-  }
-}
+generateGraph();

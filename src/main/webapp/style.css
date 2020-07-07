@@ -10,15 +10,24 @@ body {
 
 #errortext {
   color: red;
-  font-size: 40px;
+  font-size: 25px;
 }
 
 .metadata {
-  overflow: scroll;
+  overflow-y: auto;
+  overflow-x: auto;
+  white-space: nowrap;
+  width: 400px;
+  height: 400px;
+  font-size: 30px;
   
 }
 
 .tokenlist {
   list-style-type: none;
   padding-left: 0px;
+}
+
+.close-button {
+  float: right;
 }
