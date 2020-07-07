@@ -31,6 +31,7 @@ async function generateGraph() {
   // Error on server side
   if (serverErrorStatus !== null) {
     displayError(serverErrorStatus);
+    return;
   }
 
   const jsonResponse = await response.json();
@@ -38,31 +39,32 @@ async function generateGraph() {
   let nodes = jsonResponse[0];
   let edges = jsonResponse[1];
   let roots = jsonResponse[2];
-
-  if (nodes && edges) {
-    // Add node to array of cytoscape nodes
-    nodes.forEach(node =>
-      graphNodes.push({
-        group: "nodes",
-        data: { id: node["name"] }
-      }))
-    // and edge to array of cytoscape edges
-    edges.forEach(edge => {
-      let start = edge["nodeU"]["name"];
-      let end = edge["nodeV"]["name"];
-      graphEdges.push({
-        group: "edges",
-        data: {
-          id: `edge${start}${end}`,
-          target: end,
-          source: start
-        }
-      });
-    })
-    getGraphDisplay(graphNodes, graphEdges);
+  if (!nodes || !edges) {
+    displayError("Malformed graph received from server - edges or nodes are empty");
     return;
   }
-  displayError("Malformed graph received from server - edges or nodes are empty");
+
+  // Add node to array of cytoscape nodes
+  nodes.forEach(node =>
+    graphNodes.push({
+      group: "nodes",
+      data: { id: node["name"] }
+    }))
+  // and edge to array of cytoscape edges
+  edges.forEach(edge => {
+    let start = edge["nodeU"]["name"];
+    let end = edge["nodeV"]["name"];
+    graphEdges.push({
+      group: "edges",
+      data: {
+        id: `edge${start}${end}`,
+        target: end,
+        source: start
+      }
+    });
+  })
+  getGraphDisplay(graphNodes, graphEdges);
+  return;
 }
 
 /**

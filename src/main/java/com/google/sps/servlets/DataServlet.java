@@ -133,10 +133,8 @@ public class DataServlet extends HttpServlet {
       // Convert thisNode into a graph node that may store additional information
       GraphNode graphNode = protoNodeToGraphNode(thisNode);
 
-      // Update graph data structures to include the node
-      // All nodes that haven't been visited before start out as roots
+      // Update graph data structures to include the node as long as it doesn't already exist
       if (!graphNodesMap.containsKey(nodeName)) {
-        roots.add(nodeName);
         graph.addNode(graphNode);
         graphNodesMap.put(nodeName, graphNode);
       }
