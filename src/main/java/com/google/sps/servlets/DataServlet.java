@@ -337,10 +337,10 @@ public class DataServlet extends HttpServlet {
     HashSet<GraphNode> nextDepthNodes;
 
     // Process the graph layer by layer upto maxDepth
-    for(int currDepth = 0; currDepth <= maxDepth; currDepth++) {
+    for (int currDepth = 0; currDepth <= maxDepth; currDepth++) {
       nextDepthNodes = new HashSet<>();
       while (!queue.isEmpty()) {
-        GraphNode curr = queue.poll(); 
+        GraphNode curr = queue.poll();
 
         // Add to the graph to return
         if (!visited.containsKey(curr)) {
@@ -352,7 +352,7 @@ public class DataServlet extends HttpServlet {
             if (!visited.containsKey(gn)) {
               nextDepthNodes.add(gn);
               // Add the corresponding edge if the next layer isn't too deep
-              if(currDepth != maxDepth) {
+              if (currDepth != maxDepth) {
                 graphToReturn.putEdge(curr, gn);
               }
             }

@@ -19,14 +19,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonElement;
-import com.google.protobuf.Struct;
-import com.google.protobuf.Value;
 import com.google.sps.servlets.DataServlet;
-import java.util.Set;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
-import java.util.List;
 import com.google.sps.data.GraphNode;
 import com.proto.GraphProtos.Node;
 import com.proto.GraphProtos.Node.Builder;
@@ -102,7 +96,6 @@ public final class JsonTest {
     jNodeA = gson.toJson(gNodeA);
     jNodeC = gson.toJson(gNodeC);
 
-
     MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
     graph.addNode(gNodeA);
     graph.addNode(gNodeB);
@@ -155,7 +148,6 @@ public final class JsonTest {
 
     jNodeA = gson.toJson(gNodeA);
     jNodeC = gson.toJson(gNodeC);
-
 
     MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
     graph.addNode(gNodeA);
