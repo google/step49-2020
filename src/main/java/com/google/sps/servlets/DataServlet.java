@@ -123,19 +123,20 @@ public class DataServlet extends HttpServlet {
       HashSet<String> roots) {
 
     for (String nodeName : protoNodesMap.keySet()) {
-
       Node thisNode = protoNodesMap.get(nodeName);
 
       // Convert thisNode into a graph node that may store additional information
       GraphNode graphNode = protoNodeToGraphNode(thisNode);
 
+
       // Update graph data structures to include the node
+      // All nodes that haven't been visited before start out as roots
       if (!graphNodesMap.containsKey(nodeName)) {
+        roots.add(nodeName);
         graph.addNode(graphNode);
         graphNodesMap.put(nodeName, graphNode);
-        // All nodes that haven't been visited before start out as roots
-        roots.add(nodeName);
       }
+      
 
       // Add dependency edges to the graph
       for (String child : thisNode.getChildrenList()) {
