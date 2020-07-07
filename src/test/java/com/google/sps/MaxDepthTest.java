@@ -40,6 +40,8 @@ public class MaxDepthTest {
   Builder nodeD = Node.newBuilder().setName("D");
   Builder nodeE = Node.newBuilder().setName("E");
   Builder nodeF = Node.newBuilder().setName("F");
+  Builder nodeG = Node.newBuilder().setName("G");
+  Builder nodeH = Node.newBuilder().setName("H");
 
   GraphNode gNodeA;
   GraphNode gNodeB;
@@ -47,6 +49,8 @@ public class MaxDepthTest {
   GraphNode gNodeD;
   GraphNode gNodeE;
   GraphNode gNodeF;
+  GraphNode gNodeG;
+  GraphNode gNodeH;
 
   @Before
   public void setUp() {
@@ -57,6 +61,8 @@ public class MaxDepthTest {
     gNodeD = servlet.protoNodeToGraphNode(nodeD.build());
     gNodeE = servlet.protoNodeToGraphNode(nodeE.build());
     gNodeF = servlet.protoNodeToGraphNode(nodeF.build());
+    gNodeG = servlet.protoNodeToGraphNode(nodeG.build());
+    gNodeH = servlet.protoNodeToGraphNode(nodeH.build());
   }
 
   /** Max depth 0 should only return the roots */
@@ -87,6 +93,8 @@ public class MaxDepthTest {
 
     Assert.assertEquals(graphNodes.size(), 1);
     Assert.assertTrue(graphNodes.contains(gNodeA));
+    Assert.assertFalse(graphNodes.contains(gNodeB));
+    Assert.assertFalse(graphNodes.contains(gNodeC));
   }
 
   /** Invalid depth should not return anything */
@@ -138,11 +146,14 @@ public class MaxDepthTest {
     MutableGraph<GraphNode> truncatedGraph =
         servlet.getGraphWithMaxDepth(graph, roots, graphNodesMap, 1);
     Set<GraphNode> graphNodes = truncatedGraph.nodes();
+    Set<EndpointPair<GraphNode>> graphEdges = truncatedGraph.edges();
 
     Assert.assertEquals(graphNodes.size(), 3);
     Assert.assertTrue(graphNodes.contains(gNodeA));
     Assert.assertTrue(graphNodes.contains(gNodeB));
     Assert.assertTrue(graphNodes.contains(gNodeC));
+
+    Assert.assertEquals(graphEdges.size(), 2);
   }
 
   /** Distance is greater than the max distance from root to a node, the entire graph is kept */
@@ -171,10 +182,14 @@ public class MaxDepthTest {
         servlet.getGraphWithMaxDepth(graph, roots, graphNodesMap, 2);
     Set<GraphNode> graphNodes = truncatedGraph.nodes();
 
+    Set<EndpointPair<GraphNode>> graphEdges = truncatedGraph.edges();
+
     Assert.assertEquals(graphNodes.size(), 3);
     Assert.assertTrue(graphNodes.contains(gNodeA));
     Assert.assertTrue(graphNodes.contains(gNodeB));
     Assert.assertTrue(graphNodes.contains(gNodeC));
+
+    Assert.assertEquals(graphEdges.size(), 2);
   }
 
   /**
@@ -214,6 +229,7 @@ public class MaxDepthTest {
     MutableGraph<GraphNode> truncatedGraph =
         servlet.getGraphWithMaxDepth(graph, roots, graphNodesMap, 2);
     Set<GraphNode> graphNodes = truncatedGraph.nodes();
+    Set<EndpointPair<GraphNode>> graphEdges = truncatedGraph.edges();
 
     Assert.assertEquals(graphNodes.size(), 5);
     Assert.assertTrue(graphNodes.contains(gNodeA));
@@ -221,6 +237,9 @@ public class MaxDepthTest {
     Assert.assertTrue(graphNodes.contains(gNodeC));
     Assert.assertTrue(graphNodes.contains(gNodeD));
     Assert.assertTrue(graphNodes.contains(gNodeE));
+
+    Assert.assertEquals(graphEdges.size(), 5);
+
   }
 
   /** Multiple roots with max depth 0 should just return the roots */
@@ -250,10 +269,13 @@ public class MaxDepthTest {
     MutableGraph<GraphNode> truncatedGraph =
         servlet.getGraphWithMaxDepth(graph, roots, graphNodesMap, 0);
     Set<GraphNode> graphNodes = truncatedGraph.nodes();
+    Set<EndpointPair<GraphNode>> graphEdges = truncatedGraph.edges();
 
     Assert.assertEquals(graphNodes.size(), 2);
     Assert.assertTrue(graphNodes.contains(gNodeA));
     Assert.assertTrue(graphNodes.contains(gNodeC));
+
+    Assert.assertEquals(graphEdges.size(), 0);
   }
 
   /** More than one root node to calculate the depth from */
@@ -287,6 +309,7 @@ public class MaxDepthTest {
     MutableGraph<GraphNode> truncatedGraph =
         servlet.getGraphWithMaxDepth(graph, roots, graphNodesMap, 1);
     Set<GraphNode> graphNodes = truncatedGraph.nodes();
+    Set<EndpointPair<GraphNode>> graphEdges = truncatedGraph.edges();
 
     Assert.assertEquals(graphNodes.size(), 4);
     Assert.assertFalse(graphNodes.contains(gNodeC));
@@ -294,5 +317,61 @@ public class MaxDepthTest {
     Assert.assertTrue(graphNodes.contains(gNodeB));
     Assert.assertTrue(graphNodes.contains(gNodeD));
     Assert.assertTrue(graphNodes.contains(gNodeE));
+
+    Assert.assertEquals(graphEdges.size(), 2);
+  }
+
+  @Test
+  public void complexGraph() {
+    nodeA.addChildren("B");
+    nodeA.addChildren("C");
+    nodeB.addChildren("D");
+    nodeD.addChildren("G");
+    nodeE.addChildren("G");
+    nodeH.addChildren("G");
+
+    MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
+    graph.addNode(gNodeA);
+    graph.addNode(gNodeB);
+    graph.addNode(gNodeC);
+    graph.addNode(gNodeD);
+    graph.addNode(gNodeE);
+    graph.addNode(gNodeG);
+    graph.addNode(gNodeH);
+
+    HashMap<String, Node> protoNodesMap = new HashMap<>();
+    protoNodesMap.put("A", nodeA.build());
+    protoNodesMap.put("B", nodeB.build());
+    protoNodesMap.put("C", nodeC.build());
+    protoNodesMap.put("D", nodeD.build());
+    protoNodesMap.put("E", nodeE.build());
+    protoNodesMap.put("G", nodeG.build());
+    protoNodesMap.put("H", nodeH.build());
+
+    HashMap<String, GraphNode> graphNodesMap = new HashMap<>();
+
+    HashSet<String> roots = new HashSet<>();
+
+    servlet.graphFromProtoNodes(protoNodesMap, graph, graphNodesMap, roots);
+
+    MutableGraph<GraphNode> truncatedGraph =
+        servlet.getGraphWithMaxDepth(graph, roots, graphNodesMap, 1);
+    Set<GraphNode> graphNodes = truncatedGraph.nodes();
+    Set<EndpointPair<GraphNode>> graphEdges = truncatedGraph.edges();
+
+    Assert.assertEquals(graphNodes.size(), 6);
+    Assert.assertFalse(graphNodes.contains(gNodeD));
+    Assert.assertTrue(graphNodes.contains(gNodeA));
+    Assert.assertTrue(graphNodes.contains(gNodeB));
+    Assert.assertTrue(graphNodes.contains(gNodeC));
+    Assert.assertTrue(graphNodes.contains(gNodeE));
+    Assert.assertTrue(graphNodes.contains(gNodeG));
+    Assert.assertTrue(graphNodes.contains(gNodeH));
+
+    Assert.assertEquals(graphEdges.size(), 4);
+
+    // Test encapsulation, original graph isn't modified
+    Assert.assertEquals(graph.nodes().size(), 7); 
+    Assert.assertEquals(graph.edges().size(), 6); 
   }
 }
