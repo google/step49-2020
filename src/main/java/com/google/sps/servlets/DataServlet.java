@@ -41,7 +41,6 @@ import javax.servlet.http.HttpServletResponse;
 
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
-
   /*
    * Called when a client submits a GET request to the /data URL
    */
