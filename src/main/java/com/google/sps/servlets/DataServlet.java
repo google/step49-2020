@@ -163,7 +163,7 @@ public class DataServlet extends HttpServlet {
    *
    * @param graph the graph to convert into a JSON String
    */
-  private String graphToJson(MutableGraph<GraphNode> graph, HashSet<String> roots) {
+  public String graphToJson(MutableGraph<GraphNode> graph, HashSet<String> roots) {
     Type typeOfNode = new TypeToken<Set<GraphNode>>() {}.getType();
     Type typeOfEdge = new TypeToken<Set<EndpointPair<GraphNode>>>() {}.getType();
     Type typeOfRoots = new TypeToken<Set<String>>() {}.getType();
@@ -172,7 +172,6 @@ public class DataServlet extends HttpServlet {
     String edgeJson = gson.toJson(graph.edges(), typeOfEdge);
     String rootsJson = gson.toJson(roots, typeOfRoots);
     String allJson = "[" + nodeJson + "," + edgeJson + "," + rootsJson + "]";
-    // String bothJson = "[" + nodeJson + "," + edgeJson + "]";
     return allJson;
   }
 
