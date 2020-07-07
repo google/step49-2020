@@ -128,7 +128,6 @@ public class DataServlet extends HttpServlet {
       // Convert thisNode into a graph node that may store additional information
       GraphNode graphNode = protoNodeToGraphNode(thisNode);
 
-
       // Update graph data structures to include the node
       // All nodes that haven't been visited before start out as roots
       if (!graphNodesMap.containsKey(nodeName)) {
@@ -136,7 +135,6 @@ public class DataServlet extends HttpServlet {
         graph.addNode(graphNode);
         graphNodesMap.put(nodeName, graphNode);
       }
-      
 
       // Add dependency edges to the graph
       for (String child : thisNode.getChildrenList()) {

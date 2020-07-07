@@ -411,7 +411,7 @@ public final class MutationTest {
    * graph and map were different therefore mutating one didn't affect
    * the other. Originally, node B was first added to both the graph
    * and map as a child of A but only updated in the map when it itself
-   * was processed. This test checks that the two are the same. 
+   * was processed. This test checks that the two are the same.
    */
   @Test
   public void addTokensToChild() {
@@ -465,7 +465,6 @@ public final class MutationTest {
     Set<GraphNode> graphNodes = graph.nodes();
     Assert.assertTrue(graphNodesMap.containsKey("B"));
     GraphNode newNodeB = graphNodesMap.get("B");
-
 
     Assert.assertEquals(graphNodes.size(), 3);
     Assert.assertTrue(graphNodes.contains(gNodeA));
