@@ -357,15 +357,20 @@ public class DataServlet extends HttpServlet {
             if (!visited.containsKey(gn)) {
               nextDepthNodes.add(gn);
               // Add the corresponding edge if the next layer isn't too deep
-              if (currDepth != maxDepth) {
-                graphToReturn.putEdge(curr, gn);
-              }
             }
           }
         }
       }
       // make the next layer the new current layer
       queue.addAll(nextDepthNodes);
+    }
+    // Add the edges that we need, edges are only relevant if they contain nodes in
+    // our graph
+    for (EndpointPair<GraphNode> edge : graphInput.edges()) {
+      if (graphToReturn.nodes().contains(edge.nodeU())
+          && graphToReturn.nodes().contains(edge.nodeV())) {
+        graphToReturn.putEdge(edge.nodeU(), edge.nodeV());
+      }
     }
     return graphToReturn;
   }
