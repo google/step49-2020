@@ -145,9 +145,17 @@ public final class GraphGenerationTest {
 
     nodeB.addChildren("C");
 
-    protoNodesMap.put("A", nodeA.build());
-    protoNodesMap.put("B", nodeB.build());
-    protoNodesMap.put("C", nodeC.build());
+    Node pNodeA = nodeA.build();
+    Node pNodeB = nodeB.build();
+    Node pNodeC = nodeC.build();
+
+    protoNodesMap.put("A", pNodeA);
+    protoNodesMap.put("B", pNodeB);
+    protoNodesMap.put("C", pNodeC);
+
+    gNodeA = servlet.protoNodeToGraphNode(pNodeA);
+    gNodeB = servlet.protoNodeToGraphNode(pNodeB);
+    gNodeC = servlet.protoNodeToGraphNode(pNodeC);
 
     MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
     HashMap<String, GraphNode> graphNodesMap = new HashMap<>();
