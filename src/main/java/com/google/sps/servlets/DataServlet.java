@@ -49,6 +49,12 @@ public class DataServlet extends HttpServlet {
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     response.setContentType("application/json");
     String depthParam = request.getParameter("depth");
+    if (depthParam == null) {
+      String error = "Improper depth parameter, cannot generate graph";
+      response.setHeader("serverError", error);
+      return;
+    }
+  
     int depthNumber = Integer.parseInt(depthParam);
 
     // PROTO Data structure:
