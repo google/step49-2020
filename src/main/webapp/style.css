@@ -1,0 +1,14 @@
+#graph {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    margin: 100px;
+    border: solid 1px black;
+}
+
+#errortext {
+  color: red;
+  font-size: 40px;
+}

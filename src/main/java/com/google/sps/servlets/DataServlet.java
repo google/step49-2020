@@ -15,22 +15,28 @@
 package com.google.sps.servlets;
 
 import com.google.common.graph.*;
+import com.google.gson.Gson;
 import com.google.sps.data.GraphNode;
 import com.proto.GraphProtos.Graph;
 import com.proto.GraphProtos.Node;
 import com.proto.MutationProtos.Mutation;
 import com.proto.MutationProtos.MutationList;
 import com.proto.MutationProtos.TokenMutation;
+import com.google.common.graph.EndpointPair;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import com.google.protobuf.Struct;
 import java.util.Map;
+import java.util.Set;
+import com.google.common.reflect.TypeToken;
+import java.lang.reflect.Type;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.json.JSONObject;
 
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
@@ -40,6 +46,7 @@ public class DataServlet extends HttpServlet {
    */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    response.setContentType("application/json");
 
     // PROTO Data structure:
     // Parse the contents  of graph.txt into a proto Graph object, and extract information
@@ -59,7 +66,11 @@ public class DataServlet extends HttpServlet {
     // Generate graph data structures from proto data structure
     boolean success = graphFromProtoNodes(protoNodesMap, graph, graphNodesMap);
 
-    // TODO: add code if success is false
+    if (!success) {
+      String error = "Failed to parse input graph into Guava graph - not a DAG!";
+      response.setHeader("serverError", error);
+      return;
+    }
 
     // Parse the contents of mutation.txt into a list of mutations
     List<Mutation> mutList =
@@ -67,9 +78,16 @@ public class DataServlet extends HttpServlet {
             .getMutationList();
 
     for (Mutation mut : mutList) {
-      boolean mutSuccess = mutateGraph(mut, graph, graphNodesMap);
-      // TODO: add code if mutSuccess is false
+      success = mutateGraph(mut, graph, graphNodesMap);
+      if (!success) {
+        String error = "Failed to apply mutation " + mut.toString() + " to graph";
+        response.setHeader("serverError", error);
+        return;
+      }
     }
+
+    String graphJson = graphToJson(graph);
+    response.getWriter().println(graphJson);
   }
 
   /*
@@ -92,9 +110,11 @@ public class DataServlet extends HttpServlet {
       // Convert thisNode into a graph node that may store additional information
       GraphNode graphNode = protoNodeToGraphNode(thisNode);
 
-      // Update graph data structures to include the node
-      graph.addNode(graphNode);
-      graphNodesMap.put(nodeName, graphNode);
+      // Update graph data structures to include the node as long as it doesn't already exist
+      if (!graphNodesMap.containsKey(nodeName)) {
+        graph.addNode(graphNode);
+        graphNodesMap.put(nodeName, graphNode);
+      }
 
       // Add dependency edges to the graph
       for (String child : thisNode.getChildrenList()) {
@@ -111,6 +131,22 @@ public class DataServlet extends HttpServlet {
       }
     }
     return true;
+  }
+
+  /*
+   * Converts a Guava graph into a String encoding of a Json Array. The first
+   * element of the array contains a Json representation of the nodes of the
+   * graph and the second a Json representation of the edges of the graph.
+   * @param graph the graph to convert into a JSON String
+   */
+  private String graphToJson(MutableGraph<GraphNode> graph) {
+    Type typeOfNode = new TypeToken<Set<GraphNode>>() {}.getType();
+    Type typeOfEdge = new TypeToken<Set<EndpointPair<GraphNode>>>() {}.getType();
+    Gson gson = new Gson();
+    String nodeJson = gson.toJson(graph.nodes(), typeOfNode);
+    String edgeJson = gson.toJson(graph.edges(), typeOfEdge);
+    String bothJson = new JSONObject().put("nodes", nodeJson).put("edges", edgeJson).toString();
+    return bothJson;
   }
 
   /*
