@@ -12,14 +12,14 @@
   <h1>
     Graph Visualization Tool
   </h1>
-  <select id="num-layers">
+  <select id="num-layers" onchange="generateGraph()">
     <option value=1 selected>1</option>
     <option value=2>2</option>
     <option value=3>3</option>
     <option value=4>4</option>
     <option value=0>0 (Roots only)</option>
   </select>
-
+  <br/>
   <div id="graph"></div>
   <script src="script.js"></script>
 </body>

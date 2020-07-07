@@ -21,7 +21,7 @@ async function generateGraph() {
   // Arrays to store the cytoscape graph node and edge objects
   let graphNodes = [];
   let graphEdges = [];
-  var selectedDepth = document.getElementById('num_layers');
+  var selectedDepth = document.getElementById('num-layers').value;
   const url = `/data?depth=${selectedDepth}`
   const response = await fetch(url);
 
