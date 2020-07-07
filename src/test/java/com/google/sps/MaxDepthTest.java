@@ -54,7 +54,7 @@ public class MaxDepthTest {
     gNodeA = servlet.protoNodeToGraphNode(nodeA.build());
     gNodeB = servlet.protoNodeToGraphNode(nodeB.build());
     gNodeC = servlet.protoNodeToGraphNode(nodeC.build());
-    gNodeD = servlet.protoNodeToGraphNode(nodeC.build());
+    gNodeD = servlet.protoNodeToGraphNode(nodeD.build());
     gNodeE = servlet.protoNodeToGraphNode(nodeE.build());
     gNodeF = servlet.protoNodeToGraphNode(nodeF.build());
   }
@@ -141,6 +141,8 @@ public class MaxDepthTest {
 
     Assert.assertEquals(graphNodes.size(), 3);
     Assert.assertTrue(graphNodes.contains(gNodeA));
+    Assert.assertTrue(graphNodes.contains(gNodeB));
+    Assert.assertTrue(graphNodes.contains(gNodeC));
   }
 
   /** Distance is greater than the max distance from root to a node, the entire graph is kept */
@@ -171,6 +173,8 @@ public class MaxDepthTest {
 
     Assert.assertEquals(graphNodes.size(), 3);
     Assert.assertTrue(graphNodes.contains(gNodeA));
+    Assert.assertTrue(graphNodes.contains(gNodeB));
+    Assert.assertTrue(graphNodes.contains(gNodeC));
   }
 
   /**
@@ -212,6 +216,10 @@ public class MaxDepthTest {
     Set<GraphNode> graphNodes = truncatedGraph.nodes();
 
     Assert.assertEquals(graphNodes.size(), 5);
+    Assert.assertTrue(graphNodes.contains(gNodeA));
+    Assert.assertTrue(graphNodes.contains(gNodeB));
+    Assert.assertTrue(graphNodes.contains(gNodeC));
+    Assert.assertTrue(graphNodes.contains(gNodeD));
     Assert.assertTrue(graphNodes.contains(gNodeE));
   }
 
@@ -244,6 +252,8 @@ public class MaxDepthTest {
     Set<GraphNode> graphNodes = truncatedGraph.nodes();
 
     Assert.assertEquals(graphNodes.size(), 2);
+    Assert.assertTrue(graphNodes.contains(gNodeA));
+    Assert.assertTrue(graphNodes.contains(gNodeC));
   }
 
   /** More than one root node to calculate the depth from */
@@ -280,5 +290,9 @@ public class MaxDepthTest {
 
     Assert.assertEquals(graphNodes.size(), 4);
     Assert.assertFalse(graphNodes.contains(gNodeC));
+    Assert.assertTrue(graphNodes.contains(gNodeA));
+    Assert.assertTrue(graphNodes.contains(gNodeB));
+    Assert.assertTrue(graphNodes.contains(gNodeD));
+    Assert.assertTrue(graphNodes.contains(gNodeE));
   }
 }
