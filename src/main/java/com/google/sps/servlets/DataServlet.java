@@ -24,12 +24,10 @@ import com.proto.MutationProtos.MutationList;
 import com.proto.MutationProtos.TokenMutation;
 import com.google.common.graph.EndpointPair;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import com.google.protobuf.Struct;
-import com.google.protobuf.TextFormat;
 
 import java.util.Map;
 import java.util.Set;
@@ -58,11 +56,12 @@ public class DataServlet extends HttpServlet {
     /*
      * The below code is used to read a graph specified in textproto form
      */
-    // InputStreamReader graphReader = new InputStreamReader(getServletContext().getResourceAsStream("/WEB-INF/initial_graph.textproto"));
+    // InputStreamReader graphReader = new
+    // InputStreamReader(getServletContext().getResourceAsStream("/WEB-INF/initial_graph.textproto"));
     // Graph.Builder graphBuilder = Graph.newBuilder();
     // TextFormat.merge(graphReader, graphBuilder);
     // Graph protoGraph = graphBuilder.build();
-    
+
     /*
      * This code is used to read a graph specified in proto binary format.
      */
@@ -90,7 +89,8 @@ public class DataServlet extends HttpServlet {
     /*
      * The below code is used to read a mutation list specified in textproto form
      */
-    // InputStreamReader mutReader = new InputStreamReader(getServletContext().getResourceAsStream("/WEB-INF/mutations.textproto"));
+    // InputStreamReader mutReader = new
+    // InputStreamReader(getServletContext().getResourceAsStream("/WEB-INF/mutations.textproto"));
     // MutationList.Builder mutBuilder = MutationList.newBuilder();
     // TextFormat.merge(mutReader, mutBuilder);
     // List<Mutation> mutList = mutBuilder.build().getMutationList();
