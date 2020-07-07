@@ -127,6 +127,3 @@ function getGraphDisplay(graphNodes, graphEdges) {
     }
   });
 }
-
-
-generateGraph();
