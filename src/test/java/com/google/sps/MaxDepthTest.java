@@ -90,11 +90,14 @@ public class MaxDepthTest {
     MutableGraph<GraphNode> truncatedGraph =
         servlet.getGraphWithMaxDepth(graph, roots, graphNodesMap, 0);
     Set<GraphNode> graphNodes = truncatedGraph.nodes();
+    Set<EndpointPair<GraphNode>> graphEdges = truncatedGraph.edges();
 
     Assert.assertEquals(graphNodes.size(), 1);
     Assert.assertTrue(graphNodes.contains(gNodeA));
     Assert.assertFalse(graphNodes.contains(gNodeB));
     Assert.assertFalse(graphNodes.contains(gNodeC));
+
+    Assert.assertEquals(graphEdges.size(), 0);
   }
 
   /** Invalid depth should not return anything */
@@ -117,8 +120,10 @@ public class MaxDepthTest {
     MutableGraph<GraphNode> truncatedGraph =
         servlet.getGraphWithMaxDepth(graph, roots, graphNodesMap, -2);
     Set<GraphNode> graphNodes = truncatedGraph.nodes();
+    Set<EndpointPair<GraphNode>> graphEdges = truncatedGraph.edges();
 
     Assert.assertTrue(graphNodes.isEmpty());
+    Assert.assertTrue(graphEdges.isEmpty());
   }
 
   /** Distance is equal to the max distance from root to a node, the entire graph is kept */
@@ -277,7 +282,7 @@ public class MaxDepthTest {
     Assert.assertEquals(graphEdges.size(), 0);
   }
 
-  /** More than one root node to calculate the depth from */
+  /** More than one root node to calculate the depth from, algorithm will find shortest path */
   @Test
   public void multipleRoots() {
     nodeA.addChildren("B");
@@ -320,6 +325,7 @@ public class MaxDepthTest {
     Assert.assertEquals(graphEdges.size(), 2);
   }
 
+  /** This test mirrors the example graph we have in graph.txt after the mutations specified. */
   @Test
   public void complexGraph() {
     nodeA.addChildren("B");
