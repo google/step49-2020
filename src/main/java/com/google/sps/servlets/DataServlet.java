@@ -135,6 +135,7 @@ public class DataServlet extends HttpServlet {
 
       // Update graph data structures to include the node as long as it doesn't already exist
       if (!graphNodesMap.containsKey(nodeName)) {
+        roots.add(nodeName);
         graph.addNode(graphNode);
         graphNodesMap.put(nodeName, graphNode);
       }
