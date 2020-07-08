@@ -86,7 +86,7 @@ function displayError(errorMsg) {
  * data. Assumes that the graph is a DAG to display it in the optimal layout.
  */
 function getGraphDisplay(graphNodes, graphEdges) {
-  cytoscape({
+  const cy = cytoscape({
     container: document.getElementById("graph"),
     elements: {
       nodes: graphNodes,
@@ -126,4 +126,33 @@ function getGraphDisplay(graphNodes, graphEdges) {
       spacingFactor: 2
     }
   });
+  let searchElement = document.getElementById('search');
+  searchElement.onchange = function() {
+    if (searchNode(cy, searchElement.value)) {
+      document.getElementById('searcherror').innerText = "";
+    } else {
+      document.getElementById('searcherror').innerText = "Node does not exist.";
+    }
+  };
+  
+}
+
+function searchNode(cy, query) {
+  let target = findNodeInGraph(cy, query);
+  if (target) {
+    cy.fit(target, 500);
+    return true;
+  } else {
+    cy.reset();
+    return false;
+  }
+}
+
+function findNodeInGraph(cy, id) {
+  let target = cy.$('#'+id);
+  if (target.length != 0) {
+    return target;
+  } else {
+    return null;
+  }
 }
