@@ -17,17 +17,13 @@ package com.google.sps.data;
 // import com.proto.GraphProtos.*;
 
 import com.google.common.graph.*;
-import com.google.sps.data.DataGraph;
-import com.google.sps.data.GraphNode;
 import com.proto.GraphProtos.Graph;
 import com.proto.GraphProtos.Node;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import com.google.protobuf.Struct;
 import java.util.Map;
-import java.util.Set;
 import java.util.HashSet;
 
 public class DataGraph {
@@ -37,7 +33,7 @@ public class DataGraph {
 
   /**
    * Sets all the variables based on a protograph
-   * 
+   *
    * @param protoGraph the protograph to construct Guava Graph from
    */
   public DataGraph(Graph protoGraph) {
@@ -126,5 +122,4 @@ public class DataGraph {
     Struct newMetadata = Struct.newBuilder().mergeFrom(thisNode.getMetadata()).build();
     return GraphNode.create(thisNode.getName(), newTokenList, newMetadata);
   }
-
 }

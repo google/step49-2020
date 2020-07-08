@@ -2,15 +2,9 @@ package com.google.sps.data;
 
 import com.google.common.graph.*;
 import com.google.gson.Gson;
-import com.google.sps.data.DataGraph;
-import com.google.sps.data.GraphNode;
-import com.proto.GraphProtos.Graph;
-import com.proto.GraphProtos.Node;
 import com.proto.MutationProtos.Mutation;
-import com.proto.MutationProtos.MutationList;
 import com.proto.MutationProtos.TokenMutation;
 import com.google.common.graph.EndpointPair;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayDeque;
@@ -32,20 +26,21 @@ public class Utility {
    * @param graph the graph to convert into a JSON String
    */
   public static String graphToJson(MutableGraph<GraphNode> graph, HashSet<String> roots) {
-    Type typeOfNode = new TypeToken<Set<GraphNode>>() {
-    }.getType();
-    Type typeOfEdge = new TypeToken<Set<EndpointPair<GraphNode>>>() {
-    }.getType();
-    Type typeOfRoots = new TypeToken<Set<String>>() {
-    }.getType();
+    Type typeOfNode = new TypeToken<Set<GraphNode>>() {}.getType();
+    Type typeOfEdge = new TypeToken<Set<EndpointPair<GraphNode>>>() {}.getType();
+    Type typeOfRoots = new TypeToken<Set<String>>() {}.getType();
     Gson gson = new Gson();
     String nodeJson = gson.toJson(graph.nodes(), typeOfNode);
     String edgeJson = gson.toJson(graph.edges(), typeOfEdge);
     String rootsJson = gson.toJson(roots, typeOfRoots);
-    String allJson = new JSONObject().put("nodes", nodeJson).put("edges", edgeJson).put("roots", rootsJson).toString();
+    String allJson =
+        new JSONObject()
+            .put("nodes", nodeJson)
+            .put("edges", edgeJson)
+            .put("roots", rootsJson)
+            .toString();
     return allJson;
   }
-
 
   /*
    * Changes the graph according to the given mutation object. The parameters are
@@ -62,7 +57,10 @@ public class Utility {
    *
    * @return true if the mutation was successful, false otherwise
    */
-  public static boolean mutateGraph(Mutation mut, MutableGraph<GraphNode> graph, Map<String, GraphNode> graphNodesMap,
+  public static boolean mutateGraph(
+      Mutation mut,
+      MutableGraph<GraphNode> graph,
+      Map<String, GraphNode> graphNodesMap,
       HashSet<String> roots) {
     // Nodes affected by the mutation
     // second node only applicable for adding an edge and removing an edge
@@ -82,7 +80,8 @@ public class Utility {
         // New lone node is a root
         roots.add(startName);
         // Create a new node with the given name and add it to the graph and the map
-        GraphNode newGraphNode = GraphNode.create(startName, new ArrayList<>(), Struct.newBuilder().build());
+        GraphNode newGraphNode =
+            GraphNode.create(startName, new ArrayList<>(), Struct.newBuilder().build());
         graph.addNode(newGraphNode);
         graphNodesMap.put(startName, newGraphNode);
         break;
@@ -160,19 +159,21 @@ public class Utility {
   }
 
   /**
-   * Given an input graph, roots (as strings), a node map (from string to Graph
-   * Nodes), and a maximum depth, the function returns a graph with only nodes up
-   * to a max depth. Edges that don't contain nodes both reachable up until the
-   * max depth are discarded.
+   * Given an input graph, roots (as strings), a node map (from string to Graph Nodes), and a
+   * maximum depth, the function returns a graph with only nodes up to a max depth. Edges that don't
+   * contain nodes both reachable up until the max depth are discarded.
    *
-   * @param graphInput    the input graph, as a Mutatable Graph
-   * @param roots         the name (string) of the roots
+   * @param graphInput the input graph, as a Mutatable Graph
+   * @param roots the name (string) of the roots
    * @param graphNodesMap a mapping of strings to GraphNodes
-   * @param maxDepth      the maximum depth of a node from a root
+   * @param maxDepth the maximum depth of a node from a root
    * @return a graph with nodes only a certain distance from a root
    */
-  public static MutableGraph<GraphNode> getGraphWithMaxDepth(MutableGraph<GraphNode> graphInput, Set<String> roots,
-      HashMap<String, GraphNode> graphNodesMap, int maxDepth) {
+  public static MutableGraph<GraphNode> getGraphWithMaxDepth(
+      MutableGraph<GraphNode> graphInput,
+      Set<String> roots,
+      HashMap<String, GraphNode> graphNodesMap,
+      int maxDepth) {
 
     MutableGraph<GraphNode> graphToReturn = GraphBuilder.directed().build();
     if (maxDepth < 0) {
@@ -191,7 +192,8 @@ public class Utility {
     int nextDepthElements = 0; // Number of elements in the next layer/depth
 
     while (!queue.isEmpty()) {
-      GraphNode curr = queue.poll(); // Add node first, worry about edges after we have all the nodes we need
+      GraphNode curr =
+          queue.poll(); // Add node first, worry about edges after we have all the nodes we need
 
       // Add to the graph to return, within the max depth height from root
       if (!visited.containsKey(curr)) {
@@ -222,7 +224,8 @@ public class Utility {
     // Add the edges that we need, edges are only relevant if they contain nodes in
     // our graph
     for (EndpointPair<GraphNode> edge : graphInput.edges()) {
-      if (graphToReturn.nodes().contains(edge.nodeU()) && graphToReturn.nodes().contains(edge.nodeV())) {
+      if (graphToReturn.nodes().contains(edge.nodeU())
+          && graphToReturn.nodes().contains(edge.nodeV())) {
         graphToReturn.putEdge(edge.nodeU(), edge.nodeV());
       }
     }

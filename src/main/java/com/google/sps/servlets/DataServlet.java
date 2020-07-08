@@ -15,32 +15,18 @@
 package com.google.sps.servlets;
 
 import com.google.common.graph.*;
-import com.google.gson.Gson;
 import com.google.sps.data.DataGraph;
 import com.google.sps.data.GraphNode;
 import com.google.sps.data.Utility;
 import com.proto.GraphProtos.Graph;
-import com.proto.GraphProtos.Node;
 import com.proto.MutationProtos.Mutation;
 import com.proto.MutationProtos.MutationList;
-import com.proto.MutationProtos.TokenMutation;
-import com.google.common.graph.EndpointPair;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import com.google.protobuf.Struct;
-import java.util.Map;
-import java.util.HashSet;
-import java.util.Set;
-import com.google.common.reflect.TypeToken;
-import java.lang.reflect.Type;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.json.JSONObject;
 
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
@@ -84,10 +70,11 @@ public class DataServlet extends HttpServlet {
     // should be null
     if (currDataGraph == null || originalDataGraph == null) {
 
-      Graph protoGraph = Graph.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/graph.txt"));
+      Graph protoGraph =
+          Graph.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/graph.txt"));
       // Originally both set to same data
-      currDataGraph = new DataGraph(protoGraph); 
-      originalDataGraph = new DataGraph(protoGraph); 
+      currDataGraph = new DataGraph(protoGraph);
+      originalDataGraph = new DataGraph(protoGraph);
     }
 
     if (!success) {
@@ -99,11 +86,17 @@ public class DataServlet extends HttpServlet {
     // Mutations file hasn't been read yet
     if (mutList == null) {
       // Parse the contents of mutation.txt into a list of mutations
-      mutList = MutationList.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/mutations.txt"))
-          .getMutationList();
+      mutList =
+          MutationList.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/mutations.txt"))
+              .getMutationList();
       // Only apply mutations once
       for (Mutation mut : mutList) {
-        success = Utility.mutateGraph(mut, currDataGraph.getGraph(), currDataGraph.getGraphNodesMap(), currDataGraph.getRoots());
+        success =
+            Utility.mutateGraph(
+                mut,
+                currDataGraph.getGraph(),
+                currDataGraph.getGraphNodesMap(),
+                currDataGraph.getRoots());
         if (!success) {
           String error = "Failed to apply mutation " + mut.toString() + " to graph";
           response.setHeader("serverError", error);
@@ -112,7 +105,12 @@ public class DataServlet extends HttpServlet {
       }
     }
 
-    MutableGraph<GraphNode> truncatedGraph = Utility.getGraphWithMaxDepth(currDataGraph.getGraph(), currDataGraph.getRoots(), currDataGraph.getGraphNodesMap(), depthNumber);
+    MutableGraph<GraphNode> truncatedGraph =
+        Utility.getGraphWithMaxDepth(
+            currDataGraph.getGraph(),
+            currDataGraph.getRoots(),
+            currDataGraph.getGraphNodesMap(),
+            depthNumber);
     String graphJson = Utility.graphToJson(truncatedGraph, currDataGraph.getRoots());
     response.getWriter().println(graphJson);
   }
