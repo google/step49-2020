@@ -6,7 +6,9 @@ module.exports = {
   entry: './src/main/webapp/script.js',
   output: {
     filename: 'main.js',
-    path: path.join(__dirname, '/src/main/webapp/dist')
+    path: path.join(__dirname, '/src/main/webapp/dist'),
+    libraryTarget: 'var',
+    library: 'graph'
   },
   module: {
     rules: [
