@@ -37,6 +37,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.json.JSONObject;
 
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
@@ -134,7 +135,7 @@ public class DataServlet extends HttpServlet {
       // Convert thisNode into a graph node that may store additional information
       GraphNode graphNode = protoNodeToGraphNode(thisNode);
 
-      // Update graph data structures to include the node
+      // Update graph data structures to include the node as long as it doesn't already exist
       if (!graphNodesMap.containsKey(nodeName)) {
         graph.addNode(graphNode);
         graphNodesMap.put(nodeName, graphNode);
@@ -169,7 +170,7 @@ public class DataServlet extends HttpServlet {
     Gson gson = new Gson();
     String nodeJson = gson.toJson(graph.nodes(), typeOfNode);
     String edgeJson = gson.toJson(graph.edges(), typeOfEdge);
-    String bothJson = "[" + nodeJson + "," + edgeJson + "]";
+    String bothJson = new JSONObject().put("nodes", nodeJson).put("edges", edgeJson).toString();
     return bothJson;
   }
 
