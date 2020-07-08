@@ -25,23 +25,11 @@ import tippy, { sticky } from 'tippy.js';
 import 'tippy.js/dist/tippy.css';
 import 'tippy.js/dist/backdrop.css';
 import 'tippy.js/animations/shift-away.css';
-// let cytoscape = require('cytoscape');
-// let dagre = require('cytoscape-dagre');
-// let popper = require('cytoscape-popper');
-// let tippy = require('tippy.js').default;
-export { generateGraph };
 
-// module.exports = {};
-// module.exports["getTooltipContent"] = getTooltipContent;
-// module.exports["AddNumber"] = addNumber;
-// module.exports["generateGraph"] = generateGraph;
+export default initializeTippy;
 
 cytoscape.use(popper); // register extension
 cytoscape.use(dagre); // register extension
-
-function addNumber(a, b) {
-  return a+b;
-}
 
 async function generateGraph() {
   // Arrays to store the cytoscape graph node and edge objects
