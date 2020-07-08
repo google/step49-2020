@@ -194,9 +194,8 @@ public class DataServlet extends HttpServlet {
   }
 
   /*
-   * Converts a Guava graph into a String encoding of a Json Array. The first
-   * element of the array contains a Json representation of the nodes of the graph
-   * and the second a Json representation of the edges of the graph.
+   * Converts a Guava graph into a String encoding of a JSON Object. The object
+   * contains nodes, edges, and the roots of the graph.
    *
    * @param graph the graph to convert into a JSON String
    */
@@ -208,13 +207,13 @@ public class DataServlet extends HttpServlet {
     String nodeJson = gson.toJson(graph.nodes(), typeOfNode);
     String edgeJson = gson.toJson(graph.edges(), typeOfEdge);
     String rootsJson = gson.toJson(roots, typeOfRoots);
-    String bothJson =
+    String allJson =
         new JSONObject()
             .put("nodes", nodeJson)
             .put("edges", edgeJson)
             .put("roots", rootsJson)
             .toString();
-    return bothJson;
+    return allJson;
   }
 
   /*
@@ -375,31 +374,39 @@ public class DataServlet extends HttpServlet {
       GraphNode rootNode = graphNodesMap.get(rootName);
       queue.add(rootNode);
     }
+    int currentDepth = 0;
+    int elementsInThisDepth = roots.size(); // Number of elements in current layer/depth
+    int nextDepthElements = 0; // Number of elements in the next layer/depth
 
-    HashSet<GraphNode> nextDepthNodes;
+    while (!queue.isEmpty()) {
+      GraphNode curr =
+          queue.poll(); // Add node first, worry about edges after we have all the nodes we need
 
-    // Process the graph layer by layer upto maxDepth
-    for (int currDepth = 0; currDepth <= maxDepth; currDepth++) {
-      nextDepthNodes = new HashSet<>();
-      while (!queue.isEmpty()) {
-        GraphNode curr = queue.poll();
+      // Add to the graph to return, within the max depth height from root
+      if (!visited.containsKey(curr)) {
+        graphToReturn.addNode(curr);
+        visited.put(curr, true);
 
-        // Add to the graph to return
-        if (!visited.containsKey(curr)) {
-          graphToReturn.addNode(curr);
-          visited.put(curr, true);
-
-          // Add all the node's children to the next layer
-          for (GraphNode gn : graphInput.successors(curr)) {
-            if (!visited.containsKey(gn)) {
-              nextDepthNodes.add(gn);
-              // Add the corresponding edge if the next layer isn't too deep
-            }
+        // The number of outgoing edges from the current node, number of nodes in the
+        // next layer
+        for (GraphNode gn : graphInput.successors(curr)) {
+          if (!visited.containsKey(gn)) {
+            queue.add(gn);
+            nextDepthElements++;
           }
         }
       }
-      // make the next layer the new current layer
-      queue.addAll(nextDepthNodes);
+      elementsInThisDepth--; // Decrement elements in depth since we've looked at the node
+      // If the current layer has been entirely processed (we decrement since we
+      // processed the node)
+      if (elementsInThisDepth == 0) {
+        currentDepth++;
+        if (currentDepth > maxDepth) {
+          break;
+        }
+        elementsInThisDepth = nextDepthElements;
+        nextDepthElements = 0;
+      }
     }
     // Add the edges that we need, edges are only relevant if they contain nodes in
     // our graph
