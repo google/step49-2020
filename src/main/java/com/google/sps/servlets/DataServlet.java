@@ -132,6 +132,26 @@ public class DataServlet extends HttpServlet {
     response.getWriter().println(graphJson);
   }
 
+  /**
+   * 
+   * @param numMutations the number of mutations to apply
+   * @return whether all the mutations were applied successfully
+   */
+  private boolean applyMutations(int numMutations) {
+    // TODO: set graph to the original graph
+   int count = 0;
+    boolean success = true;
+    for (Mutation mut : mutList) {
+      if (count < numMutations) {
+        success = mutateGraph(mut, graph, graphNodesMap, roots);
+        if (!success) {
+          return false;
+        }
+      }
+    }
+    return false;
+  }
+
   /*
    * Takes in a map from node name to proto-parsed node object. Populates graph
    * with node and edge information and graphNodesMap with links from node names
@@ -222,7 +242,8 @@ public class DataServlet extends HttpServlet {
   }
 
   /*
-   * Changes the graph according to the given mutation object
+   * Changes the graph according to the given mutation object. The parameters are
+   * mutated in place.
    *
    * @param mut the mutation to affect
    *
@@ -230,7 +251,8 @@ public class DataServlet extends HttpServlet {
    *
    * @param graphNodesMap a reference of existing nodes, also to be mutated
    *
-   * @param roots the roots of the graph before the mutation
+   * @param roots the roots of the graph before the mutation. Changed if
+   * necessary.
    *
    * @return true if the mutation was successful, false otherwise
    */
