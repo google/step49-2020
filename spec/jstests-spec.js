@@ -2,9 +2,15 @@ import  {initializeTippy, generateGraph, getUrl } from "../src/main/webapp/scrip
 import cytoscape from "cytoscape";
 
 describe("Checking that fetch url is correctly constructed", function() {
-  it("Input valid value for depth", function() {
-    let numLayers = document.createElement("input");
+  let numLayers = {};
+  beforeEach(function () {
+    numLayers = document.createElement("input");
     numLayers.id = "num-layers";
+  })
+  afterEach(function () {
+    document.body.innerHTML = '';
+  })
+  it("Input valid large value for depth", function() {
     numLayers.value = 15;
     document.body.appendChild(numLayers);
 
@@ -14,6 +20,83 @@ describe("Checking that fetch url is correctly constructed", function() {
     let constructedUrl = new URLSearchParams(requestParams);
     expect(constructedUrl.has("depth")).toBe(true);
     expect(constructedUrl.get("depth")).toBe("15");
+  });
+  it("Input valid small value for depth", function() {
+    numLayers.value = 2;
+    document.body.appendChild(numLayers);
+
+    let requestString = getUrl();
+    let requestParams = requestString.substring(requestString.indexOf("?"));
+    
+    let constructedUrl = new URLSearchParams(requestParams);
+    expect(constructedUrl.has("depth")).toBe(true);
+    expect(constructedUrl.get("depth")).toBe("2");
+  });
+  it("Input no value for depth", function() {
+    document.body.appendChild(numLayers);
+
+    let requestString = getUrl();
+    let requestParams = requestString.substring(requestString.indexOf("?"));
+    
+    let constructedUrl = new URLSearchParams(requestParams);
+    expect(constructedUrl.has("depth")).toBe(true);
+    expect(constructedUrl.get("depth")).toBe("3");
+
+  });
+  it("Input negative value for depth", function() {
+    numLayers.value = -5;
+    document.body.appendChild(numLayers);
+
+    let requestString = getUrl();
+    let requestParams = requestString.substring(requestString.indexOf("?"));
+    
+    let constructedUrl = new URLSearchParams(requestParams);
+    expect(constructedUrl.has("depth")).toBe(true);
+    expect(constructedUrl.get("depth")).toBe("0");
+  });
+  it("Input too large value for depth", function() {
+    numLayers.value = 80;
+    document.body.appendChild(numLayers);
+
+    let requestString = getUrl();
+    let requestParams = requestString.substring(requestString.indexOf("?"));
+    
+    let constructedUrl = new URLSearchParams(requestParams);
+    expect(constructedUrl.has("depth")).toBe(true);
+    expect(constructedUrl.get("depth")).toBe("20");
+  });
+  it("Input decimal for depth", function() {
+    numLayers.value = 2.8;
+    document.body.appendChild(numLayers);
+
+    let requestString = getUrl();
+    let requestParams = requestString.substring(requestString.indexOf("?"));
+    
+    let constructedUrl = new URLSearchParams(requestParams);
+    expect(constructedUrl.has("depth")).toBe(true);
+    expect(constructedUrl.get("depth")).toBe("3");
+  });
+  it("Input negative decimal for depth", function() {
+    numLayers.value = -2.8;
+    document.body.appendChild(numLayers);
+
+    let requestString = getUrl();
+    let requestParams = requestString.substring(requestString.indexOf("?"));
+    
+    let constructedUrl = new URLSearchParams(requestParams);
+    expect(constructedUrl.has("depth")).toBe(true);
+    expect(constructedUrl.get("depth")).toBe("0");
+  });
+  it("Input large decimal for depth", function() {
+    numLayers.value = 200.8;
+    document.body.appendChild(numLayers);
+
+    let requestString = getUrl();
+    let requestParams = requestString.substring(requestString.indexOf("?"));
+    
+    let constructedUrl = new URLSearchParams(requestParams);
+    expect(constructedUrl.has("depth")).toBe(true);
+    expect(constructedUrl.get("depth")).toBe("20");
   });
 })
 
