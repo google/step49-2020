@@ -63,8 +63,7 @@ public class DataServlet extends HttpServlet {
     // from the proto object into a map. This is used to store the proto input and
     // isn't updated
     // with mutations.
-    Graph protoGraph =
-        Graph.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/graph.txt"));
+    Graph protoGraph = Graph.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/graph.txt"));
     Map<String, Node> protoNodesMap = protoGraph.getNodesMapMap();
 
     // GRAPH Data structures:
@@ -88,9 +87,8 @@ public class DataServlet extends HttpServlet {
       return;
     }
     // Parse the contents of mutation.txt into a list of mutations
-    List<Mutation> mutList =
-        MutationList.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/mutations.txt"))
-            .getMutationList();
+    List<Mutation> mutList = MutationList.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/mutations.txt"))
+        .getMutationList();
 
     for (Mutation mut : mutList) {
       success = mutateGraph(mut, graph, graphNodesMap, roots);
@@ -100,8 +98,7 @@ public class DataServlet extends HttpServlet {
         return;
       }
     }
-    MutableGraph<GraphNode> truncatedGraph =
-        getGraphWithMaxDepth(graph, roots, graphNodesMap, depthNumber);
+    MutableGraph<GraphNode> truncatedGraph = getGraphWithMaxDepth(graph, roots, graphNodesMap, depthNumber);
     String graphJson = graphToJson(truncatedGraph, roots);
     response.getWriter().println(graphJson);
   }
@@ -122,11 +119,8 @@ public class DataServlet extends HttpServlet {
    *
    * @return false if an error occurred, true otherwise
    */
-  public boolean graphFromProtoNodes(
-      Map<String, Node> protoNodesMap,
-      MutableGraph<GraphNode> graph,
-      Map<String, GraphNode> graphNodesMap,
-      HashSet<String> roots) {
+  public boolean graphFromProtoNodes(Map<String, Node> protoNodesMap, MutableGraph<GraphNode> graph,
+      Map<String, GraphNode> graphNodesMap, HashSet<String> roots) {
 
     for (String nodeName : protoNodesMap.keySet()) {
       Node thisNode = protoNodesMap.get(nodeName);
@@ -168,19 +162,17 @@ public class DataServlet extends HttpServlet {
    * @param graph the graph to convert into a JSON String
    */
   public String graphToJson(MutableGraph<GraphNode> graph, HashSet<String> roots) {
-    Type typeOfNode = new TypeToken<Set<GraphNode>>() {}.getType();
-    Type typeOfEdge = new TypeToken<Set<EndpointPair<GraphNode>>>() {}.getType();
-    Type typeOfRoots = new TypeToken<Set<String>>() {}.getType();
+    Type typeOfNode = new TypeToken<Set<GraphNode>>() {
+    }.getType();
+    Type typeOfEdge = new TypeToken<Set<EndpointPair<GraphNode>>>() {
+    }.getType();
+    Type typeOfRoots = new TypeToken<Set<String>>() {
+    }.getType();
     Gson gson = new Gson();
     String nodeJson = gson.toJson(graph.nodes(), typeOfNode);
     String edgeJson = gson.toJson(graph.edges(), typeOfEdge);
     String rootsJson = gson.toJson(roots, typeOfRoots);
-    String allJson =
-        new JSONObject()
-            .put("nodes", nodeJson)
-            .put("edges", edgeJson)
-            .put("roots", rootsJson)
-            .toString();
+    String allJson = new JSONObject().put("nodes", nodeJson).put("edges", edgeJson).put("roots", rootsJson).toString();
     return allJson;
   }
 
@@ -212,10 +204,7 @@ public class DataServlet extends HttpServlet {
    *
    * @return true if the mutation was successful, false otherwise
    */
-  public boolean mutateGraph(
-      Mutation mut,
-      MutableGraph<GraphNode> graph,
-      Map<String, GraphNode> graphNodesMap,
+  public boolean mutateGraph(Mutation mut, MutableGraph<GraphNode> graph, Map<String, GraphNode> graphNodesMap,
       HashSet<String> roots) {
     // Nodes affected by the mutation
     // second node only applicable for adding an edge and removing an edge
@@ -235,8 +224,7 @@ public class DataServlet extends HttpServlet {
         // New lone node is a root
         roots.add(startName);
         // Create a new node with the given name and add it to the graph and the map
-        GraphNode newGraphNode =
-            GraphNode.create(startName, new ArrayList<>(), Struct.newBuilder().build());
+        GraphNode newGraphNode = GraphNode.create(startName, new ArrayList<>(), Struct.newBuilder().build());
         graph.addNode(newGraphNode);
         graphNodesMap.put(startName, newGraphNode);
         break;
@@ -314,21 +302,19 @@ public class DataServlet extends HttpServlet {
   }
 
   /**
-   * Given an input graph, roots (as strings), a node map (from string to Graph Nodes), and a
-   * maximum depth, the function returns a graph with only nodes up to a max depth. Edges that don't
-   * contain nodes both reachable up until the max depth are discarded.
+   * Given an input graph, roots (as strings), a node map (from string to Graph
+   * Nodes), and a maximum depth, the function returns a graph with only nodes up
+   * to a max depth. Edges that don't contain nodes both reachable up until the
+   * max depth are discarded.
    *
-   * @param graphInput the input graph, as a Mutatable Graph
-   * @param roots the name (string) of the roots
+   * @param graphInput    the input graph, as a Mutatable Graph
+   * @param roots         the name (string) of the roots
    * @param graphNodesMap a mapping of strings to GraphNodes
-   * @param maxDepth the maximum depth of a node from a root
+   * @param maxDepth      the maximum depth of a node from a root
    * @return a graph with nodes only a certain distance from a root
    */
-  public MutableGraph<GraphNode> getGraphWithMaxDepth(
-      MutableGraph<GraphNode> graphInput,
-      Set<String> roots,
-      HashMap<String, GraphNode> graphNodesMap,
-      int maxDepth) {
+  public MutableGraph<GraphNode> getGraphWithMaxDepth(MutableGraph<GraphNode> graphInput, Set<String> roots,
+      HashMap<String, GraphNode> graphNodesMap, int maxDepth) {
 
     MutableGraph<GraphNode> graphToReturn = GraphBuilder.directed().build();
     if (maxDepth < 0) {
@@ -342,36 +328,43 @@ public class DataServlet extends HttpServlet {
       GraphNode rootNode = graphNodesMap.get(rootName);
       queue.add(rootNode);
     }
+    int currentDepth = 0;
+    int elementsInThisDepth = roots.size(); // Number of elements in current layer/depth
+    int nextDepthElements = 0; // Number of elements in the next layer/depth
 
-    HashSet<GraphNode> nextDepthNodes;
+    while (!queue.isEmpty()) {
+      GraphNode curr = queue.poll(); // Add node first, worry about edges after we have all the nodes we need
 
-    // Process the graph layer by layer upto maxDepth
-    for (int currDepth = 0; currDepth <= maxDepth; currDepth++) {
-      nextDepthNodes = new HashSet<>();
-      while (!queue.isEmpty()) {
-        GraphNode curr = queue.poll();
+      // Add to the graph to return, within the max depth height from root
+      if (!visited.containsKey(curr)) {
+        graphToReturn.addNode(curr);
+        visited.put(curr, true);
 
-        // Add to the graph to return
-        if (!visited.containsKey(curr)) {
-          graphToReturn.addNode(curr);
-          visited.put(curr, true);
-
-          // Add all the node's children to the next layer
-          for (GraphNode gn : graphInput.successors(curr)) {
-            if (!visited.containsKey(gn)) {
-              nextDepthNodes.add(gn);
-            }
+        // The number of outgoing edges from the current node, number of nodes in the
+        // next layer
+        for (GraphNode gn : graphInput.successors(curr)) {
+          if (!visited.containsKey(gn)) {
+            queue.add(gn);
+            nextDepthElements++;
           }
         }
       }
-      // make the next layer the new current layer
-      queue.addAll(nextDepthNodes);
+      elementsInThisDepth--; // Decrement elements in depth since we've looked at the node
+      // If the current layer has been entirely processed (we decrement since we
+      // processed the node)
+      if (elementsInThisDepth == 0) {
+        currentDepth++;
+        if (currentDepth > maxDepth) {
+          break;
+        }
+        elementsInThisDepth = nextDepthElements;
+        nextDepthElements = 0;
+      }
     }
     // Add the edges that we need, edges are only relevant if they contain nodes in
     // our graph
     for (EndpointPair<GraphNode> edge : graphInput.edges()) {
-      if (graphToReturn.nodes().contains(edge.nodeU())
-          && graphToReturn.nodes().contains(edge.nodeV())) {
+      if (graphToReturn.nodes().contains(edge.nodeU()) && graphToReturn.nodes().contains(edge.nodeV())) {
         graphToReturn.putEdge(edge.nodeU(), edge.nodeV());
       }
     }
