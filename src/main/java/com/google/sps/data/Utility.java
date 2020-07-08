@@ -1,0 +1,231 @@
+package com.google.sps.data;
+
+import com.google.common.graph.*;
+import com.google.gson.Gson;
+import com.google.sps.data.DataGraph;
+import com.google.sps.data.GraphNode;
+import com.proto.GraphProtos.Graph;
+import com.proto.GraphProtos.Node;
+import com.proto.MutationProtos.Mutation;
+import com.proto.MutationProtos.MutationList;
+import com.proto.MutationProtos.TokenMutation;
+import com.google.common.graph.EndpointPair;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import com.google.protobuf.Struct;
+import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
+import com.google.common.reflect.TypeToken;
+import java.lang.reflect.Type;
+import org.json.JSONObject;
+
+public class Utility {
+
+  /*
+   * Converts a Guava graph into a String encoding of a JSON Object. The object
+   * contains nodes, edges, and the roots of the graph.
+   *
+   * @param graph the graph to convert into a JSON String
+   */
+  public static String graphToJson(MutableGraph<GraphNode> graph, HashSet<String> roots) {
+    Type typeOfNode = new TypeToken<Set<GraphNode>>() {
+    }.getType();
+    Type typeOfEdge = new TypeToken<Set<EndpointPair<GraphNode>>>() {
+    }.getType();
+    Type typeOfRoots = new TypeToken<Set<String>>() {
+    }.getType();
+    Gson gson = new Gson();
+    String nodeJson = gson.toJson(graph.nodes(), typeOfNode);
+    String edgeJson = gson.toJson(graph.edges(), typeOfEdge);
+    String rootsJson = gson.toJson(roots, typeOfRoots);
+    String allJson = new JSONObject().put("nodes", nodeJson).put("edges", edgeJson).put("roots", rootsJson).toString();
+    return allJson;
+  }
+
+
+  /*
+   * Changes the graph according to the given mutation object. The parameters are
+   * mutated in place.
+   *
+   * @param mut the mutation to affect
+   *
+   * @param graph the Guava graph to mutate
+   *
+   * @param graphNodesMap a reference of existing nodes, also to be mutated
+   *
+   * @param roots the roots of the graph before the mutation. Changed if
+   * necessary.
+   *
+   * @return true if the mutation was successful, false otherwise
+   */
+  public static boolean mutateGraph(Mutation mut, MutableGraph<GraphNode> graph, Map<String, GraphNode> graphNodesMap,
+      HashSet<String> roots) {
+    // Nodes affected by the mutation
+    // second node only applicable for adding an edge and removing an edge
+    String startName = mut.getStartNode();
+    String endName = mut.getEndNode();
+
+    // Getting the corresponding graph nodes from the graph map
+    GraphNode startNode = graphNodesMap.get(startName);
+    GraphNode endNode = graphNodesMap.get(endName);
+
+    switch (mut.getType()) {
+      case ADD_NODE:
+        if (graphNodesMap.containsKey(startName)) {
+          // adding a duplicate node
+          return false;
+        }
+        // New lone node is a root
+        roots.add(startName);
+        // Create a new node with the given name and add it to the graph and the map
+        GraphNode newGraphNode = GraphNode.create(startName, new ArrayList<>(), Struct.newBuilder().build());
+        graph.addNode(newGraphNode);
+        graphNodesMap.put(startName, newGraphNode);
+        break;
+      case ADD_EDGE:
+        if (startNode == null || endNode == null) { // Check nodes exist before adding an edge
+          return false;
+        }
+        // The target cannot be a root since it has an in-edge
+        roots.remove(endName);
+        graph.putEdge(startNode, endNode);
+        break;
+      case DELETE_NODE:
+        if (startNode == null) { // Check node exists before removing
+          return false;
+        }
+        // Check whether any successor will have no in-edges after this node is removed
+        // If so, make them roots
+        Set<GraphNode> successors = graph.successors(startNode);
+        for (GraphNode succ : successors) {
+          if (graph.inDegree(succ) == 1) {
+            roots.add(succ.name());
+          }
+        }
+        roots.remove(startName);
+        graph.removeNode(startNode); // This will remove all edges associated with startNode
+        graphNodesMap.remove(startName);
+        break;
+      case DELETE_EDGE:
+        if (startNode == null || endNode == null) { // Check nodes exist before removing edge
+          return false;
+        }
+        // If the target now has no in-edges, it becomes a root
+        if (graph.inDegree(endNode) == 1) {
+          roots.add(endName);
+        }
+        graph.removeEdge(startNode, endNode);
+        break;
+      case CHANGE_TOKEN:
+        if (startNode == null) {
+          return false;
+        }
+        return changeNodeToken(startNode, mut.getTokenChange());
+      default:
+        // unrecognized mutation type
+        return false;
+    }
+    return true;
+  }
+
+  /*
+   * Modify the list of tokens for graph node 'node' to accomodate the mutation
+   * 'tokenMut'. This could involve adding or removing tokens from the list.
+   *
+   * @param node the node in the graph to change the tokens of
+   *
+   * @param tokenMut the kind of mutation to perform on node of the graph
+   *
+   * @return true if the change is successful, false otherwise
+   */
+  private static boolean changeNodeToken(GraphNode node, TokenMutation tokenMut) {
+    // List of tokens to add/remove from the existing list
+    List<String> tokenNames = tokenMut.getTokenNameList();
+    // The existing list of tokens in the node
+    List<String> tokenList = node.tokenList();
+    TokenMutation.Type tokenMutType = tokenMut.getType();
+    if (tokenMutType == TokenMutation.Type.ADD_TOKEN) {
+      tokenList.addAll(tokenNames);
+    } else if (tokenMutType == TokenMutation.Type.DELETE_TOKEN) {
+      tokenList.removeAll(tokenNames);
+    } else {
+      // unrecognized mutation
+      return false;
+    }
+    return true;
+  }
+
+  /**
+   * Given an input graph, roots (as strings), a node map (from string to Graph
+   * Nodes), and a maximum depth, the function returns a graph with only nodes up
+   * to a max depth. Edges that don't contain nodes both reachable up until the
+   * max depth are discarded.
+   *
+   * @param graphInput    the input graph, as a Mutatable Graph
+   * @param roots         the name (string) of the roots
+   * @param graphNodesMap a mapping of strings to GraphNodes
+   * @param maxDepth      the maximum depth of a node from a root
+   * @return a graph with nodes only a certain distance from a root
+   */
+  public static MutableGraph<GraphNode> getGraphWithMaxDepth(MutableGraph<GraphNode> graphInput, Set<String> roots,
+      HashMap<String, GraphNode> graphNodesMap, int maxDepth) {
+
+    MutableGraph<GraphNode> graphToReturn = GraphBuilder.directed().build();
+    if (maxDepth < 0) {
+      return graphToReturn; // If max depth below 0, then return an emtpy graph
+    }
+    ArrayDeque<GraphNode> queue = new ArrayDeque<GraphNode>();
+    Map<GraphNode, Boolean> visited = new HashMap<>();
+
+    for (String rootName : roots) {
+      // Get the GraphNode object corresponding to the root name, add to the queue
+      GraphNode rootNode = graphNodesMap.get(rootName);
+      queue.add(rootNode);
+    }
+    int currentDepth = 0;
+    int elementsInThisDepth = roots.size(); // Number of elements in current layer/depth
+    int nextDepthElements = 0; // Number of elements in the next layer/depth
+
+    while (!queue.isEmpty()) {
+      GraphNode curr = queue.poll(); // Add node first, worry about edges after we have all the nodes we need
+
+      // Add to the graph to return, within the max depth height from root
+      if (!visited.containsKey(curr)) {
+        graphToReturn.addNode(curr);
+        visited.put(curr, true);
+
+        // The number of outgoing edges from the current node, number of nodes in the
+        // next layer
+        for (GraphNode gn : graphInput.successors(curr)) {
+          if (!visited.containsKey(gn)) {
+            queue.add(gn);
+            nextDepthElements++;
+          }
+        }
+      }
+      elementsInThisDepth--; // Decrement elements in depth since we've looked at the node
+      // If the current layer has been entirely processed (we decrement since we
+      // processed the node)
+      if (elementsInThisDepth == 0) {
+        currentDepth++;
+        if (currentDepth > maxDepth) {
+          break;
+        }
+        elementsInThisDepth = nextDepthElements;
+        nextDepthElements = 0;
+      }
+    }
+    // Add the edges that we need, edges are only relevant if they contain nodes in
+    // our graph
+    for (EndpointPair<GraphNode> edge : graphInput.edges()) {
+      if (graphToReturn.nodes().contains(edge.nodeU()) && graphToReturn.nodes().contains(edge.nodeV())) {
+        graphToReturn.putEdge(edge.nodeU(), edge.nodeV());
+      }
+    }
+    return graphToReturn;
+  }
+}
