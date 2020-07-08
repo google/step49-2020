@@ -5,10 +5,11 @@
   <meta charset="UTF-8">
   <title>Graphs</title>
   <link rel="stylesheet" href="style.css">
-  <script src="cytoscape/cytoscape.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.15.1/cytoscape.min.js"></script>
+  <script src="script.js"></script>
 </head>
 
-<body id="content">
+<body id="content" onload="generateGraph()">
   <h1>
     Graph Visualization Tool
   </h1>
@@ -23,7 +24,6 @@
   <button onclick="generateGraph()">Get Graph</button>
   <br/>
   <div id="graph"></div>
-  <script src="script.js"></script>
 </body>
 
 </html>

@@ -16,21 +16,24 @@ package com.google.sps;
 
 import com.google.common.graph.*;
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonElement;
 import com.google.sps.servlets.DataServlet;
 import java.util.HashSet;
 import com.google.sps.data.GraphNode;
 import com.proto.GraphProtos.Node;
 import com.proto.GraphProtos.Node.Builder;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-/** */
+/**
+ * Since we don't manually build the JSON, we can just check all of the fields
+ * in the JSON are present.
+ */
 @RunWith(JUnit4.class)
 public final class JsonTest {
 
@@ -40,25 +43,16 @@ public final class JsonTest {
   Builder nodeA = Node.newBuilder().setName("A");
   Builder nodeB = Node.newBuilder().setName("B");
   Builder nodeC = Node.newBuilder().setName("C");
-  Builder nodeD = Node.newBuilder().setName("D");
-  Builder nodeE = Node.newBuilder().setName("E");
-  Builder nodeF = Node.newBuilder().setName("F");
 
   GraphNode gNodeA;
   GraphNode gNodeB;
   GraphNode gNodeC;
-  GraphNode gNodeD;
-  GraphNode gNodeE;
-  GraphNode gNodeF;
 
   Gson gson;
 
   String jNodeA;
   String jNodeB;
   String jNodeC;
-  String jNodeD;
-  String jNodeE;
-  String jNodeF;
 
   @Before
   public void setUp() {
@@ -68,20 +62,15 @@ public final class JsonTest {
     gNodeA = servlet.protoNodeToGraphNode(nodeA.build());
     gNodeB = servlet.protoNodeToGraphNode(nodeB.build());
     gNodeC = servlet.protoNodeToGraphNode(nodeC.build());
-    gNodeD = servlet.protoNodeToGraphNode(nodeD.build());
-    gNodeE = servlet.protoNodeToGraphNode(nodeE.build());
-    gNodeF = servlet.protoNodeToGraphNode(nodeF.build());
 
     jNodeA = gson.toJson(gNodeA);
     jNodeB = gson.toJson(gNodeB);
     jNodeC = gson.toJson(gNodeC);
-    jNodeD = gson.toJson(gNodeD);
-    jNodeE = gson.toJson(gNodeE);
-    jNodeF = gson.toJson(gNodeF);
   }
 
   /*
-   * Tests that a graph with no edges (all roots) is correctly converted to a JSON string
+   * Tests that a graph with no edges (all roots) is correctly converted to a JSON
+   * string. Edges are present despite being empty. 
    */
   @Test
   public void onlyNodesNoEdges() {
@@ -107,32 +96,21 @@ public final class JsonTest {
     roots.add("C");
 
     String result = servlet.graphToJson(graph, roots);
-    JsonElement jsonElem = JsonParser.parseString(result);
-    Assert.assertTrue(jsonElem.isJsonArray());
+    JSONObject jsonObject = new JSONObject(result);
 
-    JsonArray arr = jsonElem.getAsJsonArray();
-    Assert.assertEquals(arr.size(), 3);
-    Assert.assertTrue(arr.get(0).isJsonArray());
-    Assert.assertTrue(arr.get(1).isJsonArray());
-    Assert.assertTrue(arr.get(2).isJsonArray());
+    Assert.assertEquals(jsonObject.length(), 3);
 
-    JsonArray actNodes = arr.get(0).getAsJsonArray();
-    JsonArray actEdges = arr.get(1).getAsJsonArray();
-    JsonArray actRoots = arr.get(2).getAsJsonArray();
+    JSONArray elements = jsonObject.names();
+    Assert.assertEquals(elements.length(), 3);
 
-    Assert.assertEquals(actNodes.get(0).toString(), jNodeA);
-    Assert.assertEquals(actNodes.get(1).toString(), jNodeB);
-    Assert.assertEquals(actNodes.get(2).toString(), jNodeC);
-
-    Assert.assertEquals(actEdges.size(), 0);
-
-    Assert.assertEquals(actRoots.get(0).getAsString(), "A");
-    Assert.assertEquals(actRoots.get(1).getAsString(), "B");
-    Assert.assertEquals(actRoots.get(2).getAsString(), "C");
+    Assert.assertTrue(jsonObject.has("nodes"));
+    Assert.assertTrue(jsonObject.has("edges"));
+    Assert.assertTrue(jsonObject.has("roots"));
   }
 
   /*
-   * Tests that a graph with both nodes and edges is correctly converted to a JSON string
+   * Tests that a graph with both nodes and edges is correctly converted to a JSON
+   * string
    */
   @Test
   public void nodesAndEdges() {
@@ -161,33 +139,16 @@ public final class JsonTest {
     roots.add("B");
     roots.add("C");
 
-    String edgeAB = gson.toJson(EndpointPair.ordered(gNodeA, gNodeB));
-    String edgeAC = gson.toJson(EndpointPair.ordered(gNodeA, gNodeC));
-
     String result = servlet.graphToJson(graph, roots);
-    JsonElement jsonElem = JsonParser.parseString(result);
-    Assert.assertTrue(jsonElem.isJsonArray());
+    JSONObject jsonObject = new JSONObject(result);
 
-    JsonArray arr = jsonElem.getAsJsonArray();
-    Assert.assertEquals(arr.size(), 3);
-    Assert.assertTrue(arr.get(0).isJsonArray());
-    Assert.assertTrue(arr.get(1).isJsonArray());
-    Assert.assertTrue(arr.get(2).isJsonArray());
+    Assert.assertEquals(jsonObject.length(), 3);
 
-    JsonArray actNodes = arr.get(0).getAsJsonArray();
-    JsonArray actEdges = arr.get(1).getAsJsonArray();
-    JsonArray actRoots = arr.get(2).getAsJsonArray();
+    JSONArray elements = jsonObject.names();
+    Assert.assertEquals(elements.length(), 3);
 
-    Assert.assertEquals(actNodes.get(0).toString(), jNodeA);
-    Assert.assertEquals(actNodes.get(1).toString(), jNodeB);
-    Assert.assertEquals(actNodes.get(2).toString(), jNodeC);
-
-    Assert.assertEquals(actEdges.size(), 2);
-    Assert.assertEquals(actEdges.get(0).toString(), edgeAB);
-    Assert.assertEquals(actEdges.get(1).toString(), edgeAC);
-
-    Assert.assertEquals(actRoots.get(0).getAsString(), "A");
-    Assert.assertEquals(actRoots.get(1).getAsString(), "B");
-    Assert.assertEquals(actRoots.get(2).getAsString(), "C");
+    Assert.assertTrue(jsonObject.has("nodes"));
+    Assert.assertTrue(jsonObject.has("edges"));
+    Assert.assertTrue(jsonObject.has("roots"));
   }
 }

@@ -36,10 +36,10 @@ async function generateGraph() {
 
   const jsonResponse = await response.json();
   // Graph nodes and edges received from server
-  let nodes = jsonResponse[0];
-  let edges = jsonResponse[1];
-  let roots = jsonResponse[2];
-  if (!nodes || !edges) {
+  let nodes = JSON.parse(jsonResponse.nodes);
+  let edges = JSON.parse(jsonResponse.edges);
+
+  if (!nodes || !edges || !Array.isArray(nodes) || !Array.isArray(edges)) {
     displayError("Malformed graph received from server - edges or nodes are empty");
     return;
   }
@@ -131,6 +131,3 @@ function getGraphDisplay(graphNodes, graphEdges) {
     }
   });
 }
-
-
-generateGraph();
