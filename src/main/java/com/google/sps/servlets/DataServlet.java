@@ -346,7 +346,6 @@ public class DataServlet extends HttpServlet {
           for (GraphNode gn : graphInput.successors(curr)) {
             if (!visited.containsKey(gn)) {
               nextDepthNodes.add(gn);
-              // Add the corresponding edge if the next layer isn't too deep
             }
           }
         }
