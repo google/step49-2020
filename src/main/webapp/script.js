@@ -73,6 +73,7 @@ async function generateGraph() {
 
 /**
  * Returns the url string given the user input
+ * Ensures that the depth is an integer between 0 and 20
  */
 function getUrl() {
   let selectedDepth = document.getElementById('num-layers').value;
