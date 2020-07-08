@@ -1,4 +1,4 @@
-import initializeTippy from "../src/main/webapp/script.js";
+import  {initializeTippy, generateGraph } from "../src/main/webapp/script.js";
 import cytoscape from "cytoscape";
 
 describe("Checking that tooltip is correctly initialized", function() {
