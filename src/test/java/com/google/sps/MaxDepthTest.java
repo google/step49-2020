@@ -72,7 +72,7 @@ public class MaxDepthTest {
     nodeA.addChildren("C");
 
     MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
-    
+
     HashMap<String, Node> protoNodesMap = new HashMap<>();
     protoNodesMap.put("A", nodeA.build());
     protoNodesMap.put("B", nodeB.build());
