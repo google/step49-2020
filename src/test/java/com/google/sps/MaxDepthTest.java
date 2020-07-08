@@ -72,10 +72,7 @@ public class MaxDepthTest {
     nodeA.addChildren("C");
 
     MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
-    graph.addNode(gNodeA);
-    graph.addNode(gNodeB);
-    graph.addNode(gNodeC);
-
+    
     HashMap<String, Node> protoNodesMap = new HashMap<>();
     protoNodesMap.put("A", nodeA.build());
     protoNodesMap.put("B", nodeB.build());
@@ -104,8 +101,6 @@ public class MaxDepthTest {
   @Test
   public void invalidDepthEmptyGraph() {
     MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
-    graph.addNode(gNodeA);
-    graph.addNode(gNodeB);
 
     HashMap<String, Node> protoNodesMap = new HashMap<>();
     protoNodesMap.put("A", nodeA.build());
@@ -133,9 +128,6 @@ public class MaxDepthTest {
     nodeA.addChildren("C");
 
     MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
-    graph.addNode(gNodeA);
-    graph.addNode(gNodeB);
-    graph.addNode(gNodeC);
 
     HashMap<String, Node> protoNodesMap = new HashMap<>();
     protoNodesMap.put("A", nodeA.build());
@@ -168,9 +160,6 @@ public class MaxDepthTest {
     nodeA.addChildren("C");
 
     MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
-    graph.addNode(gNodeA);
-    graph.addNode(gNodeB);
-    graph.addNode(gNodeC);
 
     HashMap<String, Node> protoNodesMap = new HashMap<>();
     protoNodesMap.put("A", nodeA.build());
@@ -212,11 +201,6 @@ public class MaxDepthTest {
     nodeC.addChildren("E");
 
     MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
-    graph.addNode(gNodeA);
-    graph.addNode(gNodeB);
-    graph.addNode(gNodeC);
-    graph.addNode(gNodeD);
-    graph.addNode(gNodeE);
 
     HashMap<String, Node> protoNodesMap = new HashMap<>();
     protoNodesMap.put("A", nodeA.build());
@@ -253,10 +237,6 @@ public class MaxDepthTest {
     nodeC.addChildren("D");
 
     MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
-    graph.addNode(gNodeA);
-    graph.addNode(gNodeB);
-    graph.addNode(gNodeC);
-    graph.addNode(gNodeD);
 
     HashMap<String, Node> protoNodesMap = new HashMap<>();
     protoNodesMap.put("A", nodeA.build());
@@ -291,11 +271,6 @@ public class MaxDepthTest {
     nodeE.addChildren("D");
 
     MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
-    graph.addNode(gNodeA);
-    graph.addNode(gNodeB);
-    graph.addNode(gNodeC);
-    graph.addNode(gNodeD);
-    graph.addNode(gNodeE);
 
     HashMap<String, Node> protoNodesMap = new HashMap<>();
     protoNodesMap.put("A", nodeA.build());
@@ -336,13 +311,6 @@ public class MaxDepthTest {
     nodeH.addChildren("G");
 
     MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
-    graph.addNode(gNodeA);
-    graph.addNode(gNodeB);
-    graph.addNode(gNodeC);
-    graph.addNode(gNodeD);
-    graph.addNode(gNodeE);
-    graph.addNode(gNodeG);
-    graph.addNode(gNodeH);
 
     HashMap<String, Node> protoNodesMap = new HashMap<>();
     protoNodesMap.put("A", nodeA.build());
