@@ -65,6 +65,8 @@ public class DataServlet extends HttpServlet {
 
   List<Mutation> mutList = null;
 
+  boolean mutationsApplied = false;
+
   /*
    * Called when a client submits a GET request to the /data URL
    */
@@ -79,6 +81,7 @@ public class DataServlet extends HttpServlet {
     }
 
     int depthNumber = Integer.parseInt(depthParam);
+    boolean success = true; // Innocent until proven guilty; successful until proven a failure
 
     // Initialize variables if any are null. Ideally should all be null or none
     // should be null
@@ -100,10 +103,9 @@ public class DataServlet extends HttpServlet {
       mutList =
           MutationList.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/mutations.txt"))
               .getMutationList();
+      // Generate graph data structures from proto data structure
+      success = graphFromProtoNodes(protoNodesMap, graph, graphNodesMap, roots);
     }
-
-    // Generate graph data structures from proto data structure
-    boolean success = graphFromProtoNodes(protoNodesMap, graph, graphNodesMap, roots);
 
     if (!success) {
       String error = "Failed to parse input graph into Guava graph - not a DAG!";
@@ -111,14 +113,19 @@ public class DataServlet extends HttpServlet {
       return;
     }
 
-    for (Mutation mut : mutList) {
-      success = mutateGraph(mut, graph, graphNodesMap, roots);
-      if (!success) {
-        String error = "Failed to apply mutation " + mut.toString() + " to graph";
-        response.setHeader("serverError", error);
-        return;
+    // Only apply mutations once
+    if (!mutationsApplied) {
+      for (Mutation mut : mutList) {
+        success = mutateGraph(mut, graph, graphNodesMap, roots);
+        if (!success) {
+          String error = "Failed to apply mutation " + mut.toString() + " to graph";
+          response.setHeader("serverError", error);
+          return;
+        }
       }
+      mutationsApplied = true;
     }
+
     MutableGraph<GraphNode> truncatedGraph =
         getGraphWithMaxDepth(graph, roots, graphNodesMap, depthNumber);
     String graphJson = graphToJson(truncatedGraph, roots);
@@ -245,6 +252,7 @@ public class DataServlet extends HttpServlet {
     // Getting the corresponding graph nodes from the graph map
     GraphNode startNode = graphNodesMap.get(startName);
     GraphNode endNode = graphNodesMap.get(endName);
+    System.out.println(mut.getType());
 
     switch (mut.getType()) {
       case ADD_NODE:
