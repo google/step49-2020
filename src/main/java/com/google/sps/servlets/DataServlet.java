@@ -48,26 +48,26 @@ public class DataServlet extends HttpServlet {
   // from the proto object into a map. This is used to store the proto input and
   // isn't updated
   // with mutations.
-  Graph protoGraph = null;
-  Map<String, Node> protoNodesMap = null;
+  private Graph protoGraph = null;
+  private Map<String, Node> protoNodesMap = null;
 
   // GRAPH Data structures:
   // Create an undirected graph data structure to store the information, and
   // map each node name in the graph to the GraphNode objects. This is the graph &
   // map
   // we update with mutations
-  MutableGraph<GraphNode> graph = null;
-  HashMap<String, GraphNode> graphNodesMap = null;
+  private MutableGraph<GraphNode> graph = null;
+  private HashMap<String, GraphNode> graphNodesMap = null;
 
-  ImmutableGraph<GraphNode> graphOriginal = null; // never undergoes mutations
+  private ImmutableGraph<GraphNode> graphOriginal = null; // never undergoes mutations
 
   // Data structure that stores the roots of the graph across mutations
   // Roots are nodes with no in-edges
-  HashSet<String> roots = null;
+  private HashSet<String> roots = null;
 
-  List<Mutation> mutList = null;
+  private List<Mutation> mutList = null;
 
-  boolean mutationsApplied = false;
+  private boolean mutationsApplied = false;
 
   /*
    * Called when a client submits a GET request to the /data URL
@@ -255,7 +255,7 @@ public class DataServlet extends HttpServlet {
     // Getting the corresponding graph nodes from the graph map
     GraphNode startNode = graphNodesMap.get(startName);
     GraphNode endNode = graphNodesMap.get(endName);
-    
+
     switch (mut.getType()) {
       case ADD_NODE:
         if (graphNodesMap.containsKey(startName)) {
