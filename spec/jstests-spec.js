@@ -1,5 +1,22 @@
-import  {initializeTippy, generateGraph } from "../src/main/webapp/script.js";
+import  {initializeTippy, generateGraph, getUrl } from "../src/main/webapp/script.js";
 import cytoscape from "cytoscape";
+
+describe("Checking that fetch url is correctly constructed", function() {
+  it("Input valid value for depth", function() {
+    let numLayers = document.createElement("input");
+    numLayers.id = "num-layers";
+    numLayers.value = 15;
+    document.body.appendChild(numLayers);
+
+    let requestString = getUrl();
+    let requestParams = requestString.substring(requestString.indexOf("?"));
+    
+    let constructedUrl = new URLSearchParams(requestParams);
+    expect(constructedUrl.has("depth")).toBe(true);
+    expect(constructedUrl.get("depth")).toBe("15");
+  });
+})
+
 
 describe("Checking that tooltip is correctly initialized", function() {
   it("Node with tokens", function() {
@@ -82,3 +99,4 @@ describe("Checking that tooltip is correctly initialized", function() {
     expect(tokenMsg.textContent).toBe("No tokens");
   });
 });
+

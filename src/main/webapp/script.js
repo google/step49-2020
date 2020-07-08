@@ -26,7 +26,7 @@ import 'tippy.js/dist/tippy.css';
 import 'tippy.js/dist/backdrop.css';
 import 'tippy.js/animations/shift-away.css';
 
-export { initializeTippy, generateGraph };
+export { initializeTippy, generateGraph, getUrl };
 
 cytoscape.use(popper); // register extension
 cytoscape.use(dagre); // register extension
