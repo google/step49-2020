@@ -67,8 +67,6 @@ public class DataServlet extends HttpServlet {
 
   private List<Mutation> mutList = null;
 
-  private boolean mutationsApplied = false;
-
   /*
    * Called when a client submits a GET request to the /data URL
    */
@@ -117,10 +115,7 @@ public class DataServlet extends HttpServlet {
       mutList =
           MutationList.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/mutations.txt"))
               .getMutationList();
-    }
-
-    // Only apply mutations once
-    if (!mutationsApplied) {
+          // Only apply mutations once
       for (Mutation mut : mutList) {
         success = mutateGraph(mut, graph, graphNodesMap, roots);
         if (!success) {
@@ -129,8 +124,8 @@ public class DataServlet extends HttpServlet {
           return;
         }
       }
-      mutationsApplied = true;
     }
+    
 
     MutableGraph<GraphNode> truncatedGraph =
         getGraphWithMaxDepth(graph, roots, graphNodesMap, depthNumber);
