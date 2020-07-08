@@ -3,9 +3,9 @@ body {
 }
 
 #graph {
-    width: 90vw;
-    min-height: 80vh;
-    border: solid 1px black;
+  width: 90vw;
+  min-height: 80vh;
+  border: solid 1px black;
 }
 
 #errortext {
@@ -18,7 +18,7 @@ body {
   overflow-x: auto;
   white-space: nowrap;
   width: 400px;
-  height: 400px;
+  height: 200px;
   font-size: 30px;
   
 }

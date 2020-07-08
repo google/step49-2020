@@ -240,8 +240,7 @@ public class DataServlet extends HttpServlet {
         if (startNode == null) {
           return false;
         }
-        boolean succ = changeNodeToken(startNode, mut.getTokenChange());
-        return succ;
+        return changeNodeToken(startNode, mut.getTokenChange());
       default:
         // unrecognized mutation type
         return false;
