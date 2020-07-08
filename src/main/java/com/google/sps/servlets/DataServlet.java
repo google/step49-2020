@@ -255,7 +255,7 @@ public class DataServlet extends HttpServlet {
     // Getting the corresponding graph nodes from the graph map
     GraphNode startNode = graphNodesMap.get(startName);
     GraphNode endNode = graphNodesMap.get(endName);
-    
+
     switch (mut.getType()) {
       case ADD_NODE:
         if (graphNodesMap.containsKey(startName)) {
