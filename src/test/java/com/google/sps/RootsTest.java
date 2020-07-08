@@ -53,8 +53,6 @@ public class RootsTest {
   @Test
   public void allNodesAsRoots() {
     MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
-    graph.addNode(gNodeA);
-    graph.addNode(gNodeB);
 
     HashMap<String, Node> protoNodesMap = new HashMap<>();
     protoNodesMap.put("A", nodeA.build());
@@ -77,8 +75,6 @@ public class RootsTest {
     // A has a child, B
     nodeA.addChildren("B");
     MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
-    graph.addNode(gNodeA);
-    graph.addNode(gNodeB);
 
     HashMap<String, Node> protoNodesMap = new HashMap<>();
     protoNodesMap.put("A", nodeA.build());
@@ -99,8 +95,6 @@ public class RootsTest {
   @Test
   public void mutationAddEdgeChangesRoot() {
     MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
-    graph.addNode(gNodeA);
-    graph.addNode(gNodeB);
 
     HashMap<String, Node> protoNodesMap = new HashMap<>();
     protoNodesMap.put("A", nodeA.build());
@@ -135,7 +129,7 @@ public class RootsTest {
   @Test
   public void mutationAddNodeChangesRoot() {
     MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
-    graph.addNode(gNodeA);
+    // graph.addNode(gNodeA);
 
     HashMap<String, Node> protoNodesMap = new HashMap<>();
     protoNodesMap.put("A", nodeA.build());
@@ -163,8 +157,6 @@ public class RootsTest {
     // A has a child, B
     nodeA.addChildren("B");
     MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
-    graph.addNode(gNodeA);
-    graph.addNode(gNodeB);
 
     HashMap<String, Node> protoNodesMap = new HashMap<>();
     protoNodesMap.put("A", nodeA.build());
@@ -204,9 +196,6 @@ public class RootsTest {
     nodeB.addChildren("C");
 
     MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
-    graph.addNode(gNodeA);
-    graph.addNode(gNodeB);
-    graph.addNode(gNodeC);
 
     HashMap<String, Node> protoNodesMap = new HashMap<>();
     protoNodesMap.put("A", nodeA.build());
@@ -242,8 +231,6 @@ public class RootsTest {
     nodeA.addChildren("B");
 
     MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
-    graph.addNode(gNodeA);
-    graph.addNode(gNodeB);
 
     HashMap<String, Node> protoNodesMap = new HashMap<>();
     protoNodesMap.put("A", nodeA.build());
@@ -274,9 +261,6 @@ public class RootsTest {
     nodeA.addChildren("C");
 
     MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
-    graph.addNode(gNodeA);
-    graph.addNode(gNodeB);
-    graph.addNode(gNodeC);
 
     HashMap<String, Node> protoNodesMap = new HashMap<>();
     protoNodesMap.put("A", nodeA.build());

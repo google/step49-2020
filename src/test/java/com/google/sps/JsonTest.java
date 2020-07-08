@@ -69,46 +69,6 @@ public final class JsonTest {
   }
 
   /*
-   * Tests that a graph with no edges (all roots) is correctly converted to a JSON
-   * string. Edges are present despite being empty.
-   */
-  @Test
-  public void onlyNodesNoEdges() {
-    nodeA.addToken("1");
-    nodeA.addToken("2");
-
-    nodeC.addToken("3");
-
-    gNodeA = servlet.protoNodeToGraphNode(nodeA.build());
-    gNodeC = servlet.protoNodeToGraphNode(nodeC.build());
-
-    jNodeA = gson.toJson(gNodeA);
-    jNodeC = gson.toJson(gNodeC);
-
-    MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
-    graph.addNode(gNodeA);
-    graph.addNode(gNodeB);
-    graph.addNode(gNodeC);
-
-    HashSet<String> roots = new HashSet<>();
-    roots.add("A");
-    roots.add("B");
-    roots.add("C");
-
-    String result = servlet.graphToJson(graph, roots);
-    JSONObject jsonObject = new JSONObject(result);
-
-    Assert.assertEquals(jsonObject.length(), 3);
-
-    JSONArray elements = jsonObject.names();
-    Assert.assertEquals(elements.length(), 3);
-
-    Assert.assertTrue(jsonObject.has("nodes"));
-    Assert.assertTrue(jsonObject.has("edges"));
-    Assert.assertTrue(jsonObject.has("roots"));
-  }
-
-  /*
    * Tests that a graph with both nodes and edges is correctly converted to a JSON
    * string
    */
@@ -136,8 +96,6 @@ public final class JsonTest {
 
     HashSet<String> roots = new HashSet<>();
     roots.add("A");
-    roots.add("B");
-    roots.add("C");
 
     String result = servlet.graphToJson(graph, roots);
     JSONObject jsonObject = new JSONObject(result);
