@@ -75,7 +75,10 @@ async function generateGraph() {
  * Returns the url string given the user input
  */
 function getUrl() {
-  const selectedDepth = document.getElementById('num-layers').value;
+  let selectedDepth = document.getElementById('num-layers').value;
+  if (selectedDepth.length === 0) {
+    selectedDepth = 3;
+  }
   const url = `/data?depth=${selectedDepth}`
   return url;
 }
