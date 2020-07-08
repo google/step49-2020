@@ -115,7 +115,7 @@ public class DataServlet extends HttpServlet {
       mutList =
           MutationList.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/mutations.txt"))
               .getMutationList();
-          // Only apply mutations once
+      // Only apply mutations once
       for (Mutation mut : mutList) {
         success = mutateGraph(mut, graph, graphNodesMap, roots);
         if (!success) {
@@ -125,7 +125,6 @@ public class DataServlet extends HttpServlet {
         }
       }
     }
-    
 
     MutableGraph<GraphNode> truncatedGraph =
         getGraphWithMaxDepth(graph, roots, graphNodesMap, depthNumber);
