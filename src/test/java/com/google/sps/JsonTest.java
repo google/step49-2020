@@ -31,8 +31,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 /**
- * Since we don't manually build the JSON, we can just check all of the fields
- * in the JSON are present.
+ * Since we don't manually build the JSON, we can just check all of the fields in the JSON are
+ * present.
  */
 @RunWith(JUnit4.class)
 public final class JsonTest {
@@ -70,7 +70,7 @@ public final class JsonTest {
 
   /*
    * Tests that a graph with no edges (all roots) is correctly converted to a JSON
-   * string. Edges are present despite being empty. 
+   * string. Edges are present despite being empty.
    */
   @Test
   public void onlyNodesNoEdges() {
