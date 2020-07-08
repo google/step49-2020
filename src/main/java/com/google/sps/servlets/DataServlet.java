@@ -59,6 +59,8 @@ public class DataServlet extends HttpServlet {
   MutableGraph<GraphNode> graph = null;
   HashMap<String, GraphNode> graphNodesMap = null;
 
+  ImmutableGraph<GraphNode> graphOriginal = null; // never undergoes mutations
+
   // Data structure that stores the roots of the graph across mutations
   // Roots are nodes with no in-edges
   HashSet<String> roots = null;
@@ -105,6 +107,7 @@ public class DataServlet extends HttpServlet {
               .getMutationList();
       // Generate graph data structures from proto data structure
       success = graphFromProtoNodes(protoNodesMap, graph, graphNodesMap, roots);
+      graphOriginal = ImmutableGraph.copyOf(graph); // Create a copy of graph as the original graph
     }
 
     if (!success) {
