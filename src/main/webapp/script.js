@@ -78,6 +78,10 @@ function getUrl() {
   let selectedDepth = document.getElementById('num-layers').value;
   if (selectedDepth.length === 0) {
     selectedDepth = 3;
+  } else if (selectedDepth < 0) { // Extra validation for bounds
+    selectedDepth = 0;
+  } else if (selectedDepth > 20) {
+    selectedDepth = 20;
   }
   const url = `/data?depth=${selectedDepth}`
   return url;
