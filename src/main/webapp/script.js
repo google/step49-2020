@@ -35,7 +35,9 @@ async function generateGraph() {
   // Arrays to store the cytoscape graph node and edge objects
   let graphNodes = [];
   let graphEdges = [];
-  const response = await fetch("/data");
+
+  const url = getUrl();
+  const response = await fetch(url);
 
   const serverErrorStatus = response.headers.get("serverError");
 
@@ -52,6 +54,11 @@ async function generateGraph() {
 
   if (!nodes || !edges || !Array.isArray(nodes) || !Array.isArray(edges)) {
     displayError("Malformed graph received from server - edges or nodes are empty");
+    return;
+  }
+
+  if (nodes.length === 0) {
+    displayError("Nothing to display!");
     return;
   }
 
@@ -78,6 +85,17 @@ async function generateGraph() {
   return;
 }
 
+/**
+ * Returns the url string given the user input
+ */
+function getUrl() {
+  let selectedDepth = document.getElementById('num-layers').value;
+  if (selectedDepth.length === 0) {
+    selectedDepth = 3;
+  }
+  const url = `/data?depth=${selectedDepth}`
+  return url;
+}
 /**
  * Takes an error message and creates a text element on the page to display this message
  */
@@ -112,7 +130,6 @@ function getGraphDisplay(graphNodes, graphEdges) {
         style: {
           width: '50px',
           height: '50px',
-          shape: 'circle',
           'background-color': 'blue',
           'label': 'data(id)',
           'color': 'white',
@@ -134,7 +151,7 @@ function getGraphDisplay(graphNodes, graphEdges) {
     layout: {
       name: 'dagre'
     },
-    zoom: 1,
+    zoom: 0.75,
     pan: { x: 0, y: 0 },
     minZoom: .25,
     maxZoom: 2.5

@@ -3,8 +3,10 @@ body {
 }
 
 #graph {
-  width: 90vw;
-  min-height: 80vh;
+  width: 90%;
+  height: 90vh;
+  position: absolute;
+  margin: 20px;
   border: solid 1px black;
 }
 
