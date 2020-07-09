@@ -36,21 +36,6 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
 
-  // GRAPH Data structures:
-  // Create an undirected graph data structure to store the information, and
-  // map each node name in the graph to the GraphNode objects. This is the graph &
-  // map
-  // we update with mutations
-  // private MutableGraph<GraphNode> graph = null;
-  // private HashMap<String, GraphNode> graphNodesMap = null;
-
-  // private ImmutableGraph<GraphNode> graphOriginal = null; // never undergoes
-  // mutations
-
-  // // Data structure that stores the roots of the graph across mutations
-  // // Roots are nodes with no in-edges
-  // private HashSet<String> roots = null;
-
   private List<Mutation> mutList = null;
 
   private DataGraph currDataGraph = null;
