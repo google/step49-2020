@@ -23,12 +23,11 @@ public final class Utility {
     // Should not be called
   }
 
-  /** 
-   * Converts a proto node object into a graph node object that does not store the
-   * names of the child nodes but may store additional information.
+  /**
+   * Converts a proto node object into a graph node object that does not store the names of the
+   * child nodes but may store additional information.
    *
    * @param thisNode the input data Node object
-   *
    * @return a useful node used to construct the Guava Graph
    */
   public static GraphNode protoNodeToGraphNode(Node thisNode) {
@@ -38,9 +37,9 @@ public final class Utility {
     return GraphNode.create(thisNode.getName(), newTokenList, newMetadata);
   }
 
-  /** 
-   * Converts a Guava graph into a String encoding of a JSON Object. The object
-   * contains nodes, edges, and the roots of the graph.
+  /**
+   * Converts a Guava graph into a String encoding of a JSON Object. The object contains nodes,
+   * edges, and the roots of the graph.
    *
    * @param graph the graph to convert into a JSON String
    */
@@ -61,16 +60,13 @@ public final class Utility {
     return allJson;
   }
 
-  /** 
-   * Changes the graph according to the given mutation object. The parameters are
-   * mutated in place.
+  /**
+   * Changes the graph according to the given mutation object. The parameters are mutated in place.
    *
    * @param mut the mutation to affect
    * @param graph the Guava graph to mutate
    * @param graphNodesMap a reference of existing nodes, also to be mutated
-   * @param roots the roots of the graph before the mutation. Changed if
-   * necessary.
-   *
+   * @param roots the roots of the graph before the mutation. Changed if necessary.
    * @return true if the mutation was successful, false otherwise
    */
   public static boolean mutateGraph(
@@ -147,13 +143,12 @@ public final class Utility {
     return true;
   }
 
-  /** 
-   * Modify the list of tokens for graph node 'node' to accomodate the mutation
-   * 'tokenMut'. This could involve adding or removing tokens from the list.
+  /**
+   * Modify the list of tokens for graph node 'node' to accomodate the mutation 'tokenMut'. This
+   * could involve adding or removing tokens from the list.
    *
    * @param node the node in the graph to change the tokens of
    * @param tokenMut the kind of mutation to perform on node of the graph
-   *
    * @return true if the change is successful, false otherwise
    */
   private static boolean changeNodeToken(GraphNode node, TokenMutation tokenMut) {

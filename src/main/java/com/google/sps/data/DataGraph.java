@@ -57,17 +57,14 @@ public class DataGraph {
     return copy;
   }
 
-  /** 
-   * Takes in a map from node name to proto-parsed node object. Populates graph
-   * with node and edge information and graphNodesMap with links from node names
-   * to graph node objects.
+  /**
+   * Takes in a map from node name to proto-parsed node object. Populates graph with node and edge
+   * information and graphNodesMap with links from node names to graph node objects.
    *
    * @param protNodesMap map from node name to proto Node object parsed from input
    * @param graph Guava graph to fill with node and edge information
-   * @param graphNodesMap map object to fill with node-name -> graph node object
-   * links
+   * @param graphNodesMap map object to fill with node-name -> graph node object links
    * @param roots the roots of the graph
-   *
    * @return false if an error occurred, true otherwise
    */
   public boolean graphFromProtoNodes(Map<String, Node> protoNodesMap) {
