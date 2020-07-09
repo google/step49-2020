@@ -16,7 +16,6 @@ public class DataGraph {
    *
    * @param protoGraph the protograph to construct Guava Graph from
    */
-
   public DataGraph() {
     this.graph = GraphBuilder.directed().build();
     this.graphNodesMap = new HashMap<>();
@@ -25,7 +24,8 @@ public class DataGraph {
 
   /**
    * Getter for the graph
-   * @return the graph 
+   *
+   * @return the graph
    */
   public MutableGraph<GraphNode> getGraph() {
     return this.graph;
@@ -33,6 +33,7 @@ public class DataGraph {
 
   /**
    * Getter for the roots
+   *
    * @return a copy of the roots
    */
   public HashSet<String> getRoots() {
@@ -45,6 +46,7 @@ public class DataGraph {
 
   /**
    * Getter for the nodes map
+   *
    * @return a copy of the nodes map
    */
   public HashMap<String, GraphNode> getGraphNodesMap() {

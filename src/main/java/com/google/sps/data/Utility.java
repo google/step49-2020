@@ -71,7 +71,7 @@ public final class Utility {
    * @param graphNodesMap a reference of existing nodes, also to be mutated
    * @param roots the roots of the graph before the mutation. Changed if
    * necessary.
-   * 
+   *
    * @return true if the mutation was successful, false otherwise
    */
   public static boolean mutateGraph(
