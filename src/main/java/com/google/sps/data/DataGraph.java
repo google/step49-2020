@@ -1,21 +1,5 @@
 package com.google.sps.data;
 
-// import java.util.ArrayList;
-// import java.util.HashMap;
-// import java.util.HashSet;
-// import java.util.List;
-// import java.util.Map;
-
-// import com.google.appengine.repackaged.com.google.protobuf.Struct;
-// import com.google.common.graph.*;
-// import com.google.common.graph.Graph;
-
-// import com.google.common.graph.MutableGraph;
-// import com.proto.GraphProtos.Node;
-
-// import com.google.sps.data.GraphNode;
-// import com.proto.GraphProtos.*;
-
 import com.google.common.graph.*;
 import com.proto.GraphProtos.Node;
 import java.util.HashMap;
@@ -32,22 +16,6 @@ public class DataGraph {
    *
    * @param protoGraph the protograph to construct Guava Graph from
    */
-  // public DataGraph(Graph protoGraph) {
-  //   Map<String, Node> protoNodesMap = protoGraph.getNodesMapMap();
-  //   graph = GraphBuilder.directed().build();
-  //   graphNodesMap = new HashMap<>();
-
-  //   roots = new HashSet<>();
-  //   graphFromProtoNodes(protoNodesMap);
-  // }
-
-  // public DataGraph(Map<String, Node> protoNodesMap) {
-  //   graph = GraphBuilder.directed().build();
-  //   graphNodesMap = new HashMap<>();
-
-  //   roots = new HashSet<>();
-  //   graphFromProtoNodes(protoNodesMap);
-  // }
 
   public DataGraph() {
     this.graph = GraphBuilder.directed().build();
@@ -55,16 +23,36 @@ public class DataGraph {
     this.roots = new HashSet<>();
   }
 
+  /**
+   * Getter for the graph
+   * @return the graph 
+   */
   public MutableGraph<GraphNode> getGraph() {
     return this.graph;
   }
 
+  /**
+   * Getter for the roots
+   * @return a copy of the roots
+   */
   public HashSet<String> getRoots() {
-    return this.roots;
+    HashSet<String> copy = new HashSet<>();
+    for (String s : this.roots) {
+      copy.add(s);
+    }
+    return copy;
   }
 
+  /**
+   * Getter for the nodes map
+   * @return a copy of the nodes map
+   */
   public HashMap<String, GraphNode> getGraphNodesMap() {
-    return this.graphNodesMap;
+    HashMap<String, GraphNode> copy = new HashMap<>();
+    for (String key : this.graphNodesMap.keySet()) {
+      copy.put(key, this.graphNodesMap.get(key));
+    }
+    return copy;
   }
 
   /*
@@ -73,12 +61,9 @@ public class DataGraph {
    * to graph node objects.
    *
    * @param protNodesMap map from node name to proto Node object parsed from input
-   *
    * @param graph Guava graph to fill with node and edge information
-   *
    * @param graphNodesMap map object to fill with node-name -> graph node object
    * links
-   *
    * @param roots the roots of the graph
    *
    * @return false if an error occurred, true otherwise
