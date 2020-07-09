@@ -37,7 +37,6 @@ public class RootsTest {
   Builder nodeB = Node.newBuilder().setName("B");
   Builder nodeC = Node.newBuilder().setName("C");
 
-
   @Before
   public void setUp() {
     servlet = new DataServlet();
