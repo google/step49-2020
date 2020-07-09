@@ -408,10 +408,8 @@ public class DataServlet extends HttpServlet {
     Map<GraphNode, Boolean> visited = new HashMap<>();
 
     for (String rootName : roots) {
-      // Get the GraphNode object corresponding to the root name, add to the queue
       GraphNode rootNode = graphNodesMap.get(rootName);
       dfsVisit(rootNode, graphInput, visited, graphToReturn, maxDepth);
-      // stack.add(rootNode);
     }
     for (EndpointPair<GraphNode> edge : graphInput.edges()) {
       if (graphToReturn.nodes().contains(edge.nodeU())
@@ -444,6 +442,7 @@ public class DataServlet extends HttpServlet {
       graphToReturn.addNode(gn);
       for (GraphNode child : graphInput.successors(gn)) {
         if (!visited.containsKey(child)) {
+          // Visit the child and indicate the increase in depth
           dfsVisit(child, graphInput, visited, graphToReturn, depthRemaining - 1);
         }
       }
