@@ -111,13 +111,10 @@ public class DataServlet extends HttpServlet {
    * with node and edge information and graphNodesMap with links from node names
    * to graph node objects.
    *
-   * @param protNodesMap map from node name to proto Node object parsed from input
-   *
+   * @param protoNodesMap map from node name to proto Node object parsed from input
    * @param graph Guava graph to fill with node and edge information
-   *
    * @param graphNodesMap map object to fill with node-name -> graph node object
    * links
-   *
    * @param roots the roots of the graph
    *
    * @return false if an error occurred, true otherwise
@@ -203,11 +200,8 @@ public class DataServlet extends HttpServlet {
    * Changes the graph according to the given mutation object
    *
    * @param mut the mutation to affect
-   *
    * @param graph the Guava graph to mutate
-   *
    * @param graphNodesMap a reference of existing nodes, also to be mutated
-   *
    * @param roots the roots of the graph before the mutation
    *
    * @return true if the mutation was successful, false otherwise
@@ -268,7 +262,7 @@ public class DataServlet extends HttpServlet {
         if (startNode == null || endNode == null) { // Check nodes exist before removing edge
           return false;
         }
-        // If the target now has no in-edges, it becomes a root
+        // If the target has one in-edge, it becomes a root after removing that one edge
         if (graph.inDegree(endNode) == 1) {
           roots.add(endName);
         }
@@ -343,8 +337,8 @@ public class DataServlet extends HttpServlet {
       queue.add(rootNode);
     }
     int currentDepth = 0;
-    int elementsInThisDepth = roots.size(); // Number of elements in current layer/depth
-    int nextDepthElements = 0; // Number of elements in the next layer/depth
+    int currDepthElementCount = roots.size(); // Number of elements in current layer/depth
+    int nextDepthElementCount = 0; // Number of elements in the next layer/depth
 
     while (!queue.isEmpty()) {
       GraphNode curr =
@@ -360,20 +354,20 @@ public class DataServlet extends HttpServlet {
         for (GraphNode gn : graphInput.successors(curr)) {
           if (!visited.containsKey(gn)) {
             queue.add(gn);
-            nextDepthElements++;
+            nextDepthElementCount++;
           }
         }
       }
-      elementsInThisDepth--; // Decrement elements in depth since we've looked at the node
+      currDepthElementCount--; // Decrement elements in depth since we've looked at the node
       // If the current layer has been entirely processed (we decrement since we
       // processed the node)
-      if (elementsInThisDepth == 0) {
+      if (currDepthElementCount == 0) {
         currentDepth++;
         if (currentDepth > maxDepth) {
           break;
         }
-        elementsInThisDepth = nextDepthElements;
-        nextDepthElements = 0;
+        currDepthElementCount = nextDepthElementCount;
+        nextDepthElementCount = 0;
       }
     }
     // Add the edges that we need, edges are only relevant if they contain nodes in
