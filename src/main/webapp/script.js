@@ -31,8 +31,14 @@ export { initializeTippy, generateGraph, getUrl, navigateGraph, currGraphNum };
 cytoscape.use(popper); // register extension
 cytoscape.use(dagre); // register extension
 
+// Stores the index of the graph (in sequence of mutations) currently
+// displayed on the screen. Must be >= 0.
 let currGraphNum = 0;
 
+/**
+ * Submits a fetch request to the /data URL to retrieve the graph
+ * and then displays it on the page
+ */
 async function generateGraph() {
   // Arrays to store the cytoscape graph node and edge objects
   let graphNodes = [];
@@ -51,8 +57,8 @@ async function generateGraph() {
 
   const jsonResponse = await response.json();
   // Graph nodes and edges received from server
-  let nodes = JSON.parse(jsonResponse.nodes);
-  let edges = JSON.parse(jsonResponse.edges);
+  const nodes = JSON.parse(jsonResponse.nodes);
+  const edges = JSON.parse(jsonResponse.edges);
 
   if (!nodes || !edges || !Array.isArray(nodes) || !Array.isArray(edges)) {
     displayError("Malformed graph received from server - edges or nodes are empty");
@@ -72,8 +78,8 @@ async function generateGraph() {
     }))
   // and edge to array of cytoscape edges
   edges.forEach(edge => {
-    let start = edge["nodeU"]["name"];
-    let end = edge["nodeV"]["name"];
+    const start = edge["nodeU"]["name"];
+    const end = edge["nodeV"]["name"];
     graphEdges.push({
       group: "edges",
       data: {
@@ -92,7 +98,7 @@ async function generateGraph() {
  * Ensures that the depth is an integer between 0 and 20
  */
 function getUrl() {
-  let depthElem = document.getElementById('num-layers');
+  const depthElem = document.getElementById('num-layers');
   let selectedDepth = 0;
   if(depthElem === null) {
     selectedDepth = 3;
@@ -188,10 +194,10 @@ function getGraphDisplay(graphNodes, graphEdges) {
  * Initializes a tooltip containing the node's token list
  */
 function initializeTippy(node) {
-  let tipPosition = node.popperRef(); // used only for positioning
+  const tipPosition = node.popperRef(); // used only for positioning
 
   // a dummy element must be passed as tippy only accepts a dom element as the target
-  let dummyDomEle = document.createElement('div');
+  const dummyDomEle = document.createElement('div');
 
   node.tip = tippy(dummyDomEle, { 
     trigger: 'manual',
@@ -209,14 +215,14 @@ function initializeTippy(node) {
 
 /**
  * Takes in a node and returns an HTML element containing the element's
- * tokens formatted into an HTML unordered list witha  close button if
+ * tokens formatted into an HTML unordered list with a close button if
  * the node has tokens and a message indicating so if it doesn't.
  */
 function getTooltipContent(node) {
-  let content = document.createElement("div");
+  const content = document.createElement("div");
 
   // Create button that will close the tooltip
-  let closeButton = document.createElement("button");
+  const closeButton = document.createElement("button");
   closeButton.innerText = "close";
   closeButton.classList.add("material-icons", "close-button");
   closeButton.addEventListener('click', function() {
@@ -224,17 +230,17 @@ function getTooltipContent(node) {
   }, false);
   content.appendChild(closeButton);
 
-  let nodeTokens = node.data("tokens");
+  const nodeTokens = node.data("tokens");
   if (nodeTokens.length === 0) {
     // The node has an empty token list
-    let noTokenMsg = document.createElement("p");
+    const noTokenMsg = document.createElement("p");
     noTokenMsg.innerText = "No tokens";
     content.appendChild(noTokenMsg);
   } else {
     // The node has some tokens
-    let tokenList = document.createElement("ul");
+    const tokenList = document.createElement("ul");
     nodeTokens.forEach(token => {
-      let tokenItem = document.createElement("li");
+      const tokenItem = document.createElement("li");
       tokenItem.innerText = token;
       tokenList.appendChild(tokenItem);
     });
@@ -246,6 +252,11 @@ function getTooltipContent(node) {
   return content;
 }
 
+/**
+ * When a next/previous button is clicked, modifies the mutation index of the
+ * current graph to represent the new state. Then, the corresponding
+ * graph is requested from the server.
+ */
 function navigateGraph(amount) {
   currGraphNum += amount;
   if(currGraphNum < 0) {
