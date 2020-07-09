@@ -3,7 +3,6 @@ package com.google.sps.data;
 import com.google.common.graph.*;
 import com.google.gson.Gson;
 import com.proto.GraphProtos.Node;
-import com.proto.MutationProtos.Mutation;
 import com.google.common.graph.EndpointPair;
 import java.util.List;
 import java.util.ArrayList;
