@@ -8,7 +8,6 @@ import com.proto.MutationProtos.TokenMutation;
 import com.google.common.graph.EndpointPair;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import com.google.protobuf.Struct;
 import java.util.Map;
@@ -174,7 +173,6 @@ public final class Utility {
     return true;
   }
 
-  
   /**
    * Alternative function for calculating maxDepth
    *
