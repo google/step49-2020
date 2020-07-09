@@ -1,7 +1,7 @@
-import  {initializeTippy, generateGraph, getUrl } from "../src/main/webapp/script.js";
+import  {initializeTippy, generateGraph, getUrl, navigateGraph, currGraphNum  } from "../src/main/webapp/script.js";
 import cytoscape from "cytoscape";
 
-describe("Checking that fetch url is correctly constructed", function() {
+describe("Checking that depth in fetch url is correct", function() {
   let numLayers = {};
   beforeEach(function () {
     numLayers = document.createElement("input");
@@ -183,3 +183,55 @@ describe("Checking that tooltip is correctly initialized", function() {
   });
 });
 
+describe("Checking that graph number in fetch url is correct", function() {
+  it("Button presses generate correct request", function() {
+
+    let prevButton = document.createElement("button");
+    prevButton.id = "prevbutton";
+    prevButton.onclick = () => navigateGraph(-1);
+    let nextButton = document.createElement("button");
+    nextButton.id = "nextbutton";
+    nextButton.onclick = () => navigateGraph(1);
+    document.body.appendChild(prevButton);
+    document.body.appendChild(nextButton);
+
+
+    expect(currGraphNum).toBe(0);
+
+    nextButton.click();
+    expect(currGraphNum).toBe(1);
+
+    nextButton.click();
+    expect(currGraphNum).toBe(2);
+
+    prevButton.click();
+    expect(currGraphNum).toBe(1);
+
+    nextButton.click();
+    expect(currGraphNum).toBe(2);
+
+    prevButton.click();
+    expect(currGraphNum).toBe(1);
+
+    prevButton.click();
+    expect(currGraphNum).toBe(0);
+
+    prevButton.click();
+    expect(currGraphNum).toBe(0);
+
+    prevButton.click();
+    expect(currGraphNum).toBe(0);
+ 
+    nextButton.click();
+    expect(currGraphNum).toBe(1);
+
+    let requestString = getUrl();
+    let requestParams = requestString.substring(requestString.indexOf("?"));
+    
+    let constructedUrl = new URLSearchParams(requestParams);
+    expect(constructedUrl.has("depth")).toBe(true);
+    expect(constructedUrl.get("depth")).toBe("3");
+    expect(constructedUrl.has("mutationNum")).toBe(true);
+    expect(constructedUrl.get("mutationNum")).toBe("1");
+  });
+});

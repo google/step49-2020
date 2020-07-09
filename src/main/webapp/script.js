@@ -26,10 +26,12 @@ import 'tippy.js/dist/tippy.css';
 import 'tippy.js/dist/backdrop.css';
 import 'tippy.js/animations/shift-away.css';
 
-export { initializeTippy, generateGraph, getUrl };
+export { initializeTippy, generateGraph, getUrl, navigateGraph, currGraphNum };
 
 cytoscape.use(popper); // register extension
 cytoscape.use(dagre); // register extension
+
+let currGraphNum = 0;
 
 async function generateGraph() {
   // Arrays to store the cytoscape graph node and edge objects
@@ -90,18 +92,25 @@ async function generateGraph() {
  * Ensures that the depth is an integer between 0 and 20
  */
 function getUrl() {
-  let selectedDepth = document.getElementById('num-layers').value;
-  if (selectedDepth.length === 0) {
+  let depthElem = document.getElementById('num-layers');
+  let selectedDepth = 0;
+  if(depthElem === null) {
     selectedDepth = 3;
-  } else if (!Number.isInteger(selectedDepth)) {
-    selectedDepth = Math.round(selectedDepth);
   }
-  if (selectedDepth < 0) { // Extra validation for bounds
-    selectedDepth = 0;
-  } else if (selectedDepth > 20) {
-    selectedDepth = 20;
-  } 
-  const url = `/data?depth=${selectedDepth}`
+  else {
+    selectedDepth = depthElem.value
+    if (selectedDepth.length === 0) {
+      selectedDepth = 3;
+    } else if (!Number.isInteger(selectedDepth)) {
+      selectedDepth = Math.round(selectedDepth);
+    }
+    if (selectedDepth < 0) { // Extra validation for bounds
+      selectedDepth = 0;
+    } else if (selectedDepth > 20) {
+      selectedDepth = 20;
+    } 
+  }
+  const url = `/data?depth=${selectedDepth}&mutationNum=${currGraphNum}`;
   return url;
 }
 /**
@@ -235,4 +244,12 @@ function getTooltipContent(node) {
   content.className = "metadata";
 
   return content;
+}
+
+function navigateGraph(amount) {
+  currGraphNum += amount;
+  if(currGraphNum < 0) {
+    currGraphNum = 0;
+  }
+  generateGraph();
 }
