@@ -17,12 +17,8 @@ package com.google.sps.data;
 // import com.proto.GraphProtos.*;
 
 import com.google.common.graph.*;
-import com.proto.GraphProtos.Graph;
 import com.proto.GraphProtos.Node;
 import java.util.HashMap;
-import java.util.List;
-import java.util.ArrayList;
-import com.google.protobuf.Struct;
 import java.util.Map;
 import java.util.HashSet;
 

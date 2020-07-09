@@ -159,7 +159,6 @@ public final class GraphGenerationTest {
     boolean success = dataGraph.graphFromProtoNodes(protoNodesMap);
     Assert.assertTrue(success);
 
-    
     MutableGraph<GraphNode> graph = dataGraph.getGraph();
     HashMap<String, GraphNode> graphNodesMap = dataGraph.getGraphNodesMap();
 

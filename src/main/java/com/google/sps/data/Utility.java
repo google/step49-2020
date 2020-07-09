@@ -20,7 +20,6 @@ import org.json.JSONObject;
 
 public class Utility {
 
-
   /*
    * Converts a proto node object into a graph node object that does not store the
    * names of the child nodes but may store additional information.

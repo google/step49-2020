@@ -437,7 +437,6 @@ public final class MutationTest {
     boolean success = dataGraph.graphFromProtoNodes(protoNodesMap);
     Assert.assertTrue(success);
 
-    
     MutableGraph<GraphNode> graph = dataGraph.getGraph();
     HashMap<String, GraphNode> graphNodesMap = dataGraph.getGraphNodesMap();
     HashSet<String> roots = dataGraph.getRoots();

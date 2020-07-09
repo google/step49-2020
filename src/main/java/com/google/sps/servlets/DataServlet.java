@@ -76,7 +76,8 @@ public class DataServlet extends HttpServlet {
     // should be null
     if (currDataGraph == null && originalDataGraph == null) {
 
-      Graph protoGraph = Graph.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/graph.txt"));
+      Graph protoGraph =
+          Graph.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/graph.txt"));
       Map<String, Node> protoNodesMap = protoGraph.getNodesMapMap();
       // Originally both set to same data
       originalDataGraph = new DataGraph();
@@ -95,7 +96,6 @@ public class DataServlet extends HttpServlet {
       return;
     }
 
-
     MutableGraph<GraphNode> graph = currDataGraph.getGraph();
     HashMap<String, GraphNode> graphNodesMap = currDataGraph.getGraphNodesMap();
     HashSet<String> roots = currDataGraph.getRoots();
@@ -103,8 +103,9 @@ public class DataServlet extends HttpServlet {
     // Mutations file hasn't been read yet
     if (mutList == null) {
       // Parse the contents of mutation.txt into a list of mutations
-      mutList = MutationList.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/mutations.txt"))
-          .getMutationList();
+      mutList =
+          MutationList.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/mutations.txt"))
+              .getMutationList();
       // Only apply mutations once
       for (Mutation mut : mutList) {
         success = Utility.mutateGraph(mut, graph, graphNodesMap, roots);
@@ -116,7 +117,8 @@ public class DataServlet extends HttpServlet {
       }
     }
 
-    MutableGraph<GraphNode> truncatedGraph = Utility.getGraphWithMaxDepth(graph, roots, graphNodesMap, depthNumber);
+    MutableGraph<GraphNode> truncatedGraph =
+        Utility.getGraphWithMaxDepth(graph, roots, graphNodesMap, depthNumber);
     String graphJson = Utility.graphToJson(truncatedGraph, currDataGraph.getRoots());
     response.getWriter().println(graphJson);
   }

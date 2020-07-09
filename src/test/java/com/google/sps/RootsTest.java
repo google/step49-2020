@@ -185,7 +185,6 @@ public class RootsTest {
     nodeA.addChildren("C");
     nodeB.addChildren("C");
 
-
     HashMap<String, Node> protoNodesMap = new HashMap<>();
     protoNodesMap.put("A", nodeA.build());
     protoNodesMap.put("B", nodeB.build());
@@ -196,7 +195,6 @@ public class RootsTest {
     MutableGraph<GraphNode> graph = dataGraph.getGraph();
     HashMap<String, GraphNode> graphNodesMap = dataGraph.getGraphNodesMap();
     HashSet<String> roots = dataGraph.getRoots();
-
 
     // Before mutation
     Assert.assertEquals(roots.size(), 1);
@@ -249,7 +247,6 @@ public class RootsTest {
     nodeA.addChildren("B");
     nodeA.addChildren("C");
 
-
     HashMap<String, Node> protoNodesMap = new HashMap<>();
     protoNodesMap.put("A", nodeA.build());
     protoNodesMap.put("B", nodeB.build());
@@ -260,7 +257,7 @@ public class RootsTest {
     MutableGraph<GraphNode> graph = dataGraph.getGraph();
     HashMap<String, GraphNode> graphNodesMap = dataGraph.getGraphNodesMap();
     HashSet<String> roots = dataGraph.getRoots();
-    
+
     // Before mutation
     Assert.assertEquals(roots.size(), 1);
     Assert.assertTrue(roots.contains("A"));

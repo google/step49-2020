@@ -70,7 +70,6 @@ public class MaxDepthTest {
     nodeA.addChildren("B");
     nodeA.addChildren("C");
 
-
     HashMap<String, Node> protoNodesMap = new HashMap<>();
     protoNodesMap.put("A", nodeA.build());
     protoNodesMap.put("B", nodeB.build());
@@ -193,7 +192,6 @@ public class MaxDepthTest {
     nodeD.addChildren("E");
     nodeC.addChildren("E");
 
-
     HashMap<String, Node> protoNodesMap = new HashMap<>();
     protoNodesMap.put("A", nodeA.build());
     protoNodesMap.put("B", nodeB.build());
@@ -227,7 +225,6 @@ public class MaxDepthTest {
   public void multipleRootsZero() {
     nodeA.addChildren("B");
     nodeC.addChildren("D");
-
 
     HashMap<String, Node> protoNodesMap = new HashMap<>();
     protoNodesMap.put("A", nodeA.build());
