@@ -32,7 +32,6 @@ import com.google.protobuf.Struct;
 import java.util.Map;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.Stack;
 
 import com.google.common.reflect.TypeToken;
 import java.lang.reflect.Type;
@@ -198,13 +197,9 @@ public class DataServlet extends HttpServlet {
    * Changes the graph according to the given mutation object
    *
    * @param mut the mutation to affect
-   * 
    * @param graph the Guava graph to mutate
-   * 
    * @param graphNodesMap a reference of existing nodes, also to be mutated
-   * 
    * @param roots the roots of the graph before the mutation
-   *
    * @return true if the mutation was successful, false otherwise
    */
   public boolean mutateGraph(Mutation mut, MutableGraph<GraphNode> graph, Map<String, GraphNode> graphNodesMap,
@@ -282,7 +277,7 @@ public class DataServlet extends HttpServlet {
    * 'tokenMut'. This could involve adding or removing tokens from the list.
    *
    * @param node the node in the graph to change the tokens of
-   *
+   * 
    * @param tokenMut the kind of mutation to perform on node of the graph
    *
    * @return true if the change is successful, false otherwise
@@ -376,11 +371,12 @@ public class DataServlet extends HttpServlet {
 
   /**
    * Alternative function for calculating maxDepth
-   * @param graphInput
-   * @param roots
-   * @param graphNodesMap
-   * @param maxDepth
-   * @return
+   * 
+   * @param graphInput    the input graph, as a Mutatable Graph
+   * @param roots         the name (string) of the roots
+   * @param graphNodesMap a mapping of strings to GraphNodes
+   * @param maxDepth      the maximum depth of a node from a root
+   * @return a graph with nodes only a certain distance from a root
    */
   public MutableGraph<GraphNode> getGraphWithMaxDepth(MutableGraph<GraphNode> graphInput, Set<String> roots,
       HashMap<String, GraphNode> graphNodesMap, int maxDepth) {
@@ -408,24 +404,28 @@ public class DataServlet extends HttpServlet {
   }
 
   /**
-   * Helpfer function for calculating max depth
-   * @param gn
-   * @param graphInput
-   * @param visited
-   * @param graphToReturn
-   * @param depthRemaining
+   * Helper function for calculating max depth that actually visits a node and its
+   * children
+   * 
+   * @param gn             the GraphNode to visit
+   * @param graphInput     the input graph
+   * @param visited        a map that records whether nodes have been visited
+   * @param graphToReturn  the graph to return, with all nodes within the
+   *                       specified depth
+   * @param depthRemaining the number of layers left to explore, decreases by one
+   *                       with each recursive call on a child
    */
-  private void dfsVisit(GraphNode gn, MutableGraph<GraphNode> graphInput, Map<GraphNode, Boolean> visited, MutableGraph<GraphNode> graphToReturn,
-      int depthRemaining) {
-        if (depthRemaining >= 0) {
-          visited.put(gn, true); 
-          graphToReturn.addNode(gn);
-          for (GraphNode child : graphInput.successors(gn)) {
-            if (!visited.containsKey(child)) {
-              dfsVisit(child, graphInput, visited, graphToReturn, depthRemaining -1);
-            }
-          }
+  private void dfsVisit(GraphNode gn, MutableGraph<GraphNode> graphInput, Map<GraphNode, Boolean> visited,
+      MutableGraph<GraphNode> graphToReturn, int depthRemaining) {
+    if (depthRemaining >= 0) {
+      visited.put(gn, true);
+      graphToReturn.addNode(gn);
+      for (GraphNode child : graphInput.successors(gn)) {
+        if (!visited.containsKey(child)) {
+          dfsVisit(child, graphInput, visited, graphToReturn, depthRemaining - 1);
         }
-        
+      }
+    }
+
   }
 }
