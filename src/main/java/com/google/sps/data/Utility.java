@@ -129,11 +129,11 @@ public final class Utility {
         if (startNode == null || endNode == null) { // Check nodes exist before removing edge
           return false;
         }
+        graph.removeEdge(startNode, endNode);
         // If the target now has no in-edges, it becomes a root
-        if (graph.inDegree(endNode) == 1) {
+        if (graph.inDegree(endNode) == 0) {
           roots.add(endName);
         }
-        graph.removeEdge(startNode, endNode);
         break;
       case CHANGE_TOKEN:
         if (startNode == null) {
