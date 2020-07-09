@@ -38,14 +38,6 @@ public class RootsTest {
   Builder nodeB = Node.newBuilder().setName("B");
   Builder nodeC = Node.newBuilder().setName("C");
 
-  GraphNode gNodeB;
-  GraphNode gNodeC;
-
-  @Before
-  public void setUp() {
-    gNodeB = Utility.protoNodeToGraphNode(nodeB.build());
-    gNodeC = Utility.protoNodeToGraphNode(nodeC.build());
-  }
 
   /** Add nodes without edges has all nodes as roots */
   @Test
