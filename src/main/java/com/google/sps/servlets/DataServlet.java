@@ -61,7 +61,7 @@ public class DataServlet extends HttpServlet {
 
     // PROTO Data structure:
     // Parse the contents of graph.txt into a proto Graph object, and extract
-    // information from the proto object into a map. This is used to store the proto 
+    // information from the proto object into a map. This is used to store the proto
     // input and isn't updated with mutations.
 
     /*
