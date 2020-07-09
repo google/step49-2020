@@ -16,9 +16,9 @@ package com.google.sps;
 
 import com.google.common.graph.*;
 import com.google.gson.Gson;
-import com.google.sps.servlets.DataServlet;
 import java.util.HashSet;
 import com.google.sps.data.GraphNode;
+import com.google.sps.data.Utility;
 import com.proto.GraphProtos.Node;
 import com.proto.GraphProtos.Node.Builder;
 
@@ -37,8 +37,6 @@ import org.junit.runners.JUnit4;
 @RunWith(JUnit4.class)
 public final class JsonTest {
 
-  DataServlet servlet;
-
   // Proto nodes to construct graph with
   Builder nodeA = Node.newBuilder().setName("A");
   Builder nodeB = Node.newBuilder().setName("B");
@@ -56,12 +54,11 @@ public final class JsonTest {
 
   @Before
   public void setUp() {
-    servlet = new DataServlet();
     gson = new Gson();
 
-    gNodeA = servlet.protoNodeToGraphNode(nodeA.build());
-    gNodeB = servlet.protoNodeToGraphNode(nodeB.build());
-    gNodeC = servlet.protoNodeToGraphNode(nodeC.build());
+    gNodeA = Utility.protoNodeToGraphNode(nodeA.build());
+    gNodeB = Utility.protoNodeToGraphNode(nodeB.build());
+    gNodeC = Utility.protoNodeToGraphNode(nodeC.build());
 
     jNodeA = gson.toJson(gNodeA);
     jNodeB = gson.toJson(gNodeB);
@@ -81,8 +78,8 @@ public final class JsonTest {
 
     nodeC.addToken("3");
 
-    gNodeA = servlet.protoNodeToGraphNode(nodeA.build());
-    gNodeC = servlet.protoNodeToGraphNode(nodeC.build());
+    gNodeA = Utility.protoNodeToGraphNode(nodeA.build());
+    gNodeC = Utility.protoNodeToGraphNode(nodeC.build());
 
     jNodeA = gson.toJson(gNodeA);
     jNodeC = gson.toJson(gNodeC);
@@ -97,7 +94,7 @@ public final class JsonTest {
     HashSet<String> roots = new HashSet<>();
     roots.add("A");
 
-    String result = servlet.graphToJson(graph, roots);
+    String result = Utility.graphToJson(graph, roots);
     JSONObject jsonObject = new JSONObject(result);
 
     Assert.assertEquals(jsonObject.length(), 3);

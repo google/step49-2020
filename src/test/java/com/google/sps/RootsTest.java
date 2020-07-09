@@ -15,10 +15,12 @@
 package com.google.sps;
 
 import com.google.common.graph.*;
-import com.google.sps.servlets.DataServlet;
 import java.util.HashMap;
 import java.util.HashSet;
+
+import com.google.sps.data.DataGraph;
 import com.google.sps.data.GraphNode;
+import com.google.sps.data.Utility;
 import com.proto.GraphProtos.Node;
 import com.proto.GraphProtos.Node.Builder;
 import com.proto.MutationProtos.Mutation;
@@ -30,7 +32,6 @@ import org.junit.runners.JUnit4;
 
 @RunWith(JUnit4.class)
 public class RootsTest {
-  DataServlet servlet;
 
   // Proto nodes to construct graph with
   Builder nodeA = Node.newBuilder().setName("A");
@@ -42,25 +43,20 @@ public class RootsTest {
 
   @Before
   public void setUp() {
-    servlet = new DataServlet();
-    gNodeB = servlet.protoNodeToGraphNode(nodeB.build());
-    gNodeC = servlet.protoNodeToGraphNode(nodeC.build());
+    gNodeB = Utility.protoNodeToGraphNode(nodeB.build());
+    gNodeC = Utility.protoNodeToGraphNode(nodeC.build());
   }
 
   /** Add nodes without edges has all nodes as roots */
   @Test
   public void allNodesAsRoots() {
-    MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
-
     HashMap<String, Node> protoNodesMap = new HashMap<>();
     protoNodesMap.put("A", nodeA.build());
     protoNodesMap.put("B", nodeB.build());
 
-    HashMap<String, GraphNode> graphNodesMap = new HashMap<>();
-
-    HashSet<String> roots = new HashSet<>();
-
-    servlet.graphFromProtoNodes(protoNodesMap, graph, graphNodesMap, roots);
+    DataGraph dataGraph = new DataGraph();
+    dataGraph.graphFromProtoNodes(protoNodesMap);
+    HashSet<String> roots = dataGraph.getRoots();
 
     Assert.assertEquals(roots.size(), 2);
     Assert.assertTrue(roots.contains("A"));
@@ -72,17 +68,14 @@ public class RootsTest {
   public void singleEdgeChildNonRoot() {
     // A has a child, B
     nodeA.addChildren("B");
-    MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
 
     HashMap<String, Node> protoNodesMap = new HashMap<>();
     protoNodesMap.put("A", nodeA.build());
     protoNodesMap.put("B", nodeB.build());
 
-    HashMap<String, GraphNode> graphNodesMap = new HashMap<>();
-
-    HashSet<String> roots = new HashSet<>();
-
-    servlet.graphFromProtoNodes(protoNodesMap, graph, graphNodesMap, roots);
+    DataGraph dataGraph = new DataGraph();
+    dataGraph.graphFromProtoNodes(protoNodesMap);
+    HashSet<String> roots = dataGraph.getRoots();
 
     Assert.assertEquals(roots.size(), 1);
     Assert.assertTrue(roots.contains("A"));
@@ -92,17 +85,16 @@ public class RootsTest {
   /** Add edge mutation changes the root */
   @Test
   public void mutationAddEdgeChangesRoot() {
-    MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
 
     HashMap<String, Node> protoNodesMap = new HashMap<>();
     protoNodesMap.put("A", nodeA.build());
     protoNodesMap.put("B", nodeB.build());
 
-    HashMap<String, GraphNode> graphNodesMap = new HashMap<>();
-
-    HashSet<String> roots = new HashSet<>();
-
-    servlet.graphFromProtoNodes(protoNodesMap, graph, graphNodesMap, roots);
+    DataGraph dataGraph = new DataGraph();
+    dataGraph.graphFromProtoNodes(protoNodesMap);
+    MutableGraph<GraphNode> graph = dataGraph.getGraph();
+    HashMap<String, GraphNode> graphNodesMap = dataGraph.getGraphNodesMap();
+    HashSet<String> roots = dataGraph.getRoots();
 
     // Before mutation
     Assert.assertEquals(roots.size(), 2);
@@ -116,7 +108,7 @@ public class RootsTest {
             .setEndNode("B")
             .build();
 
-    servlet.mutateGraph(addAB, graph, graphNodesMap, roots);
+    Utility.mutateGraph(addAB, graph, graphNodesMap, roots);
 
     Assert.assertEquals(roots.size(), 1);
     Assert.assertTrue(roots.contains("A"));
@@ -126,22 +118,22 @@ public class RootsTest {
   /** Add node mutation adds to the root as well */
   @Test
   public void mutationAddNodeChangesRoot() {
-    MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
 
     HashMap<String, Node> protoNodesMap = new HashMap<>();
     protoNodesMap.put("A", nodeA.build());
 
-    HashMap<String, GraphNode> graphNodesMap = new HashMap<>();
-
-    HashSet<String> roots = new HashSet<>();
-    servlet.graphFromProtoNodes(protoNodesMap, graph, graphNodesMap, roots);
+    DataGraph dataGraph = new DataGraph();
+    dataGraph.graphFromProtoNodes(protoNodesMap);
+    MutableGraph<GraphNode> graph = dataGraph.getGraph();
+    HashMap<String, GraphNode> graphNodesMap = dataGraph.getGraphNodesMap();
+    HashSet<String> roots = dataGraph.getRoots();
 
     // Before mutation
     Assert.assertEquals(roots.size(), 1);
     Assert.assertTrue(roots.contains("A"));
 
     Mutation addB = Mutation.newBuilder().setType(Mutation.Type.ADD_NODE).setStartNode("B").build();
-    servlet.mutateGraph(addB, graph, graphNodesMap, roots);
+    Utility.mutateGraph(addB, graph, graphNodesMap, roots);
 
     Assert.assertEquals(roots.size(), 2);
     Assert.assertTrue(roots.contains("A"));
@@ -153,17 +145,16 @@ public class RootsTest {
   public void mutationRemoveEdgeAddsRoot() {
     // A has a child, B
     nodeA.addChildren("B");
-    MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
 
     HashMap<String, Node> protoNodesMap = new HashMap<>();
     protoNodesMap.put("A", nodeA.build());
     protoNodesMap.put("B", nodeB.build());
 
-    HashMap<String, GraphNode> graphNodesMap = new HashMap<>();
-
-    HashSet<String> roots = new HashSet<>();
-
-    servlet.graphFromProtoNodes(protoNodesMap, graph, graphNodesMap, roots);
+    DataGraph dataGraph = new DataGraph();
+    dataGraph.graphFromProtoNodes(protoNodesMap);
+    MutableGraph<GraphNode> graph = dataGraph.getGraph();
+    HashMap<String, GraphNode> graphNodesMap = dataGraph.getGraphNodesMap();
+    HashSet<String> roots = dataGraph.getRoots();
 
     // Before mutation
     Assert.assertEquals(roots.size(), 1);
@@ -175,7 +166,7 @@ public class RootsTest {
             .setStartNode("A")
             .setEndNode("B")
             .build();
-    servlet.mutateGraph(removeAB, graph, graphNodesMap, roots);
+    Utility.mutateGraph(removeAB, graph, graphNodesMap, roots);
 
     Assert.assertEquals(roots.size(), 2);
     Assert.assertTrue(roots.contains("A"));
@@ -192,18 +183,16 @@ public class RootsTest {
     nodeA.addChildren("C");
     nodeB.addChildren("C");
 
-    MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
-
     HashMap<String, Node> protoNodesMap = new HashMap<>();
     protoNodesMap.put("A", nodeA.build());
     protoNodesMap.put("B", nodeB.build());
     protoNodesMap.put("C", nodeC.build());
 
-    HashMap<String, GraphNode> graphNodesMap = new HashMap<>();
-
-    HashSet<String> roots = new HashSet<>();
-
-    servlet.graphFromProtoNodes(protoNodesMap, graph, graphNodesMap, roots);
+    DataGraph dataGraph = new DataGraph();
+    dataGraph.graphFromProtoNodes(protoNodesMap);
+    MutableGraph<GraphNode> graph = dataGraph.getGraph();
+    HashMap<String, GraphNode> graphNodesMap = dataGraph.getGraphNodesMap();
+    HashSet<String> roots = dataGraph.getRoots();
 
     // Before mutation
     Assert.assertEquals(roots.size(), 1);
@@ -215,7 +204,7 @@ public class RootsTest {
             .setStartNode("B")
             .setEndNode("C")
             .build();
-    servlet.mutateGraph(removeBC, graph, graphNodesMap, roots);
+    Utility.mutateGraph(removeBC, graph, graphNodesMap, roots);
 
     // After mutation
     Assert.assertEquals(roots.size(), 1);
@@ -227,24 +216,23 @@ public class RootsTest {
   public void mutationDeleteNodeNoChangeToRoot() {
     nodeA.addChildren("B");
 
-    MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
-
     HashMap<String, Node> protoNodesMap = new HashMap<>();
     protoNodesMap.put("A", nodeA.build());
     protoNodesMap.put("B", nodeB.build());
 
-    HashMap<String, GraphNode> graphNodesMap = new HashMap<>();
+    DataGraph dataGraph = new DataGraph();
+    dataGraph.graphFromProtoNodes(protoNodesMap);
+    MutableGraph<GraphNode> graph = dataGraph.getGraph();
+    HashMap<String, GraphNode> graphNodesMap = dataGraph.getGraphNodesMap();
+    HashSet<String> roots = dataGraph.getRoots();
 
-    HashSet<String> roots = new HashSet<>();
-
-    servlet.graphFromProtoNodes(protoNodesMap, graph, graphNodesMap, roots);
     // Before mutation
     Assert.assertEquals(roots.size(), 1);
     Assert.assertTrue(roots.contains("A"));
 
     Mutation removeB =
         Mutation.newBuilder().setType(Mutation.Type.DELETE_NODE).setStartNode("B").build();
-    servlet.mutateGraph(removeB, graph, graphNodesMap, roots);
+    Utility.mutateGraph(removeB, graph, graphNodesMap, roots);
 
     // After mutation
     Assert.assertEquals(roots.size(), 1);
@@ -257,25 +245,24 @@ public class RootsTest {
     nodeA.addChildren("B");
     nodeA.addChildren("C");
 
-    MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
-
     HashMap<String, Node> protoNodesMap = new HashMap<>();
     protoNodesMap.put("A", nodeA.build());
     protoNodesMap.put("B", nodeB.build());
     protoNodesMap.put("C", nodeC.build());
 
-    HashMap<String, GraphNode> graphNodesMap = new HashMap<>();
+    DataGraph dataGraph = new DataGraph();
+    dataGraph.graphFromProtoNodes(protoNodesMap);
+    MutableGraph<GraphNode> graph = dataGraph.getGraph();
+    HashMap<String, GraphNode> graphNodesMap = dataGraph.getGraphNodesMap();
+    HashSet<String> roots = dataGraph.getRoots();
 
-    HashSet<String> roots = new HashSet<>();
-
-    servlet.graphFromProtoNodes(protoNodesMap, graph, graphNodesMap, roots);
     // Before mutation
     Assert.assertEquals(roots.size(), 1);
     Assert.assertTrue(roots.contains("A"));
 
     Mutation removeA =
         Mutation.newBuilder().setType(Mutation.Type.DELETE_NODE).setStartNode("A").build();
-    servlet.mutateGraph(removeA, graph, graphNodesMap, roots);
+    Utility.mutateGraph(removeA, graph, graphNodesMap, roots);
 
     // After mutation
     Assert.assertEquals(roots.size(), 2);

@@ -10,4 +10,3 @@ maven-build.properties
 maven-build.xml
 node_modules/
 src/main/webapp/dist/
-
