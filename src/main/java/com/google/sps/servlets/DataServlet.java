@@ -26,9 +26,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import com.google.protobuf.Struct;
 import java.util.Map;
 import java.util.HashSet;
 
@@ -70,8 +67,8 @@ public class DataServlet extends HttpServlet {
       // input and isn't updated with mutations.
 
       /*
-      * The below code is used to read a graph specified in textproto form
-      */
+       * The below code is used to read a graph specified in textproto form
+       */
       // InputStreamReader graphReader = new
       // InputStreamReader(getServletContext().getResourceAsStream("/WEB-INF/initial_graph.textproto"));
       // Graph.Builder graphBuilder = Graph.newBuilder();
@@ -79,10 +76,10 @@ public class DataServlet extends HttpServlet {
       // Graph protoGraph = graphBuilder.build();
 
       /*
-      * This code is used to read a graph specified in proto binary format.
-      */
+       * This code is used to read a graph specified in proto binary format.
+       */
       Graph protoGraph =
-        Graph.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/graph.txt"));
+          Graph.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/graph.txt"));
       Map<String, Node> protoNodesMap = protoGraph.getNodesMapMap();
       // Originally both set to same data
       originalDataGraph = new DataGraph();
