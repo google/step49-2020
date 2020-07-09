@@ -44,30 +44,35 @@ public final class Utility {
    * @param graph the graph to convert into a JSON String
    */
   public static String graphToJson(MutableGraph<GraphNode> graph, HashSet<String> roots) {
-    Type typeOfNode = new TypeToken<Set<GraphNode>>() {
-    }.getType();
-    Type typeOfEdge = new TypeToken<Set<EndpointPair<GraphNode>>>() {
-    }.getType();
-    Type typeOfRoots = new TypeToken<Set<String>>() {
-    }.getType();
+    Type typeOfNode = new TypeToken<Set<GraphNode>>() {}.getType();
+    Type typeOfEdge = new TypeToken<Set<EndpointPair<GraphNode>>>() {}.getType();
+    Type typeOfRoots = new TypeToken<Set<String>>() {}.getType();
     Gson gson = new Gson();
     String nodeJson = gson.toJson(graph.nodes(), typeOfNode);
     String edgeJson = gson.toJson(graph.edges(), typeOfEdge);
     String rootsJson = gson.toJson(roots, typeOfRoots);
-    String allJson = new JSONObject().put("nodes", nodeJson).put("edges", edgeJson).put("roots", rootsJson).toString();
+    String allJson =
+        new JSONObject()
+            .put("nodes", nodeJson)
+            .put("edges", edgeJson)
+            .put("roots", rootsJson)
+            .toString();
     return allJson;
   }
 
   /**
    * Changes the graph according to the given mutation object. The parameters are mutated in place.
    *
-   * @param mut           the mutation to affect
-   * @param graph         the Guava graph to mutate
+   * @param mut the mutation to affect
+   * @param graph the Guava graph to mutate
    * @param graphNodesMap a reference of existing nodes, also to be mutated
    * @param roots the roots of the graph before the mutation. Changed if necessary.
    * @return true if the mutation was successful, false otherwise
    */
-  public static boolean mutateGraph(Mutation mut, MutableGraph<GraphNode> graph, Map<String, GraphNode> graphNodesMap,
+  public static boolean mutateGraph(
+      Mutation mut,
+      MutableGraph<GraphNode> graph,
+      Map<String, GraphNode> graphNodesMap,
       HashSet<String> roots) {
     // Nodes affected by the mutation
     // second node only applicable for adding an edge and removing an edge
@@ -87,7 +92,8 @@ public final class Utility {
         // New lone node is a root
         roots.add(startName);
         // Create a new node with the given name and add it to the graph and the map
-        GraphNode newGraphNode = GraphNode.create(startName, new ArrayList<>(), Struct.newBuilder().build());
+        GraphNode newGraphNode =
+            GraphNode.create(startName, new ArrayList<>(), Struct.newBuilder().build());
         graph.addNode(newGraphNode);
         graphNodesMap.put(startName, newGraphNode);
         break;
@@ -141,7 +147,7 @@ public final class Utility {
    * Modify the list of tokens for graph node 'node' to accomodate the mutation 'tokenMut'. This
    * could involve adding or removing tokens from the list.
    *
-   * @param node     the node in the graph to change the tokens of
+   * @param node the node in the graph to change the tokens of
    * @param tokenMut the kind of mutation to perform on node of the graph
    * @return true if the change is successful, false otherwise
    */
@@ -165,14 +171,17 @@ public final class Utility {
   /**
    * Alternative function for calculating maxDepth
    *
-   * @param graphInput    the input graph, as a Mutatable Graph
-   * @param roots         the name (string) of the roots
+   * @param graphInput the input graph, as a Mutatable Graph
+   * @param roots the name (string) of the roots
    * @param graphNodesMap a mapping of strings to GraphNodes
-   * @param maxDepth      the maximum depth of a node from a root
+   * @param maxDepth the maximum depth of a node from a root
    * @return a graph with nodes only a certain distance from a root
    */
-  public static MutableGraph<GraphNode> getGraphWithMaxDepth(MutableGraph<GraphNode> graphInput, Set<String> roots,
-      HashMap<String, GraphNode> graphNodesMap, int maxDepth) {
+  public static MutableGraph<GraphNode> getGraphWithMaxDepth(
+      MutableGraph<GraphNode> graphInput,
+      Set<String> roots,
+      HashMap<String, GraphNode> graphNodesMap,
+      int maxDepth) {
 
     MutableGraph<GraphNode> graphToReturn = GraphBuilder.directed().build();
     if (maxDepth < 0) {
@@ -186,7 +195,8 @@ public final class Utility {
       dfsVisit(rootNode, graphInput, visited, graphToReturn, maxDepth);
     }
     for (EndpointPair<GraphNode> edge : graphInput.edges()) {
-      if (graphToReturn.nodes().contains(edge.nodeU()) && graphToReturn.nodes().contains(edge.nodeV())) {
+      if (graphToReturn.nodes().contains(edge.nodeU())
+          && graphToReturn.nodes().contains(edge.nodeV())) {
         graphToReturn.putEdge(edge.nodeU(), edge.nodeV());
       }
     }
@@ -195,19 +205,21 @@ public final class Utility {
   }
 
   /**
-   * Helper function for calculating max depth that actually visits a node and its
-   * children
+   * Helper function for calculating max depth that actually visits a node and its children
    *
-   * @param gn             the GraphNode to visit
-   * @param graphInput     the input graph
-   * @param visited        a map that records whether nodes have been visited
-   * @param graphToReturn  the graph to return, with all nodes within the
-   *                       specified depth
-   * @param depthRemaining the number of layers left to explore, decreases by one
-   *                       with each recursive call on a child
+   * @param gn the GraphNode to visit
+   * @param graphInput the input graph
+   * @param visited a map that records whether nodes have been visited
+   * @param graphToReturn the graph to return, with all nodes within the specified depth
+   * @param depthRemaining the number of layers left to explore, decreases by one with each
+   *     recursive call on a child
    */
-  private static void dfsVisit(GraphNode gn, MutableGraph<GraphNode> graphInput, Map<GraphNode, Boolean> visited,
-      MutableGraph<GraphNode> graphToReturn, int depthRemaining) {
+  private static void dfsVisit(
+      GraphNode gn,
+      MutableGraph<GraphNode> graphInput,
+      Map<GraphNode, Boolean> visited,
+      MutableGraph<GraphNode> graphToReturn,
+      int depthRemaining) {
     if (depthRemaining >= 0) {
       visited.put(gn, true);
       graphToReturn.addNode(gn);
