@@ -153,7 +153,6 @@ public final class Utility {
    * 'tokenMut'. This could involve adding or removing tokens from the list.
    *
    * @param node the node in the graph to change the tokens of
-   *
    * @param tokenMut the kind of mutation to perform on node of the graph
    *
    * @return true if the change is successful, false otherwise
