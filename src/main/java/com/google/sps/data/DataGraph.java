@@ -57,7 +57,7 @@ public class DataGraph {
     return copy;
   }
 
-  /*
+  /** 
    * Takes in a map from node name to proto-parsed node object. Populates graph
    * with node and edge information and graphNodesMap with links from node names
    * to graph node objects.

@@ -23,7 +23,7 @@ public final class Utility {
     // Should not be called
   }
 
-  /*
+  /** 
    * Converts a proto node object into a graph node object that does not store the
    * names of the child nodes but may store additional information.
    *
@@ -38,7 +38,7 @@ public final class Utility {
     return GraphNode.create(thisNode.getName(), newTokenList, newMetadata);
   }
 
-  /*
+  /** 
    * Converts a Guava graph into a String encoding of a JSON Object. The object
    * contains nodes, edges, and the roots of the graph.
    *
@@ -61,7 +61,7 @@ public final class Utility {
     return allJson;
   }
 
-  /*
+  /** 
    * Changes the graph according to the given mutation object. The parameters are
    * mutated in place.
    *
@@ -147,7 +147,7 @@ public final class Utility {
     return true;
   }
 
-  /*
+  /** 
    * Modify the list of tokens for graph node 'node' to accomodate the mutation
    * 'tokenMut'. This could involve adding or removing tokens from the list.
    *
