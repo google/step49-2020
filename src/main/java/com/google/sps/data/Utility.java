@@ -89,9 +89,9 @@ public final class Utility {
 
     switch (mut.getType()) {
       case ADD_NODE:
-        if (!graphNodesMap.containsKey(startName)) {  
+        if (!graphNodesMap.containsKey(startName)) {
           // Don't add duplicate nodes
-          
+
           // New lone node is a root
           roots.add(startName);
           // Create a new node with the given name and add it to the graph and the map
