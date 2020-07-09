@@ -21,7 +21,9 @@ async function generateGraph() {
   // Arrays to store the cytoscape graph node and edge objects
   let graphNodes = [];
   let graphEdges = [];
-  const response = await fetch("/data");
+
+  const url = getUrl();
+  const response = await fetch(url);
 
   const serverErrorStatus = response.headers.get("serverError");
 
@@ -38,6 +40,11 @@ async function generateGraph() {
 
   if (!nodes || !edges || !Array.isArray(nodes) || !Array.isArray(edges)) {
     displayError("Malformed graph received from server - edges or nodes are empty");
+    return;
+  }
+
+  if (nodes.length === 0) {
+    displayError("Nothing to display!");
     return;
   }
 
@@ -64,6 +71,25 @@ async function generateGraph() {
   return;
 }
 
+/**
+ * Returns the url string given the user input
+ * Ensures that the depth is an integer between 0 and 20
+ */
+function getUrl() {
+  let selectedDepth = document.getElementById('num-layers').value;
+  if (selectedDepth.length === 0) {
+    selectedDepth = 3;
+  } else if (!Number.isInteger(selectedDepth)) {
+    selectedDepth = Math.round(selectedDepth);
+  }
+  if (selectedDepth < 0) { // Extra validation for bounds
+    selectedDepth = 0;
+  } else if (selectedDepth > 20) {
+    selectedDepth = 20;
+  } 
+  const url = `/data?depth=${selectedDepth}`
+  return url;
+}
 /**
  * Takes an error message and creates a text element on the page to display this message
  */
@@ -123,7 +149,8 @@ function getGraphDisplay(graphNodes, graphEdges) {
       directed: true,
       padding: 10,
       avoidOverlap: true,
-      spacingFactor: 2
+      spacingFactor: 2,
+      zoom: .75
     }
   });
 }

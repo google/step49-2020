@@ -13,6 +13,11 @@
   <h1>
     Graph Visualization Tool
   </h1>
+  <label for="layers">Number of layers (0-20, default is 3):</label>
+  <input type="number" id="num-layers" name="layers"
+       min="0" max="20" value="3">
+  <button onclick="generateGraph()">Get Graph</button>
+  <br/>
   <div id="graph"></div>
 </body>
 
