@@ -49,6 +49,7 @@ public class DataServlet extends HttpServlet {
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     response.setContentType("application/json");
     String depthParam = request.getParameter("depth");
+    String mutationParam = request.getParameter("mutationNum");
     if (depthParam == null) {
       String error = "Improper depth parameter, cannot generate graph";
       response.setHeader("serverError", error);
@@ -56,15 +57,12 @@ public class DataServlet extends HttpServlet {
     }
 
     int depthNumber = Integer.parseInt(depthParam);
+    int mutationNumber = Integer.parseInt(mutationParam);
     boolean success = true; // Innocent until proven guilty; successful until proven a failure
 
     // Initialize variables if any are null. Ideally should all be null or none
     // should be null
     if (currDataGraph == null && originalDataGraph == null) {
-      // PROTO Data structure:
-      // Parse the contents of graph.txt into a proto Graph object, and extract
-      // information from the proto object into a map. This is used to store the proto
-      // input and isn't updated with mutations.
 
       /*
        * The below code is used to read a graph specified in textproto form
