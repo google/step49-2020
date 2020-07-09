@@ -18,7 +18,11 @@ import com.google.common.reflect.TypeToken;
 import java.lang.reflect.Type;
 import org.json.JSONObject;
 
-public class Utility {
+public final class Utility {
+
+  private Utility() {
+    // Should not be called
+  }
 
   /*
    * Converts a proto node object into a graph node object that does not store the
@@ -63,14 +67,11 @@ public class Utility {
    * mutated in place.
    *
    * @param mut the mutation to affect
-   *
    * @param graph the Guava graph to mutate
-   *
    * @param graphNodesMap a reference of existing nodes, also to be mutated
-   *
    * @param roots the roots of the graph before the mutation. Changed if
    * necessary.
-   *
+   * 
    * @return true if the mutation was successful, false otherwise
    */
   public static boolean mutateGraph(
