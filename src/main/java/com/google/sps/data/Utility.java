@@ -45,22 +45,23 @@ public final class Utility {
    * @param graph the graph to convert into a JSON String
    */
   public static String graphToJson(MutableGraph<GraphNode> graph, HashSet<String> roots) {
-    Type typeOfNode = new TypeToken<Set<GraphNode>>() {
-    }.getType();
-    Type typeOfEdge = new TypeToken<Set<EndpointPair<GraphNode>>>() {
-    }.getType();
-    Type typeOfRoots = new TypeToken<Set<String>>() {
-    }.getType();
+    Type typeOfNode = new TypeToken<Set<GraphNode>>() {}.getType();
+    Type typeOfEdge = new TypeToken<Set<EndpointPair<GraphNode>>>() {}.getType();
+    Type typeOfRoots = new TypeToken<Set<String>>() {}.getType();
     Gson gson = new Gson();
     String nodeJson = gson.toJson(graph.nodes(), typeOfNode);
     String edgeJson = gson.toJson(graph.edges(), typeOfEdge);
     String rootsJson = gson.toJson(roots, typeOfRoots);
-    String allJson = new JSONObject().put("nodes", nodeJson).put("edges", edgeJson).put("roots", rootsJson).toString();
+    String allJson =
+        new JSONObject()
+            .put("nodes", nodeJson)
+            .put("edges", edgeJson)
+            .put("roots", rootsJson)
+            .toString();
     return allJson;
   }
 
   /**
-   * 
    * @param original the original graph
    * @param mutationNum number of mutations to apply
    * @param graphNodesMap
