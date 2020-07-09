@@ -76,8 +76,7 @@ public class DataServlet extends HttpServlet {
       /*
        * This code is used to read a graph specified in proto binary format.
        */
-      Graph protoGraph =
-          Graph.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/graph.txt"));
+      Graph protoGraph = Graph.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/graph.txt"));
       Map<String, Node> protoNodesMap = protoGraph.getNodesMapMap();
       // Originally both set to same data
       originalDataGraph = new DataGraph();
@@ -96,12 +95,6 @@ public class DataServlet extends HttpServlet {
       return;
     }
 
-    MutableGraph<GraphNode> graph = currDataGraph.getGraph();
-    HashMap<String, GraphNode> graphNodesMap = currDataGraph.getGraphNodesMap();
-    HashSet<String> roots = currDataGraph.getRoots();
-
-    final MutableGraph<GraphNode> graphOriginal = originalDataGraph.getGraph();
-
     // Mutations file hasn't been read yet
     if (mutList == null) {
       /*
@@ -116,22 +109,27 @@ public class DataServlet extends HttpServlet {
        * This code is used to read a mutation list specified in proto binary format.
        */
       // Parse the contents of mutation.txt into a list of mutations
-      mutList =
-          MutationList.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/mutations.txt"))
-              .getMutationList();
+      mutList = MutationList.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/mutations.txt"))
+          .getMutationList();
       // Only apply mutations once
-      for (Mutation mut : mutList) {
-        success = Utility.mutateGraph(mut, graph, graphNodesMap, roots);
-        if (!success) {
-          String error = "Failed to apply mutation " + mut.toString() + " to graph";
-          response.setHeader("serverError", error);
-          return;
-        }
-      }
+      // for (Mutation mut : mutList) {
+      // success = Utility.mutateGraph(mut, graph, graphNodesMap, roots);
+      // if (!success) {
+      // String error = "Failed to apply mutation " + mut.toString() + " to graph";
+      // response.setHeader("serverError", error);
+      // return;
+      // }
+      // }
     }
 
-    MutableGraph<GraphNode> truncatedGraph =
-        Utility.getGraphWithMaxDepth(graph, roots, graphNodesMap, depthNumber);
+    success = Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
+    if (!success) {
+      String error = "Failed to apply mutation!";
+      response.setHeader("serverError", error);
+      return;
+    }
+
+    MutableGraph<GraphNode> truncatedGraph = currDataGraph.getGraphWithMaxDepth(depthNumber);
     String graphJson = Utility.graphToJson(truncatedGraph, currDataGraph.getRoots());
     response.getWriter().println(graphJson);
   }
