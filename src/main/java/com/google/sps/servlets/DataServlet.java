@@ -60,17 +60,14 @@ public class DataServlet extends HttpServlet {
 
     // PROTO Data structure:
     // Parse the contents of graph.txt into a proto Graph object, and extract
-    // information
-    // from the proto object into a map. This is used to store the proto input and
-    // isn't updated
-    // with mutations.
+    // information from the proto object into a map. This is used to store the proto
+    // input and isn't updated with mutations.
     Graph protoGraph = Graph.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/graph.txt"));
     Map<String, Node> protoNodesMap = protoGraph.getNodesMapMap();
 
     // GRAPH Data structures:
-    // Create an undirected graph data structure to store the information, and
-    // map each node name in the graph to the GraphNode objects. This is the graph &
-    // map
+    // Create an undirected graph data structure to store the information, and map
+    // each node name in the graph to the GraphNode objects. This is the graph & map
     // we update with mutations
     MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
     HashMap<String, GraphNode> graphNodesMap = new HashMap<>();
@@ -197,9 +194,13 @@ public class DataServlet extends HttpServlet {
    * Changes the graph according to the given mutation object
    *
    * @param mut the mutation to affect
+   * 
    * @param graph the Guava graph to mutate
+   * 
    * @param graphNodesMap a reference of existing nodes, also to be mutated
+   * 
    * @param roots the roots of the graph before the mutation
+   * 
    * @return true if the mutation was successful, false otherwise
    */
   public boolean mutateGraph(Mutation mut, MutableGraph<GraphNode> graph, Map<String, GraphNode> graphNodesMap,
