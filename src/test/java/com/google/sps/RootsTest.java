@@ -38,13 +38,11 @@ public class RootsTest {
   Builder nodeB = Node.newBuilder().setName("B");
   Builder nodeC = Node.newBuilder().setName("C");
 
-  GraphNode gNodeA;
   GraphNode gNodeB;
   GraphNode gNodeC;
 
   @Before
   public void setUp() {
-    gNodeA = Utility.protoNodeToGraphNode(nodeA.build());
     gNodeB = Utility.protoNodeToGraphNode(nodeB.build());
     gNodeC = Utility.protoNodeToGraphNode(nodeC.build());
   }
@@ -175,7 +173,7 @@ public class RootsTest {
     Assert.assertTrue(roots.contains("B"));
   }
 
-  /** Remhoving an edge that doesn't change the roots */
+  /** Removing an edge that doesn't change the roots */
   @Test
   public void mutationRemoveEdgeNoChangeToRoot() {
     // A

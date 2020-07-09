@@ -174,10 +174,9 @@ public final class Utility {
     return true;
   }
 
+  
   /**
-   * Given an input graph, roots (as strings), a node map (from string to Graph Nodes), and a
-   * maximum depth, the function returns a graph with only nodes up to a max depth. Edges that don't
-   * contain nodes both reachable up until the max depth are discarded.
+   * Alternative function for calculating maxDepth
    *
    * @param graphInput the input graph, as a Mutatable Graph
    * @param roots the name (string) of the roots
@@ -195,56 +194,48 @@ public final class Utility {
     if (maxDepth < 0) {
       return graphToReturn; // If max depth below 0, then return an emtpy graph
     }
-    ArrayDeque<GraphNode> queue = new ArrayDeque<GraphNode>();
+
     Map<GraphNode, Boolean> visited = new HashMap<>();
 
     for (String rootName : roots) {
-      // Get the GraphNode object corresponding to the root name, add to the queue
       GraphNode rootNode = graphNodesMap.get(rootName);
-      queue.add(rootNode);
+      dfsVisit(rootNode, graphInput, visited, graphToReturn, maxDepth);
     }
-    int currentDepth = 0;
-    int elementsInThisDepth = roots.size(); // Number of elements in current layer/depth
-    int nextDepthElements = 0; // Number of elements in the next layer/depth
-
-    while (!queue.isEmpty()) {
-      GraphNode curr =
-          queue.poll(); // Add node first, worry about edges after we have all the nodes we need
-
-      // Add to the graph to return, within the max depth height from root
-      if (!visited.containsKey(curr)) {
-        graphToReturn.addNode(curr);
-        visited.put(curr, true);
-
-        // The number of outgoing edges from the current node, number of nodes in the
-        // next layer
-        for (GraphNode gn : graphInput.successors(curr)) {
-          if (!visited.containsKey(gn)) {
-            queue.add(gn);
-            nextDepthElements++;
-          }
-        }
-      }
-      elementsInThisDepth--; // Decrement elements in depth since we've looked at the node
-      // If the current layer has been entirely processed (we decrement since we
-      // processed the node)
-      if (elementsInThisDepth == 0) {
-        currentDepth++;
-        if (currentDepth > maxDepth) {
-          break;
-        }
-        elementsInThisDepth = nextDepthElements;
-        nextDepthElements = 0;
-      }
-    }
-    // Add the edges that we need, edges are only relevant if they contain nodes in
-    // our graph
     for (EndpointPair<GraphNode> edge : graphInput.edges()) {
       if (graphToReturn.nodes().contains(edge.nodeU())
           && graphToReturn.nodes().contains(edge.nodeV())) {
         graphToReturn.putEdge(edge.nodeU(), edge.nodeV());
       }
     }
+
     return graphToReturn;
+  }
+
+  /**
+   * Helper function for calculating max depth that actually visits a node and its children
+   *
+   * @param gn the GraphNode to visit
+   * @param graphInput the input graph
+   * @param visited a map that records whether nodes have been visited
+   * @param graphToReturn the graph to return, with all nodes within the specified depth
+   * @param depthRemaining the number of layers left to explore, decreases by one with each
+   *     recursive call on a child
+   */
+  private static void dfsVisit(
+      GraphNode gn,
+      MutableGraph<GraphNode> graphInput,
+      Map<GraphNode, Boolean> visited,
+      MutableGraph<GraphNode> graphToReturn,
+      int depthRemaining) {
+    if (depthRemaining >= 0) {
+      visited.put(gn, true);
+      graphToReturn.addNode(gn);
+      for (GraphNode child : graphInput.successors(gn)) {
+        if (!visited.containsKey(child)) {
+          // Visit the child and indicate the increase in depth
+          dfsVisit(child, graphInput, visited, graphToReturn, depthRemaining - 1);
+        }
+      }
+    }
   }
 }
