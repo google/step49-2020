@@ -17,11 +17,27 @@
  * nodes and edges of the graph, renders the graph in a container on the page using
  * the cytoscape.js library
  */
+
+import cytoscape from 'cytoscape';
+import dagre from 'cytoscape-dagre';
+import popper from 'cytoscape-popper';
+import tippy, { sticky } from 'tippy.js';
+import 'tippy.js/dist/tippy.css';
+import 'tippy.js/dist/backdrop.css';
+import 'tippy.js/animations/shift-away.css';
+
+export { initializeTippy, generateGraph, getUrl };
+
+cytoscape.use(popper); // register extension
+cytoscape.use(dagre); // register extension
+
 async function generateGraph() {
   // Arrays to store the cytoscape graph node and edge objects
   let graphNodes = [];
   let graphEdges = [];
-  const response = await fetch("/data");
+
+  const url = getUrl();
+  const response = await fetch(url);
 
   const serverErrorStatus = response.headers.get("serverError");
 
@@ -41,11 +57,16 @@ async function generateGraph() {
     return;
   }
 
+  if (nodes.length === 0) {
+    displayError("Nothing to display!");
+    return;
+  }
+
   // Add node to array of cytoscape nodes
   nodes.forEach(node =>
     graphNodes.push({
       group: "nodes",
-      data: { id: node["name"] }
+      data: { id: node["name"], metadata: node["metadata"], tokens: node["tokenList"] }
     }))
   // and edge to array of cytoscape edges
   edges.forEach(edge => {
@@ -64,6 +85,25 @@ async function generateGraph() {
   return;
 }
 
+/**
+ * Returns the url string given the user input
+ * Ensures that the depth is an integer between 0 and 20
+ */
+function getUrl() {
+  let selectedDepth = document.getElementById('num-layers').value;
+  if (selectedDepth.length === 0) {
+    selectedDepth = 3;
+  } else if (!Number.isInteger(selectedDepth)) {
+    selectedDepth = Math.round(selectedDepth);
+  }
+  if (selectedDepth < 0) { // Extra validation for bounds
+    selectedDepth = 0;
+  } else if (selectedDepth > 20) {
+    selectedDepth = 20;
+  } 
+  const url = `/data?depth=${selectedDepth}`
+  return url;
+}
 /**
  * Takes an error message and creates a text element on the page to display this message
  */
@@ -98,7 +138,6 @@ function getGraphDisplay(graphNodes, graphEdges) {
         style: {
           width: '50px',
           height: '50px',
-          shape: 'square',
           'background-color': 'blue',
           'label': 'data(id)',
           'color': 'white',
@@ -118,14 +157,23 @@ function getGraphDisplay(graphNodes, graphEdges) {
         }
       }],
     layout: {
-      name: 'breadthfirst',
-      maximal: true,
-      directed: true,
-      padding: 10,
-      avoidOverlap: true,
-      spacingFactor: 2
-    }
+      name: 'dagre'
+    },
+    zoom: 0.75,
+    pan: { x: 0, y: 0 },
+    minZoom: .25,
+    maxZoom: 2.5
   });
+
+  // Initialize content of node's token list popup
+  cy.nodes().forEach(node => initializeTippy(node));
+
+  // When the user clicks on a node, display the token list tooltip for the node
+  cy.on('tap', 'node', function(evt) {
+    const node = evt.target;
+    node.tip.show();
+  });
+
   let searchElement = document.getElementById('search');
   searchElement.onchange = function() {
     if (searchNode(cy, searchElement.value)) {
@@ -137,10 +185,13 @@ function getGraphDisplay(graphNodes, graphEdges) {
   
 }
 
+/**
+ * Zooms in on specific node
+ */
 function searchNode(cy, query) {
   let target = findNodeInGraph(cy, query);
   if (target) {
-    cy.fit(target, 500);
+    cy.fit(target, 50);
     return true;
   } else {
     cy.reset();
@@ -148,6 +199,9 @@ function searchNode(cy, query) {
   }
 }
 
+/**
+ * Finds element in cy graph by id
+ */
 function findNodeInGraph(cy, id) {
   let target = cy.$('#'+id);
   if (target.length != 0) {
@@ -155,4 +209,66 @@ function findNodeInGraph(cy, id) {
   } else {
     return null;
   }
+}
+
+/**
+ * Initializes a tooltip containing the node's token list
+ */
+function initializeTippy(node) {
+  let tipPosition = node.popperRef(); // used only for positioning
+
+  // a dummy element must be passed as tippy only accepts a dom element as the target
+  let dummyDomEle = document.createElement('div');
+
+  node.tip = tippy(dummyDomEle, { 
+    trigger: 'manual',
+    lazy: false, 
+    onCreate: instance => { instance.popperInstance.reference = tipPosition; },
+
+    content: () => getTooltipContent(node),
+    interactive: true,
+    appendTo: document.body,
+    // the tooltip  adheres to the node if the graph is zoomed in on
+    sticky: true,
+    plugins: [sticky]
+  });
+}
+
+/**
+ * Takes in a node and returns an HTML element containing the element's
+ * tokens formatted into an HTML unordered list witha  close button if
+ * the node has tokens and a message indicating so if it doesn't.
+ */
+function getTooltipContent(node) {
+  let content = document.createElement("div");
+
+  // Create button that will close the tooltip
+  let closeButton = document.createElement("button");
+  closeButton.innerText = "close";
+  closeButton.classList.add("material-icons", "close-button");
+  closeButton.addEventListener('click', function() {
+    node.tip.hide();
+  }, false);
+  content.appendChild(closeButton);
+
+  let nodeTokens = node.data("tokens");
+  if (nodeTokens.length === 0) {
+    // The node has an empty token list
+    let noTokenMsg = document.createElement("p");
+    noTokenMsg.innerText = "No tokens";
+    content.appendChild(noTokenMsg);
+  } else {
+    // The node has some tokens
+    let tokenList = document.createElement("ul");
+    nodeTokens.forEach(token => {
+      let tokenItem = document.createElement("li");
+      tokenItem.innerText = token;
+      tokenList.appendChild(tokenItem);
+    });
+    tokenList.className = "tokenlist";
+    content.appendChild(tokenList);
+  }
+  content.className = "metadata";
+
+  return content;
 }

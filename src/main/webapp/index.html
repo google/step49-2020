@@ -4,15 +4,20 @@
 <head>
   <meta charset="UTF-8">
   <title>Graphs</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.15.1/cytoscape.min.js"></script>
-  <script src="script.js"></script>
+  <script src="./dist/main.js"></script>
 </head>
 
-<body id="content" onload="generateGraph()">
+<body id="content" onload="graph.generateGraph()">
   <h1>
     Graph Visualization Tool
   </h1>
+  <label for="layers">Number of layers (0-20, default is 3):</label>
+  <input type="number" id="num-layers" name="layers"
+       min="0" max="20" value="3">
+  <button onclick="graph.generateGraph()">Get Graph</button>
+  <br/>
   <div id="graph"></div>
   <label>Search by Node: </label>
   <input type="text" id="search" name="search"></input>
