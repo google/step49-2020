@@ -98,7 +98,7 @@ async function generateGraph() {
  * Ensures that the depth is an integer between 0 and 20
  */
 function getUrl() {
-  let depthElem = document.getElementById('num-layers');
+  const depthElem = document.getElementById('num-layers');
   let selectedDepth = 0;
   if(depthElem === null) {
     selectedDepth = 3;
