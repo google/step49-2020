@@ -33,6 +33,7 @@ import com.google.protobuf.Struct;
 import java.util.Map;
 import java.util.HashSet;
 import java.util.Set;
+
 import com.google.common.reflect.TypeToken;
 import java.lang.reflect.Type;
 import javax.servlet.annotation.WebServlet;
@@ -60,10 +61,8 @@ public class DataServlet extends HttpServlet {
 
     // PROTO Data structure:
     // Parse the contents of graph.txt into a proto Graph object, and extract
-    // information
-    // from the proto object into a map. This is used to store the proto input and
-    // isn't updated
-    // with mutations.
+    // information from the proto object into a map. This is used to store the proto 
+    // input and isn't updated with mutations.
 
     /*
      * The below code is used to read a graph specified in textproto form
@@ -83,9 +82,8 @@ public class DataServlet extends HttpServlet {
     Map<String, Node> protoNodesMap = protoGraph.getNodesMapMap();
 
     // GRAPH Data structures:
-    // Create an undirected graph data structure to store the information, and
-    // map each node name in the graph to the GraphNode objects. This is the graph &
-    // map
+    // Create an undirected graph data structure to store the information, and map
+    // each node name in the graph to the GraphNode objects. This is the graph & map
     // we update with mutations
     MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
     HashMap<String, GraphNode> graphNodesMap = new HashMap<>();
@@ -138,7 +136,8 @@ public class DataServlet extends HttpServlet {
    * with node and edge information and graphNodesMap with links from node names
    * to graph node objects.
    *
-   * @param protNodesMap map from node name to proto Node object parsed from input
+   * @param protoNodesMap map from node name to proto Node object parsed from
+   * input
    *
    * @param graph Guava graph to fill with node and edge information
    *
@@ -295,7 +294,7 @@ public class DataServlet extends HttpServlet {
         if (startNode == null || endNode == null) { // Check nodes exist before removing edge
           return false;
         }
-        // If the target now has no in-edges, it becomes a root
+        // If the target has one in-edge, it becomes a root after removing that one edge
         if (graph.inDegree(endNode) == 1) {
           roots.add(endName);
         }
@@ -351,7 +350,7 @@ public class DataServlet extends HttpServlet {
    * @param maxDepth the maximum depth of a node from a root
    * @return a graph with nodes only a certain distance from a root
    */
-  public MutableGraph<GraphNode> getGraphWithMaxDepth(
+  public MutableGraph<GraphNode> getGraphWithMaxDepth2(
       MutableGraph<GraphNode> graphInput,
       Set<String> roots,
       HashMap<String, GraphNode> graphNodesMap,
@@ -370,8 +369,8 @@ public class DataServlet extends HttpServlet {
       queue.add(rootNode);
     }
     int currentDepth = 0;
-    int elementsInThisDepth = roots.size(); // Number of elements in current layer/depth
-    int nextDepthElements = 0; // Number of elements in the next layer/depth
+    int currDepthElementCount = roots.size(); // Number of elements in current layer/depth
+    int nextDepthElementCount = 0; // Number of elements in the next layer/depth
 
     while (!queue.isEmpty()) {
       GraphNode curr =
@@ -387,20 +386,20 @@ public class DataServlet extends HttpServlet {
         for (GraphNode gn : graphInput.successors(curr)) {
           if (!visited.containsKey(gn)) {
             queue.add(gn);
-            nextDepthElements++;
+            nextDepthElementCount++;
           }
         }
       }
-      elementsInThisDepth--; // Decrement elements in depth since we've looked at the node
+      currDepthElementCount--; // Decrement elements in depth since we've looked at the node
       // If the current layer has been entirely processed (we decrement since we
       // processed the node)
-      if (elementsInThisDepth == 0) {
+      if (currDepthElementCount == 0) {
         currentDepth++;
         if (currentDepth > maxDepth) {
           break;
         }
-        elementsInThisDepth = nextDepthElements;
-        nextDepthElements = 0;
+        currDepthElementCount = nextDepthElementCount;
+        nextDepthElementCount = 0;
       }
     }
     // Add the edges that we need, edges are only relevant if they contain nodes in
@@ -412,5 +411,69 @@ public class DataServlet extends HttpServlet {
       }
     }
     return graphToReturn;
+  }
+
+  /**
+   * Alternative function for calculating maxDepth
+   *
+   * @param graphInput the input graph, as a Mutatable Graph
+   * @param roots the name (string) of the roots
+   * @param graphNodesMap a mapping of strings to GraphNodes
+   * @param maxDepth the maximum depth of a node from a root
+   * @return a graph with nodes only a certain distance from a root
+   */
+  public MutableGraph<GraphNode> getGraphWithMaxDepth(
+      MutableGraph<GraphNode> graphInput,
+      Set<String> roots,
+      HashMap<String, GraphNode> graphNodesMap,
+      int maxDepth) {
+
+    MutableGraph<GraphNode> graphToReturn = GraphBuilder.directed().build();
+    if (maxDepth < 0) {
+      return graphToReturn; // If max depth below 0, then return an emtpy graph
+    }
+
+    Map<GraphNode, Boolean> visited = new HashMap<>();
+
+    for (String rootName : roots) {
+      GraphNode rootNode = graphNodesMap.get(rootName);
+      dfsVisit(rootNode, graphInput, visited, graphToReturn, maxDepth);
+    }
+    for (EndpointPair<GraphNode> edge : graphInput.edges()) {
+      if (graphToReturn.nodes().contains(edge.nodeU())
+          && graphToReturn.nodes().contains(edge.nodeV())) {
+        graphToReturn.putEdge(edge.nodeU(), edge.nodeV());
+      }
+    }
+
+    return graphToReturn;
+  }
+
+  /**
+   * Helper function for calculating max depth that actually visits a node and its children
+   *
+   * @param gn the GraphNode to visit
+   * @param graphInput the input graph
+   * @param visited a map that records whether nodes have been visited
+   * @param graphToReturn the graph to return, with all nodes within the specified depth
+   * @param depthRemaining the number of layers left to explore, decreases by one with each
+   *     recursive call on a child
+   */
+  private void dfsVisit(
+      GraphNode gn,
+      MutableGraph<GraphNode> graphInput,
+      Map<GraphNode, Boolean> visited,
+      MutableGraph<GraphNode> graphToReturn,
+      int depthRemaining) {
+    if (depthRemaining >= 0) {
+      visited.put(gn, true);
+      graphToReturn.addNode(gn);
+      for (GraphNode child : graphInput.successors(gn)) {
+        if (!visited.containsKey(child)) {
+          // Visit the child and indicate the increase in depth
+          dfsVisit(child, graphInput, visited, graphToReturn, depthRemaining - 1);
+        }
+      }
+    }
   }
 }

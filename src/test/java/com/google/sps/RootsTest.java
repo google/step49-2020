@@ -37,14 +37,12 @@ public class RootsTest {
   Builder nodeB = Node.newBuilder().setName("B");
   Builder nodeC = Node.newBuilder().setName("C");
 
-  GraphNode gNodeA;
   GraphNode gNodeB;
   GraphNode gNodeC;
 
   @Before
   public void setUp() {
     servlet = new DataServlet();
-    gNodeA = servlet.protoNodeToGraphNode(nodeA.build());
     gNodeB = servlet.protoNodeToGraphNode(nodeB.build());
     gNodeC = servlet.protoNodeToGraphNode(nodeC.build());
   }
@@ -129,7 +127,6 @@ public class RootsTest {
   @Test
   public void mutationAddNodeChangesRoot() {
     MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
-    // graph.addNode(gNodeA);
 
     HashMap<String, Node> protoNodesMap = new HashMap<>();
     protoNodesMap.put("A", nodeA.build());
@@ -185,7 +182,7 @@ public class RootsTest {
     Assert.assertTrue(roots.contains("B"));
   }
 
-  /** Remhoving an edge that doesn't change the roots */
+  /** Removing an edge that doesn't change the roots */
   @Test
   public void mutationRemoveEdgeNoChangeToRoot() {
     // A
