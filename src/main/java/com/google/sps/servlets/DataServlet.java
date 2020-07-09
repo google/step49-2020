@@ -100,6 +100,8 @@ public class DataServlet extends HttpServlet {
     HashMap<String, GraphNode> graphNodesMap = currDataGraph.getGraphNodesMap();
     HashSet<String> roots = currDataGraph.getRoots();
 
+    final MutableGraph<GraphNode> graphOriginal = originalDataGraph.getGraph();
+
     // Mutations file hasn't been read yet
     if (mutList == null) {
       /*
