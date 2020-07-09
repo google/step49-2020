@@ -186,10 +186,10 @@ describe("Checking that tooltip is correctly initialized", function() {
 describe("Checking that graph number in fetch url is correct", function() {
   it("Button presses generate correct request", function() {
 
-    let prevButton = document.createElement("button");
+    const prevButton = document.createElement("button");
     prevButton.id = "prevbutton";
     prevButton.onclick = () => navigateGraph(-1);
-    let nextButton = document.createElement("button");
+    const nextButton = document.createElement("button");
     nextButton.id = "nextbutton";
     nextButton.onclick = () => navigateGraph(1);
     document.body.appendChild(prevButton);
@@ -225,10 +225,10 @@ describe("Checking that graph number in fetch url is correct", function() {
     nextButton.click();
     expect(currGraphNum).toBe(1);
 
-    let requestString = getUrl();
-    let requestParams = requestString.substring(requestString.indexOf("?"));
+    const requestString = getUrl();
+    const requestParams = requestString.substring(requestString.indexOf("?"));
     
-    let constructedUrl = new URLSearchParams(requestParams);
+    const constructedUrl = new URLSearchParams(requestParams);
     expect(constructedUrl.has("depth")).toBe(true);
     expect(constructedUrl.get("depth")).toBe("3");
     expect(constructedUrl.has("mutationNum")).toBe(true);

@@ -31,8 +31,14 @@ export { initializeTippy, generateGraph, getUrl, navigateGraph, currGraphNum };
 cytoscape.use(popper); // register extension
 cytoscape.use(dagre); // register extension
 
+// Stores the index of the graph (in sequence of mutations) currently
+// displayed on the screen. Must be >= 0.
 let currGraphNum = 0;
 
+/**
+ * Submits a fetch request to the /data URL to retrieve the graph
+ * and then displays it on the page
+ */
 async function generateGraph() {
   // Arrays to store the cytoscape graph node and edge objects
   let graphNodes = [];
@@ -246,6 +252,11 @@ function getTooltipContent(node) {
   return content;
 }
 
+/**
+ * When a next/previous button is clicked, modifies the mutation index of the
+ * current graph to represent the new state. Then, the corresponding
+ * graph is requested from the server.
+ */
 function navigateGraph(amount) {
   currGraphNum += amount;
   if(currGraphNum < 0) {
