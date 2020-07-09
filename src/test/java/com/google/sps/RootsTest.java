@@ -101,7 +101,12 @@ public class RootsTest {
     Assert.assertTrue(roots.contains("A"));
     Assert.assertTrue(roots.contains("B"));
 
-    Mutation addAB = Mutation.newBuilder().setType(Mutation.Type.ADD_EDGE).setStartNode("A").setEndNode("B").build();
+    Mutation addAB =
+        Mutation.newBuilder()
+            .setType(Mutation.Type.ADD_EDGE)
+            .setStartNode("A")
+            .setEndNode("B")
+            .build();
 
     dataGraph.mutateGraph(addAB);
 
@@ -151,8 +156,12 @@ public class RootsTest {
     Assert.assertEquals(roots.size(), 1);
     Assert.assertTrue(roots.contains("A"));
 
-    Mutation removeAB = Mutation.newBuilder().setType(Mutation.Type.DELETE_EDGE).setStartNode("A").setEndNode("B")
-        .build();
+    Mutation removeAB =
+        Mutation.newBuilder()
+            .setType(Mutation.Type.DELETE_EDGE)
+            .setStartNode("A")
+            .setEndNode("B")
+            .build();
     dataGraph.mutateGraph(removeAB);
 
     Assert.assertEquals(roots.size(), 2);
@@ -183,8 +192,12 @@ public class RootsTest {
     Assert.assertEquals(roots.size(), 1);
     Assert.assertTrue(roots.contains("A"));
 
-    Mutation removeBC = Mutation.newBuilder().setType(Mutation.Type.DELETE_EDGE).setStartNode("B").setEndNode("C")
-        .build();
+    Mutation removeBC =
+        Mutation.newBuilder()
+            .setType(Mutation.Type.DELETE_EDGE)
+            .setStartNode("B")
+            .setEndNode("C")
+            .build();
     dataGraph.mutateGraph(removeBC);
 
     // After mutation
@@ -209,7 +222,8 @@ public class RootsTest {
     Assert.assertEquals(roots.size(), 1);
     Assert.assertTrue(roots.contains("A"));
 
-    Mutation removeB = Mutation.newBuilder().setType(Mutation.Type.DELETE_NODE).setStartNode("B").build();
+    Mutation removeB =
+        Mutation.newBuilder().setType(Mutation.Type.DELETE_NODE).setStartNode("B").build();
     dataGraph.mutateGraph(removeB);
 
     // After mutation
@@ -236,7 +250,8 @@ public class RootsTest {
     Assert.assertEquals(roots.size(), 1);
     Assert.assertTrue(roots.contains("A"));
 
-    Mutation removeA = Mutation.newBuilder().setType(Mutation.Type.DELETE_NODE).setStartNode("A").build();
+    Mutation removeA =
+        Mutation.newBuilder().setType(Mutation.Type.DELETE_NODE).setStartNode("A").build();
     dataGraph.mutateGraph(removeA);
 
     // After mutation

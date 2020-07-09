@@ -31,7 +31,11 @@ public class DataGraph {
     this.mutationNum = 0;
   }
 
-  public DataGraph(MutableGraph<GraphNode> graph, HashMap<String, GraphNode> map, HashSet<String> roots, int num) {
+  public DataGraph(
+      MutableGraph<GraphNode> graph,
+      HashMap<String, GraphNode> map,
+      HashSet<String> roots,
+      int num) {
     this.graph = graph;
     this.graphNodesMap = map;
     this.roots = roots;
@@ -39,7 +43,8 @@ public class DataGraph {
   }
 
   public DataGraph getCopy() {
-    return new DataGraph(this.getGraph(), this.getGraphNodesMap(), this.getRoots(), this.mutationNum);
+    return new DataGraph(
+        this.getGraph(), this.getGraphNodesMap(), this.getRoots(), this.mutationNum);
   }
 
   /**
@@ -95,12 +100,12 @@ public class DataGraph {
    * to graph node objects.
    *
    * @param protNodesMap map from node name to proto Node object parsed from input
-   * 
+   *
    * @param graph Guava graph to fill with node and edge information
-   * 
+   *
    * @param graphNodesMap map object to fill with node-name -> graph node object
    * links
-   * 
+   *
    * @param roots the roots of the graph
    *
    * @return false if an error occurred, true otherwise
@@ -154,13 +159,14 @@ public class DataGraph {
       case ADD_NODE:
         if (graphNodesMap.containsKey(startName)) {
           // adding a duplicate node
-          this.mutationNum ++;
+          this.mutationNum++;
           return true;
         }
         // New lone node is a root
         roots.add(startName);
         // Create a new node with the given name and add it to the graph and the map
-        GraphNode newGraphNode = GraphNode.create(startName, new ArrayList<>(), Struct.newBuilder().build());
+        GraphNode newGraphNode =
+            GraphNode.create(startName, new ArrayList<>(), Struct.newBuilder().build());
         graph.addNode(newGraphNode);
         graphNodesMap.put(startName, newGraphNode);
         break;
@@ -207,13 +213,11 @@ public class DataGraph {
         // unrecognized mutation type
         return false;
     }
-    this.mutationNum ++;
+    this.mutationNum++;
     return true;
   }
 
-  /**
-   * 
-   */
+  /** */
   private boolean changeNodeToken(GraphNode node, TokenMutation tokenMut) {
     // List of tokens to add/remove from the existing list
     List<String> tokenNames = tokenMut.getTokenNameList();
@@ -234,7 +238,7 @@ public class DataGraph {
   /**
    * Function for calculating maxDepth
    *
-   * @param maxDepth      the maximum depth of a node from a root
+   * @param maxDepth the maximum depth of a node from a root
    * @return a graph with nodes only a certain distance from a root
    */
   public MutableGraph<GraphNode> getGraphWithMaxDepth(int maxDepth) {
@@ -256,13 +260,12 @@ public class DataGraph {
   }
 
   /**
-   * Helper function for calculating max depth that actually visits a node and its
-   * children
+   * Helper function for calculating max depth that actually visits a node and its children
    *
-   * @param gn             the GraphNode to visit
-   * @param visited        a map that records whether nodes have been visited
-   * @param depthRemaining the number of layers left to explore, decreases by one
-   *                       with each recursive call on a child
+   * @param gn the GraphNode to visit
+   * @param visited a map that records whether nodes have been visited
+   * @param depthRemaining the number of layers left to explore, decreases by one with each
+   *     recursive call on a child
    */
   private void dfsVisit(GraphNode gn, Map<GraphNode, Boolean> visited, int depthRemaining) {
     if (depthRemaining >= 0) {

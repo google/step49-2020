@@ -23,11 +23,8 @@ import com.proto.GraphProtos.Node;
 import com.proto.MutationProtos.Mutation;
 import com.proto.MutationProtos.MutationList;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.HashSet;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -76,7 +73,8 @@ public class DataServlet extends HttpServlet {
       /*
        * This code is used to read a graph specified in proto binary format.
        */
-      Graph protoGraph = Graph.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/graph.txt"));
+      Graph protoGraph =
+          Graph.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/graph.txt"));
       Map<String, Node> protoNodesMap = protoGraph.getNodesMapMap();
       // Originally both set to same data
       originalDataGraph = new DataGraph();
@@ -109,8 +107,9 @@ public class DataServlet extends HttpServlet {
        * This code is used to read a mutation list specified in proto binary format.
        */
       // Parse the contents of mutation.txt into a list of mutations
-      mutList = MutationList.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/mutations.txt"))
-          .getMutationList();
+      mutList =
+          MutationList.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/mutations.txt"))
+              .getMutationList();
       // Only apply mutations once
       // for (Mutation mut : mutList) {
       // success = Utility.mutateGraph(mut, graph, graphNodesMap, roots);
@@ -122,7 +121,8 @@ public class DataServlet extends HttpServlet {
       // }
     }
 
-    success = Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
+    success =
+        Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
     if (!success) {
       String error = "Failed to apply mutation!";
       response.setHeader("serverError", error);

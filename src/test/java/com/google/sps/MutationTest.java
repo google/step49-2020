@@ -591,7 +591,7 @@ public final class MutationTest {
     HashSet<String> roots = new HashSet<>();
     DataGraph dataGraph = new DataGraph(graph, graphNodesMap, roots, 0);
     boolean success = dataGraph.mutateGraph(addToA);
-    
+
     Assert.assertFalse(success);
 
     Set<GraphNode> graphNodes = graph.nodes();

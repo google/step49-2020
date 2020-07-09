@@ -17,7 +17,6 @@ package com.google.sps;
 import com.google.common.graph.*;
 import com.google.sps.data.Utility;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Set;
 
 import com.google.sps.data.DataGraph;
@@ -109,10 +108,7 @@ public class MaxDepthTest {
     Assert.assertTrue(graphEdges.isEmpty());
   }
 
-  /**
-   * Distance is equal to the max distance from root to a node, the entire graph
-   * is kept
-   */
+  /** Distance is equal to the max distance from root to a node, the entire graph is kept */
   @Test
   public void entireGraphIsKept() {
     nodeA.addChildren("B");
@@ -138,10 +134,7 @@ public class MaxDepthTest {
     Assert.assertEquals(graphEdges.size(), 2);
   }
 
-  /**
-   * Distance is greater than the max distance from root to a node, the entire
-   * graph is kept
-   */
+  /** Distance is greater than the max distance from root to a node, the entire graph is kept */
   @Test
   public void maxDepthIsGreaterThanMaxDistance() {
     nodeA.addChildren("B");
@@ -169,8 +162,8 @@ public class MaxDepthTest {
   }
 
   /**
-   * two ways to get to node E. One way is depth 3 and the other is depth 2. Node
-   * E should be in the final graph
+   * two ways to get to node E. One way is depth 3 and the other is depth 2. Node E should be in the
+   * final graph
    */
   @Test
   public void testMultipleWaysToGetToNodeFindsShorter() {
@@ -232,10 +225,7 @@ public class MaxDepthTest {
     Assert.assertEquals(graphEdges.size(), 0);
   }
 
-  /**
-   * More than one root node to calculate the depth from, algorithm will find
-   * shortest path
-   */
+  /** More than one root node to calculate the depth from, algorithm will find shortest path */
   @Test
   public void multipleRoots() {
     nodeA.addChildren("B");
@@ -267,10 +257,7 @@ public class MaxDepthTest {
     Assert.assertEquals(graphEdges.size(), 2);
   }
 
-  /**
-   * This test mirrors the example graph we have in graph.txt after the mutations
-   * specified.
-   */
+  /** This test mirrors the example graph we have in graph.txt after the mutations specified. */
   @Test
   public void complexGraph() {
     nodeA.addChildren("B");

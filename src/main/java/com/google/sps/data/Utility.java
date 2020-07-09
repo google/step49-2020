@@ -4,13 +4,10 @@ import com.google.common.graph.*;
 import com.google.gson.Gson;
 import com.proto.GraphProtos.Node;
 import com.proto.MutationProtos.Mutation;
-import com.proto.MutationProtos.TokenMutation;
 import com.google.common.graph.EndpointPair;
-import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import com.google.protobuf.Struct;
-import java.util.Map;
 import java.util.HashSet;
 import java.util.Set;
 import com.google.common.reflect.TypeToken;
@@ -68,28 +65,29 @@ public final class Utility {
    * @param mutList mutation list
    * @param roots roots, to modify
    */
-  public static boolean getGraphAtMutationNumber(DataGraph original, DataGraph curr, int mutationNum, List<Mutation> mutList) {
-      boolean success = true;
-      if (curr.getMutationNum() <= mutationNum) { // going forward
-        for (int i = curr.getMutationNum(); i < mutationNum; i++) {
-          
-          // Mutate graph operates in place
-          success = curr.mutateGraph(mutList.get(i));
-          if (!success) {
-            break;
-          }
+  public static boolean getGraphAtMutationNumber(
+      DataGraph original, DataGraph curr, int mutationNum, List<Mutation> mutList) {
+    boolean success = true;
+    if (curr.getMutationNum() <= mutationNum) { // going forward
+      for (int i = curr.getMutationNum(); i < mutationNum; i++) {
+
+        // Mutate graph operates in place
+        success = curr.mutateGraph(mutList.get(i));
+        if (!success) {
+          break;
         }
-      } else {
-        // Create a copy of the original graph and start from the original graph
-        DataGraph originalCopy = original.getCopy();
-        for (int i = 0; i < mutationNum; i ++) {
-          success = originalCopy.mutateGraph(mutList.get(i));
-          if (!success) {
-            break;
-          }
-        }
-        curr = originalCopy; 
       }
-      return success;
+    } else {
+      // Create a copy of the original graph and start from the original graph
+      DataGraph originalCopy = original.getCopy();
+      for (int i = 0; i < mutationNum; i++) {
+        success = originalCopy.mutateGraph(mutList.get(i));
+        if (!success) {
+          break;
+        }
+      }
+      curr = originalCopy;
+    }
+    return success;
   }
 }
