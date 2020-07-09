@@ -110,6 +110,7 @@ public class RootsTest {
 
     dataGraph.mutateGraph(addAB);
 
+    roots = dataGraph.getRoots();
     Assert.assertEquals(roots.size(), 1);
     Assert.assertTrue(roots.contains("A"));
     Assert.assertFalse(roots.contains("B"));
@@ -133,6 +134,7 @@ public class RootsTest {
     Mutation addB = Mutation.newBuilder().setType(Mutation.Type.ADD_NODE).setStartNode("B").build();
     dataGraph.mutateGraph(addB);
 
+    roots = dataGraph.getRoots();
     Assert.assertEquals(roots.size(), 2);
     Assert.assertTrue(roots.contains("A"));
     Assert.assertTrue(roots.contains("B"));
@@ -164,6 +166,7 @@ public class RootsTest {
             .build();
     dataGraph.mutateGraph(removeAB);
 
+    roots = dataGraph.getRoots();
     Assert.assertEquals(roots.size(), 2);
     Assert.assertTrue(roots.contains("A"));
     Assert.assertTrue(roots.contains("B"));
@@ -201,6 +204,7 @@ public class RootsTest {
     dataGraph.mutateGraph(removeBC);
 
     // After mutation
+    roots = dataGraph.getRoots();
     Assert.assertEquals(roots.size(), 1);
     Assert.assertTrue(roots.contains("A"));
   }
@@ -227,6 +231,7 @@ public class RootsTest {
     dataGraph.mutateGraph(removeB);
 
     // After mutation
+    roots = dataGraph.getRoots();
     Assert.assertEquals(roots.size(), 1);
     Assert.assertTrue(roots.contains("A"));
   }
@@ -254,6 +259,7 @@ public class RootsTest {
         Mutation.newBuilder().setType(Mutation.Type.DELETE_NODE).setStartNode("A").build();
     dataGraph.mutateGraph(removeA);
 
+    roots = dataGraph.getRoots();
     // After mutation
     Assert.assertEquals(roots.size(), 2);
     Assert.assertTrue(roots.contains("B"));

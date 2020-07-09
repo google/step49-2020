@@ -57,37 +57,4 @@ public final class Utility {
             .toString();
     return allJson;
   }
-
-  /**
-   * @param original the original graph
-   * @param mutationNum number of mutations to apply
-   * @param graphNodesMap
-   * @param mutList mutation list
-   * @param roots roots, to modify
-   */
-  public static boolean getGraphAtMutationNumber(
-      DataGraph original, DataGraph curr, int mutationNum, List<Mutation> mutList) {
-    boolean success = true;
-    if (curr.getMutationNum() <= mutationNum) { // going forward
-      for (int i = curr.getMutationNum(); i < mutationNum; i++) {
-
-        // Mutate graph operates in place
-        success = curr.mutateGraph(mutList.get(i));
-        if (!success) {
-          break;
-        }
-      }
-    } else {
-      // Create a copy of the original graph and start from the original graph
-      DataGraph originalCopy = original.getCopy();
-      for (int i = 0; i < mutationNum; i++) {
-        success = originalCopy.mutateGraph(mutList.get(i));
-        if (!success) {
-          break;
-        }
-      }
-      curr = originalCopy;
-    }
-    return success;
-  }
 }
