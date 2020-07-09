@@ -36,13 +36,27 @@ public class DataGraph {
    *
    * @param protoGraph the protograph to construct Guava Graph from
    */
-  public DataGraph(Graph protoGraph) {
-    Map<String, Node> protoNodesMap = protoGraph.getNodesMapMap();
-    graph = GraphBuilder.directed().build();
-    graphNodesMap = new HashMap<>();
+  // public DataGraph(Graph protoGraph) {
+  //   Map<String, Node> protoNodesMap = protoGraph.getNodesMapMap();
+  //   graph = GraphBuilder.directed().build();
+  //   graphNodesMap = new HashMap<>();
 
-    roots = new HashSet<>();
-    graphFromProtoNodes(protoNodesMap);
+  //   roots = new HashSet<>();
+  //   graphFromProtoNodes(protoNodesMap);
+  // }
+
+  // public DataGraph(Map<String, Node> protoNodesMap) {
+  //   graph = GraphBuilder.directed().build();
+  //   graphNodesMap = new HashMap<>();
+
+  //   roots = new HashSet<>();
+  //   graphFromProtoNodes(protoNodesMap);
+  // }
+
+  public DataGraph() {
+    this.graph = GraphBuilder.directed().build();
+    this.graphNodesMap = new HashMap<>();
+    this.roots = new HashSet<>();
   }
 
   public MutableGraph<GraphNode> getGraph() {
@@ -79,7 +93,7 @@ public class DataGraph {
       Node thisNode = protoNodesMap.get(nodeName);
 
       // Convert thisNode into a graph node that may store additional information
-      GraphNode graphNode = protoNodeToGraphNode(thisNode);
+      GraphNode graphNode = Utility.protoNodeToGraphNode(thisNode);
 
       // Update graph data structures to include the node as long as it doesn't
       // already exist
@@ -93,7 +107,7 @@ public class DataGraph {
       for (String child : thisNode.getChildrenList()) {
         // This child can no longer be a root since it has an in-edge
         roots.remove(child);
-        GraphNode childNode = protoNodeToGraphNode(protoNodesMap.get(child));
+        GraphNode childNode = Utility.protoNodeToGraphNode(protoNodesMap.get(child));
         if (!graphNodesMap.containsKey(child)) {
           // If child node is not already in the graph, add it
           graph.addNode(childNode);
@@ -106,20 +120,5 @@ public class DataGraph {
       }
     }
     return true;
-  }
-
-  /*
-   * Converts a proto node object into a graph node object that does not store the
-   * names of the child nodes but may store additional information.
-   *
-   * @param thisNode the input data Node object
-   *
-   * @return a useful node used to construct the Guava Graph
-   */
-  public GraphNode protoNodeToGraphNode(Node thisNode) {
-    List<String> newTokenList = new ArrayList<>();
-    newTokenList.addAll(thisNode.getTokenList());
-    Struct newMetadata = Struct.newBuilder().mergeFrom(thisNode.getMetadata()).build();
-    return GraphNode.create(thisNode.getName(), newTokenList, newMetadata);
   }
 }
