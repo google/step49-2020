@@ -85,10 +85,11 @@ public final class MutationTest {
   }
 
   /*
-   * Check that adding duplicate nodes is not allowed
+   * Check that adding duplicate nodes does not cause an error
+   * but does not make any change to the graph
    */
   @Test
-  public void noAddDuplicates() {
+  public void duplicateAddNoChange() {
     MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
     graph.addNode(gNodeA);
     HashMap<String, GraphNode> graphNodesMap = new HashMap<>();

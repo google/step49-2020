@@ -25,7 +25,6 @@ import com.proto.GraphProtos.Node;
 import com.proto.GraphProtos.Node.Builder;
 import com.proto.MutationProtos.Mutation;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -37,15 +36,6 @@ public class RootsTest {
   Builder nodeA = Node.newBuilder().setName("A");
   Builder nodeB = Node.newBuilder().setName("B");
   Builder nodeC = Node.newBuilder().setName("C");
-
-  GraphNode gNodeB;
-  GraphNode gNodeC;
-
-  @Before
-  public void setUp() {
-    gNodeB = Utility.protoNodeToGraphNode(nodeB.build());
-    gNodeC = Utility.protoNodeToGraphNode(nodeC.build());
-  }
 
   /** Add nodes without edges has all nodes as roots */
   @Test
