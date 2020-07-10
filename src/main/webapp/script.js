@@ -26,7 +26,7 @@ import 'tippy.js/dist/tippy.css';
 import 'tippy.js/dist/backdrop.css';
 import 'tippy.js/animations/shift-away.css';
 
-export { initializeTippy, generateGraph, getUrl, navigateGraph, currGraphNum };
+export { initializeTippy, generateGraph, getUrl, navigateGraph, currGraphNum, numMutations };
 
 cytoscape.use(popper); // register extension
 cytoscape.use(dagre); // register extension
@@ -35,6 +35,7 @@ cytoscape.use(dagre); // register extension
 // displayed on the screen. Must be >= 0.
 let currGraphNum = 0;
 // Stores the number of mutations in the list this graph is applying
+
 let numMutations = 0;
 
 /**
@@ -271,5 +272,28 @@ function navigateGraph(amount) {
     alert("no more!"); 
     return;
   }
+  if(currGraphNum >= numMutations) {
+    currGraphNum = numMutations;
+  }
   generateGraph();
+  updateButtons();
+}
+
+/**
+ * Updates next and previous buttons of the graph to prevent user
+ * from clicking previous for the initial graph and next for the 
+ * final graph
+ * Assumes currGraphNum is between 0 and numMutations
+ */
+function updateButtons() {
+  if(currGraphNum === 0) {
+    document.getElementById("prevbutton").disabled = true;
+  } else {
+    document.getElementById("prevbutton").disabled = false;
+  }
+  if(currGraphNum === numMutations) {
+    document.getElementById("nextbutton").disabled = true;
+  } else {
+    document.getElementById("nextbutton").disabled = false;
+  }
 }
