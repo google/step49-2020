@@ -264,7 +264,7 @@ function navigateGraph(amount) {
   currGraphNum += amount;
   if(currGraphNum < 0) {
     currGraphNum = 0;
-    alert("no more!"); // to do: change to a different warning
+    alert("no more!");
     return;
   } else if(currGraphNum >= numMutations) {
     currGraphNum = numMutations;
