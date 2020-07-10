@@ -158,4 +158,102 @@ public class GraphMutationTest {
     Assert.assertFalse(newNodes.contains(gNodeC));
     Assert.assertTrue(newGraph.hasEdgeConnecting(gNodeA, gNodeB));
   }
+
+  /** Mutation Number requested exceeds the length of the mutation list */
+  @Test
+  public void numberRequestedTooBig() {
+    HashMap<String, Node> protoNodesMap = new HashMap<>();
+    protoNodesMap.put("A", nodeA.build());
+    protoNodesMap.put("B", nodeB.build());
+    protoNodesMap.put("C", nodeC.build());
+
+    DataGraph dataGraph = new DataGraph();
+    dataGraph.graphFromProtoNodes(protoNodesMap);
+
+    List<Mutation> mutList = new ArrayList<>();
+
+    DataGraph mutatedGraph = Utility.getGraphAtMutationNumber(dataGraph, dataGraph, 2, mutList);
+    Assert.assertNull(mutatedGraph);
+
+  }
+
+  /** The current graph node is at a mutation AFTER the one requested.*/
+  @Test
+  public void goBack() {
+    HashMap<String, Node> protoNodesMap = new HashMap<>();
+    protoNodesMap.put("A", nodeA.build());
+    protoNodesMap.put("B", nodeB.build());
+    protoNodesMap.put("C", nodeC.build());
+
+    DataGraph dataGraph = new DataGraph();
+    dataGraph.graphFromProtoNodes(protoNodesMap);
+
+    MutableGraph<GraphNode> origGraph = dataGraph.getGraph();
+    HashMap<String, GraphNode> origGraphNodesMap = dataGraph.getGraphNodesMap();
+    HashSet<String> origRoots = dataGraph.getRoots();
+    Set<GraphNode> origNodes = origGraph.nodes();
+
+    Mutation addAB =
+        Mutation.newBuilder()
+            .setType(Mutation.Type.ADD_EDGE)
+            .setStartNode("A")
+            .setEndNode("B")
+            .build();
+    Mutation removeAB =
+        Mutation.newBuilder()
+            .setType(Mutation.Type.DELETE_EDGE)
+            .setStartNode("A")
+            .setEndNode("B")
+            .build();
+    Mutation removeC =
+        Mutation.newBuilder().setType(Mutation.Type.DELETE_NODE).setStartNode("C").build();
+    List<Mutation> mutList = new ArrayList<>();
+    mutList.add(addAB);
+    mutList.add(removeAB);
+    mutList.add(removeC);
+
+    // Build the current graph (same graph and map)
+    DataGraph dataGraphMutated = new DataGraph(origGraph, origGraphNodesMap, origRoots, 2);
+
+    DataGraph mutatedGraph = Utility.getGraphAtMutationNumber(dataGraph, dataGraphMutated, 1, mutList);
+
+    MutableGraph<GraphNode> newGraph = mutatedGraph.getGraph();
+    HashMap<String, GraphNode> newGraphNodesMap = mutatedGraph.getGraphNodesMap();
+    HashSet<String> newRoots = mutatedGraph.getRoots();
+    Set<GraphNode> newNodes = newGraph.nodes();
+    int newNum = mutatedGraph.getMutationNum();
+
+    Assert.assertFalse(origGraph.hasEdgeConnecting(gNodeA, gNodeB));
+    Assert.assertEquals(origNodes.size(), 3);
+
+    Assert.assertEquals(newNum, 1);
+    Assert.assertEquals(newNodes.size(), 3);
+    Assert.assertTrue(newNodes.contains(gNodeA));
+    Assert.assertTrue(newNodes.contains(gNodeB));
+    Assert.assertTrue(newNodes.contains(gNodeC));
+    Assert.assertTrue(newGraph.hasEdgeConnecting(gNodeA, gNodeB));
+
+    Assert.assertEquals(newRoots.size(), 2);
+    Assert.assertFalse(newRoots.contains("B"));
+    Assert.assertTrue(newRoots.contains("A"));
+    Assert.assertTrue(newRoots.contains("C"));
+  }
+
+  /** Mutation number requested exceeds the length of the mutation list */
+  @Test
+  public void numberRequestedTooSmall() {
+    HashMap<String, Node> protoNodesMap = new HashMap<>();
+    protoNodesMap.put("A", nodeA.build());
+    protoNodesMap.put("B", nodeB.build());
+    protoNodesMap.put("C", nodeC.build());
+
+    DataGraph dataGraph = new DataGraph();
+    dataGraph.graphFromProtoNodes(protoNodesMap);
+
+    List<Mutation> mutList = new ArrayList<>();
+
+    DataGraph mutatedGraph = Utility.getGraphAtMutationNumber(dataGraph, dataGraph, -2, mutList);
+    Assert.assertNull(mutatedGraph);
+
+  }
 }
