@@ -110,12 +110,12 @@ public class DataServlet extends HttpServlet {
               .getMutationList();
       // Only apply mutations once
       for (Mutation mut : mutList) {
-      success = currDataGraph.mutateGraph(mut);
-      if (!success) {
-      String error = "Failed to apply mutation " + mut.toString() + " to graph";
-      response.setHeader("serverError", error);
-      return;
-      }
+        success = currDataGraph.mutateGraph(mut);
+        if (!success) {
+          String error = "Failed to apply mutation " + mut.toString() + " to graph";
+          response.setHeader("serverError", error);
+          return;
+        }
       }
     }
 

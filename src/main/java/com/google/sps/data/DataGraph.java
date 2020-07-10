@@ -14,37 +14,38 @@ import java.util.HashSet;
 import java.util.List;
 
 public class DataGraph {
+  // A directed mutable Guava graph containing the nodes and edges of this graph
   private MutableGraph<GraphNode> graph;
+  // A map from the name to the node object for nodes of this graph
   private HashMap<String, GraphNode> graphNodesMap;
+  // A set of names of roots (nodes with no in-edges) of this graph
   private HashSet<String> roots;
-  private int mutationNum;
 
-  /**
-   * Sets all the variables based on a protograph
-   *
-   * @param protoGraph the protograph to construct Guava Graph from
-   */
+  // Initializes an empty data graph
   public DataGraph() {
     this.graph = GraphBuilder.directed().build();
     this.graphNodesMap = new HashMap<>();
     this.roots = new HashSet<>();
-    this.mutationNum = 0;
   }
 
+  // Initializes a data graph with the given fields
   public DataGraph(
       MutableGraph<GraphNode> graph,
       HashMap<String, GraphNode> map,
-      HashSet<String> roots,
-      int num) {
+      HashSet<String> roots) {
     this.graph = graph;
     this.graphNodesMap = map;
     this.roots = roots;
-    this.mutationNum = num;
   }
 
+  /**
+   * Returns a deep copy of the given data graph
+   *
+   * @return a deep copy of this data graph
+   */
   public DataGraph getCopy() {
     return new DataGraph(
-        this.getGraph(), this.getGraphNodesMap(), this.getRoots(), this.mutationNum);
+        this.getGraph(), this.getGraphNodesMap(), this.getRoots());
   }
 
   /**
@@ -53,7 +54,7 @@ public class DataGraph {
    * @return the graph
    */
   public MutableGraph<GraphNode> getGraph() {
-    return Graphs.copyOf(this.graph);
+    return Utility.copyGraph(this.graph);
   }
 
   /**
@@ -62,11 +63,7 @@ public class DataGraph {
    * @return a copy of the roots
    */
   public HashSet<String> getRoots() {
-    HashSet<String> copy = new HashSet<>();
-    for (String s : this.roots) {
-      copy.add(s);
-    }
-    return copy;
+    return Utility.copyRoots(this.roots);
   }
 
   /**
@@ -75,38 +72,14 @@ public class DataGraph {
    * @return a copy of the nodes map
    */
   public HashMap<String, GraphNode> getGraphNodesMap() {
-    HashMap<String, GraphNode> copy = new HashMap<>();
-    for (String key : this.graphNodesMap.keySet()) {
-      copy.put(key, this.graphNodesMap.get(key));
-    }
-    return copy;
+    return Utility.copyNodeMap(this.graphNodesMap);
   }
 
-  public int getMutationNum() {
-    return this.mutationNum;
-  }
-
-  public void setMutationNum(int newNum) {
-    this.mutationNum = newNum;
-  }
-
-  public void incMutationMum() {
-    this.mutationNum++;
-  }
-
-  /*
-   * Takes in a map from node name to proto-parsed node object. Populates graph
-   * with node and edge information and graphNodesMap with links from node names
-   * to graph node objects.
+  /**
+   * Takes in a map from node name to proto-parsed node object. Populates fields
+   * of this data graph with this information
    *
    * @param protNodesMap map from node name to proto Node object parsed from input
-   *
-   * @param graph Guava graph to fill with node and edge information
-   *
-   * @param graphNodesMap map object to fill with node-name -> graph node object
-   * links
-   *
-   * @param roots the roots of the graph
    *
    * @return false if an error occurred, true otherwise
    */
@@ -145,6 +118,13 @@ public class DataGraph {
     return true;
   }
 
+  /**
+   * Applies a single mutation to the given data graph
+   *
+   * @param mut the mutation to apply to the graph
+   *
+   * @return true if the mutation was successfully applied, false otherwise
+   */
   public boolean mutateGraph(Mutation mut) {
     // Nodes affected by the mutation
     // second node only applicable for adding an edge and removing an edge
@@ -157,18 +137,16 @@ public class DataGraph {
 
     switch (mut.getType()) {
       case ADD_NODE:
-        if (graphNodesMap.containsKey(startName)) {
-          // adding a duplicate node
-          this.mutationNum++;
-          return true;
+        // adding a duplicate node doesn't make any change
+        if (!graphNodesMap.containsKey(startName)) {
+          // New lone node is a root
+          roots.add(startName);
+          // Create a new node with the given name and add it to the graph and the map
+          GraphNode newGraphNode =
+              GraphNode.create(startName, new ArrayList<>(), Struct.newBuilder().build());
+          graph.addNode(newGraphNode);
+          graphNodesMap.put(startName, newGraphNode);
         }
-        // New lone node is a root
-        roots.add(startName);
-        // Create a new node with the given name and add it to the graph and the map
-        GraphNode newGraphNode =
-            GraphNode.create(startName, new ArrayList<>(), Struct.newBuilder().build());
-        graph.addNode(newGraphNode);
-        graphNodesMap.put(startName, newGraphNode);
         break;
       case ADD_EDGE:
         if (startNode == null || endNode == null) { // Check nodes exist before adding an edge
@@ -213,11 +191,18 @@ public class DataGraph {
         // unrecognized mutation type
         return false;
     }
-    this.mutationNum++;
     return true;
   }
 
-  /** */
+  /** 
+   * Modifies the list of tokens of this node to either add or remove
+   * tokens contained in tokenMut
+   *
+   * @param node the node whose token list should be modified
+   * @param tokenMut the mutation that should be applied to the token list
+   *
+   * @return true if the mutation was successfully applied, false otherwise
+  */
   private boolean changeNodeToken(GraphNode node, TokenMutation tokenMut) {
     // List of tokens to add/remove from the existing list
     List<String> tokenNames = tokenMut.getTokenNameList();
@@ -236,14 +221,14 @@ public class DataGraph {
   }
 
   /**
-   * Function for calculating maxDepth
+   * Function for calculating nodes reachable from roots of this graph
+   * within at most maxDepth steps
    *
    * @param maxDepth the maximum depth of a node from a root
+   *
    * @return a graph with nodes only a certain distance from a root
    */
   public MutableGraph<GraphNode> getGraphWithMaxDepth(int maxDepth) {
-
-    // MutableGraph<GraphNode> graphToReturn = GraphBuilder.directed().build();
     if (maxDepth < 0) {
       return GraphBuilder.directed().build(); // If max depth below 0, then return an emtpy graph
     }
@@ -260,9 +245,11 @@ public class DataGraph {
   }
 
   /**
-   * Helper function for calculating max depth that actually visits a node and its children
+   * Helper function for performing a depth-first traversal of the graph starting at node
+   * and adding all those nodes to visited which are within depthRemaining steps from the
+   * node
    *
-   * @param gn the GraphNode to visit
+   * @param gn the GraphNode to start at
    * @param visited a map that records whether nodes have been visited
    * @param depthRemaining the number of layers left to explore, decreases by one with each
    *     recursive call on a child
