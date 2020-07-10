@@ -34,6 +34,8 @@ cytoscape.use(dagre); // register extension
 // Stores the index of the graph (in sequence of mutations) currently
 // displayed on the screen. Must be >= 0.
 let currGraphNum = 0;
+// Stores the number of mutations in the list this graph is applying
+let numMutations = 0;
 
 /**
  * Submits a fetch request to the /data URL to retrieve the graph
@@ -59,6 +61,7 @@ async function generateGraph() {
   // Graph nodes and edges received from server
   const nodes = JSON.parse(jsonResponse.nodes);
   const edges = JSON.parse(jsonResponse.edges);
+  numMutations = JSON.parse(jsonResponse.numMutations);
 
   if (!nodes || !edges || !Array.isArray(nodes) || !Array.isArray(edges)) {
     displayError("Malformed graph received from server - edges or nodes are empty");
@@ -90,6 +93,7 @@ async function generateGraph() {
     });
   })
   getGraphDisplay(graphNodes, graphEdges);
+  console.log(graphEdges);
   return;
 }
 
@@ -261,6 +265,8 @@ function navigateGraph(amount) {
   currGraphNum += amount;
   if(currGraphNum < 0) {
     currGraphNum = 0;
+  } else if(currGraphNum >= numMutations) {
+    currGraphNum = numMutations;
   }
   generateGraph();
 }

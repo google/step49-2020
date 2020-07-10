@@ -20,20 +20,27 @@ public class DataGraph {
   private HashMap<String, GraphNode> graphNodesMap;
   // A set of names of roots (nodes with no in-edges) of this graph
   private HashSet<String> roots;
+  /*
+   * The index in the list of mutations upto which the original graph was mutated
+   * to obtain this graph
+   */
+  private int mutationNum;
 
   // Initializes an empty data graph
   public DataGraph() {
     this.graph = GraphBuilder.directed().build();
     this.graphNodesMap = new HashMap<>();
     this.roots = new HashSet<>();
+    this.mutationNum = 0;
   }
 
   // Initializes a data graph with the given fields
   public DataGraph(
-      MutableGraph<GraphNode> graph, HashMap<String, GraphNode> map, HashSet<String> roots) {
+      MutableGraph<GraphNode> graph, HashMap<String, GraphNode> map, HashSet<String> roots, int mutationNum) {
     this.graph = graph;
     this.graphNodesMap = map;
     this.roots = roots;
+    this.mutationNum = mutationNum;
   }
 
   /**
@@ -42,7 +49,7 @@ public class DataGraph {
    * @return a deep copy of this data graph
    */
   public DataGraph getCopy() {
-    return new DataGraph(this.getGraph(), this.getGraphNodesMap(), this.getRoots());
+    return new DataGraph(this.getGraph(), this.getGraphNodesMap(), this.getRoots(), this.mutationNum);
   }
 
   /**
@@ -71,6 +78,17 @@ public class DataGraph {
   public HashMap<String, GraphNode> getGraphNodesMap() {
     return Utility.copyNodeMap(this.graphNodesMap);
   }
+
+  /**
+   * Returns the index in the list of mutations upto which the original graph was mutated
+   * to obtain this graph
+   *
+   * @return the mutation number of this graph
+   */
+  public int getMutationNum() {
+    return this.mutationNum;
+  }
+
 
   /**
    * Takes in a map from node name to proto-parsed node object. Populates fields of this data graph
@@ -186,6 +204,7 @@ public class DataGraph {
         // unrecognized mutation type
         return false;
     }
+    this.mutationNum++;
     return true;
   }
 

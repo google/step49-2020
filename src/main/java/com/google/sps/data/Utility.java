@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import com.google.protobuf.Struct;
 import java.util.HashSet;
 import java.util.Set;
+import com.proto.MutationProtos.Mutation;
 import com.google.common.reflect.TypeToken;
 import java.lang.reflect.Type;
 import org.json.JSONObject;
@@ -40,9 +41,13 @@ public final class Utility {
    *
    * @param graph the graph to convert into a JSON String
    * @param roots the roots of the graph to convert into a JSON String
-   * @return a JSON object containing as entries the nodes, edges and roots of this graph
+   * @param maxMutations the length of the list of mutations
+   * 
+   * @return a JSON object containing as entries the nodes, edges and roots of this graph as
+   * well as the length of the list of mutations this graph is an intermediate result of
+   * applying
    */
-  public static String graphToJson(MutableGraph<GraphNode> graph, HashSet<String> roots) {
+  public static String graphToJson(MutableGraph<GraphNode> graph, HashSet<String> roots, int maxMutations) {
     Type typeOfNode = new TypeToken<Set<GraphNode>>() {}.getType();
     Type typeOfEdge = new TypeToken<Set<EndpointPair<GraphNode>>>() {}.getType();
     Type typeOfRoots = new TypeToken<Set<String>>() {}.getType();
@@ -55,6 +60,7 @@ public final class Utility {
             .put("nodes", nodeJson)
             .put("edges", edgeJson)
             .put("roots", rootsJson)
+            .put("numMutations", maxMutations)
             .toString();
     return allJson;
   }
@@ -93,5 +99,40 @@ public final class Utility {
       copy.put(key, graphNodesMap.get(key).getCopy());
     }
     return copy;
+  }
+
+  /**
+   * @param original the original graph
+   * @param mutationNum number of mutations to apply
+   * @param graphNodesMap
+   * @param mutList mutation list
+   * @param roots roots, to modify
+   *
+   * @return the resulting data graph or null if there was an error
+   */
+  public static DataGraph getGraphAtMutationNumber(
+      DataGraph original, DataGraph curr, int mutationNum, List<Mutation> mutList) {
+    boolean success = true;
+    if (curr.getMutationNum() <= mutationNum) { // going forward
+      for (int i = curr.getMutationNum(); i < mutationNum; i++) {
+ 
+        // Mutate graph operates in place
+        success = curr.mutateGraph(mutList.get(i));
+        if (!success) {
+          return null;
+        }
+      }
+      return curr;
+    } else {
+      // Create a copy of the original graph and start from the original graph
+      DataGraph originalCopy = original.getCopy();
+      for (int i = 0; i < mutationNum; i++) {
+        success = originalCopy.mutateGraph(mutList.get(i));
+        if (!success) {
+          return null;
+        }
+      }
+      return originalCopy;
+    }
   }
 }
