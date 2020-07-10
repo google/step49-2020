@@ -93,7 +93,6 @@ async function generateGraph() {
     });
   })
   getGraphDisplay(graphNodes, graphEdges);
-  console.log(graphEdges);
   return;
 }
 

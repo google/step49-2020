@@ -254,6 +254,5 @@ public class GraphMutationTest {
 
     DataGraph mutatedGraph = Utility.getGraphAtMutationNumber(dataGraph, dataGraph, -2, mutList);
     Assert.assertNull(mutatedGraph);
-
   }
 }
