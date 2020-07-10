@@ -89,7 +89,7 @@ public final class JsonTest {
     graph.addNode(gNodeC);
     graph.putEdge(gNodeA, gNodeB);
     graph.putEdge(gNodeA, gNodeC);
-    
+
     String result = Utility.graphToJson(graph, 0);
     JSONObject jsonObject = new JSONObject(result);
 

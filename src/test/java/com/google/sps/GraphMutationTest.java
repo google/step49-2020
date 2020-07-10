@@ -11,10 +11,9 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- 
+
 package com.google.sps;
- 
-import com.google.common.graph.Graphs;
+
 import com.google.common.graph.*;
 import com.google.sps.data.Utility;
 import java.util.HashMap;
@@ -22,7 +21,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.List;
 import java.util.ArrayList;
- 
+
 import com.google.sps.data.DataGraph;
 import com.google.sps.data.GraphNode;
 import com.proto.GraphProtos.Node;
@@ -33,10 +32,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
- 
+
 @RunWith(JUnit4.class)
 public class GraphMutationTest {
- 
+
   // Proto nodes to construct graph with
   Builder nodeA = Node.newBuilder().setName("A");
   Builder nodeB = Node.newBuilder().setName("B");
@@ -46,7 +45,7 @@ public class GraphMutationTest {
   Builder nodeF = Node.newBuilder().setName("F");
   Builder nodeG = Node.newBuilder().setName("G");
   Builder nodeH = Node.newBuilder().setName("H");
- 
+
   GraphNode gNodeA;
   GraphNode gNodeB;
   GraphNode gNodeC;
@@ -55,7 +54,7 @@ public class GraphMutationTest {
   GraphNode gNodeF;
   GraphNode gNodeG;
   GraphNode gNodeH;
- 
+
   @Before
   public void setUp() {
     gNodeA = Utility.protoNodeToGraphNode(nodeA.build());
@@ -67,24 +66,24 @@ public class GraphMutationTest {
     gNodeG = Utility.protoNodeToGraphNode(nodeG.build());
     gNodeH = Utility.protoNodeToGraphNode(nodeH.build());
   }
- 
-  /** Only a single mutation is applied  */
+
+  /** Only a single mutation is applied */
   @Test
   public void oneStepMutation() {
- 
+
     HashMap<String, Node> protoNodesMap = new HashMap<>();
     protoNodesMap.put("A", nodeA.build());
     protoNodesMap.put("B", nodeB.build());
     protoNodesMap.put("C", nodeC.build());
- 
+
     DataGraph dataGraph = new DataGraph();
     dataGraph.graphFromProtoNodes(protoNodesMap);
- 
+
     MutableGraph<GraphNode> origGraph = dataGraph.getGraph();
     HashMap<String, GraphNode> origGraphNodesMap = dataGraph.getGraphNodesMap();
     HashSet<String> origRoots = dataGraph.getRoots();
     Set<GraphNode> origNodes = origGraph.nodes();
- 
+
     Mutation addAB =
         Mutation.newBuilder()
             .setType(Mutation.Type.ADD_EDGE)
@@ -93,17 +92,17 @@ public class GraphMutationTest {
             .build();
     List<Mutation> mutList = new ArrayList<>();
     mutList.add(addAB);
- 
+
     DataGraph mutatedGraph = Utility.getGraphAtMutationNumber(dataGraph, dataGraph, 1, mutList);
- 
+
     MutableGraph<GraphNode> newGraph = mutatedGraph.getGraph();
     HashMap<String, GraphNode> newGraphNodesMap = mutatedGraph.getGraphNodesMap();
     HashSet<String> newRoots = mutatedGraph.getRoots();
     Set<GraphNode> newNodes = newGraph.nodes();
     int newNum = mutatedGraph.getMutationNum();
- 
+
     Assert.assertFalse(origGraph.hasEdgeConnecting(gNodeA, gNodeB));
- 
+
     Assert.assertEquals(newNum, 1);
     Assert.assertEquals(newNodes.size(), 3);
     Assert.assertTrue(newNodes.contains(gNodeA));
@@ -111,24 +110,24 @@ public class GraphMutationTest {
     Assert.assertTrue(newNodes.contains(gNodeC));
     Assert.assertTrue(newGraph.hasEdgeConnecting(gNodeA, gNodeB));
   }
- 
-  /** Two mutations are applied  */
+
+  /** Two mutations are applied */
   @Test
   public void twoStepForwardMutation() {
- 
+
     HashMap<String, Node> protoNodesMap = new HashMap<>();
     protoNodesMap.put("A", nodeA.build());
     protoNodesMap.put("B", nodeB.build());
     protoNodesMap.put("C", nodeC.build());
- 
+
     DataGraph dataGraph = new DataGraph();
     dataGraph.graphFromProtoNodes(protoNodesMap);
- 
+
     MutableGraph<GraphNode> origGraph = dataGraph.getGraph();
     HashMap<String, GraphNode> origGraphNodesMap = dataGraph.getGraphNodesMap();
     HashSet<String> origRoots = dataGraph.getRoots();
     Set<GraphNode> origNodes = origGraph.nodes();
- 
+
     Mutation addAB =
         Mutation.newBuilder()
             .setType(Mutation.Type.ADD_EDGE)
@@ -140,18 +139,18 @@ public class GraphMutationTest {
     List<Mutation> mutList = new ArrayList<>();
     mutList.add(addAB);
     mutList.add(removeC);
- 
+
     DataGraph mutatedGraph = Utility.getGraphAtMutationNumber(dataGraph, dataGraph, 2, mutList);
- 
+
     MutableGraph<GraphNode> newGraph = mutatedGraph.getGraph();
     HashMap<String, GraphNode> newGraphNodesMap = mutatedGraph.getGraphNodesMap();
     HashSet<String> newRoots = mutatedGraph.getRoots();
     Set<GraphNode> newNodes = newGraph.nodes();
     int newNum = mutatedGraph.getMutationNum();
- 
+
     Assert.assertFalse(origGraph.hasEdgeConnecting(gNodeA, gNodeB));
     Assert.assertEquals(origNodes.size(), 3);
- 
+
     Assert.assertEquals(newNum, 2);
     Assert.assertEquals(newNodes.size(), 2);
     Assert.assertTrue(newNodes.contains(gNodeA));
