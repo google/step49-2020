@@ -294,11 +294,11 @@ public class DataServlet extends HttpServlet {
         if (startNode == null || endNode == null) { // Check nodes exist before removing edge
           return false;
         }
-        // If the target has one in-edge, it becomes a root after removing that one edge
-        if (graph.inDegree(endNode) == 1) {
+        graph.removeEdge(startNode, endNode);
+        // If the end node now has no in-edges, make it a root
+        if (graph.inDegree(endNode) == 0) {
           roots.add(endName);
         }
-        graph.removeEdge(startNode, endNode);
         break;
       case CHANGE_TOKEN:
         if (startNode == null) {
