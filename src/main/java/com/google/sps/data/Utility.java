@@ -111,9 +111,11 @@ public final class Utility {
   public static DataGraph getGraphAtMutationNumber(
       DataGraph original, DataGraph curr, int mutationNum, List<Mutation> mutList) {
     boolean success = true;
+    if (mutationNum >= mutList.size()) {
+      return null;
+    }
     if (curr.getMutationNum() <= mutationNum) { // going forward
       for (int i = curr.getMutationNum(); i < mutationNum; i++) {
-
         // Mutate graph operates in place
         success = curr.mutateGraph(mutList.get(i));
         if (!success) {
