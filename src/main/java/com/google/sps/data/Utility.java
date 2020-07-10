@@ -21,11 +21,10 @@ public final class Utility {
   }
 
   /**
-   * Converts a proto node object into a graph node object that does not store the
-   * names of the child nodes but may store additional information.
+   * Converts a proto node object into a graph node object that does not store the names of the
+   * child nodes but may store additional information.
    *
    * @param thisNode the input data Node object
-   *
    * @return a useful node used to construct the Guava Graph
    */
   public static GraphNode protoNodeToGraphNode(Node thisNode) {
@@ -36,14 +35,12 @@ public final class Utility {
   }
 
   /**
-   * Converts a Guava graph into a String encoding of a JSON Object. The object
-   * contains nodes, edges, and the roots of the graph.
+   * Converts a Guava graph into a String encoding of a JSON Object. The object contains nodes,
+   * edges, and the roots of the graph.
    *
    * @param graph the graph to convert into a JSON String
    * @param roots the roots of the graph to convert into a JSON String
-   *
-   * @return a JSON object containing as entries the nodes, edges and roots of this
-   * graph
+   * @return a JSON object containing as entries the nodes, edges and roots of this graph
    */
   public static String graphToJson(MutableGraph<GraphNode> graph, HashSet<String> roots) {
     Type typeOfNode = new TypeToken<Set<GraphNode>>() {}.getType();
@@ -66,7 +63,6 @@ public final class Utility {
    * Returns a mutable shallow copy of the given guava graph
    *
    * @param graph the guava graph to shallow copy
-   *
    * @return a shallow copy of the given guava graph
    */
   public static MutableGraph<GraphNode> copyGraph(MutableGraph graph) {
@@ -77,7 +73,6 @@ public final class Utility {
    * Returns a mutable deep copy of the set of strings
    *
    * @param roots the set of strings to deep copy
-
    * @return a deep copy of the given set of strings
    */
   public static HashSet<String> copyRoots(HashSet<String> roots) {
@@ -86,11 +81,10 @@ public final class Utility {
     return copy;
   }
 
-   /**
+  /**
    * Returns a mutable deep copy of the given map from string to graph node
    *
    * @param graphNodesMap the map from string to graph node to deepcopy
-   *
    * @return a deep copy of the given map from string to Graph Node
    */
   public static HashMap<String, GraphNode> copyNodeMap(HashMap<String, GraphNode> graphNodesMap) {

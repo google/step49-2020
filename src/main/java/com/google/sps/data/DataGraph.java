@@ -30,9 +30,7 @@ public class DataGraph {
 
   // Initializes a data graph with the given fields
   public DataGraph(
-      MutableGraph<GraphNode> graph,
-      HashMap<String, GraphNode> map,
-      HashSet<String> roots) {
+      MutableGraph<GraphNode> graph, HashMap<String, GraphNode> map, HashSet<String> roots) {
     this.graph = graph;
     this.graphNodesMap = map;
     this.roots = roots;
@@ -44,8 +42,7 @@ public class DataGraph {
    * @return a deep copy of this data graph
    */
   public DataGraph getCopy() {
-    return new DataGraph(
-        this.getGraph(), this.getGraphNodesMap(), this.getRoots());
+    return new DataGraph(this.getGraph(), this.getGraphNodesMap(), this.getRoots());
   }
 
   /**
@@ -76,11 +73,10 @@ public class DataGraph {
   }
 
   /**
-   * Takes in a map from node name to proto-parsed node object. Populates fields
-   * of this data graph with this information
+   * Takes in a map from node name to proto-parsed node object. Populates fields of this data graph
+   * with this information
    *
    * @param protNodesMap map from node name to proto Node object parsed from input
-   *
    * @return false if an error occurred, true otherwise
    */
   public boolean graphFromProtoNodes(Map<String, Node> protoNodesMap) {
@@ -122,7 +118,6 @@ public class DataGraph {
    * Applies a single mutation to the given data graph
    *
    * @param mut the mutation to apply to the graph
-   *
    * @return true if the mutation was successfully applied, false otherwise
    */
   public boolean mutateGraph(Mutation mut) {
@@ -194,15 +189,13 @@ public class DataGraph {
     return true;
   }
 
-  /** 
-   * Modifies the list of tokens of this node to either add or remove
-   * tokens contained in tokenMut
+  /**
+   * Modifies the list of tokens of this node to either add or remove tokens contained in tokenMut
    *
    * @param node the node whose token list should be modified
    * @param tokenMut the mutation that should be applied to the token list
-   *
    * @return true if the mutation was successfully applied, false otherwise
-  */
+   */
   private boolean changeNodeToken(GraphNode node, TokenMutation tokenMut) {
     // List of tokens to add/remove from the existing list
     List<String> tokenNames = tokenMut.getTokenNameList();
@@ -221,11 +214,9 @@ public class DataGraph {
   }
 
   /**
-   * Function for calculating nodes reachable from roots of this graph
-   * within at most maxDepth steps
+   * Function for calculating nodes reachable from roots of this graph within at most maxDepth steps
    *
    * @param maxDepth the maximum depth of a node from a root
-   *
    * @return a graph with nodes only a certain distance from a root
    */
   public MutableGraph<GraphNode> getGraphWithMaxDepth(int maxDepth) {
@@ -245,9 +236,8 @@ public class DataGraph {
   }
 
   /**
-   * Helper function for performing a depth-first traversal of the graph starting at node
-   * and adding all those nodes to visited which are within depthRemaining steps from the
-   * node
+   * Helper function for performing a depth-first traversal of the graph starting at node and adding
+   * all those nodes to visited which are within depthRemaining steps from the node
    *
    * @param gn the GraphNode to start at
    * @param visited a map that records whether nodes have been visited
