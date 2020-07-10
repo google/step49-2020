@@ -5,10 +5,8 @@ import com.google.gson.Gson;
 import com.proto.GraphProtos.Node;
 import com.google.common.graph.EndpointPair;
 import java.util.List;
-import java.util.HashMap;
 import java.util.ArrayList;
 import com.google.protobuf.Struct;
-import java.util.HashSet;
 import java.util.Set;
 import com.proto.MutationProtos.Mutation;
 import com.google.common.reflect.TypeToken;
@@ -36,68 +34,27 @@ public final class Utility {
   }
 
   /**
-   * Converts a Guava graph into a String encoding of a JSON Object. The object contains nodes,
-   * edges, and the roots of the graph.
+   * Converts a Guava graph into a String encoding of a JSON Object. The object contains nodes and
+   * edges of the graph.
    *
    * @param graph the graph to convert into a JSON String
-   * @param roots the roots of the graph to convert into a JSON String
    * @param maxMutations the length of the list of mutations
-   * @return a JSON object containing as entries the nodes, edges and roots of this graph as well as
-   *     the length of the list of mutations this graph is an intermediate result of applying
+   * @return a JSON object containing as entries the nodes and edges of this graph as well as the
+   *     length of the list of mutations this graph is an intermediate result of applying
    */
-  public static String graphToJson(
-      MutableGraph<GraphNode> graph, HashSet<String> roots, int maxMutations) {
+  public static String graphToJson(MutableGraph<GraphNode> graph, int maxMutations) {
     Type typeOfNode = new TypeToken<Set<GraphNode>>() {}.getType();
     Type typeOfEdge = new TypeToken<Set<EndpointPair<GraphNode>>>() {}.getType();
-    Type typeOfRoots = new TypeToken<Set<String>>() {}.getType();
     Gson gson = new Gson();
     String nodeJson = gson.toJson(graph.nodes(), typeOfNode);
     String edgeJson = gson.toJson(graph.edges(), typeOfEdge);
-    String rootsJson = gson.toJson(roots, typeOfRoots);
-    String allJson =
+    String resultJson =
         new JSONObject()
             .put("nodes", nodeJson)
             .put("edges", edgeJson)
-            .put("roots", rootsJson)
             .put("numMutations", maxMutations)
             .toString();
-    return allJson;
-  }
-
-  /**
-   * Returns a mutable shallow copy of the given guava graph
-   *
-   * @param graph the guava graph to shallow copy
-   * @return a shallow copy of the given guava graph
-   */
-  public static MutableGraph<GraphNode> copyGraph(MutableGraph graph) {
-    return Graphs.copyOf(graph);
-  }
-
-  /**
-   * Returns a mutable deep copy of the set of strings
-   *
-   * @param roots the set of strings to deep copy
-   * @return a deep copy of the given set of strings
-   */
-  public static HashSet<String> copyRoots(HashSet<String> roots) {
-    HashSet<String> copy = new HashSet<>();
-    copy.addAll(roots);
-    return copy;
-  }
-
-  /**
-   * Returns a mutable deep copy of the given map from string to graph node
-   *
-   * @param graphNodesMap the map from string to graph node to deepcopy
-   * @return a deep copy of the given map from string to Graph Node
-   */
-  public static HashMap<String, GraphNode> copyNodeMap(HashMap<String, GraphNode> graphNodesMap) {
-    HashMap<String, GraphNode> copy = new HashMap<>();
-    for (String key : graphNodesMap.keySet()) {
-      copy.put(key, graphNodesMap.get(key).getCopy());
-    }
-    return copy;
+    return resultJson;
   }
 
   /**
