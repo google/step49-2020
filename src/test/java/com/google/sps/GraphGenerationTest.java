@@ -218,36 +218,7 @@ public final class GraphGenerationTest {
     Assert.assertEquals(graphNodesMap.get("B"), gNodeB);
     Assert.assertEquals(graphNodesMap.get("C"), gNodeC);
   }
-
-  /*
-   * Ensure that getter fields for node map and roots of a data graph return deep copies
-   * of the original fields
-   */
-  @Test
-  public void ensureFieldsCopies() {
-    MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
-    graph.addNode(gNodeA);
-    graph.addNode(gNodeB);
-    HashMap<String, GraphNode> graphNodesMap = new HashMap<>();
-    graphNodesMap.put("A", gNodeA);
-    graphNodesMap.put("B", gNodeB);
-    HashSet<String> roots = new HashSet<>();
-    roots.add("A");
-    roots.add("B");
-
-    DataGraph dataGraph = new DataGraph(graph, graphNodesMap, roots, 0);
-
-    // Make sure roots and nodes map returned are always copies of the original
-    HashMap<String, GraphNode> graphNodesMapCopy = dataGraph.getGraphNodesMap();
-    HashSet<String> rootsCopy = dataGraph.getRoots();
-    Assert.assertEquals(graphNodesMap, graphNodesMapCopy);
-    Assert.assertFalse(graphNodesMap == graphNodesMapCopy);
-    Assert.assertEquals(graphNodesMap.get("A"), graphNodesMapCopy.get("A"));
-    Assert.assertFalse(graphNodesMap.get("A") == graphNodesMapCopy.get("A"));
-    Assert.assertEquals(roots, rootsCopy);
-    Assert.assertFalse(roots == rootsCopy);
-  }
-
+  
   /*
    * Check that a cyclic graph is detected and an error is returned.
    */

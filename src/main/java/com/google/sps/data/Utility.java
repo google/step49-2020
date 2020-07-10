@@ -71,6 +71,7 @@ public final class Utility {
     if (mutationNum > mutList.size() || mutationNum < 0) {
       return null;
     }
+    
     if (curr.getMutationNum() <= mutationNum) { // going forward
       for (int i = curr.getMutationNum(); i < mutationNum; i++) {
         // Mutate graph operates in place
