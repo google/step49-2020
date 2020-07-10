@@ -68,7 +68,7 @@ public final class Utility {
   public static DataGraph getGraphAtMutationNumber(
       DataGraph original, DataGraph curr, int mutationNum, List<Mutation> mutList) {
     boolean success = true;
-    if (mutationNum >= mutList.size()) {
+    if (mutationNum > mutList.size() || mutationNum < 0) {
       return null;
     }
     if (curr.getMutationNum() <= mutationNum) { // going forward
