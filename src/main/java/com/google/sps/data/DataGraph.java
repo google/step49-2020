@@ -47,6 +47,26 @@ public class DataGraph {
   }
 
   /**
+   * Check whether the given object is equal in contents to the current data graph
+   *
+   * @param other the object to check is equal to this data graph
+   * @return true if they are equal, false if not or if this object is not a data graph
+   */
+  @Override
+  public boolean equals(Object other) {
+    if (other == this) {
+      return true;
+    }
+    if (!(other instanceof DataGraph)) {
+      return false;
+    }
+    DataGraph otherGraph = (DataGraph) other;
+    return this.graph.equals(otherGraph.getGraph())
+        && this.roots.equals(otherGraph.getRoots())
+        && this.graphNodesMap.equals(otherGraph.getGraphNodesMap());
+  }
+
+  /**
    * Returns a deep copy of the given data graph
    *
    * @return a deep copy of this data graph
@@ -59,28 +79,34 @@ public class DataGraph {
   /**
    * Getter for the graph
    *
-   * @return the graph
+   * @return a shallow copy of the graph
    */
   public MutableGraph<GraphNode> getGraph() {
-    return Utility.copyGraph(this.graph);
+    return Graphs.copyOf(this.graph);
   }
 
   /**
    * Getter for the roots
    *
-   * @return a copy of the roots
+   * @return a deep copy of the roots
    */
   public HashSet<String> getRoots() {
-    return Utility.copyRoots(this.roots);
+    HashSet<String> copy = new HashSet<>();
+    copy.addAll(roots);
+    return copy;
   }
 
   /**
    * Getter for the nodes map
    *
-   * @return a copy of the nodes map
+   * @return a deep copy of the nodes map
    */
   public HashMap<String, GraphNode> getGraphNodesMap() {
-    return Utility.copyNodeMap(this.graphNodesMap);
+    HashMap<String, GraphNode> copy = new HashMap<>();
+    for (String key : graphNodesMap.keySet()) {
+      copy.put(key, graphNodesMap.get(key).getCopy());
+    }
+    return copy;
   }
 
   /**
