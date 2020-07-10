@@ -91,19 +91,15 @@ public final class JsonTest {
     graph.putEdge(gNodeA, gNodeB);
     graph.putEdge(gNodeA, gNodeC);
 
-    HashSet<String> roots = new HashSet<>();
-    roots.add("A");
-
-    String result = Utility.graphToJson(graph, roots);
+    String result = Utility.graphToJson(graph);
     JSONObject jsonObject = new JSONObject(result);
 
-    Assert.assertEquals(jsonObject.length(), 3);
+    Assert.assertEquals(jsonObject.length(), 2);
 
     JSONArray elements = jsonObject.names();
-    Assert.assertEquals(elements.length(), 3);
+    Assert.assertEquals(elements.length(), 2);
 
     Assert.assertTrue(jsonObject.has("nodes"));
     Assert.assertTrue(jsonObject.has("edges"));
-    Assert.assertTrue(jsonObject.has("roots"));
   }
 }
