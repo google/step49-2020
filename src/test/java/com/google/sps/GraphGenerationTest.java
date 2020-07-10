@@ -126,7 +126,6 @@ public final class GraphGenerationTest {
     Assert.assertEquals(generatedMetadata.getFieldsOrThrow("column").getStringValue(), "17");
   }
 
-
   /*
    * Tests that a graph node is correctly deep-copied
    */
@@ -219,7 +218,7 @@ public final class GraphGenerationTest {
     Assert.assertEquals(graphNodesMap.get("B"), gNodeB);
     Assert.assertEquals(graphNodesMap.get("C"), gNodeC);
   }
-  
+
   /*
    * Ensure that getter fields for node map and roots of a data graph return deep copies
    * of the original fields
@@ -235,7 +234,7 @@ public final class GraphGenerationTest {
     HashSet<String> roots = new HashSet<>();
     roots.add("A");
     roots.add("B");
-    
+
     DataGraph dataGraph = new DataGraph(graph, graphNodesMap, roots);
 
     // Make sure roots and nodes map returned are always copies of the original
@@ -282,7 +281,7 @@ public final class GraphGenerationTest {
     HashSet<String> roots = new HashSet<>();
     roots.add("A");
     roots.add("B");
-    
+
     DataGraph dataGraph = new DataGraph(graph, graphNodesMap, roots);
     DataGraph dataGraphCopy = dataGraph.getCopy();
 

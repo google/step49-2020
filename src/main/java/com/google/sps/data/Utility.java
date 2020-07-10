@@ -5,10 +5,8 @@ import com.google.gson.Gson;
 import com.proto.GraphProtos.Node;
 import com.google.common.graph.EndpointPair;
 import java.util.List;
-import java.util.HashMap;
 import java.util.ArrayList;
 import com.google.protobuf.Struct;
-import java.util.HashSet;
 import java.util.Set;
 import com.google.common.reflect.TypeToken;
 import java.lang.reflect.Type;
@@ -34,13 +32,11 @@ public final class Utility {
     return GraphNode.create(thisNode.getName(), newTokenList, newMetadata);
   }
 
-
   /**
-   * Converts a Guava graph into a String encoding of a JSON Object. The object contains nodes
-   * and edges of the graph.
+   * Converts a Guava graph into a String encoding of a JSON Object. The object contains nodes and
+   * edges of the graph.
    *
    * @param graph the graph to convert into a JSON String
-   * 
    * @return a JSON object containing as entries the nodes and edges of this graph
    */
   public static String graphToJson(MutableGraph<GraphNode> graph) {
@@ -49,11 +45,7 @@ public final class Utility {
     Gson gson = new Gson();
     String nodeJson = gson.toJson(graph.nodes(), typeOfNode);
     String edgeJson = gson.toJson(graph.edges(), typeOfEdge);
-    String resultJson =
-        new JSONObject()
-            .put("nodes", nodeJson)
-            .put("edges", edgeJson)
-            .toString();
+    String resultJson = new JSONObject().put("nodes", nodeJson).put("edges", edgeJson).toString();
     return resultJson;
   }
 }

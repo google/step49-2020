@@ -40,19 +40,19 @@ public class DataGraph {
    * Check whether the given object is equal in contents to the current data graph
    *
    * @param other the object to check is equal to this data graph
-   * 
    * @return true if they are equal, false if not or if this object is not a data graph
-   */ 
+   */
   @Override
   public boolean equals(Object other) {
-    if (other == this) { 
-      return true; 
-    } 
-    if (!(other instanceof DataGraph)) { 
-      return false; 
-    } 
-    DataGraph otherGraph = (DataGraph) other; 
-    return this.graph.equals(otherGraph.getGraph()) && this.roots.equals(otherGraph.getRoots())
+    if (other == this) {
+      return true;
+    }
+    if (!(other instanceof DataGraph)) {
+      return false;
+    }
+    DataGraph otherGraph = (DataGraph) other;
+    return this.graph.equals(otherGraph.getGraph())
+        && this.roots.equals(otherGraph.getRoots())
         && this.graphNodesMap.equals(otherGraph.getGraphNodesMap());
   }
 
