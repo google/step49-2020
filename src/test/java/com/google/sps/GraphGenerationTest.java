@@ -218,7 +218,7 @@ public final class GraphGenerationTest {
     Assert.assertEquals(graphNodesMap.get("B"), gNodeB);
     Assert.assertEquals(graphNodesMap.get("C"), gNodeC);
   }
-  
+
   /*
    * Check that a cyclic graph is detected and an error is returned.
    */
