@@ -1,4 +1,4 @@
-import  {initializeTippy, generateGraph, getUrl, navigateGraph, currGraphNum  } from "../src/main/webapp/script.js";
+import  {initializeTippy, generateGraph, getUrl, navigateGraph, currGraphNum, numMutations, updateButtons  } from "../src/main/webapp/script.js";
 import cytoscape from "cytoscape";
 
 describe("Checking that depth in fetch url is correct", function() {
@@ -195,8 +195,8 @@ describe("Checking that graph number in fetch url is correct", function() {
     document.body.appendChild(prevButton);
     document.body.appendChild(nextButton);
 
-
     expect(currGraphNum).toBe(0);
+    expect(numMutations).toBe(3);
 
     nextButton.click();
     expect(currGraphNum).toBe(1);
@@ -204,8 +204,24 @@ describe("Checking that graph number in fetch url is correct", function() {
     nextButton.click();
     expect(currGraphNum).toBe(2);
 
+    nextButton.click();
+    expect(currGraphNum).toBe(3);
+
+    nextButton.click();
+    expect(currGraphNum).toBe(3);
+
+    expect(nextButton.disabled).toBe(true);
+    expect(prevButton.disabled).toBe(false);
+
     prevButton.click();
+    expect(currGraphNum).toBe(2);
+    expect(nextButton.disabled).toBe(false);
+    expect(prevButton.disabled).toBe(false);
+
+    prevButton.click(); 
     expect(currGraphNum).toBe(1);
+    expect(nextButton.disabled).toBe(false);
+    expect(prevButton.disabled).toBe(false);
 
     nextButton.click();
     expect(currGraphNum).toBe(2);
@@ -221,9 +237,13 @@ describe("Checking that graph number in fetch url is correct", function() {
 
     prevButton.click();
     expect(currGraphNum).toBe(0);
+    expect(nextButton.disabled).toBe(false);
+    expect(prevButton.disabled).toBe(true);
  
     nextButton.click();
     expect(currGraphNum).toBe(1);
+    expect(nextButton.disabled).toBe(false);
+    expect(prevButton.disabled).toBe(false);
 
     const requestString = getUrl();
     const requestParams = requestString.substring(requestString.indexOf("?"));

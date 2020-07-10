@@ -72,8 +72,32 @@ public class DataGraph {
    * @return a deep copy of this data graph
    */
   public DataGraph getCopy() {
+    MutableGraph<GraphNode> newGraph = GraphBuilder.directed().build();
+    HashMap<String, GraphNode> newNodesMap = new HashMap<>();
+    Set<GraphNode> nodes = graph.nodes();
+    for(GraphNode node : nodes) {
+      GraphNode nodeCopy;
+      if(!newNodesMap.containsKey(node.name())) {
+        nodeCopy = node.getCopy();
+        newGraph.addNode(nodeCopy);
+        newNodesMap.put(node.name(), nodeCopy);
+      } else {
+        nodeCopy = newNodesMap.get(node.name());
+      }
+      Set<GraphNode> successors = graph.successors(node);
+      for(GraphNode succ : successors) {
+        if(newNodesMap.containsKey(succ.name())) {
+          GraphNode newSucc = newNodesMap.get(succ.name());
+          newGraph.putEdge(nodeCopy, newSucc);
+        } else {
+          GraphNode newSucc = succ.getCopy();
+          newGraph.putEdge(nodeCopy, newSucc);
+          newNodesMap.put(succ.name(), newSucc);
+        }
+      }
+    }
     return new DataGraph(
-        this.getGraph(), this.getGraphNodesMap(), this.getRoots(), this.mutationNum);
+        newGraph, newNodesMap, this.getRoots(), this.mutationNum);
   }
 
   /**
@@ -228,7 +252,9 @@ public class DataGraph {
         if (startNode == null) {
           return false;
         }
-        return changeNodeToken(startNode, mut.getTokenChange());
+        boolean succ = changeNodeToken(startNode, mut.getTokenChange());
+        graph.addNode(startNode);
+        return succ;
       default:
         // unrecognized mutation type
         return false;
