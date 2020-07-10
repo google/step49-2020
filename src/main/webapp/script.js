@@ -261,6 +261,7 @@ function navigateGraph(amount) {
   currGraphNum += amount;
   if(currGraphNum < 0) {
     currGraphNum = 0;
+    return;
   }
   generateGraph();
 }
