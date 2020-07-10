@@ -42,12 +42,11 @@ public final class Utility {
    * @param graph the graph to convert into a JSON String
    * @param roots the roots of the graph to convert into a JSON String
    * @param maxMutations the length of the list of mutations
-   * 
-   * @return a JSON object containing as entries the nodes, edges and roots of this graph as
-   * well as the length of the list of mutations this graph is an intermediate result of
-   * applying
+   * @return a JSON object containing as entries the nodes, edges and roots of this graph as well as
+   *     the length of the list of mutations this graph is an intermediate result of applying
    */
-  public static String graphToJson(MutableGraph<GraphNode> graph, HashSet<String> roots, int maxMutations) {
+  public static String graphToJson(
+      MutableGraph<GraphNode> graph, HashSet<String> roots, int maxMutations) {
     Type typeOfNode = new TypeToken<Set<GraphNode>>() {}.getType();
     Type typeOfEdge = new TypeToken<Set<EndpointPair<GraphNode>>>() {}.getType();
     Type typeOfRoots = new TypeToken<Set<String>>() {}.getType();
@@ -107,7 +106,6 @@ public final class Utility {
    * @param graphNodesMap
    * @param mutList mutation list
    * @param roots roots, to modify
-   *
    * @return the resulting data graph or null if there was an error
    */
   public static DataGraph getGraphAtMutationNumber(
@@ -115,7 +113,7 @@ public final class Utility {
     boolean success = true;
     if (curr.getMutationNum() <= mutationNum) { // going forward
       for (int i = curr.getMutationNum(); i < mutationNum; i++) {
- 
+
         // Mutate graph operates in place
         success = curr.mutateGraph(mutList.get(i));
         if (!success) {

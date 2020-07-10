@@ -36,7 +36,10 @@ public class DataGraph {
 
   // Initializes a data graph with the given fields
   public DataGraph(
-      MutableGraph<GraphNode> graph, HashMap<String, GraphNode> map, HashSet<String> roots, int mutationNum) {
+      MutableGraph<GraphNode> graph,
+      HashMap<String, GraphNode> map,
+      HashSet<String> roots,
+      int mutationNum) {
     this.graph = graph;
     this.graphNodesMap = map;
     this.roots = roots;
@@ -49,7 +52,8 @@ public class DataGraph {
    * @return a deep copy of this data graph
    */
   public DataGraph getCopy() {
-    return new DataGraph(this.getGraph(), this.getGraphNodesMap(), this.getRoots(), this.mutationNum);
+    return new DataGraph(
+        this.getGraph(), this.getGraphNodesMap(), this.getRoots(), this.mutationNum);
   }
 
   /**
@@ -80,15 +84,14 @@ public class DataGraph {
   }
 
   /**
-   * Returns the index in the list of mutations upto which the original graph was mutated
-   * to obtain this graph
+   * Returns the index in the list of mutations upto which the original graph was mutated to obtain
+   * this graph
    *
    * @return the mutation number of this graph
    */
   public int getMutationNum() {
     return this.mutationNum;
   }
-
 
   /**
    * Takes in a map from node name to proto-parsed node object. Populates fields of this data graph

@@ -129,7 +129,8 @@ public class DataServlet extends HttpServlet {
     }
 
     MutableGraph<GraphNode> truncatedGraph = currDataGraph.getGraphWithMaxDepth(depthNumber);
-    String graphJson = Utility.graphToJson(truncatedGraph, currDataGraph.getRoots(), mutList.size());
+    String graphJson =
+        Utility.graphToJson(truncatedGraph, currDataGraph.getRoots(), mutList.size());
 
     response.getWriter().println(graphJson);
   }
