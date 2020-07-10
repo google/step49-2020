@@ -174,10 +174,9 @@ public class GraphMutationTest {
 
     DataGraph mutatedGraph = Utility.getGraphAtMutationNumber(dataGraph, dataGraph, 2, mutList);
     Assert.assertNull(mutatedGraph);
-
   }
 
-  /** The current graph node is at a mutation AFTER the one requested.*/
+  /** The current graph node is at a mutation AFTER the one requested. */
   @Test
   public void goBack() {
     HashMap<String, Node> protoNodesMap = new HashMap<>();
@@ -215,7 +214,8 @@ public class GraphMutationTest {
     // Build the current graph (same graph and map)
     DataGraph dataGraphMutated = new DataGraph(origGraph, origGraphNodesMap, origRoots, 2);
 
-    DataGraph mutatedGraph = Utility.getGraphAtMutationNumber(dataGraph, dataGraphMutated, 1, mutList);
+    DataGraph mutatedGraph =
+        Utility.getGraphAtMutationNumber(dataGraph, dataGraphMutated, 1, mutList);
 
     MutableGraph<GraphNode> newGraph = mutatedGraph.getGraph();
     HashMap<String, GraphNode> newGraphNodesMap = mutatedGraph.getGraphNodesMap();
@@ -254,6 +254,5 @@ public class GraphMutationTest {
 
     DataGraph mutatedGraph = Utility.getGraphAtMutationNumber(dataGraph, dataGraph, -2, mutList);
     Assert.assertNull(mutatedGraph);
-
   }
 }
