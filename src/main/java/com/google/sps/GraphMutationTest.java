@@ -15,15 +15,15 @@
 package com.google.sps;
 
 import com.google.common.graph.*;
-import com.google.sps.data.Utility;
+import com.google.sps.Utility;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.List;
 import java.util.ArrayList;
 
-import com.google.sps.data.DataGraph;
-import com.google.sps.data.GraphNode;
+import com.google.sps.DataGraph;
+import com.google.sps.GraphNode;
 import com.proto.GraphProtos.Node;
 import com.proto.GraphProtos.Node.Builder;
 import com.proto.MutationProtos.Mutation;
@@ -76,12 +76,12 @@ public class GraphMutationTest {
     protoNodesMap.put("B", nodeB.build());
     protoNodesMap.put("C", nodeC.build());
 
-    DataGraph dataGraph = new DataGraph();
+    DataGraph dataGraph = DataGraph.create();
     dataGraph.graphFromProtoNodes(protoNodesMap);
 
-    MutableGraph<GraphNode> origGraph = dataGraph.getGraph();
-    HashMap<String, GraphNode> origGraphNodesMap = dataGraph.getGraphNodesMap();
-    HashSet<String> origRoots = dataGraph.getRoots();
+    MutableGraph<GraphNode> origGraph = dataGraph.graph();
+    HashMap<String, GraphNode> origGraphNodesMap = dataGraph.graphNodesMap();
+    HashSet<String> origRoots = dataGraph.roots();
     Set<GraphNode> origNodes = origGraph.nodes();
 
     Mutation addAB =
@@ -95,11 +95,11 @@ public class GraphMutationTest {
 
     DataGraph mutatedGraph = Utility.getGraphAtMutationNumber(dataGraph, dataGraph, 1, mutList);
 
-    MutableGraph<GraphNode> newGraph = mutatedGraph.getGraph();
-    HashMap<String, GraphNode> newGraphNodesMap = mutatedGraph.getGraphNodesMap();
-    HashSet<String> newRoots = mutatedGraph.getRoots();
+    MutableGraph<GraphNode> newGraph = mutatedGraph.graph();
+    HashMap<String, GraphNode> newGraphNodesMap = mutatedGraph.graphNodesMap();
+    HashSet<String> newRoots = mutatedGraph.roots();
     Set<GraphNode> newNodes = newGraph.nodes();
-    int newNum = mutatedGraph.getMutationNum();
+    int newNum = mutatedGraph.numMutations();
 
     // Assert.assertFalse(origGraph.hasEdgeConnecting(gNodeA, gNodeB));
 
@@ -120,12 +120,12 @@ public class GraphMutationTest {
     protoNodesMap.put("B", nodeB.build());
     protoNodesMap.put("C", nodeC.build());
 
-    DataGraph dataGraph = new DataGraph();
+    DataGraph dataGraph = DataGraph.create();
     dataGraph.graphFromProtoNodes(protoNodesMap);
 
-    MutableGraph<GraphNode> origGraph = dataGraph.getGraph();
-    HashMap<String, GraphNode> origGraphNodesMap = dataGraph.getGraphNodesMap();
-    HashSet<String> origRoots = dataGraph.getRoots();
+    MutableGraph<GraphNode> origGraph = dataGraph.graph();
+    HashMap<String, GraphNode> origGraphNodesMap = dataGraph.graphNodesMap();
+    HashSet<String> origRoots = dataGraph.roots();
     Set<GraphNode> origNodes = origGraph.nodes();
 
     Mutation addAB =
@@ -142,11 +142,11 @@ public class GraphMutationTest {
 
     DataGraph mutatedGraph = Utility.getGraphAtMutationNumber(dataGraph, dataGraph, 2, mutList);
 
-    MutableGraph<GraphNode> newGraph = mutatedGraph.getGraph();
-    HashMap<String, GraphNode> newGraphNodesMap = mutatedGraph.getGraphNodesMap();
-    HashSet<String> newRoots = mutatedGraph.getRoots();
+    MutableGraph<GraphNode> newGraph = mutatedGraph.graph();
+    HashMap<String, GraphNode> newGraphNodesMap = mutatedGraph.graphNodesMap();
+    HashSet<String> newRoots = mutatedGraph.roots();
     Set<GraphNode> newNodes = newGraph.nodes();
-    int newNum = mutatedGraph.getMutationNum();
+    int newNum = mutatedGraph.numMutations();
 
     // Assert.assertFalse(origGraph.hasEdgeConnecting(gNodeA, gNodeB));
     // Assert.assertEquals(origNodes.size(), 3);
@@ -167,7 +167,7 @@ public class GraphMutationTest {
     protoNodesMap.put("B", nodeB.build());
     protoNodesMap.put("C", nodeC.build());
 
-    DataGraph dataGraph = new DataGraph();
+    DataGraph dataGraph = DataGraph.create();
     dataGraph.graphFromProtoNodes(protoNodesMap);
 
     List<Mutation> mutList = new ArrayList<>();
@@ -184,12 +184,12 @@ public class GraphMutationTest {
     protoNodesMap.put("B", nodeB.build());
     protoNodesMap.put("C", nodeC.build());
 
-    DataGraph dataGraph = new DataGraph();
+    DataGraph dataGraph = DataGraph.create();
     dataGraph.graphFromProtoNodes(protoNodesMap);
 
-    MutableGraph<GraphNode> origGraph = dataGraph.getGraph();
-    HashMap<String, GraphNode> origGraphNodesMap = dataGraph.getGraphNodesMap();
-    HashSet<String> origRoots = dataGraph.getRoots();
+    MutableGraph<GraphNode> origGraph = dataGraph.graph();
+    HashMap<String, GraphNode> origGraphNodesMap = dataGraph.graphNodesMap();
+    HashSet<String> origRoots = dataGraph.roots();
     Set<GraphNode> origNodes = origGraph.nodes();
 
     Mutation addAB =
@@ -212,16 +212,16 @@ public class GraphMutationTest {
     mutList.add(removeC);
 
     // Build the current graph (same graph and map)
-    DataGraph dataGraphMutated = new DataGraph(origGraph, origGraphNodesMap, origRoots, 2);
+    DataGraph dataGraphMutated = DataGraph.create(origGraph, origGraphNodesMap, origRoots, 2);
 
     DataGraph mutatedGraph =
         Utility.getGraphAtMutationNumber(dataGraph, dataGraphMutated, 1, mutList);
 
-    MutableGraph<GraphNode> newGraph = mutatedGraph.getGraph();
-    HashMap<String, GraphNode> newGraphNodesMap = mutatedGraph.getGraphNodesMap();
-    HashSet<String> newRoots = mutatedGraph.getRoots();
+    MutableGraph<GraphNode> newGraph = mutatedGraph.graph();
+    HashMap<String, GraphNode> newGraphNodesMap = mutatedGraph.graphNodesMap();
+    HashSet<String> newRoots = mutatedGraph.roots();
     Set<GraphNode> newNodes = newGraph.nodes();
-    int newNum = mutatedGraph.getMutationNum();
+    int newNum = mutatedGraph.numMutations();
 
     Assert.assertFalse(origGraph.hasEdgeConnecting(gNodeA, gNodeB));
     Assert.assertEquals(origNodes.size(), 3);
@@ -247,7 +247,7 @@ public class GraphMutationTest {
     protoNodesMap.put("B", nodeB.build());
     protoNodesMap.put("C", nodeC.build());
 
-    DataGraph dataGraph = new DataGraph();
+    DataGraph dataGraph = DataGraph.create();
     dataGraph.graphFromProtoNodes(protoNodesMap);
 
     List<Mutation> mutList = new ArrayList<>();

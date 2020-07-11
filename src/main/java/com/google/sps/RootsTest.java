@@ -14,15 +14,14 @@
 
 package com.google.sps;
 
-import com.google.common.graph.*;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import com.google.sps.data.DataGraph;
-import com.google.sps.data.GraphNode;
+import com.google.common.graph.MutableGraph;
 import com.proto.GraphProtos.Node;
 import com.proto.GraphProtos.Node.Builder;
 import com.proto.MutationProtos.Mutation;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,9 +42,9 @@ public class RootsTest {
     protoNodesMap.put("A", nodeA.build());
     protoNodesMap.put("B", nodeB.build());
 
-    DataGraph dataGraph = new DataGraph();
+    DataGraph dataGraph = DataGraph.create();
     dataGraph.graphFromProtoNodes(protoNodesMap);
-    HashSet<String> roots = dataGraph.getRoots();
+    HashSet<String> roots = dataGraph.roots();
 
     Assert.assertEquals(roots.size(), 2);
     Assert.assertTrue(roots.contains("A"));
@@ -62,9 +61,9 @@ public class RootsTest {
     protoNodesMap.put("A", nodeA.build());
     protoNodesMap.put("B", nodeB.build());
 
-    DataGraph dataGraph = new DataGraph();
+    DataGraph dataGraph = DataGraph.create();
     dataGraph.graphFromProtoNodes(protoNodesMap);
-    HashSet<String> roots = dataGraph.getRoots();
+    HashSet<String> roots = dataGraph.roots();
 
     Assert.assertEquals(roots.size(), 1);
     Assert.assertTrue(roots.contains("A"));
@@ -79,11 +78,11 @@ public class RootsTest {
     protoNodesMap.put("A", nodeA.build());
     protoNodesMap.put("B", nodeB.build());
 
-    DataGraph dataGraph = new DataGraph();
+    DataGraph dataGraph = DataGraph.create();
     dataGraph.graphFromProtoNodes(protoNodesMap);
-    MutableGraph<GraphNode> graph = dataGraph.getGraph();
-    HashMap<String, GraphNode> graphNodesMap = dataGraph.getGraphNodesMap();
-    HashSet<String> roots = dataGraph.getRoots();
+    MutableGraph<GraphNode> graph = dataGraph.graph();
+    HashMap<String, GraphNode> graphNodesMap = dataGraph.graphNodesMap();
+    HashSet<String> roots = dataGraph.roots();
 
     // Before mutation
     Assert.assertEquals(roots.size(), 2);
@@ -99,7 +98,7 @@ public class RootsTest {
 
     dataGraph.mutateGraph(addAB);
 
-    roots = dataGraph.getRoots();
+    roots = dataGraph.roots();
     Assert.assertEquals(roots.size(), 1);
     Assert.assertTrue(roots.contains("A"));
     Assert.assertFalse(roots.contains("B"));
@@ -112,9 +111,9 @@ public class RootsTest {
     HashMap<String, Node> protoNodesMap = new HashMap<>();
     protoNodesMap.put("A", nodeA.build());
 
-    DataGraph dataGraph = new DataGraph();
+    DataGraph dataGraph = DataGraph.create();
     dataGraph.graphFromProtoNodes(protoNodesMap);
-    HashSet<String> roots = dataGraph.getRoots();
+    HashSet<String> roots = dataGraph.roots();
 
     // Before mutation
     Assert.assertEquals(roots.size(), 1);
@@ -123,7 +122,7 @@ public class RootsTest {
     Mutation addB = Mutation.newBuilder().setType(Mutation.Type.ADD_NODE).setStartNode("B").build();
     dataGraph.mutateGraph(addB);
 
-    roots = dataGraph.getRoots();
+    roots = dataGraph.roots();
     Assert.assertEquals(roots.size(), 2);
     Assert.assertTrue(roots.contains("A"));
     Assert.assertTrue(roots.contains("B"));
@@ -139,9 +138,9 @@ public class RootsTest {
     protoNodesMap.put("A", nodeA.build());
     protoNodesMap.put("B", nodeB.build());
 
-    DataGraph dataGraph = new DataGraph();
+    DataGraph dataGraph = DataGraph.create();
     dataGraph.graphFromProtoNodes(protoNodesMap);
-    HashSet<String> roots = dataGraph.getRoots();
+    HashSet<String> roots = dataGraph.roots();
 
     // Before mutation
     Assert.assertEquals(roots.size(), 1);
@@ -155,7 +154,7 @@ public class RootsTest {
             .build();
     dataGraph.mutateGraph(removeAB);
 
-    roots = dataGraph.getRoots();
+    roots = dataGraph.roots();
     Assert.assertEquals(roots.size(), 2);
     Assert.assertTrue(roots.contains("A"));
     Assert.assertTrue(roots.contains("B"));
@@ -176,9 +175,9 @@ public class RootsTest {
     protoNodesMap.put("B", nodeB.build());
     protoNodesMap.put("C", nodeC.build());
 
-    DataGraph dataGraph = new DataGraph();
+    DataGraph dataGraph = DataGraph.create();
     dataGraph.graphFromProtoNodes(protoNodesMap);
-    HashSet<String> roots = dataGraph.getRoots();
+    HashSet<String> roots = dataGraph.roots();
 
     // Before mutation
     Assert.assertEquals(roots.size(), 1);
@@ -193,7 +192,7 @@ public class RootsTest {
     dataGraph.mutateGraph(removeBC);
 
     // After mutation
-    roots = dataGraph.getRoots();
+    roots = dataGraph.roots();
     Assert.assertEquals(roots.size(), 1);
     Assert.assertTrue(roots.contains("A"));
   }
@@ -207,9 +206,9 @@ public class RootsTest {
     protoNodesMap.put("A", nodeA.build());
     protoNodesMap.put("B", nodeB.build());
 
-    DataGraph dataGraph = new DataGraph();
+    DataGraph dataGraph = DataGraph.create();
     dataGraph.graphFromProtoNodes(protoNodesMap);
-    HashSet<String> roots = dataGraph.getRoots();
+    HashSet<String> roots = dataGraph.roots();
 
     // Before mutation
     Assert.assertEquals(roots.size(), 1);
@@ -220,7 +219,7 @@ public class RootsTest {
     dataGraph.mutateGraph(removeB);
 
     // After mutation
-    roots = dataGraph.getRoots();
+    roots = dataGraph.roots();
     Assert.assertEquals(roots.size(), 1);
     Assert.assertTrue(roots.contains("A"));
   }
@@ -236,9 +235,9 @@ public class RootsTest {
     protoNodesMap.put("B", nodeB.build());
     protoNodesMap.put("C", nodeC.build());
 
-    DataGraph dataGraph = new DataGraph();
+    DataGraph dataGraph = DataGraph.create();
     dataGraph.graphFromProtoNodes(protoNodesMap);
-    HashSet<String> roots = dataGraph.getRoots();
+    HashSet<String> roots = dataGraph.roots();
 
     // Before mutation
     Assert.assertEquals(roots.size(), 1);
@@ -248,7 +247,7 @@ public class RootsTest {
         Mutation.newBuilder().setType(Mutation.Type.DELETE_NODE).setStartNode("A").build();
     dataGraph.mutateGraph(removeA);
 
-    roots = dataGraph.getRoots();
+    roots = dataGraph.roots();
     // After mutation
     Assert.assertEquals(roots.size(), 2);
     Assert.assertTrue(roots.contains("B"));

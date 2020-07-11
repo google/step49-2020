@@ -14,20 +14,19 @@
 
 package com.google.sps;
 
-import com.google.common.graph.*;
-import com.google.protobuf.Struct;
-import com.google.protobuf.Value;
-import com.google.sps.data.Utility;
-import java.util.Set;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import com.google.sps.data.DataGraph;
-import com.google.sps.data.GraphNode;
+import com.google.common.graph.GraphBuilder;
+import com.google.common.graph.MutableGraph;
+import com.google.protobuf.Struct;
+import com.google.protobuf.Value;
 import com.proto.GraphProtos.Node;
 import com.proto.GraphProtos.Node.Builder;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -127,43 +126,6 @@ public final class GraphGenerationTest {
   }
 
   /*
-   * Tests that a graph node is correctly deep-copied
-   */
-  @Test
-  public void deepCopyGraphNode() {
-    nodeA.addToken("1");
-    nodeA.addToken("2");
-    nodeA.addToken("3");
-
-    Value rowValue = Value.newBuilder().setStringValue("10").build();
-    Value colValue = Value.newBuilder().setStringValue("17").build();
-
-    Struct metadata =
-        Struct.newBuilder().putFields("row", rowValue).putFields("column", colValue).build();
-    nodeA.setMetadata(metadata);
-
-    GraphNode graphNode = Utility.protoNodeToGraphNode(nodeA.build());
-    List<String> tokenList = graphNode.tokenList();
-    metadata = graphNode.metadata();
-
-    // Assert that a copy is a deep copy
-    GraphNode nodeCopy = graphNode.getCopy();
-    String copyName = nodeCopy.name();
-    List<String> copyTokenList = nodeCopy.tokenList();
-    Struct copyMetadata = nodeCopy.metadata();
-
-    // Nodes should be equal content-wise but not the same pointers
-    Assert.assertEquals(graphNode, nodeCopy);
-    Assert.assertFalse(graphNode == nodeCopy);
-
-    Assert.assertEquals(copyName, "A");
-    Assert.assertEquals(tokenList, copyTokenList);
-    Assert.assertFalse(tokenList == copyTokenList);
-    Assert.assertEquals(metadata, copyMetadata);
-    Assert.assertFalse(metadata == copyMetadata);
-  }
-
-  /*
    * Test that nodes and edges of the following graph are correctly added:
    *                              A
    *                            _/ \_
@@ -193,12 +155,12 @@ public final class GraphGenerationTest {
     gNodeB = Utility.protoNodeToGraphNode(pNodeB);
     gNodeC = Utility.protoNodeToGraphNode(pNodeC);
 
-    DataGraph dataGraph = new DataGraph();
+    DataGraph dataGraph = DataGraph.create();
     boolean success = dataGraph.graphFromProtoNodes(protoNodesMap);
     Assert.assertTrue(success);
 
-    MutableGraph<GraphNode> graph = dataGraph.getGraph();
-    HashMap<String, GraphNode> graphNodesMap = dataGraph.getGraphNodesMap();
+    MutableGraph<GraphNode> graph = dataGraph.graph();
+    HashMap<String, GraphNode> graphNodesMap = dataGraph.graphNodesMap();
 
     Set<GraphNode> graphNodes = graph.nodes();
     Assert.assertEquals(graphNodes.size(), 3);
@@ -233,7 +195,7 @@ public final class GraphGenerationTest {
     protoNodesMap.put("A", nodeA.build());
     protoNodesMap.put("B", nodeB.build());
 
-    DataGraph dataGraph = new DataGraph();
+    DataGraph dataGraph = DataGraph.create();
     boolean success = dataGraph.graphFromProtoNodes(protoNodesMap);
     Assert.assertFalse(success);
   }
@@ -253,19 +215,19 @@ public final class GraphGenerationTest {
     roots.add("A");
     roots.add("B");
 
-    DataGraph dataGraph = new DataGraph(graph, graphNodesMap, roots, 0);
+    DataGraph dataGraph = DataGraph.create(graph, graphNodesMap, roots, 0);
     DataGraph dataGraphCopy = dataGraph.getCopy();
 
     Assert.assertEquals(dataGraph, dataGraphCopy);
     Assert.assertFalse(dataGraph == dataGraphCopy);
 
-    Assert.assertEquals(dataGraph.getGraph(), dataGraphCopy.getGraph());
-    Assert.assertFalse(dataGraph.getGraph() == dataGraphCopy.getGraph());
+    Assert.assertEquals(dataGraph.graph(), dataGraphCopy.graph());
+    Assert.assertFalse(dataGraph.graph() == dataGraphCopy.graph());
 
-    Assert.assertEquals(dataGraph.getRoots(), dataGraphCopy.getRoots());
-    Assert.assertFalse(dataGraph.getRoots() == dataGraphCopy.getRoots());
+    Assert.assertEquals(dataGraph.roots(), dataGraphCopy.roots());
+    Assert.assertFalse(dataGraph.roots() == dataGraphCopy.roots());
 
-    Assert.assertEquals(dataGraph.getGraphNodesMap(), dataGraphCopy.getGraphNodesMap());
-    Assert.assertFalse(dataGraph.getGraphNodesMap() == dataGraphCopy.getGraphNodesMap());
+    Assert.assertEquals(dataGraph.graphNodesMap(), dataGraphCopy.graphNodesMap());
+    Assert.assertFalse(dataGraph.graphNodesMap() == dataGraphCopy.graphNodesMap());
   }
 }

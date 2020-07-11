@@ -1,16 +1,19 @@
 import  {initializeTippy, generateGraph, getUrl, navigateGraph, currGraphNum, numMutations  } from "../src/main/webapp/script.js";
 import cytoscape from "cytoscape";
 
-describe("Checking that depth in fetch url is correct", function() {
+describe("Modifying value of depth input", function() {
   let numLayers = {};
+
   beforeEach(function () {
     numLayers = document.createElement("input");
     numLayers.id = "num-layers";
-  })
+  });
+
   afterEach(function () {
     document.body.innerHTML = '';
-  })
-  it("Input valid large value for depth", function() {
+  });
+
+  it("accepts a large valid depth value", function() {
     numLayers.value = 15;
     document.body.appendChild(numLayers);
 
@@ -21,7 +24,8 @@ describe("Checking that depth in fetch url is correct", function() {
     expect(constructedUrl.has("depth")).toBe(true);
     expect(constructedUrl.get("depth")).toBe("15");
   });
-  it("Input valid small value for depth", function() {
+
+  it("accepts a small valid depth value", function() {
     numLayers.value = 2;
     document.body.appendChild(numLayers);
 
@@ -32,7 +36,8 @@ describe("Checking that depth in fetch url is correct", function() {
     expect(constructedUrl.has("depth")).toBe(true);
     expect(constructedUrl.get("depth")).toBe("2");
   });
-  it("Input no value for depth", function() {
+
+  it("fills in default value if input has no value", function() {
     document.body.appendChild(numLayers);
 
     const requestString = getUrl();
@@ -43,7 +48,8 @@ describe("Checking that depth in fetch url is correct", function() {
     expect(constructedUrl.get("depth")).toBe("3");
 
   });
-  it("Input negative value for depth", function() {
+
+  it("rounds up negative depths to 0", function() {
     numLayers.value = -5;
     document.body.appendChild(numLayers);
 
@@ -54,7 +60,8 @@ describe("Checking that depth in fetch url is correct", function() {
     expect(constructedUrl.has("depth")).toBe(true);
     expect(constructedUrl.get("depth")).toBe("0");
   });
-  it("Input too large value for depth", function() {
+
+  it("rounds down depths larger than 20 to 20", function() {
     numLayers.value = 80;
     document.body.appendChild(numLayers);
 
@@ -65,7 +72,8 @@ describe("Checking that depth in fetch url is correct", function() {
     expect(constructedUrl.has("depth")).toBe(true);
     expect(constructedUrl.get("depth")).toBe("20");
   });
-  it("Input decimal for depth", function() {
+
+  it("rounds a decimal depth value to the nearest number", function() {
     numLayers.value = 2.8;
     document.body.appendChild(numLayers);
 
@@ -76,7 +84,8 @@ describe("Checking that depth in fetch url is correct", function() {
     expect(constructedUrl.has("depth")).toBe(true);
     expect(constructedUrl.get("depth")).toBe("3");
   });
-  it("Input negative decimal for depth", function() {
+
+  it("rounds up negative decimals to 0", function() {
     numLayers.value = -2.8;
     document.body.appendChild(numLayers);
 
@@ -87,7 +96,8 @@ describe("Checking that depth in fetch url is correct", function() {
     expect(constructedUrl.has("depth")).toBe(true);
     expect(constructedUrl.get("depth")).toBe("0");
   });
-  it("Input large decimal for depth", function() {
+
+  it("rounds up decimals above 20 to 20", function() {
     numLayers.value = 200.8;
     document.body.appendChild(numLayers);
 
@@ -101,8 +111,9 @@ describe("Checking that depth in fetch url is correct", function() {
 })
 
 
-describe("Checking that tooltip is correctly initialized", function() {
-  it("Node with tokens", function() {
+describe("Initializing tooltips", function() {
+
+  it("initializes the tooltip of a node with tokens as a list of tokens", function() {
     document.body.innerHTML = `
     <div id="cy"></div>`;
     const cy = cytoscape({
@@ -145,7 +156,8 @@ describe("Checking that tooltip is correctly initialized", function() {
     expect(tokens[2].nodeName).toBe("LI");
     expect(tokens[2].textContent).toBe("c.js");
   });
-  it("Node without tokens", function() {
+
+  it("indicates that a node without tokens has no tokens", function() {
     document.body.innerHTML = `
     <div id="cy"></div>`;
     const cy = cytoscape({
@@ -183,8 +195,8 @@ describe("Checking that tooltip is correctly initialized", function() {
   });
 });
 
-describe("Checking that graph number in fetch url is correct", function() {
-  it("Button presses generate correct request", function() {
+describe("Pressing next and previous buttons associated with a graph", function() {
+  it("generates correct fetch request when next/previous buttons are pressed", function() {
 
     const prevButton = document.createElement("button");
     prevButton.id = "prevbutton";

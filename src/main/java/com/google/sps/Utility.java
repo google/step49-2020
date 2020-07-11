@@ -1,4 +1,4 @@
-package com.google.sps.data;
+package com.google.sps;
 
 import com.google.common.graph.*;
 import com.google.gson.Gson;
@@ -72,8 +72,8 @@ public final class Utility {
       return null;
     }
 
-    if (curr.getMutationNum() <= mutationNum) { // going forward
-      for (int i = curr.getMutationNum(); i < mutationNum; i++) {
+    if (curr.numMutations() <= mutationNum) { // going forward
+      for (int i = curr.numMutations(); i < mutationNum; i++) {
         // Mutate graph operates in place
         success = curr.mutateGraph(mutList.get(i));
         if (!success) {
