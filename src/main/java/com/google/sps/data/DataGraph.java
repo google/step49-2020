@@ -246,7 +246,7 @@ public class DataGraph {
         // unrecognized mutation type
         return false;
     }
-    this.mutationNum ++;
+    this.mutationNum++;
     return true;
   }
   /**

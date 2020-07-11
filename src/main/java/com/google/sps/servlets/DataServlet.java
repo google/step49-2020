@@ -52,7 +52,6 @@ public class DataServlet extends HttpServlet {
       response.setHeader("serverError", error);
       return;
     }
-    
 
     int depthNumber = Integer.parseInt(depthParam);
     int mutationNumber = Integer.parseInt(mutationParam);
