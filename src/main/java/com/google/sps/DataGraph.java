@@ -26,23 +26,26 @@ abstract class DataGraph {
 
   /**
    * Create a new empty data graph
-   * 
+   *
    * @return the empty data graph with these attributes
    */
   public static DataGraph create() {
-    return new AutoValue_DataGraph(GraphBuilder.directed().build(), new HashMap<String, GraphNode>(), new HashSet<String>());
+    return new AutoValue_DataGraph(
+        GraphBuilder.directed().build(), new HashMap<String, GraphNode>(), new HashSet<String>());
   }
 
   /**
    * Create a new data graph with the given attributes
-   * 
+   *
    * @param graph the guava graph
    * @param graphNodesMap the map from node name to node
    * @param roots a set of roots (nodes with no in-edges) of the graph
-   * 
    * @return the data graph with these attributes
    */
-   static DataGraph create(MutableGraph<GraphNode> graph, HashMap<String, GraphNode> graphNodesMap, HashSet<String> roots) {
+  static DataGraph create(
+      MutableGraph<GraphNode> graph,
+      HashMap<String, GraphNode> graphNodesMap,
+      HashSet<String> roots) {
     return new AutoValue_DataGraph(graph, graphNodesMap, roots);
   }
 
@@ -68,18 +71,16 @@ abstract class DataGraph {
   abstract HashSet<String> roots();
 
   /**
-   * Takes in a map from node name to proto-parsed node object. Populates data graph 
-   * with information from the parsed graph
+   * Takes in a map from node name to proto-parsed node object. Populates data graph with
+   * information from the parsed graph
    *
    * @param protoNodesMap map from node name to proto Node object parsed from input
-   * 
    * @return false if an error occurred, true otherwise
    */
   boolean graphFromProtoNodes(Map<String, Node> protoNodesMap) {
     MutableGraph<GraphNode> graph = this.graph();
     HashMap<String, GraphNode> graphNodesMap = this.graphNodesMap();
     HashSet<String> roots = this.roots();
-
 
     for (String nodeName : protoNodesMap.keySet()) {
       Node thisNode = protoNodesMap.get(nodeName);
