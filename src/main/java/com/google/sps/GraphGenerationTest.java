@@ -14,19 +14,17 @@
 
 package com.google.sps;
 
-import com.google.common.graph.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import com.google.common.graph.MutableGraph;
 import com.google.protobuf.Struct;
 import com.google.protobuf.Value;
-import com.google.sps.data.Utility;
-import java.util.Set;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.List;
-
-import com.google.sps.data.DataGraph;
-import com.google.sps.data.GraphNode;
 import com.proto.GraphProtos.Node;
 import com.proto.GraphProtos.Node.Builder;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -155,12 +153,12 @@ public final class GraphGenerationTest {
     gNodeB = Utility.protoNodeToGraphNode(pNodeB);
     gNodeC = Utility.protoNodeToGraphNode(pNodeC);
 
-    DataGraph dataGraph = new DataGraph();
+    DataGraph dataGraph = DataGraph.create();
     boolean success = dataGraph.graphFromProtoNodes(protoNodesMap);
     Assert.assertTrue(success);
 
-    MutableGraph<GraphNode> graph = dataGraph.getGraph();
-    HashMap<String, GraphNode> graphNodesMap = dataGraph.getGraphNodesMap();
+    MutableGraph<GraphNode> graph = dataGraph.graph();
+    HashMap<String, GraphNode> graphNodesMap = dataGraph.graphNodesMap();
 
     Set<GraphNode> graphNodes = graph.nodes();
     Assert.assertEquals(graphNodes.size(), 3);
@@ -195,7 +193,7 @@ public final class GraphGenerationTest {
     protoNodesMap.put("A", nodeA.build());
     protoNodesMap.put("B", nodeB.build());
 
-    DataGraph dataGraph = new DataGraph();
+    DataGraph dataGraph = DataGraph.create();
     boolean success = dataGraph.graphFromProtoNodes(protoNodesMap);
     Assert.assertFalse(success);
   }
