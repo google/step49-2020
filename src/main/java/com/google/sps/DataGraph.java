@@ -1,10 +1,25 @@
-package com.google.sps.data;
+// Copyright 2020 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
+package com.google.sps;
+
+import com.google.auto.value.AutoValue;
 import com.google.common.graph.*;
+import com.google.protobuf.Struct;
+import com.proto.GraphProtos.Node;
 import com.proto.MutationProtos.Mutation;
 import com.proto.MutationProtos.TokenMutation;
-import com.proto.GraphProtos.Node;
-import com.google.protobuf.Struct;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,99 +28,66 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.List;
 
-public class DataGraph {
-  // A directed mutable Guava graph containing the nodes and edges of this graph
-  private MutableGraph<GraphNode> graph;
-  // A map from the name to the node object for nodes of this graph
-  private HashMap<String, GraphNode> graphNodesMap;
-  // A set of names of roots (nodes with no in-edges) of this graph
-  private HashSet<String> roots;
+@AutoValue
+abstract class DataGraph {
 
-  // Initializes an empty data graph
-  public DataGraph() {
-    this.graph = GraphBuilder.directed().build();
-    this.graphNodesMap = new HashMap<>();
-    this.roots = new HashSet<>();
-  }
-
-  // Initializes a data graph with the given fields
-  public DataGraph(
-      MutableGraph<GraphNode> graph, HashMap<String, GraphNode> map, HashSet<String> roots) {
-    this.graph = graph;
-    this.graphNodesMap = map;
-    this.roots = roots;
+  /**
+   * Create a new empty data graph
+   *
+   * @return the empty data graph with these attributes
+   */
+  public static DataGraph create() {
+    return new AutoValue_DataGraph(
+        GraphBuilder.directed().build(), new HashMap<String, GraphNode>(), new HashSet<String>());
   }
 
   /**
-   * Check whether the given object is equal in contents to the current data graph
+   * Create a new data graph with the given attributes
    *
-   * @param other the object to check is equal to this data graph
-   * @return true if they are equal, false if not or if this object is not a data graph
+   * @param graph the guava graph
+   * @param graphNodesMap the map from node name to node
+   * @param roots a set of roots (nodes with no in-edges) of the graph
+   * @return the data graph with these attributes
    */
-  @Override
-  public boolean equals(Object other) {
-    if (other == this) {
-      return true;
-    }
-    if (!(other instanceof DataGraph)) {
-      return false;
-    }
-    DataGraph otherGraph = (DataGraph) other;
-    return this.graph.equals(otherGraph.getGraph())
-        && this.roots.equals(otherGraph.getRoots())
-        && this.graphNodesMap.equals(otherGraph.getGraphNodesMap());
-  }
-
-  /**
-   * Returns a deep copy of the given data graph
-   *
-   * @return a deep copy of this data graph
-   */
-  public DataGraph getCopy() {
-    return new DataGraph(this.getGraph(), this.getGraphNodesMap(), this.getRoots());
+  static DataGraph create(
+      MutableGraph<GraphNode> graph,
+      HashMap<String, GraphNode> graphNodesMap,
+      HashSet<String> roots) {
+    return new AutoValue_DataGraph(graph, graphNodesMap, roots);
   }
 
   /**
    * Getter for the graph
    *
-   * @return a shallow copy of the graph
+   * @return the graph
    */
-  public MutableGraph<GraphNode> getGraph() {
-    return Graphs.copyOf(this.graph);
-  }
-
-  /**
-   * Getter for the roots
-   *
-   * @return a deep copy of the roots
-   */
-  public HashSet<String> getRoots() {
-    HashSet<String> copy = new HashSet<>();
-    copy.addAll(roots);
-    return copy;
-  }
+  abstract MutableGraph<GraphNode> graph();
 
   /**
    * Getter for the nodes map
    *
-   * @return a deep copy of the nodes map
+   * @return the map from node names -> nodes of the graph
    */
-  public HashMap<String, GraphNode> getGraphNodesMap() {
-    HashMap<String, GraphNode> copy = new HashMap<>();
-    for (String key : graphNodesMap.keySet()) {
-      copy.put(key, graphNodesMap.get(key).getCopy());
-    }
-    return copy;
-  }
+  abstract HashMap<String, GraphNode> graphNodesMap();
 
   /**
-   * Takes in a map from node name to proto-parsed node object. Populates fields of this data graph
-   * with this information
+   * Getter for the roots
    *
-   * @param protNodesMap map from node name to proto Node object parsed from input
+   * @return the roots of the graph
+   */
+  abstract HashSet<String> roots();
+
+  /**
+   * Takes in a map from node name to proto-parsed node object. Populates data graph with
+   * information from the parsed graph
+   *
+   * @param protoNodesMap map from node name to proto Node object parsed from input
    * @return false if an error occurred, true otherwise
    */
-  public boolean graphFromProtoNodes(Map<String, Node> protoNodesMap) {
+  boolean graphFromProtoNodes(Map<String, Node> protoNodesMap) {
+    MutableGraph<GraphNode> graph = this.graph();
+    HashMap<String, GraphNode> graphNodesMap = this.graphNodesMap();
+    HashSet<String> roots = this.roots();
 
     for (String nodeName : protoNodesMap.keySet()) {
       Node thisNode = protoNodesMap.get(nodeName);
@@ -140,6 +122,7 @@ public class DataGraph {
     return true;
   }
 
+
   /**
    * Applies a single mutation to the given data graph
    *
@@ -147,6 +130,9 @@ public class DataGraph {
    * @return true if the mutation was successfully applied, false otherwise
    */
   public boolean mutateGraph(Mutation mut) {
+    MutableGraph<GraphNode> graph = this.graph();
+    HashMap<String, GraphNode> graphNodesMap = this.graphNodesMap();
+    HashSet<String> roots = this.roots();
     // Nodes affected by the mutation
     // second node only applicable for adding an edge and removing an edge
     String startName = mut.getStartNode();
@@ -250,6 +236,9 @@ public class DataGraph {
       return GraphBuilder.directed().build(); // If max depth below 0, then return an emtpy graph
     }
 
+    MutableGraph<GraphNode> graph = this.graph();
+    HashMap<String, GraphNode> graphNodesMap = this.graphNodesMap();
+    HashSet<String> roots = this.roots();
     Map<GraphNode, Boolean> visited = new HashMap<>();
 
     for (String rootName : roots) {
@@ -271,6 +260,7 @@ public class DataGraph {
    *     recursive call on a child
    */
   private void dfsVisit(GraphNode gn, Map<GraphNode, Boolean> visited, int depthRemaining) {
+    MutableGraph<GraphNode> graph = this.graph();
     if (depthRemaining >= 0) {
       visited.put(gn, true);
       for (GraphNode child : graph.successors(gn)) {

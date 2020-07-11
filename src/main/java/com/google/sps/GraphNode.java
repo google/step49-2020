@@ -1,4 +1,4 @@
-package com.google.sps.data;
+package com.google.sps;
 
 import com.google.auto.value.AutoValue;
 import com.google.protobuf.Struct;
@@ -28,13 +28,5 @@ public abstract class GraphNode {
 
   public int hashCode() {
     return name().hashCode();
-  }
-
-  // Returns a deep copy of the given graph node
-  public GraphNode getCopy() {
-    List<String> newTokenList = new ArrayList<>();
-    newTokenList.addAll(this.tokenList());
-    Struct newMetadata = Struct.newBuilder().mergeFrom(this.metadata()).build();
-    return GraphNode.create(this.name(), newTokenList, newMetadata);
   }
 }

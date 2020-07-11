@@ -14,15 +14,14 @@
 
 package com.google.sps;
 
-import com.google.common.graph.*;
-import com.google.sps.data.Utility;
 import java.util.HashMap;
 import java.util.Set;
 
-import com.google.sps.data.DataGraph;
-import com.google.sps.data.GraphNode;
+import com.google.common.graph.EndpointPair;
+import com.google.common.graph.MutableGraph;
 import com.proto.GraphProtos.Node;
 import com.proto.GraphProtos.Node.Builder;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -74,7 +73,7 @@ public class MaxDepthTest {
     protoNodesMap.put("B", nodeB.build());
     protoNodesMap.put("C", nodeC.build());
 
-    DataGraph dataGraph = new DataGraph();
+    DataGraph dataGraph = DataGraph.create();
     dataGraph.graphFromProtoNodes(protoNodesMap);
 
     MutableGraph<GraphNode> truncatedGraph = dataGraph.getGraphWithMaxDepth(0);
@@ -97,7 +96,7 @@ public class MaxDepthTest {
     protoNodesMap.put("A", nodeA.build());
     protoNodesMap.put("B", nodeB.build());
 
-    DataGraph dataGraph = new DataGraph();
+    DataGraph dataGraph = DataGraph.create();
     dataGraph.graphFromProtoNodes(protoNodesMap);
 
     MutableGraph<GraphNode> truncatedGraph = dataGraph.getGraphWithMaxDepth(-2);
@@ -119,7 +118,7 @@ public class MaxDepthTest {
     protoNodesMap.put("B", nodeB.build());
     protoNodesMap.put("C", nodeC.build());
 
-    DataGraph dataGraph = new DataGraph();
+    DataGraph dataGraph = DataGraph.create();
     dataGraph.graphFromProtoNodes(protoNodesMap);
 
     MutableGraph<GraphNode> truncatedGraph = dataGraph.getGraphWithMaxDepth(1);
@@ -145,7 +144,7 @@ public class MaxDepthTest {
     protoNodesMap.put("B", nodeB.build());
     protoNodesMap.put("C", nodeC.build());
 
-    DataGraph dataGraph = new DataGraph();
+    DataGraph dataGraph = DataGraph.create();
     dataGraph.graphFromProtoNodes(protoNodesMap);
 
     MutableGraph<GraphNode> truncatedGraph = dataGraph.getGraphWithMaxDepth(2);
@@ -182,7 +181,7 @@ public class MaxDepthTest {
     protoNodesMap.put("D", nodeD.build());
     protoNodesMap.put("E", nodeE.build());
 
-    DataGraph dataGraph = new DataGraph();
+    DataGraph dataGraph = DataGraph.create();
     dataGraph.graphFromProtoNodes(protoNodesMap);
 
     MutableGraph<GraphNode> truncatedGraph = dataGraph.getGraphWithMaxDepth(2);
@@ -211,7 +210,7 @@ public class MaxDepthTest {
     protoNodesMap.put("C", nodeC.build());
     protoNodesMap.put("D", nodeD.build());
 
-    DataGraph dataGraph = new DataGraph();
+    DataGraph dataGraph = DataGraph.create();
     dataGraph.graphFromProtoNodes(protoNodesMap);
 
     MutableGraph<GraphNode> truncatedGraph = dataGraph.getGraphWithMaxDepth(0);
@@ -240,7 +239,7 @@ public class MaxDepthTest {
     protoNodesMap.put("D", nodeD.build());
     protoNodesMap.put("E", nodeE.build());
 
-    DataGraph dataGraph = new DataGraph();
+    DataGraph dataGraph = DataGraph.create();
     dataGraph.graphFromProtoNodes(protoNodesMap);
 
     MutableGraph<GraphNode> truncatedGraph = dataGraph.getGraphWithMaxDepth(1);
@@ -276,9 +275,9 @@ public class MaxDepthTest {
     protoNodesMap.put("G", nodeG.build());
     protoNodesMap.put("H", nodeH.build());
 
-    DataGraph dataGraph = new DataGraph();
+    DataGraph dataGraph = DataGraph.create();
     dataGraph.graphFromProtoNodes(protoNodesMap);
-    MutableGraph<GraphNode> graph = dataGraph.getGraph();
+    MutableGraph<GraphNode> graph = dataGraph.graph();
 
     MutableGraph<GraphNode> truncatedGraph = dataGraph.getGraphWithMaxDepth(1);
     Set<GraphNode> graphNodes = truncatedGraph.nodes();

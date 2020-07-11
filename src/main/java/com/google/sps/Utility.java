@@ -1,4 +1,4 @@
-package com.google.sps.data;
+package com.google.sps;
 
 import com.google.common.graph.*;
 import com.google.gson.Gson;
