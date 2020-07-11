@@ -47,7 +47,7 @@ public class DataGraph {
   }
 
   public int getMutationNum() {
-    return this.mutationNum; 
+    return this.mutationNum;
   }
   /**
    * Check whether the given object is equal in contents to the current data graph
@@ -177,7 +177,8 @@ public class DataGraph {
           // New lone node is a root
           roots.add(startName);
           // Create a new node with the given name and add it to the graph and the map
-          GraphNode newGraphNode = GraphNode.create(startName, new ArrayList<>(), Struct.newBuilder().build());
+          GraphNode newGraphNode =
+              GraphNode.create(startName, new ArrayList<>(), Struct.newBuilder().build());
           graph.addNode(newGraphNode);
           graphNodesMap.put(startName, newGraphNode);
         }
@@ -227,11 +228,11 @@ public class DataGraph {
         }
 
         graphNodesMap.put(startName, newNode);
-        
+
         Set<GraphNode> s = graph.successors(startNode);
         Set<GraphNode> p = graph.predecessors(startNode);
         graph.removeNode(startNode);
-        
+
         graph.addNode(newNode);
         for (GraphNode gn : s) {
           graph.putEdge(newNode, gn);
@@ -240,7 +241,6 @@ public class DataGraph {
           graph.putEdge(gn, newNode);
         }
 
-        
         break;
       default:
         // unrecognized mutation type
@@ -250,10 +250,9 @@ public class DataGraph {
     return true;
   }
   /**
-   * Modifies the list of tokens of this node to either add or remove tokens
-   * contained in tokenMut
+   * Modifies the list of tokens of this node to either add or remove tokens contained in tokenMut
    *
-   * @param node     the node whose token list should be modified
+   * @param node the node whose token list should be modified
    * @param tokenMut the mutation that should be applied to the token list
    * @return the new GraphNode object, or null if it's an unrecognized mutation
    */
