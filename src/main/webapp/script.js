@@ -35,7 +35,6 @@ cytoscape.use(dagre); // register extension
 // displayed on the screen. Must be >= 0.
 let currGraphNum = 0;
 // Stores the number of mutations in the list this graph is applying
-
 let numMutations = 0;
 
 /**
@@ -271,9 +270,6 @@ function navigateGraph(amount) {
     currGraphNum = numMutations;
     alert("no more!"); 
     return;
-  }
-  if(currGraphNum >= numMutations) {
-    currGraphNum = numMutations;
   }
   generateGraph();
   updateButtons();

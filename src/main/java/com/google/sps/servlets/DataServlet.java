@@ -46,15 +46,17 @@ public class DataServlet extends HttpServlet {
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     response.setContentType("application/json");
     String depthParam = request.getParameter("depth");
-    if (depthParam == null) {
+    String mutationParam = request.getParameter("mutationNum");
+    if (depthParam == null || mutationParam == null) {
       String error = "Improper depth parameter, cannot generate graph";
       response.setHeader("serverError", error);
       return;
     }
-    String mutationParam = request.getParameter("mutationNum");
+    
 
     int depthNumber = Integer.parseInt(depthParam);
     int mutationNumber = Integer.parseInt(mutationParam);
+    System.out.println(mutationNumber);
     boolean success = true; // Innocent until proven guilty; successful until proven a failure
 
     // Initialize variables if any are null. Ideally should all be null or none
