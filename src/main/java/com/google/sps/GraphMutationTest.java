@@ -15,15 +15,12 @@
 package com.google.sps;
 
 import com.google.common.graph.*;
-import com.google.sps.Utility;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.List;
 import java.util.ArrayList;
 
-import com.google.sps.DataGraph;
-import com.google.sps.GraphNode;
 import com.proto.GraphProtos.Node;
 import com.proto.GraphProtos.Node.Builder;
 import com.proto.MutationProtos.Mutation;

@@ -38,7 +38,10 @@ abstract class DataGraph {
    */
   public static DataGraph create() {
     return new AutoValue_DataGraph(
-        GraphBuilder.directed().build(), new HashMap<String, GraphNode>(), new HashSet<String>(), 0);
+        GraphBuilder.directed().build(),
+        new HashMap<String, GraphNode>(),
+        new HashSet<String>(),
+        0);
   }
 
   /**
@@ -47,8 +50,8 @@ abstract class DataGraph {
    * @param graph the guava graph
    * @param graphNodesMap the map from node name to node
    * @param roots a set of roots (nodes with no in-edges) of the graph
-   * @param numMutations the maximum number of mutations in the list of 
-   * mutations this graph is an intermediate result of applyiing
+   * @param numMutations the maximum number of mutations in the list of mutations this graph is an
+   *     intermediate result of applyiing
    * @return the data graph with these attributes
    */
   static DataGraph create(
@@ -89,6 +92,7 @@ abstract class DataGraph {
 
   /**
    * Return a deep copy of the given data graph
+   *
    * @return a deep copy of the given data graph
    */
   public DataGraph getCopy() {
