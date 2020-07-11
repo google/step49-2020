@@ -2,7 +2,6 @@ package com.google.sps;
 
 import com.google.auto.value.AutoValue;
 import com.google.protobuf.Struct;
-import java.util.ArrayList;
 import java.util.List;
 
 /*

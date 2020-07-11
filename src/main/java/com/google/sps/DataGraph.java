@@ -122,7 +122,6 @@ abstract class DataGraph {
     return true;
   }
 
-
   /**
    * Applies a single mutation to the given data graph
    *

@@ -17,8 +17,6 @@ package com.google.sps;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import com.google.sps.DataGraph;
-import com.google.sps.GraphNode;
 import com.google.common.graph.MutableGraph;
 import com.proto.GraphProtos.Node;
 import com.proto.GraphProtos.Node.Builder;
