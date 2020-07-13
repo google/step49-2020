@@ -14,10 +14,9 @@
 
 package com.google.sps;
 
-import com.google.common.graph.*;
+import com.google.common.graph.GraphBuilder;
+import com.google.common.graph.MutableGraph;
 import com.google.gson.Gson;
-import com.google.sps.data.GraphNode;
-import com.google.sps.data.Utility;
 import com.proto.GraphProtos.Node;
 import com.proto.GraphProtos.Node.Builder;
 
@@ -89,7 +88,7 @@ public final class JsonTest {
     graph.addNode(gNodeC);
     graph.putEdge(gNodeA, gNodeB);
     graph.putEdge(gNodeA, gNodeC);
-    
+
     String result = Utility.graphToJson(graph, 0);
     JSONObject jsonObject = new JSONObject(result);
 

@@ -1,16 +1,19 @@
-import  {initializeTippy, generateGraph, getUrl, navigateGraph, currGraphNum, numMutations, updateButtons  } from "../src/main/webapp/script.js";
+import  { initializeNumMutations, setCurrGraphNum, initializeTippy, generateGraph, getUrl, navigateGraph, currGraphNum, numMutations, updateButtons  } from "../src/main/webapp/script.js";
 import cytoscape from "cytoscape";
 
-describe("Checking that depth in fetch url is correct", function() {
+describe("Modifying value of depth input", function() {
   let numLayers = {};
+
   beforeEach(function () {
     numLayers = document.createElement("input");
     numLayers.id = "num-layers";
-  })
+  });
+
   afterEach(function () {
     document.body.innerHTML = '';
-  })
-  it("Input valid large value for depth", function() {
+  });
+
+  it("accepts a large valid depth value", function() {
     numLayers.value = 15;
     document.body.appendChild(numLayers);
 
@@ -21,7 +24,8 @@ describe("Checking that depth in fetch url is correct", function() {
     expect(constructedUrl.has("depth")).toBe(true);
     expect(constructedUrl.get("depth")).toBe("15");
   });
-  it("Input valid small value for depth", function() {
+
+  it("accepts a small valid depth value", function() {
     numLayers.value = 2;
     document.body.appendChild(numLayers);
 
@@ -32,7 +36,8 @@ describe("Checking that depth in fetch url is correct", function() {
     expect(constructedUrl.has("depth")).toBe(true);
     expect(constructedUrl.get("depth")).toBe("2");
   });
-  it("Input no value for depth", function() {
+
+  it("fills in default value if input has no value", function() {
     document.body.appendChild(numLayers);
 
     const requestString = getUrl();
@@ -43,7 +48,8 @@ describe("Checking that depth in fetch url is correct", function() {
     expect(constructedUrl.get("depth")).toBe("3");
 
   });
-  it("Input negative value for depth", function() {
+
+  it("rounds up negative depths to 0", function() {
     numLayers.value = -5;
     document.body.appendChild(numLayers);
 
@@ -54,7 +60,8 @@ describe("Checking that depth in fetch url is correct", function() {
     expect(constructedUrl.has("depth")).toBe(true);
     expect(constructedUrl.get("depth")).toBe("0");
   });
-  it("Input too large value for depth", function() {
+
+  it("rounds down depths larger than 20 to 20", function() {
     numLayers.value = 80;
     document.body.appendChild(numLayers);
 
@@ -65,7 +72,8 @@ describe("Checking that depth in fetch url is correct", function() {
     expect(constructedUrl.has("depth")).toBe(true);
     expect(constructedUrl.get("depth")).toBe("20");
   });
-  it("Input decimal for depth", function() {
+
+  it("rounds a decimal depth value to the nearest number", function() {
     numLayers.value = 2.8;
     document.body.appendChild(numLayers);
 
@@ -76,7 +84,8 @@ describe("Checking that depth in fetch url is correct", function() {
     expect(constructedUrl.has("depth")).toBe(true);
     expect(constructedUrl.get("depth")).toBe("3");
   });
-  it("Input negative decimal for depth", function() {
+
+  it("rounds up negative decimals to 0", function() {
     numLayers.value = -2.8;
     document.body.appendChild(numLayers);
 
@@ -87,7 +96,8 @@ describe("Checking that depth in fetch url is correct", function() {
     expect(constructedUrl.has("depth")).toBe(true);
     expect(constructedUrl.get("depth")).toBe("0");
   });
-  it("Input large decimal for depth", function() {
+
+  it("rounds up decimals above 20 to 20", function() {
     numLayers.value = 200.8;
     document.body.appendChild(numLayers);
 
@@ -101,8 +111,9 @@ describe("Checking that depth in fetch url is correct", function() {
 })
 
 
-describe("Checking that tooltip is correctly initialized", function() {
-  it("Node with tokens", function() {
+describe("Initializing tooltips", function() {
+
+  it("initializes the tooltip of a node with tokens as a list of tokens", function() {
     document.body.innerHTML = `
     <div id="cy"></div>`;
     const cy = cytoscape({
@@ -145,7 +156,8 @@ describe("Checking that tooltip is correctly initialized", function() {
     expect(tokens[2].nodeName).toBe("LI");
     expect(tokens[2].textContent).toBe("c.js");
   });
-  it("Node without tokens", function() {
+
+  it("indicates that a node without tokens has no tokens", function() {
     document.body.innerHTML = `
     <div id="cy"></div>`;
     const cy = cytoscape({
@@ -183,15 +195,15 @@ describe("Checking that tooltip is correctly initialized", function() {
   });
 });
 
-describe("Checking that graph number in fetch url is correct", function() {
-  it("Button presses generate correct request", function() {
-
+describe("Pressing next and previous buttons associated with a graph", function() {
+  it("correctly updates mutation tracking variables and buttons on click", function() {
+    initializeNumMutations(3);
     const prevButton = document.createElement("button");
     prevButton.id = "prevbutton";
-    prevButton.onclick = () => navigateGraph(-1);
+    prevButton.onclick = () => { navigateGraph(-1); updateButtons(); }
     const nextButton = document.createElement("button");
     nextButton.id = "nextbutton";
-    nextButton.onclick = () => navigateGraph(1);
+    nextButton.onclick = () => { navigateGraph(1); updateButtons(); }
     document.body.appendChild(prevButton);
     document.body.appendChild(nextButton);
 
@@ -200,16 +212,16 @@ describe("Checking that graph number in fetch url is correct", function() {
 
     nextButton.click();
     expect(currGraphNum).toBe(1);
+    expect(nextButton.disabled).toBe(false);
+    expect(prevButton.disabled).toBe(false);
 
     nextButton.click();
     expect(currGraphNum).toBe(2);
+    expect(nextButton.disabled).toBe(false);
+    expect(prevButton.disabled).toBe(false);
 
     nextButton.click();
     expect(currGraphNum).toBe(3);
-
-    nextButton.click();
-    expect(currGraphNum).toBe(3);
-
     expect(nextButton.disabled).toBe(true);
     expect(prevButton.disabled).toBe(false);
 
@@ -225,15 +237,18 @@ describe("Checking that graph number in fetch url is correct", function() {
 
     nextButton.click();
     expect(currGraphNum).toBe(2);
+    expect(nextButton.disabled).toBe(false);
+    expect(prevButton.disabled).toBe(false);
 
     prevButton.click();
     expect(currGraphNum).toBe(1);
+    expect(nextButton.disabled).toBe(false);
+    expect(prevButton.disabled).toBe(false);
 
     prevButton.click();
     expect(currGraphNum).toBe(0);
-
-    prevButton.click();
-    expect(currGraphNum).toBe(0);
+    expect(nextButton.disabled).toBe(false);
+    expect(prevButton.disabled).toBe(true);
 
     prevButton.click();
     expect(currGraphNum).toBe(0);
@@ -243,13 +258,25 @@ describe("Checking that graph number in fetch url is correct", function() {
     nextButton.click();
     expect(currGraphNum).toBe(1);
     expect(nextButton.disabled).toBe(false);
-    expect(prevButton.disabled).toBe(false);
+    expect(prevButton.disabled).toBe(false);  
+  });
+});
 
-    const requestString = getUrl();
-    const requestParams = requestString.substring(requestString.indexOf("?"));
+describe("Check initializing variables are passed correctly", function() {
+    beforeEach(function () {
+    setCurrGraphNum(1);
+  });
+
+  afterEach(function () {
+    setCurrGraphNum(0);
+  });
+  it("passes correct value of the mutations number in the fetch request", function() {
+
+    let requestString = getUrl();
+    let requestParams = requestString.substring(requestString.indexOf("?"));
     
-    const constructedUrl = new URLSearchParams(requestParams);
-    expect(constructedUrl.has("depth")).toBe(true);
+    let constructedUrl = new URLSearchParams(requestParams);
+      expect(constructedUrl.has("depth")).toBe(true);
     expect(constructedUrl.get("depth")).toBe("3");
     expect(constructedUrl.has("mutationNum")).toBe(true);
     expect(constructedUrl.get("mutationNum")).toBe("1");
