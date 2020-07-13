@@ -165,7 +165,12 @@ public class GraphMutationTest {
             .setStartNode("A")
             .setEndNode("B")
             .build();
-    TokenMutation tokenMut = TokenMutation.newBuilder().setType(TokenMutation.Type.ADD_TOKEN).addTokenName("2").addTokenName("4").build();
+    TokenMutation tokenMut =
+        TokenMutation.newBuilder()
+            .setType(TokenMutation.Type.ADD_TOKEN)
+            .addTokenName("2")
+            .addTokenName("4")
+            .build();
 
     Mutation addToA =
         Mutation.newBuilder()
