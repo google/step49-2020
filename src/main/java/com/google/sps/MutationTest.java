@@ -134,7 +134,6 @@ public final class MutationTest {
     Assert.assertTrue(success);
 
     Set<GraphNode> graphNodes = graph.nodes();
-    graphNodesMap = dataGraph.graphNodesMap();
     Assert.assertEquals(graphNodes.size(), 2);
     Assert.assertTrue(graphNodes.contains(gNodeA));
     Assert.assertTrue(graphNodes.contains(gNodeB));
@@ -173,7 +172,6 @@ public final class MutationTest {
     Assert.assertFalse(success);
 
     Set<GraphNode> graphNodes = graph.nodes();
-    graphNodesMap = dataGraph.graphNodesMap();
     Assert.assertEquals(graphNodes.size(), 2);
     Assert.assertTrue(graphNodes.contains(gNodeA));
     Assert.assertTrue(graphNodes.contains(gNodeB));
@@ -209,7 +207,6 @@ public final class MutationTest {
     Assert.assertTrue(success);
 
     Set<GraphNode> graphNodes = graph.nodes();
-    graphNodesMap = dataGraph.graphNodesMap();
     Assert.assertEquals(graphNodes.size(), 2);
     Assert.assertTrue(graphNodes.contains(gNodeB));
     Assert.assertEquals(graphNodesMap.get("B"), gNodeB);
@@ -243,7 +240,6 @@ public final class MutationTest {
     Assert.assertFalse(success);
 
     Set<GraphNode> graphNodes = graph.nodes();
-    graphNodesMap = dataGraph.graphNodesMap();
     Assert.assertEquals(graphNodes.size(), 2);
     Assert.assertTrue(graphNodes.contains(gNodeB));
     Assert.assertEquals(graphNodesMap.get("B"), gNodeB);
@@ -282,7 +278,6 @@ public final class MutationTest {
     Assert.assertTrue(success);
 
     Set<GraphNode> graphNodes = graph.nodes();
-    graphNodesMap = dataGraph.graphNodesMap();
     Assert.assertEquals(graphNodes.size(), 3);
     Assert.assertTrue(graphNodes.contains(gNodeA));
     Assert.assertEquals(graphNodesMap.get("A"), gNodeA);
@@ -319,7 +314,6 @@ public final class MutationTest {
     Assert.assertFalse(success);
 
     Set<GraphNode> graphNodes = graph.nodes();
-    graphNodesMap = dataGraph.graphNodesMap();
     Assert.assertEquals(graphNodes.size(), 2);
     Assert.assertTrue(graphNodes.contains(gNodeB));
     Assert.assertEquals(graphNodesMap.get("B"), gNodeB);
@@ -358,7 +352,6 @@ public final class MutationTest {
     Assert.assertTrue(success);
 
     Set<GraphNode> graphNodes = graph.nodes();
-    graphNodesMap = dataGraph.graphNodesMap();
     Assert.assertEquals(graphNodes.size(), 3);
     Assert.assertTrue(graphNodes.contains(gNodeA));
     Assert.assertEquals(graphNodesMap.get("A"), gNodeA);
@@ -414,7 +407,6 @@ public final class MutationTest {
     Assert.assertTrue(success);
 
     Set<GraphNode> graphNodes = graph.nodes();
-    graphNodesMap = dataGraph.graphNodesMap();
     Assert.assertTrue(graphNodesMap.containsKey("A"));
     GraphNode newNodeA = graphNodesMap.get("A");
 
@@ -492,7 +484,6 @@ public final class MutationTest {
     Assert.assertTrue(success);
 
     Set<GraphNode> graphNodes = graph.nodes();
-    graphNodesMap = dataGraph.graphNodesMap();
     Assert.assertTrue(graphNodesMap.containsKey("B"));
     GraphNode newNodeB = graphNodesMap.get("B");
 
@@ -558,7 +549,6 @@ public final class MutationTest {
     Assert.assertTrue(success);
 
     Set<GraphNode> graphNodes = graph.nodes();
-    graphNodesMap = dataGraph.graphNodesMap();
     Assert.assertTrue(graphNodesMap.containsKey("A"));
     GraphNode newNodeA = graphNodesMap.get("A");
 
@@ -607,7 +597,6 @@ public final class MutationTest {
     Assert.assertFalse(success);
 
     Set<GraphNode> graphNodes = graph.nodes();
-    graphNodesMap = dataGraph.graphNodesMap();
     Assert.assertEquals(graphNodes.size(), 3);
     Assert.assertTrue(graphNodes.contains(gNodeA));
     Assert.assertTrue(graphNodesMap.containsKey("A"));
@@ -653,7 +642,6 @@ public final class MutationTest {
     Assert.assertFalse(success);
 
     Set<GraphNode> graphNodes = graph.nodes();
-    graphNodesMap = dataGraph.graphNodesMap();
     Assert.assertEquals(graphNodes.size(), 3);
     Assert.assertTrue(graphNodes.contains(gNodeA));
     Assert.assertTrue(graphNodesMap.containsKey("A"));
