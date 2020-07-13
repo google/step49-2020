@@ -14,19 +14,20 @@
 
 package com.google.sps;
 
-import com.google.common.graph.*;
-import com.google.sps.servlets.DataServlet;
 import java.util.ArrayList;
-import java.util.Set;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import com.google.sps.data.GraphNode;
+import java.util.Set;
+
+import com.google.common.graph.GraphBuilder;
+import com.google.common.graph.MutableGraph;
 import com.proto.GraphProtos.Node;
 import com.proto.GraphProtos.Node.Builder;
 import com.proto.MutationProtos.Mutation;
 import com.proto.MutationProtos.TokenMutation;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,8 +37,6 @@ import org.junit.runners.JUnit4;
 /** */
 @RunWith(JUnit4.class)
 public final class MutationTest {
-
-  DataServlet servlet;
 
   // Proto nodes to construct graph with
   Builder nodeA = Node.newBuilder().setName("A");
@@ -56,13 +55,12 @@ public final class MutationTest {
 
   @Before
   public void setUp() {
-    servlet = new DataServlet();
-    gNodeA = servlet.protoNodeToGraphNode(nodeA.build());
-    gNodeB = servlet.protoNodeToGraphNode(nodeB.build());
-    gNodeC = servlet.protoNodeToGraphNode(nodeC.build());
-    gNodeD = servlet.protoNodeToGraphNode(nodeD.build());
-    gNodeE = servlet.protoNodeToGraphNode(nodeE.build());
-    gNodeF = servlet.protoNodeToGraphNode(nodeF.build());
+    gNodeA = Utility.protoNodeToGraphNode(nodeA.build());
+    gNodeB = Utility.protoNodeToGraphNode(nodeB.build());
+    gNodeC = Utility.protoNodeToGraphNode(nodeC.build());
+    gNodeD = Utility.protoNodeToGraphNode(nodeD.build());
+    gNodeE = Utility.protoNodeToGraphNode(nodeE.build());
+    gNodeF = Utility.protoNodeToGraphNode(nodeF.build());
   }
 
   /*
@@ -76,7 +74,7 @@ public final class MutationTest {
     Mutation addA = Mutation.newBuilder().setType(Mutation.Type.ADD_NODE).setStartNode("A").build();
 
     HashSet<String> roots = new HashSet<>();
-    boolean success = servlet.mutateGraph(addA, graph, graphNodesMap, roots);
+    boolean success = Utility.mutateGraph(addA, graph, graphNodesMap, roots);
     Assert.assertTrue(success);
 
     Set<GraphNode> graphNodes = graph.nodes();
@@ -86,10 +84,11 @@ public final class MutationTest {
   }
 
   /*
-   * Check that adding duplicate nodes is not allowed
+   * Check that adding duplicate nodes does not cause an error
+   * but does not make any change to the graph
    */
   @Test
-  public void noAddDuplicates() {
+  public void duplicateAddNoChange() {
     MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
     graph.addNode(gNodeA);
     HashMap<String, GraphNode> graphNodesMap = new HashMap<>();
@@ -97,8 +96,11 @@ public final class MutationTest {
 
     Mutation addA = Mutation.newBuilder().setType(Mutation.Type.ADD_NODE).setStartNode("A").build();
     HashSet<String> roots = new HashSet<>();
-    boolean success = servlet.mutateGraph(addA, graph, graphNodesMap, roots);
+    boolean success = Utility.mutateGraph(addA, graph, graphNodesMap, roots);
     Assert.assertTrue(success);
+    Set<GraphNode> graphNodes = graph.nodes();
+    Assert.assertEquals(graphNodes.size(), 1);
+    Assert.assertTrue(graphNodes.contains(gNodeA));
   }
 
   /*
@@ -121,7 +123,7 @@ public final class MutationTest {
             .setEndNode("B")
             .build();
     HashSet<String> roots = new HashSet<>();
-    boolean success = servlet.mutateGraph(addAB, graph, graphNodesMap, roots);
+    boolean success = Utility.mutateGraph(addAB, graph, graphNodesMap, roots);
     Assert.assertTrue(success);
 
     Set<GraphNode> graphNodes = graph.nodes();
@@ -157,7 +159,7 @@ public final class MutationTest {
             .build();
 
     HashSet<String> roots = new HashSet<>();
-    boolean success = servlet.mutateGraph(addAB, graph, graphNodesMap, roots);
+    boolean success = Utility.mutateGraph(addAB, graph, graphNodesMap, roots);
     Assert.assertFalse(success);
 
     Set<GraphNode> graphNodes = graph.nodes();
@@ -191,7 +193,7 @@ public final class MutationTest {
         Mutation.newBuilder().setType(Mutation.Type.DELETE_NODE).setStartNode("A").build();
 
     HashSet<String> roots = new HashSet<>();
-    boolean success = servlet.mutateGraph(removeA, graph, graphNodesMap, roots);
+    boolean success = Utility.mutateGraph(removeA, graph, graphNodesMap, roots);
     Assert.assertTrue(success);
 
     Set<GraphNode> graphNodes = graph.nodes();
@@ -223,7 +225,7 @@ public final class MutationTest {
         Mutation.newBuilder().setType(Mutation.Type.DELETE_NODE).setStartNode("C").build();
 
     HashSet<String> roots = new HashSet<>();
-    boolean success = servlet.mutateGraph(removeC, graph, graphNodesMap, roots);
+    boolean success = Utility.mutateGraph(removeC, graph, graphNodesMap, roots);
     Assert.assertFalse(success);
 
     Set<GraphNode> graphNodes = graph.nodes();
@@ -260,7 +262,7 @@ public final class MutationTest {
             .build();
 
     HashSet<String> roots = new HashSet<>();
-    boolean success = servlet.mutateGraph(removeAB, graph, graphNodesMap, roots);
+    boolean success = Utility.mutateGraph(removeAB, graph, graphNodesMap, roots);
     Assert.assertTrue(success);
 
     Set<GraphNode> graphNodes = graph.nodes();
@@ -295,7 +297,7 @@ public final class MutationTest {
         Mutation.newBuilder().setType(Mutation.Type.DELETE_EDGE).setStartNode("A").build();
 
     HashSet<String> roots = new HashSet<>();
-    boolean success = servlet.mutateGraph(removeAX, graph, graphNodesMap, roots);
+    boolean success = Utility.mutateGraph(removeAX, graph, graphNodesMap, roots);
     Assert.assertFalse(success);
 
     Set<GraphNode> graphNodes = graph.nodes();
@@ -332,7 +334,7 @@ public final class MutationTest {
             .build();
 
     HashSet<String> roots = new HashSet<>();
-    boolean success = servlet.mutateGraph(removeAC, graph, graphNodesMap, roots);
+    boolean success = Utility.mutateGraph(removeAC, graph, graphNodesMap, roots);
     Assert.assertTrue(success);
 
     Set<GraphNode> graphNodes = graph.nodes();
@@ -385,7 +387,7 @@ public final class MutationTest {
             .build();
 
     HashSet<String> roots = new HashSet<>();
-    boolean success = servlet.mutateGraph(addTokenToA, graph, graphNodesMap, roots);
+    boolean success = Utility.mutateGraph(addTokenToA, graph, graphNodesMap, roots);
     Assert.assertTrue(success);
 
     Set<GraphNode> graphNodes = graph.nodes();
@@ -430,14 +432,22 @@ public final class MutationTest {
     protoNodesMap.put("B", pNodeB);
     protoNodesMap.put("C", pNodeC);
 
-    gNodeA = servlet.protoNodeToGraphNode(pNodeA);
-    gNodeB = servlet.protoNodeToGraphNode(pNodeB);
-    gNodeC = servlet.protoNodeToGraphNode(pNodeC);
+    gNodeA = Utility.protoNodeToGraphNode(pNodeA);
+    gNodeB = Utility.protoNodeToGraphNode(pNodeB);
+    gNodeC = Utility.protoNodeToGraphNode(pNodeC);
 
-    MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
-    HashMap<String, GraphNode> graphNodesMap = new HashMap<>();
-    HashSet<String> roots = new HashSet<>();
-    boolean success = servlet.graphFromProtoNodes(protoNodesMap, graph, graphNodesMap, roots);
+    DataGraph dataGraph = DataGraph.create();
+    boolean success = dataGraph.graphFromProtoNodes(protoNodesMap);
+    Assert.assertTrue(success);
+
+    MutableGraph<GraphNode> graph = dataGraph.graph();
+    HashMap<String, GraphNode> graphNodesMap = dataGraph.graphNodesMap();
+    HashSet<String> roots = dataGraph.roots();
+
+    // MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
+    // HashMap<String, GraphNode> graphNodesMap = new HashMap<>();
+    // HashSet<String> roots = new HashSet<>();
+    // boolean success = Utility.graphFromProtoNodes(protoNodesMap, graph, graphNodesMap, roots);
 
     List<String> newTokens = new ArrayList<>();
     newTokens.add("1");
@@ -459,7 +469,7 @@ public final class MutationTest {
             .setTokenChange(tokenMut)
             .build();
 
-    success = servlet.mutateGraph(addTokenToB, graph, graphNodesMap, roots);
+    success = Utility.mutateGraph(addTokenToB, graph, graphNodesMap, roots);
     Assert.assertTrue(success);
 
     Set<GraphNode> graphNodes = graph.nodes();
@@ -491,7 +501,7 @@ public final class MutationTest {
     nodeA.addToken("2");
     nodeA.addToken("3");
     nodeA.addToken("4");
-    gNodeA = servlet.protoNodeToGraphNode(nodeA.build());
+    gNodeA = Utility.protoNodeToGraphNode(nodeA.build());
 
     graph.addNode(gNodeA);
     graph.addNode(gNodeB);
@@ -521,7 +531,7 @@ public final class MutationTest {
             .build();
 
     HashSet<String> roots = new HashSet<>();
-    boolean success = servlet.mutateGraph(removeTokenFromA, graph, graphNodesMap, roots);
+    boolean success = Utility.mutateGraph(removeTokenFromA, graph, graphNodesMap, roots);
     Assert.assertTrue(success);
 
     Set<GraphNode> graphNodes = graph.nodes();
@@ -567,7 +577,7 @@ public final class MutationTest {
             .build();
 
     HashSet<String> roots = new HashSet<>();
-    boolean success = servlet.mutateGraph(addToA, graph, graphNodesMap, roots);
+    boolean success = Utility.mutateGraph(addToA, graph, graphNodesMap, roots);
     Assert.assertFalse(success);
 
     Set<GraphNode> graphNodes = graph.nodes();
@@ -610,7 +620,7 @@ public final class MutationTest {
         Mutation.newBuilder().setType(Mutation.Type.CHANGE_TOKEN).setTokenChange(tokenMut).build();
 
     HashSet<String> roots = new HashSet<>();
-    boolean success = servlet.mutateGraph(add, graph, graphNodesMap, roots);
+    boolean success = Utility.mutateGraph(add, graph, graphNodesMap, roots);
     Assert.assertFalse(success);
 
     Set<GraphNode> graphNodes = graph.nodes();

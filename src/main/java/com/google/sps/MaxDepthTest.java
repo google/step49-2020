@@ -14,14 +14,15 @@
 
 package com.google.sps;
 
-import com.google.common.graph.*;
-import com.google.sps.servlets.DataServlet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
-import com.google.sps.data.GraphNode;
+
+import com.google.common.graph.EndpointPair;
+import com.google.common.graph.MutableGraph;
 import com.proto.GraphProtos.Node;
 import com.proto.GraphProtos.Node.Builder;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,8 +31,6 @@ import org.junit.runners.JUnit4;
 
 @RunWith(JUnit4.class)
 public class MaxDepthTest {
-
-  DataServlet servlet;
 
   // Proto nodes to construct graph with
   Builder nodeA = Node.newBuilder().setName("A");
@@ -54,15 +53,14 @@ public class MaxDepthTest {
 
   @Before
   public void setUp() {
-    servlet = new DataServlet();
-    gNodeA = servlet.protoNodeToGraphNode(nodeA.build());
-    gNodeB = servlet.protoNodeToGraphNode(nodeB.build());
-    gNodeC = servlet.protoNodeToGraphNode(nodeC.build());
-    gNodeD = servlet.protoNodeToGraphNode(nodeD.build());
-    gNodeE = servlet.protoNodeToGraphNode(nodeE.build());
-    gNodeF = servlet.protoNodeToGraphNode(nodeF.build());
-    gNodeG = servlet.protoNodeToGraphNode(nodeG.build());
-    gNodeH = servlet.protoNodeToGraphNode(nodeH.build());
+    gNodeA = Utility.protoNodeToGraphNode(nodeA.build());
+    gNodeB = Utility.protoNodeToGraphNode(nodeB.build());
+    gNodeC = Utility.protoNodeToGraphNode(nodeC.build());
+    gNodeD = Utility.protoNodeToGraphNode(nodeD.build());
+    gNodeE = Utility.protoNodeToGraphNode(nodeE.build());
+    gNodeF = Utility.protoNodeToGraphNode(nodeF.build());
+    gNodeG = Utility.protoNodeToGraphNode(nodeG.build());
+    gNodeH = Utility.protoNodeToGraphNode(nodeH.build());
   }
 
   /** Max depth 0 should only return the roots */
@@ -71,21 +69,19 @@ public class MaxDepthTest {
     nodeA.addChildren("B");
     nodeA.addChildren("C");
 
-    MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
-
     HashMap<String, Node> protoNodesMap = new HashMap<>();
     protoNodesMap.put("A", nodeA.build());
     protoNodesMap.put("B", nodeB.build());
     protoNodesMap.put("C", nodeC.build());
 
-    HashMap<String, GraphNode> graphNodesMap = new HashMap<>();
-
-    HashSet<String> roots = new HashSet<>();
-
-    servlet.graphFromProtoNodes(protoNodesMap, graph, graphNodesMap, roots);
+    DataGraph dataGraph = DataGraph.create();
+    dataGraph.graphFromProtoNodes(protoNodesMap);
+    MutableGraph<GraphNode> graph = dataGraph.graph();
+    HashMap<String, GraphNode> graphNodesMap = dataGraph.graphNodesMap();
+    HashSet<String> roots = dataGraph.roots();
 
     MutableGraph<GraphNode> truncatedGraph =
-        servlet.getGraphWithMaxDepth(graph, roots, graphNodesMap, 0);
+        Utility.getGraphWithMaxDepth(graph, roots, graphNodesMap, 0);
     Set<GraphNode> graphNodes = truncatedGraph.nodes();
     Set<EndpointPair<GraphNode>> graphEdges = truncatedGraph.edges();
 
@@ -100,20 +96,19 @@ public class MaxDepthTest {
   /** Invalid depth should not return anything */
   @Test
   public void invalidDepthEmptyGraph() {
-    MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
 
     HashMap<String, Node> protoNodesMap = new HashMap<>();
     protoNodesMap.put("A", nodeA.build());
     protoNodesMap.put("B", nodeB.build());
 
-    HashMap<String, GraphNode> graphNodesMap = new HashMap<>();
-
-    HashSet<String> roots = new HashSet<>();
-
-    servlet.graphFromProtoNodes(protoNodesMap, graph, graphNodesMap, roots);
+    DataGraph dataGraph = DataGraph.create();
+    dataGraph.graphFromProtoNodes(protoNodesMap);
+    MutableGraph<GraphNode> graph = dataGraph.graph();
+    HashMap<String, GraphNode> graphNodesMap = dataGraph.graphNodesMap();
+    HashSet<String> roots = dataGraph.roots();
 
     MutableGraph<GraphNode> truncatedGraph =
-        servlet.getGraphWithMaxDepth(graph, roots, graphNodesMap, -2);
+        Utility.getGraphWithMaxDepth(graph, roots, graphNodesMap, -2);
     Set<GraphNode> graphNodes = truncatedGraph.nodes();
     Set<EndpointPair<GraphNode>> graphEdges = truncatedGraph.edges();
 
@@ -127,21 +122,19 @@ public class MaxDepthTest {
     nodeA.addChildren("B");
     nodeA.addChildren("C");
 
-    MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
-
     HashMap<String, Node> protoNodesMap = new HashMap<>();
     protoNodesMap.put("A", nodeA.build());
     protoNodesMap.put("B", nodeB.build());
     protoNodesMap.put("C", nodeC.build());
 
-    HashMap<String, GraphNode> graphNodesMap = new HashMap<>();
-
-    HashSet<String> roots = new HashSet<>();
-
-    servlet.graphFromProtoNodes(protoNodesMap, graph, graphNodesMap, roots);
+    DataGraph dataGraph = DataGraph.create();
+    dataGraph.graphFromProtoNodes(protoNodesMap);
+    MutableGraph<GraphNode> graph = dataGraph.graph();
+    HashMap<String, GraphNode> graphNodesMap = dataGraph.graphNodesMap();
+    HashSet<String> roots = dataGraph.roots();
 
     MutableGraph<GraphNode> truncatedGraph =
-        servlet.getGraphWithMaxDepth(graph, roots, graphNodesMap, 1);
+        Utility.getGraphWithMaxDepth(graph, roots, graphNodesMap, 1);
     Set<GraphNode> graphNodes = truncatedGraph.nodes();
     Set<EndpointPair<GraphNode>> graphEdges = truncatedGraph.edges();
 
@@ -159,21 +152,19 @@ public class MaxDepthTest {
     nodeA.addChildren("B");
     nodeA.addChildren("C");
 
-    MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
-
     HashMap<String, Node> protoNodesMap = new HashMap<>();
     protoNodesMap.put("A", nodeA.build());
     protoNodesMap.put("B", nodeB.build());
     protoNodesMap.put("C", nodeC.build());
 
-    HashMap<String, GraphNode> graphNodesMap = new HashMap<>();
-
-    HashSet<String> roots = new HashSet<>();
-
-    servlet.graphFromProtoNodes(protoNodesMap, graph, graphNodesMap, roots);
+    DataGraph dataGraph = DataGraph.create();
+    dataGraph.graphFromProtoNodes(protoNodesMap);
+    MutableGraph<GraphNode> graph = dataGraph.graph();
+    HashMap<String, GraphNode> graphNodesMap = dataGraph.graphNodesMap();
+    HashSet<String> roots = dataGraph.roots();
 
     MutableGraph<GraphNode> truncatedGraph =
-        servlet.getGraphWithMaxDepth(graph, roots, graphNodesMap, 2);
+        Utility.getGraphWithMaxDepth(graph, roots, graphNodesMap, 2);
     Set<GraphNode> graphNodes = truncatedGraph.nodes();
 
     Set<EndpointPair<GraphNode>> graphEdges = truncatedGraph.edges();
@@ -200,8 +191,6 @@ public class MaxDepthTest {
     nodeD.addChildren("E");
     nodeC.addChildren("E");
 
-    MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
-
     HashMap<String, Node> protoNodesMap = new HashMap<>();
     protoNodesMap.put("A", nodeA.build());
     protoNodesMap.put("B", nodeB.build());
@@ -209,14 +198,14 @@ public class MaxDepthTest {
     protoNodesMap.put("D", nodeD.build());
     protoNodesMap.put("E", nodeE.build());
 
-    HashMap<String, GraphNode> graphNodesMap = new HashMap<>();
-
-    HashSet<String> roots = new HashSet<>();
-
-    servlet.graphFromProtoNodes(protoNodesMap, graph, graphNodesMap, roots);
+    DataGraph dataGraph = DataGraph.create();
+    dataGraph.graphFromProtoNodes(protoNodesMap);
+    MutableGraph<GraphNode> graph = dataGraph.graph();
+    HashMap<String, GraphNode> graphNodesMap = dataGraph.graphNodesMap();
+    HashSet<String> roots = dataGraph.roots();
 
     MutableGraph<GraphNode> truncatedGraph =
-        servlet.getGraphWithMaxDepth(graph, roots, graphNodesMap, 2);
+        Utility.getGraphWithMaxDepth(graph, roots, graphNodesMap, 2);
     Set<GraphNode> graphNodes = truncatedGraph.nodes();
     Set<EndpointPair<GraphNode>> graphEdges = truncatedGraph.edges();
 
@@ -236,22 +225,20 @@ public class MaxDepthTest {
     nodeA.addChildren("B");
     nodeC.addChildren("D");
 
-    MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
-
     HashMap<String, Node> protoNodesMap = new HashMap<>();
     protoNodesMap.put("A", nodeA.build());
     protoNodesMap.put("B", nodeB.build());
     protoNodesMap.put("C", nodeC.build());
     protoNodesMap.put("D", nodeD.build());
 
-    HashMap<String, GraphNode> graphNodesMap = new HashMap<>();
-
-    HashSet<String> roots = new HashSet<>();
-
-    servlet.graphFromProtoNodes(protoNodesMap, graph, graphNodesMap, roots);
+    DataGraph dataGraph = DataGraph.create();
+    dataGraph.graphFromProtoNodes(protoNodesMap);
+    MutableGraph<GraphNode> graph = dataGraph.graph();
+    HashMap<String, GraphNode> graphNodesMap = dataGraph.graphNodesMap();
+    HashSet<String> roots = dataGraph.roots();
 
     MutableGraph<GraphNode> truncatedGraph =
-        servlet.getGraphWithMaxDepth(graph, roots, graphNodesMap, 0);
+        Utility.getGraphWithMaxDepth(graph, roots, graphNodesMap, 0);
     Set<GraphNode> graphNodes = truncatedGraph.nodes();
     Set<EndpointPair<GraphNode>> graphEdges = truncatedGraph.edges();
 
@@ -270,8 +257,6 @@ public class MaxDepthTest {
     nodeC.addChildren("D");
     nodeE.addChildren("D");
 
-    MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
-
     HashMap<String, Node> protoNodesMap = new HashMap<>();
     protoNodesMap.put("A", nodeA.build());
     protoNodesMap.put("B", nodeB.build());
@@ -279,14 +264,14 @@ public class MaxDepthTest {
     protoNodesMap.put("D", nodeD.build());
     protoNodesMap.put("E", nodeE.build());
 
-    HashMap<String, GraphNode> graphNodesMap = new HashMap<>();
-
-    HashSet<String> roots = new HashSet<>();
-
-    servlet.graphFromProtoNodes(protoNodesMap, graph, graphNodesMap, roots);
+    DataGraph dataGraph = DataGraph.create();
+    dataGraph.graphFromProtoNodes(protoNodesMap);
+    MutableGraph<GraphNode> graph = dataGraph.graph();
+    HashMap<String, GraphNode> graphNodesMap = dataGraph.graphNodesMap();
+    HashSet<String> roots = dataGraph.roots();
 
     MutableGraph<GraphNode> truncatedGraph =
-        servlet.getGraphWithMaxDepth(graph, roots, graphNodesMap, 1);
+        Utility.getGraphWithMaxDepth(graph, roots, graphNodesMap, 1);
     Set<GraphNode> graphNodes = truncatedGraph.nodes();
     Set<EndpointPair<GraphNode>> graphEdges = truncatedGraph.edges();
 
@@ -310,8 +295,6 @@ public class MaxDepthTest {
     nodeE.addChildren("G");
     nodeH.addChildren("G");
 
-    MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
-
     HashMap<String, Node> protoNodesMap = new HashMap<>();
     protoNodesMap.put("A", nodeA.build());
     protoNodesMap.put("B", nodeB.build());
@@ -321,14 +304,14 @@ public class MaxDepthTest {
     protoNodesMap.put("G", nodeG.build());
     protoNodesMap.put("H", nodeH.build());
 
-    HashMap<String, GraphNode> graphNodesMap = new HashMap<>();
-
-    HashSet<String> roots = new HashSet<>();
-
-    servlet.graphFromProtoNodes(protoNodesMap, graph, graphNodesMap, roots);
+    DataGraph dataGraph = DataGraph.create();
+    dataGraph.graphFromProtoNodes(protoNodesMap);
+    MutableGraph<GraphNode> graph = dataGraph.graph();
+    HashMap<String, GraphNode> graphNodesMap = dataGraph.graphNodesMap();
+    HashSet<String> roots = dataGraph.roots();
 
     MutableGraph<GraphNode> truncatedGraph =
-        servlet.getGraphWithMaxDepth(graph, roots, graphNodesMap, 1);
+        Utility.getGraphWithMaxDepth(graph, roots, graphNodesMap, 1);
     Set<GraphNode> graphNodes = truncatedGraph.nodes();
     Set<EndpointPair<GraphNode>> graphEdges = truncatedGraph.edges();
 
