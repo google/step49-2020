@@ -53,7 +53,7 @@ public class DataServlet extends HttpServlet {
 
     int depthNumber = Integer.parseInt(depthParam);
     int mutationNumber = Integer.parseInt(mutationParam);
-    System.out.println(mutationNumber);
+   
     boolean success = true; // Innocent until proven guilty; successful until proven a failure
 
     // Initialize variables if any are null. Ideally should all be null or none
