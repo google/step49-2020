@@ -61,6 +61,7 @@ async function generateGraph() {
   let graphNodes = [];
   let graphEdges = [];
 
+  // disable buttons
   const prevBtn = document.getElementById("prevbutton");
   const nextBtn = document.getElementById("nextbutton");
 
@@ -286,10 +287,15 @@ function getTooltipContent(node) {
 function navigateGraph(amount) {
   currGraphNum += amount;
   if(currGraphNum < 0) {
-    currGraphNum = 0;
-  } else if(currGraphNum >= numMutations) {
-    currGraphNum = numMutations; 
+    setCurrGraphNum(0);
+    return;
   }
+  if(currGraphNum > numMutations) {
+    setCurrGraphNum(numMutations);
+    return;
+  }
+  generateGraph();
+  updateButtons();
 }
 
 /**
