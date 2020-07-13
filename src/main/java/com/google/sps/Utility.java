@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.ArrayList;
 import com.google.protobuf.Struct;
 import java.util.Set;
-import java.util.HashMap;
 import com.proto.MutationProtos.Mutation;
 import com.proto.MutationProtos.Mutation;
 import com.proto.MutationProtos.TokenMutation;
@@ -112,9 +111,9 @@ public final class Utility {
   }
 
   public static Mutation diffBetween(List<Mutation> mutList, int currIndex, int nextIndex) {
-    if(Math.abs(currIndex - nextIndex) != 1) {
+    if (Math.abs(currIndex - nextIndex) != 1) {
       return null;
-    } else if(nextIndex - currIndex == 1) {
+    } else if (nextIndex - currIndex == 1) {
       return mutList.get(currIndex);
     } else {
       return invertMutation(mutList.get(nextIndex));
@@ -150,9 +149,9 @@ public final class Utility {
 
   private static TokenMutation invertTokenChange(TokenMutation tokenMut) {
     TokenMutation.Builder invertedMut = TokenMutation.newBuilder(mut);
-    if(tokenMut.getType() == TokenMutation.Type.ADD_TOKEN) {
+    if (tokenMut.getType() == TokenMutation.Type.ADD_TOKEN) {
       invertedMut.setType(TokenMutation.Type.DELETE_TOKEN);
-    } else if(tokenMut.getType() == TokenMutation.Type.DELETE_TOKEN) {
+    } else if (tokenMut.getType() == TokenMutation.Type.DELETE_TOKEN) {
       invertedMut.setType(TokenMutation.Type.ADD_TOKEN);
     } else {
       return null;
