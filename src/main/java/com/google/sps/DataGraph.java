@@ -345,15 +345,22 @@ abstract class DataGraph {
     if (radius < 0) {
       return GraphBuilder.directed().build(); // If max depth below 0, then return an emtpy graph
     }
-
+    
     HashMap<String, GraphNode> graphNodesMap = this.graphNodesMap();
-    if (graphNodesMap.containsKey(name)) {
+
+    if (!graphNodesMap.containsKey(name)) {
+      System.out.println("it should not be getting here bc it should contain the key");   
       return GraphBuilder.directed()
           .build(); // If the specified node is not found, return an empty graph
+       
     }
 
     MutableGraph<GraphNode> graph = this.graph();
     GraphNode tgtNode = graphNodesMap.get(name);
+    if (tgtNode == null) {
+      System.out.println("it should not be getting here bc this is a useless check");
+      return getGraphWithMaxDepth(radius);
+    }
 
     Map<GraphNode, Boolean> visited = new HashMap<>();
     HashSet<GraphNode> nextLayer;
@@ -374,6 +381,7 @@ abstract class DataGraph {
 
           // Adds the children
           for (GraphNode child : graph.successors(curr)) {
+            System.out.println(child);
             if (!visited.containsKey(child)) {
               nextLayer.add(child);
             }
