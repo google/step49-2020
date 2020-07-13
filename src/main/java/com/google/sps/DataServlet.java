@@ -112,6 +112,7 @@ public class DataServlet extends HttpServlet {
 
     // Parameter for the nodeName the user searched for in the frontend
     String nodeNameParam = request.getParameter("nodeName");
+    System.out.println(nodeNameParam);
 
     currDataGraph =
         Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
@@ -125,10 +126,10 @@ public class DataServlet extends HttpServlet {
 
     // If a node is searched, get the graph with just the node. Otherwise, use the
     // whole graph
-    if (nodeNameParam != null && !nodeNameParam.isEmpty()) {
-      truncatedGraph = currDataGraph.getReachableNodes(nodeNameParam, depthNumber);
+    if (nodeNameParam == null || nodeNameParam.length() == 0) {
+      truncatedGraph = currDataGraph.getGraphWithMaxDepth(depthNumber); 
     } else {
-      truncatedGraph = currDataGraph.getGraphWithMaxDepth(depthNumber);
+      truncatedGraph = currDataGraph.getReachableNodes(nodeNameParam, depthNumber);
     }
 
     String graphJson = Utility.graphToJson(truncatedGraph, mutList.size());
