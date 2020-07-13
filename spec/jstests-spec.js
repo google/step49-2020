@@ -1,4 +1,4 @@
-import  {initializeTippy, generateGraph, getUrl, navigateGraph, currGraphNum, numMutations  } from "../src/main/webapp/script.js";
+import  {initializeNumMutations, setCurrGraphNum, initializeTippy, generateGraph, getUrl, navigateGraph, currGraphNum, numMutations  } from "../src/main/webapp/script.js";
 import cytoscape from "cytoscape";
 
 describe("Modifying value of depth input", function() {
@@ -197,7 +197,7 @@ describe("Initializing tooltips", function() {
 
 describe("Pressing next and previous buttons associated with a graph", function() {
   it("generates correct fetch request when next/previous buttons are pressed", function() {
-
+    initializeNumMutations(3);
     const prevButton = document.createElement("button");
     prevButton.id = "prevbutton";
     prevButton.onclick = () => navigateGraph(-1);
@@ -212,16 +212,16 @@ describe("Pressing next and previous buttons associated with a graph", function(
 
     nextButton.click();
     expect(currGraphNum).toBe(1);
+    expect(nextButton.disabled).toBe(false);
+    expect(prevButton.disabled).toBe(false);
 
     nextButton.click();
     expect(currGraphNum).toBe(2);
+    expect(nextButton.disabled).toBe(false);
+    expect(prevButton.disabled).toBe(false);
 
     nextButton.click();
     expect(currGraphNum).toBe(3);
-
-    nextButton.click();
-    expect(currGraphNum).toBe(3);
-
     expect(nextButton.disabled).toBe(true);
     expect(prevButton.disabled).toBe(false);
 
@@ -237,9 +237,13 @@ describe("Pressing next and previous buttons associated with a graph", function(
 
     nextButton.click();
     expect(currGraphNum).toBe(2);
+    expect(nextButton.disabled).toBe(false);
+    expect(prevButton.disabled).toBe(false);
 
     prevButton.click();
     expect(currGraphNum).toBe(1);
+    expect(nextButton.disabled).toBe(false);
+    expect(prevButton.disabled).toBe(false);
 
     prevButton.click();
     expect(currGraphNum).toBe(0);
