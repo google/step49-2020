@@ -116,8 +116,7 @@ async function generateGraph() {
     });
   })
   getGraphDisplay(graphNodes, graphEdges);
-  prevBtn.disabled = false;
-  nextBtn.disabled = false;
+  updateButtons();
   return;
 }
 

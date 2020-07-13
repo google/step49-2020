@@ -196,7 +196,7 @@ describe("Initializing tooltips", function() {
 });
 
 describe("Pressing next and previous buttons associated with a graph", function() {
-  it("generates correct fetch request when next/previous buttons are pressed", function() {
+  it("correctly updates mutation tracking variables and buttons on click", function() {
     initializeNumMutations(3);
     const prevButton = document.createElement("button");
     prevButton.id = "prevbutton";
@@ -270,7 +270,7 @@ describe("Check initializing variables are passed correctly", function() {
   afterEach(function () {
     setCurrGraphNum(0);
   });
-  it("Correct numMutations passed into request", function() {
+  it("passes correct value of the mutations number in the fetch request", function() {
 
     let requestString = getUrl();
     let requestParams = requestString.substring(requestString.indexOf("?"));
