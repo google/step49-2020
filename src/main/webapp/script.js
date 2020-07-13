@@ -62,7 +62,15 @@ async function generateGraph() {
   let graphNodes = [];
   let graphEdges = [];
 
+  // disable buttons
+  const prevBtn = document.getElementById("prevbutton");
+  const nextBtn = document.getElementById("nextbutton");
+
   const url = getUrl();
+
+  prevBtn.disabled = true;
+  nextBtn.disabled = true;
+
   const response = await fetch(url);
 
   const serverErrorStatus = response.headers.get("serverError");
@@ -108,6 +116,8 @@ async function generateGraph() {
     });
   })
   getGraphDisplay(graphNodes, graphEdges);
+  prevBtn.disabled = false;
+  nextBtn.disabled = false;
   return;
 }
 
