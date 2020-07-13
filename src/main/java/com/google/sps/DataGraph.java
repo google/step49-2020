@@ -21,6 +21,7 @@ import com.proto.GraphProtos.Node;
 import com.proto.MutationProtos.Mutation;
 import com.proto.MutationProtos.TokenMutation;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,28 +38,22 @@ abstract class DataGraph {
    * @return the empty data graph with these attributes
    */
   public static DataGraph create() {
-    return new AutoValue_DataGraph(
-        GraphBuilder.directed().build(),
-        new HashMap<String, GraphNode>(),
-        new HashSet<String>(),
-        0);
+    return new AutoValue_DataGraph(GraphBuilder.directed().build(), new HashMap<String, GraphNode>(),
+        new HashSet<String>(), 0);
   }
 
   /**
    * Create a new data graph with the given attributes
    *
-   * @param graph the guava graph
+   * @param graph         the guava graph
    * @param graphNodesMap the map from node name to node
-   * @param roots a set of roots (nodes with no in-edges) of the graph
-   * @param numMutations the maximum number of mutations in the list of mutations this graph is an
-   *     intermediate result of applyiing
+   * @param roots         a set of roots (nodes with no in-edges) of the graph
+   * @param numMutations  the maximum number of mutations in the list of mutations
+   *                      this graph is an intermediate result of applyiing
    * @return the data graph with these attributes
    */
-  static DataGraph create(
-      MutableGraph<GraphNode> graph,
-      HashMap<String, GraphNode> graphNodesMap,
-      HashSet<String> roots,
-      int numMutations) {
+  static DataGraph create(MutableGraph<GraphNode> graph, HashMap<String, GraphNode> graphNodesMap,
+      HashSet<String> roots, int numMutations) {
     return new AutoValue_DataGraph(graph, graphNodesMap, roots, numMutations);
   }
 
@@ -111,10 +106,11 @@ abstract class DataGraph {
   }
 
   /**
-   * Takes in a map from node name to proto-parsed node object. Populates data graph with
-   * information from the parsed graph
+   * Takes in a map from node name to proto-parsed node object. Populates data
+   * graph with information from the parsed graph
    *
-   * @param protoNodesMap map from node name to proto Node object parsed from input
+   * @param protoNodesMap map from node name to proto Node object parsed from
+   *                      input
    * @return false if an error occurred, true otherwise
    */
   boolean graphFromProtoNodes(Map<String, Node> protoNodesMap) {
@@ -183,8 +179,7 @@ abstract class DataGraph {
           // New lone node is a root
           roots.add(startName);
           // Create a new node with the given name and add it to the graph and the map
-          GraphNode newGraphNode =
-              GraphNode.create(startName, new ArrayList<>(), Struct.newBuilder().build());
+          GraphNode newGraphNode = GraphNode.create(startName, new ArrayList<>(), Struct.newBuilder().build());
           graph.addNode(newGraphNode);
           graphNodesMap.put(startName, newGraphNode);
         }
@@ -254,10 +249,12 @@ abstract class DataGraph {
     }
     return true;
   }
+
   /**
-   * Modifies the list of tokens of this node to either add or remove tokens contained in tokenMut
+   * Modifies the list of tokens of this node to either add or remove tokens
+   * contained in tokenMut
    *
-   * @param node the node whose token list should be modified
+   * @param node     the node whose token list should be modified
    * @param tokenMut the mutation that should be applied to the token list
    * @return the new GraphNode object, or null if it's an unrecognized mutation
    */
@@ -283,7 +280,8 @@ abstract class DataGraph {
   }
 
   /**
-   * Function for calculating nodes reachable from roots of this graph within at most maxDepth steps
+   * Function for calculating nodes reachable from roots of this graph within at
+   * most maxDepth steps
    *
    * @param maxDepth the maximum depth of a node from a root
    * @return a graph with nodes only a certain distance from a root
@@ -308,13 +306,14 @@ abstract class DataGraph {
   }
 
   /**
-   * Helper function for performing a depth-first traversal of the graph starting at node and adding
-   * all those nodes to visited which are within depthRemaining steps from the node
+   * Helper function for performing a depth-first traversal of the graph starting
+   * at node and adding all those nodes to visited which are within depthRemaining
+   * steps from the node
    *
-   * @param gn the GraphNode to start at
-   * @param visited a map that records whether nodes have been visited
-   * @param depthRemaining the number of layers left to explore, decreases by one with each
-   *     recursive call on a child
+   * @param gn             the GraphNode to start at
+   * @param visited        a map that records whether nodes have been visited
+   * @param depthRemaining the number of layers left to explore, decreases by one
+   *                       with each recursive call on a child
    */
   private void dfsVisit(GraphNode gn, Map<GraphNode, Boolean> visited, int depthRemaining) {
     MutableGraph<GraphNode> graph = this.graph();
@@ -327,5 +326,57 @@ abstract class DataGraph {
         }
       }
     }
+  }
+
+  /**
+   * Returns a MutableGraph with nodes that are at most a certain radius from a given node
+   * If the radius is less than 0 or the node specified isn't present, return an emptu graph
+   * Since maxDepth was implemented as DFS, we use BFS for *diversity*
+   * 
+   * @param name the name of the node to search for
+   * @param radius the distance from the node to search for parents and children
+   * @return a graph comprised of only nodes and edges within a certain distance from the specified node
+   */
+  public MutableGraph<GraphNode> nodeSearch(String name, int radius) {
+    if (radius < 0) {
+      return GraphBuilder.directed().build(); // If max depth below 0, then return an emtpy graph
+    }
+
+    HashMap<String, GraphNode> graphNodesMap = this.graphNodesMap();
+    if (graphNodesMap.containsKey(name)) {
+      return GraphBuilder.directed().build(); // If the specified node is not found, return an empty graph
+    }
+
+    MutableGraph<GraphNode> graph = this.graph();
+    GraphNode tgtNode = graphNodesMap.get(name);
+
+    Map<GraphNode, Boolean> visited = new HashMap<>();
+    HashSet<GraphNode> nextLayer;
+    ArrayDeque<GraphNode> queue = new ArrayDeque<GraphNode>();
+
+    queue.add(tgtNode); // Adds the searched node to the queue
+
+    for (int i = 0; i < radius; i++) {
+      nextLayer = new HashSet<>();
+      while (!queue.isEmpty()) {
+        GraphNode curr = queue.poll();
+        if (!visited.containsKey(curr)) {
+          visited.put(curr, true);
+
+          for (GraphNode child : graph.successors(curr)) {
+            if (!visited.containsKey(child)) {
+              nextLayer.add(child);
+            }
+          }
+          for (GraphNode parent : graph.predecessors(curr)) {
+            nextLayer.add(parent);
+          }
+        }
+      }
+      queue.addAll(nextLayer);
+    }
+    MutableGraph<GraphNode> graphToReturn = Graphs.inducedSubgraph(graph, visited.keySet());
+
+    return graphToReturn;
   }
 }
