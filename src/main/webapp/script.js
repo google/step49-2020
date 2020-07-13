@@ -26,7 +26,7 @@ import 'tippy.js/dist/tippy.css';
 import 'tippy.js/dist/backdrop.css';
 import 'tippy.js/animations/shift-away.css';
 
-export { initializeNumMutations, setCurrGraphNum, initializeTippy, generateGraph, getUrl, navigateGraph, currGraphNum, numMutations };
+export { initializeNumMutations, setCurrGraphNum, initializeTippy, generateGraph, getUrl, navigateGraph, currGraphNum, numMutations, updateButtons };
 
 cytoscape.use(popper); // register extension
 cytoscape.use(dagre); // register extension
@@ -43,7 +43,7 @@ let numMutations = 0;
  * Initializes the number of mutations
  */
 function initializeNumMutations(num) {
-  numMutations = num; 
+  numMutations = num;
 }
 
 /**
@@ -65,6 +65,8 @@ async function generateGraph() {
   // disable buttons
   const prevBtn = document.getElementById("prevbutton");
   const nextBtn = document.getElementById("nextbutton");
+  prevBtn.disabled = true;
+  nextBtn.disabled = true;
 
   const url = getUrl();
 
@@ -127,7 +129,7 @@ async function generateGraph() {
 function getUrl() {
   const depthElem = document.getElementById('num-layers');
   let selectedDepth = 0;
-  if(depthElem === null) {
+  if (depthElem === null) {
     selectedDepth = 3;
   }
   else {
@@ -141,7 +143,7 @@ function getUrl() {
       selectedDepth = 0;
     } else if (selectedDepth > 20) {
       selectedDepth = 20;
-    } 
+    }
   }
   const url = `/data?depth=${selectedDepth}&mutationNum=${currGraphNum}`;
   return url;
@@ -226,9 +228,9 @@ function initializeTippy(node) {
   // a dummy element must be passed as tippy only accepts a dom element as the target
   const dummyDomEle = document.createElement('div');
 
-  node.tip = tippy(dummyDomEle, { 
+  node.tip = tippy(dummyDomEle, {
     trigger: 'manual',
-    lazy: false, 
+    lazy: false,
     onCreate: instance => { instance.popperInstance.reference = tipPosition; },
 
     content: () => getTooltipContent(node),
@@ -286,16 +288,12 @@ function getTooltipContent(node) {
  */
 function navigateGraph(amount) {
   currGraphNum += amount;
-  if(currGraphNum < 0) {
-    setCurrGraphNum(0);
-    return;
+  if (currGraphNum <= 0) {
+    currGraphNum = 0;
   }
-  if(currGraphNum > numMutations) {
-    setCurrGraphNum(numMutations);
-    return;
+  if (currGraphNum >= numMutations) {
+    currGraphNum = numMutations;
   }
-  generateGraph();
-  updateButtons();
 }
 
 /**
@@ -305,12 +303,12 @@ function navigateGraph(amount) {
  * Assumes currGraphNum is between 0 and numMutations
  */
 function updateButtons() {
-  if(currGraphNum === 0) {
+  if (currGraphNum === 0) {
     document.getElementById("prevbutton").disabled = true;
   } else {
     document.getElementById("prevbutton").disabled = false;
   }
-  if(currGraphNum === numMutations) {
+  if (currGraphNum === numMutations) {
     document.getElementById("nextbutton").disabled = true;
   } else {
     document.getElementById("nextbutton").disabled = false;

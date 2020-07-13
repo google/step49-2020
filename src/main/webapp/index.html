@@ -22,8 +22,8 @@
     <div id="graph"></div>
     <p id="buttontext">Navigate to the next and previous graph using the buttons below:</p>
     <div id="buttondiv">
-      <button id="prevbutton" class="nextprev material-icons" onclick="graph.navigateGraph(-1)">navigate_before</button>
-      <button id="nextbutton" class="nextprev material-icons" onclick="graph.navigateGraph(1)">navigate_next</button>
+      <button id="prevbutton" class="nextprev material-icons" onclick="graph.navigateGraph(-1); graph.generateGraph()">navigate_before</button>
+      <button id="nextbutton" class="nextprev material-icons" onclick="graph.navigateGraph(1); graph.generateGraph()">navigate_next</button>
     </div>
   </div>
 </body>

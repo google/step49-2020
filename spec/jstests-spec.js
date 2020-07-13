@@ -1,15 +1,15 @@
-import  {initializeNumMutations, setCurrGraphNum, initializeTippy, generateGraph, getUrl, navigateGraph, currGraphNum, numMutations  } from "../src/main/webapp/script.js";
+import { initializeNumMutations, setCurrGraphNum, initializeTippy, generateGraph, getUrl, navigateGraph, currGraphNum, numMutations, updateButtons } from "../src/main/webapp/script.js";
 import cytoscape from "cytoscape";
 
-describe("Modifying value of depth input", function() {
+describe("Checking that depth in fetch url is correct", function() {
   let numLayers = {};
 
-  beforeEach(function () {
+  beforeEach(function() {
     numLayers = document.createElement("input");
     numLayers.id = "num-layers";
   });
 
-  afterEach(function () {
+  afterEach(function() {
     document.body.innerHTML = '';
   });
 
@@ -19,7 +19,7 @@ describe("Modifying value of depth input", function() {
 
     const requestString = getUrl();
     const requestParams = requestString.substring(requestString.indexOf("?"));
-    
+
     const constructedUrl = new URLSearchParams(requestParams);
     expect(constructedUrl.has("depth")).toBe(true);
     expect(constructedUrl.get("depth")).toBe("15");
@@ -31,7 +31,7 @@ describe("Modifying value of depth input", function() {
 
     const requestString = getUrl();
     const requestParams = requestString.substring(requestString.indexOf("?"));
-    
+
     const constructedUrl = new URLSearchParams(requestParams);
     expect(constructedUrl.has("depth")).toBe(true);
     expect(constructedUrl.get("depth")).toBe("2");
@@ -42,7 +42,7 @@ describe("Modifying value of depth input", function() {
 
     const requestString = getUrl();
     const requestParams = requestString.substring(requestString.indexOf("?"));
-    
+
     const constructedUrl = new URLSearchParams(requestParams);
     expect(constructedUrl.has("depth")).toBe(true);
     expect(constructedUrl.get("depth")).toBe("3");
@@ -55,7 +55,7 @@ describe("Modifying value of depth input", function() {
 
     const requestString = getUrl();
     const requestParams = requestString.substring(requestString.indexOf("?"));
-    
+
     const constructedUrl = new URLSearchParams(requestParams);
     expect(constructedUrl.has("depth")).toBe(true);
     expect(constructedUrl.get("depth")).toBe("0");
@@ -67,7 +67,7 @@ describe("Modifying value of depth input", function() {
 
     const requestString = getUrl();
     const requestParams = requestString.substring(requestString.indexOf("?"));
-    
+
     const constructedUrl = new URLSearchParams(requestParams);
     expect(constructedUrl.has("depth")).toBe(true);
     expect(constructedUrl.get("depth")).toBe("20");
@@ -79,7 +79,7 @@ describe("Modifying value of depth input", function() {
 
     const requestString = getUrl();
     const requestParams = requestString.substring(requestString.indexOf("?"));
-    
+
     const constructedUrl = new URLSearchParams(requestParams);
     expect(constructedUrl.has("depth")).toBe(true);
     expect(constructedUrl.get("depth")).toBe("3");
@@ -91,7 +91,7 @@ describe("Modifying value of depth input", function() {
 
     const requestString = getUrl();
     const requestParams = requestString.substring(requestString.indexOf("?"));
-    
+
     const constructedUrl = new URLSearchParams(requestParams);
     expect(constructedUrl.has("depth")).toBe(true);
     expect(constructedUrl.get("depth")).toBe("0");
@@ -103,7 +103,7 @@ describe("Modifying value of depth input", function() {
 
     const requestString = getUrl();
     const requestParams = requestString.substring(requestString.indexOf("?"));
-    
+
     const constructedUrl = new URLSearchParams(requestParams);
     expect(constructedUrl.has("depth")).toBe(true);
     expect(constructedUrl.get("depth")).toBe("20");
@@ -133,7 +133,7 @@ describe("Initializing tooltips", function() {
 
     const children = content.childNodes;
     expect(children.length).toBe(2);
-    const closeButton =  children[0];
+    const closeButton = children[0];
     expect(closeButton.nodeName).toBe("BUTTON");
 
     // Click on node and make sure tippy shows
@@ -177,7 +177,7 @@ describe("Initializing tooltips", function() {
 
     const children = content.childNodes;
     expect(children.length).toBe(2);
-    const closeButton =  children[0];
+    const closeButton = children[0];
     expect(closeButton.nodeName).toBe("BUTTON");
 
     // Click on node and make sure tippy shows
@@ -200,10 +200,10 @@ describe("Pressing next and previous buttons associated with a graph", function(
     initializeNumMutations(3);
     const prevButton = document.createElement("button");
     prevButton.id = "prevbutton";
-    prevButton.onclick = () => navigateGraph(-1);
+    prevButton.onclick = () => { navigateGraph(-1); updateButtons(); };
     const nextButton = document.createElement("button");
     nextButton.id = "nextbutton";
-    nextButton.onclick = () => navigateGraph(1);
+    nextButton.onclick = () => { navigateGraph(1); updateButtons(); };
     document.body.appendChild(prevButton);
     document.body.appendChild(nextButton);
 
@@ -230,7 +230,7 @@ describe("Pressing next and previous buttons associated with a graph", function(
     expect(nextButton.disabled).toBe(false);
     expect(prevButton.disabled).toBe(false);
 
-    prevButton.click(); 
+    prevButton.click();
     expect(currGraphNum).toBe(1);
     expect(nextButton.disabled).toBe(false);
     expect(prevButton.disabled).toBe(false);
@@ -254,29 +254,29 @@ describe("Pressing next and previous buttons associated with a graph", function(
     expect(currGraphNum).toBe(0);
     expect(nextButton.disabled).toBe(false);
     expect(prevButton.disabled).toBe(true);
- 
+
     nextButton.click();
     expect(currGraphNum).toBe(1);
     expect(nextButton.disabled).toBe(false);
-    expect(prevButton.disabled).toBe(false);  
+    expect(prevButton.disabled).toBe(false);
   });
 });
 
 describe("Check initializing variables are passed correctly", function() {
-    beforeEach(function () {
+  beforeEach(function() {
     setCurrGraphNum(1);
   });
 
-  afterEach(function () {
+  afterEach(function() {
     setCurrGraphNum(0);
   });
-  it("passes correct value of the mutations number in the fetch request", function() {
 
-    let requestString = getUrl();
-    let requestParams = requestString.substring(requestString.indexOf("?"));
-    
-    let constructedUrl = new URLSearchParams(requestParams);
-      expect(constructedUrl.has("depth")).toBe(true);
+  it("passes correct value of the mutations number in the fetch request", function() {
+    const requestString = getUrl();
+    const requestParams = requestString.substring(requestString.indexOf("?"));
+
+    const constructedUrl = new URLSearchParams(requestParams);
+    expect(constructedUrl.has("depth")).toBe(true);
     expect(constructedUrl.get("depth")).toBe("3");
     expect(constructedUrl.has("mutationNum")).toBe(true);
     expect(constructedUrl.get("mutationNum")).toBe("1");
