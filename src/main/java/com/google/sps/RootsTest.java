@@ -17,7 +17,6 @@ package com.google.sps;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import com.google.common.graph.MutableGraph;
 import com.proto.GraphProtos.Node;
 import com.proto.GraphProtos.Node.Builder;
 import com.proto.MutationProtos.Mutation;
@@ -80,8 +79,6 @@ public class RootsTest {
 
     DataGraph dataGraph = DataGraph.create();
     dataGraph.graphFromProtoNodes(protoNodesMap);
-    MutableGraph<GraphNode> graph = dataGraph.graph();
-    HashMap<String, GraphNode> graphNodesMap = dataGraph.graphNodesMap();
     HashSet<String> roots = dataGraph.roots();
 
     // Before mutation
@@ -98,7 +95,6 @@ public class RootsTest {
 
     dataGraph.mutateGraph(addAB);
 
-    roots = dataGraph.roots();
     Assert.assertEquals(roots.size(), 1);
     Assert.assertTrue(roots.contains("A"));
     Assert.assertFalse(roots.contains("B"));
@@ -122,7 +118,6 @@ public class RootsTest {
     Mutation addB = Mutation.newBuilder().setType(Mutation.Type.ADD_NODE).setStartNode("B").build();
     dataGraph.mutateGraph(addB);
 
-    roots = dataGraph.roots();
     Assert.assertEquals(roots.size(), 2);
     Assert.assertTrue(roots.contains("A"));
     Assert.assertTrue(roots.contains("B"));
@@ -154,7 +149,6 @@ public class RootsTest {
             .build();
     dataGraph.mutateGraph(removeAB);
 
-    roots = dataGraph.roots();
     Assert.assertEquals(roots.size(), 2);
     Assert.assertTrue(roots.contains("A"));
     Assert.assertTrue(roots.contains("B"));
@@ -192,7 +186,6 @@ public class RootsTest {
     dataGraph.mutateGraph(removeBC);
 
     // After mutation
-    roots = dataGraph.roots();
     Assert.assertEquals(roots.size(), 1);
     Assert.assertTrue(roots.contains("A"));
   }
@@ -219,7 +212,6 @@ public class RootsTest {
     dataGraph.mutateGraph(removeB);
 
     // After mutation
-    roots = dataGraph.roots();
     Assert.assertEquals(roots.size(), 1);
     Assert.assertTrue(roots.contains("A"));
   }
@@ -247,7 +239,6 @@ public class RootsTest {
         Mutation.newBuilder().setType(Mutation.Type.DELETE_NODE).setStartNode("A").build();
     dataGraph.mutateGraph(removeA);
 
-    roots = dataGraph.roots();
     // After mutation
     Assert.assertEquals(roots.size(), 2);
     Assert.assertTrue(roots.contains("B"));
