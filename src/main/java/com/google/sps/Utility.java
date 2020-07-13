@@ -14,20 +14,20 @@
 
 package com.google.sps;
 
-import com.google.common.graph.*;
-import com.google.gson.Gson;
-import com.proto.GraphProtos.Node;
-import com.google.common.graph.EndpointPair;
-import java.util.List;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
-import com.google.protobuf.Struct;
+import java.util.List;
 import java.util.Set;
-import java.util.HashMap;
-import com.proto.MutationProtos.Mutation;
+
+import com.google.common.graph.EndpointPair;
+import com.google.common.graph.MutableGraph;
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
+import com.google.protobuf.Struct;
+import com.proto.GraphProtos.Node;
 import com.proto.MutationProtos.Mutation;
 import com.proto.MutationProtos.TokenMutation;
-import com.google.common.reflect.TypeToken;
-import java.lang.reflect.Type;
+
 import org.json.JSONObject;
 
 public final class Utility {
@@ -37,8 +37,8 @@ public final class Utility {
   }
 
   /**
-   * Converts a proto node object into a graph node object that does not store the names of the
-   * child nodes but may store additional information.
+   * Converts a proto node object into a graph node object that does not store the
+   * names of the child nodes but may store additional information.
    *
    * @param thisNode the input data Node object
    * @return a useful node used to construct the Guava Graph
@@ -51,38 +51,38 @@ public final class Utility {
   }
 
   /**
-   * Converts a Guava graph into a String encoding of a JSON Object. The object contains nodes and
-   * edges of the graph.
+   * Converts a Guava graph into a String encoding of a JSON Object. The object
+   * contains nodes and edges of the graph.
    *
-   * @param graph the graph to convert into a JSON String
+   * @param graph        the graph to convert into a JSON String
    * @param maxMutations the length of the list of mutations
-   * @return a JSON object containing as entries the nodes and edges of this graph as well as the
-   *     length of the list of mutations this graph is an intermediate result of applying
+   * @return a JSON object containing as entries the nodes and edges of this graph
+   *         as well as the length of the list of mutations this graph is an
+   *         intermediate result of applying
    */
   public static String graphToJson(MutableGraph<GraphNode> graph, int maxMutations) {
-    Type typeOfNode = new TypeToken<Set<GraphNode>>() {}.getType();
-    Type typeOfEdge = new TypeToken<Set<EndpointPair<GraphNode>>>() {}.getType();
+    Type typeOfNode = new TypeToken<Set<GraphNode>>() {
+    }.getType();
+    Type typeOfEdge = new TypeToken<Set<EndpointPair<GraphNode>>>() {
+    }.getType();
     Gson gson = new Gson();
     String nodeJson = gson.toJson(graph.nodes(), typeOfNode);
     String edgeJson = gson.toJson(graph.edges(), typeOfEdge);
-    String resultJson =
-        new JSONObject()
-            .put("nodes", nodeJson)
-            .put("edges", edgeJson)
-            .put("numMutations", maxMutations)
-            .toString();
+    String resultJson = new JSONObject().put("nodes", nodeJson).put("edges", edgeJson).put("numMutations", maxMutations)
+        .toString();
     return resultJson;
   }
 
   /**
-   * @param original the original graph
-   * @param curr the current (most recently-requested) graph
+   * @param original    the original graph
+   * @param curr        the current (most recently-requested) graph
    * @param mutationNum number of mutations to apply
-   * @param mutList mutation list
-   * @return the resulting data graph or null if there was an error Requires that original != curr
+   * @param mutList     mutation list
+   * @return the resulting data graph or null if there was an error Requires that
+   *         original != curr
    */
-  public static DataGraph getGraphAtMutationNumber(
-      DataGraph original, DataGraph curr, int mutationNum, List<Mutation> mutList) {
+  public static DataGraph getGraphAtMutationNumber(DataGraph original, DataGraph curr, int mutationNum,
+      List<Mutation> mutList) {
     boolean success = true;
     if (mutationNum > mutList.size() || mutationNum < 0) {
       return null;
@@ -106,15 +106,14 @@ public final class Utility {
           return null;
         }
       }
-      return DataGraph.create(
-          originalCopy.graph(), originalCopy.graphNodesMap(), originalCopy.roots(), mutationNum);
+      return DataGraph.create(originalCopy.graph(), originalCopy.graphNodesMap(), originalCopy.roots(), mutationNum);
     }
   }
 
   public static Mutation diffBetween(List<Mutation> mutList, int currIndex, int nextIndex) {
-    if(Math.abs(currIndex - nextIndex) != 1) {
+    if (Math.abs(currIndex - nextIndex) != 1) {
       return null;
-    } else if(nextIndex - currIndex == 1) {
+    } else if (nextIndex - currIndex == 1) {
       return mutList.get(currIndex);
     } else {
       return invertMutation(mutList.get(nextIndex));
@@ -126,37 +125,36 @@ public final class Utility {
     Mutation.Type invertedMutType;
     switch (mut.getType()) {
       case ADD_NODE:
-        invertedMutType = DELETE_NODE;
+        invertedMutType = Mutation.Type.DELETE_NODE;
         break;
       case DELETE_NODE:
-        invertedMutType = ADD_NODE;
-        break;
+        invertedMutType = Mutation.Type.ADD_NODE;
       case ADD_EDGE:
-        invertedMutType = DELETE_EDGE;
+        invertedMutType = Mutation.Type.DELETE_EDGE;
         break;
       case DELETE_EDGE:
-        invertedMutType = ADD_EDGE;
+        invertedMutType = Mutation.Type.ADD_EDGE;
         break;
       case CHANGE_TOKEN:
-        invertedMutType = CHANGE_TOKEN;
+        invertedMutType = Mutation.Type.CHANGE_TOKEN;
         invertedMut.setTokenChange(invertTokenChange(mut.getTokenChange()));
         break;
       default:
+        // unrecognized mutation type
         return null;
     }
-    invertedMut.setType(invertedMutType).build();
-    return invertedMut;
+    return invertedMut.setType(invertedMutType).build();
   }
 
   private static TokenMutation invertTokenChange(TokenMutation tokenMut) {
-    TokenMutation.Builder invertedMut = TokenMutation.newBuilder(mut);
-    if(tokenMut.getType() == TokenMutation.Type.ADD_TOKEN) {
+    TokenMutation.Builder invertedMut = TokenMutation.newBuilder(tokenMut);
+    if (tokenMut.getType() == TokenMutation.Type.ADD_TOKEN) {
       invertedMut.setType(TokenMutation.Type.DELETE_TOKEN);
-    } else if(tokenMut.getType() == TokenMutation.Type.DELETE_TOKEN) {
+    } else if (tokenMut.getType() == TokenMutation.Type.DELETE_TOKEN) {
       invertedMut.setType(TokenMutation.Type.ADD_TOKEN);
     } else {
       return null;
     }
-    invertedMut.build();
+    return invertedMut.build();
   }
 }
