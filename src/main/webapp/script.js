@@ -174,12 +174,12 @@ function getGraphDisplay(graphNodes, graphEdges) {
     node.tip.show();
   });
 
-  let searchElement = document.getElementById('search');
+  const searchElement = document.getElementById('search');
   searchElement.onchange = function() {
-    if (searchNode(cy, searchElement.value)) {
-      document.getElementById('searcherror').innerText = "";
+    if (searchNode(cy, searchElement.value) || searchElement.value == "") {
+      document.getElementById('search-error').innerText = "";
     } else {
-      document.getElementById('searcherror').innerText = "Node does not exist.";
+      document.getElementById('search-error').innerText = "Node does not exist.";
     }
   };
   
@@ -189,12 +189,16 @@ function getGraphDisplay(graphNodes, graphEdges) {
  * Zooms in on specific node
  */
 function searchNode(cy, query) {
-  let target = findNodeInGraph(cy, query);
+  // reset nodes to default color
+  cy.nodes().forEach(node => node.style('background-color', 'blue'));
+  const target = findNodeInGraph(cy, query);
   if (target) {
     cy.fit(target, 50);
+    target.style('background-color', 'olive');
     return true;
   } else {
-    cy.reset();
+    // fits all nodes on screen
+    cy.fit(cy.$('#'), 50);
     return false;
   }
 }
@@ -203,8 +207,8 @@ function searchNode(cy, query) {
  * Finds element in cy graph by id
  */
 function findNodeInGraph(cy, id) {
-  let target = cy.$('#'+id);
-  if (target.length != 0) {
+  const target = cy.$('#'+id);
+  if (target.length != 0 && id.length != 0) {
     return target;
   } else {
     return null;
