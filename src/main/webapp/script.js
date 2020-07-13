@@ -128,7 +128,8 @@ async function generateGraph() {
  */
 function getUrl() {
   const depthElem = document.getElementById('num-layers');
-  const nodeName = document.getElementById('search-name') || null; // TODO: get the node name
+  const nodeName = document.getElementById('node-name').value || ""; 
+
   let selectedDepth = 0;
   if (depthElem === null) {
     selectedDepth = 3;
