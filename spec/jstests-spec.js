@@ -256,13 +256,25 @@ describe("Pressing next and previous buttons associated with a graph", function(
     nextButton.click();
     expect(currGraphNum).toBe(1);
     expect(nextButton.disabled).toBe(false);
-    expect(prevButton.disabled).toBe(false);
+    expect(prevButton.disabled).toBe(false); 
+  });
+});
 
-    const requestString = getUrl();
-    const requestParams = requestString.substring(requestString.indexOf("?"));
+describe("Check initializing variables are passed correctly", function() {
+    beforeEach(function () {
+    setCurrGraphNum(1);
+  });
+
+  afterEach(function () {
+    setCurrGraphNum(0);
+  });
+  it("Correct numMutations passed into request", function() {
+
+    let requestString = getUrl();
+    let requestParams = requestString.substring(requestString.indexOf("?"));
     
-    const constructedUrl = new URLSearchParams(requestParams);
-    expect(constructedUrl.has("depth")).toBe(true);
+    let constructedUrl = new URLSearchParams(requestParams);
+      expect(constructedUrl.has("depth")).toBe(true);
     expect(constructedUrl.get("depth")).toBe("3");
     expect(constructedUrl.has("mutationNum")).toBe(true);
     expect(constructedUrl.get("mutationNum")).toBe("1");

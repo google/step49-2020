@@ -281,7 +281,7 @@ function navigateGraph(amount) {
     setCurrGraphNum(0);
     return;
   }
-  if(currGraphNum >= numMutations) {
+  if(currGraphNum > numMutations) {
     setCurrGraphNum(numMutations);
     return;
   }
