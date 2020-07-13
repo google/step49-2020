@@ -26,7 +26,8 @@ import 'tippy.js/dist/tippy.css';
 import 'tippy.js/dist/backdrop.css';
 import 'tippy.js/animations/shift-away.css';
 
-export { initializeTippy, generateGraph, getUrl };
+export { initializeTippy, generateGraph, getUrl, searchNode };
+
 
 cytoscape.use(popper); // register extension
 cytoscape.use(dagre); // register extension
@@ -175,8 +176,8 @@ function getGraphDisplay(graphNodes, graphEdges) {
   });
 
   const searchElement = document.getElementById('search');
-  searchElement.onchange = function() {
-    if (searchNode(cy, searchElement.value) || searchElement.value == "") {
+  document.getElementById('search-button').onclick = function() {
+    if (searchElement.value == "" || searchNode(cy, searchElement.value)) {
       document.getElementById('search-error').innerText = "";
     } else {
       document.getElementById('search-error').innerText = "Node does not exist.";
@@ -190,15 +191,20 @@ function getGraphDisplay(graphNodes, graphEdges) {
  */
 function searchNode(cy, query) {
   // reset nodes to default color
-  cy.nodes().forEach(node => node.style('background-color', 'blue'));
+  cy.nodes().forEach(node => {
+    node.style('background-color', 'blue');
+    node.style('opacity', '1')
+  });
   const target = findNodeInGraph(cy, query);
   if (target) {
-    cy.fit(target, 50);
+    cy.nodes().forEach(node => node.style('opacity', '0.25'));
     target.style('background-color', 'olive');
+    target.style('opacity', '1');
+    cy.fit(target, 50);
     return true;
   } else {
     // fits all nodes on screen
-    cy.fit(cy.$('#'), 50);
+    cy.fit(cy.nodes(), 50);
     return false;
   }
 }
@@ -207,12 +213,13 @@ function searchNode(cy, query) {
  * Finds element in cy graph by id
  */
 function findNodeInGraph(cy, id) {
-  const target = cy.$('#'+id);
-  if (target.length != 0 && id.length != 0) {
-    return target;
-  } else {
-    return null;
+  if (id.length != 0) {
+    const target = cy.$('#'+id);
+    if (target.length != 0) {
+      return target;
+    }
   }
+  return null;
 }
 
 /**

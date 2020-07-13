@@ -1,4 +1,4 @@
-import  {initializeTippy, generateGraph, getUrl } from "../src/main/webapp/script.js";
+import  {initializeTippy, generateGraph, getUrl, searchNode} from "../src/main/webapp/script.js";
 import cytoscape from "cytoscape";
 
 describe("Modifying value of depth input", function() {
@@ -192,6 +192,42 @@ describe("Initializing tooltips", function() {
     const tokenMsg = children[1];
     expect(tokenMsg.nodeName).toBe("P");
     expect(tokenMsg.textContent).toBe("No tokens");
+  });
+});
+
+describe("Node search", function() {
+  const cy = cytoscape({ 
+    elements: [
+    { data: { id: "A" } },
+    { data: { id: "B" } },
+    {
+      data: {
+        id: "AB",
+        source: "A",
+        target: "B"
+      }
+    }]
+  });
+
+  it("should be a successful search", function() {
+    let result = searchNode(cy, "A");
+
+    // search should find node
+    expect(result).toBe(true);
+  });
+
+  it("should be an unsuccessful search", function() {
+    let result = searchNode(cy, "C");
+
+    // search should not find node
+    expect(result).toBe(false);
+  });
+
+  it("should not search at all", function() {
+    let result = searchNode(cy, "");
+
+    // search should not find node
+    expect(result).toBe(false);
   });
 });
 
