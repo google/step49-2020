@@ -171,10 +171,11 @@ function getGraphDisplay(graphNodes, graphEdges) {
   // When the user clicks on a node, display the token list tooltip for the node
   cy.on('tap', 'node', function(evt) {
     const node = evt.target;
+    console.log(node);
     node.tip.show();
   });
 
-  let searchElement = document.getElementById('search');
+  let searchElement = document.getElementById('searchnode');
   searchElement.onchange = function() {
     if (searchNode(cy, searchElement.value)) {
       document.getElementById('searcherror').innerText = "";
@@ -183,6 +184,14 @@ function getGraphDisplay(graphNodes, graphEdges) {
     }
   };
   
+  let searchTokenElement = document.getElementById('searchtoken');
+  searchTokenElement.onchange = function() {
+    if (searchToken(cy, graphNodes, searchTokenElement.value)) {
+      document.getElementById('tokenerror').innerText = "";
+    } else {
+      document.getElementById('tokenerror').innerText = "Token does not exist.";
+    }
+  };
 }
 
 /**
@@ -208,6 +217,29 @@ function findNodeInGraph(cy, id) {
     return target;
   } else {
     return null;
+  }
+}
+
+/**
+ * Constructs list of nodes that contain specified token
+ * and zooms in on
+ */
+function searchToken(cy, nodes, query) {
+  let target = [];
+  console.log(cy.nodes());
+  nodes.forEach(node => {
+    if (node.data.tokens.includes(query)) {
+      target.push(node);
+    }
+  });
+  if (target.length > 0) {
+    let showNode = cy.$('#'+target[0].data.id);
+    console.log(showNode[0]);
+    cy.fit(showNode);
+    showNode[0].tip.show();
+    return true;
+  } else {
+    return false;
   }
 }
 
