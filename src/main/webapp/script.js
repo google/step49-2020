@@ -128,6 +128,7 @@ async function generateGraph() {
  */
 function getUrl() {
   const depthElem = document.getElementById('num-layers');
+  const nodeName = "placeholder"; // TODO: get the node name
   let selectedDepth = 0;
   if (depthElem === null) {
     selectedDepth = 3;
@@ -145,7 +146,7 @@ function getUrl() {
       selectedDepth = 20;
     }
   }
-  const url = `/data?depth=${selectedDepth}&mutationNum=${currGraphNum}`;
+  const url = `/data?depth=${selectedDepth}&mutationNum=${currGraphNum}&nodeName=${nodeName}`;
   return url;
 }
 /**
