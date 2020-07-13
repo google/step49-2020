@@ -1,4 +1,4 @@
-import  {initializeTippy, generateGraph, getUrl, navigateGraph, currGraphNum, numMutations  } from "../src/main/webapp/script.js";
+import  {initializeNumMutations, setCurrGraphNum, initializeTippy, generateGraph, getUrl, navigateGraph, currGraphNum, numMutations  } from "../src/main/webapp/script.js";
 import cytoscape from "cytoscape";
 
 describe("Modifying value of depth input", function() {
@@ -197,7 +197,7 @@ describe("Initializing tooltips", function() {
 
 describe("Pressing next and previous buttons associated with a graph", function() {
   it("generates correct fetch request when next/previous buttons are pressed", function() {
-
+    initializeNumMutations(3);
     const prevButton = document.createElement("button");
     prevButton.id = "prevbutton";
     prevButton.onclick = () => navigateGraph(-1);
@@ -212,16 +212,16 @@ describe("Pressing next and previous buttons associated with a graph", function(
 
     nextButton.click();
     expect(currGraphNum).toBe(1);
+    expect(nextButton.disabled).toBe(false);
+    expect(prevButton.disabled).toBe(false);
 
     nextButton.click();
     expect(currGraphNum).toBe(2);
+    expect(nextButton.disabled).toBe(false);
+    expect(prevButton.disabled).toBe(false);
 
     nextButton.click();
     expect(currGraphNum).toBe(3);
-
-    nextButton.click();
-    expect(currGraphNum).toBe(3);
-
     expect(nextButton.disabled).toBe(true);
     expect(prevButton.disabled).toBe(false);
 
@@ -237,15 +237,18 @@ describe("Pressing next and previous buttons associated with a graph", function(
 
     nextButton.click();
     expect(currGraphNum).toBe(2);
+    expect(nextButton.disabled).toBe(false);
+    expect(prevButton.disabled).toBe(false);
 
     prevButton.click();
     expect(currGraphNum).toBe(1);
+    expect(nextButton.disabled).toBe(false);
+    expect(prevButton.disabled).toBe(false);
 
     prevButton.click();
     expect(currGraphNum).toBe(0);
-
-    prevButton.click();
-    expect(currGraphNum).toBe(0);
+    expect(nextButton.disabled).toBe(false);
+    expect(prevButton.disabled).toBe(true);
 
     prevButton.click();
     expect(currGraphNum).toBe(0);
@@ -255,13 +258,25 @@ describe("Pressing next and previous buttons associated with a graph", function(
     nextButton.click();
     expect(currGraphNum).toBe(1);
     expect(nextButton.disabled).toBe(false);
-    expect(prevButton.disabled).toBe(false);
+    expect(prevButton.disabled).toBe(false);  
+  });
+});
 
-    const requestString = getUrl();
-    const requestParams = requestString.substring(requestString.indexOf("?"));
+describe("Check initializing variables are passed correctly", function() {
+    beforeEach(function () {
+    setCurrGraphNum(1);
+  });
+
+  afterEach(function () {
+    setCurrGraphNum(0);
+  });
+  it("Correct numMutations passed into request", function() {
+
+    let requestString = getUrl();
+    let requestParams = requestString.substring(requestString.indexOf("?"));
     
-    const constructedUrl = new URLSearchParams(requestParams);
-    expect(constructedUrl.has("depth")).toBe(true);
+    let constructedUrl = new URLSearchParams(requestParams);
+      expect(constructedUrl.has("depth")).toBe(true);
     expect(constructedUrl.get("depth")).toBe("3");
     expect(constructedUrl.has("mutationNum")).toBe(true);
     expect(constructedUrl.get("mutationNum")).toBe("1");

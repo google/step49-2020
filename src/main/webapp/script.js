@@ -26,7 +26,7 @@ import 'tippy.js/dist/tippy.css';
 import 'tippy.js/dist/backdrop.css';
 import 'tippy.js/animations/shift-away.css';
 
-export { initializeTippy, generateGraph, getUrl, navigateGraph, currGraphNum, numMutations };
+export { initializeNumMutations, setCurrGraphNum, initializeTippy, generateGraph, getUrl, navigateGraph, currGraphNum, numMutations };
 
 cytoscape.use(popper); // register extension
 cytoscape.use(dagre); // register extension
@@ -37,7 +37,21 @@ let currGraphNum = 0;
 // Stores the number of mutations in the list this graph is applying
 // The user cannot click next to a graph beyond this point
 // currently setting to an arbitrary value for testing
-let numMutations = 3;
+let numMutations = 0;
+
+/**
+ * Initializes the number of mutations
+ */
+function initializeNumMutations(num) {
+  numMutations = num; 
+}
+
+/**
+ * Sets the current graph number
+ */
+function setCurrGraphNum(num) {
+  currGraphNum = num;
+}
 
 /**
  * Submits a fetch request to the /data URL to retrieve the graph
@@ -48,7 +62,15 @@ async function generateGraph() {
   let graphNodes = [];
   let graphEdges = [];
 
+  // disable buttons
+  const prevBtn = document.getElementById("prevbutton");
+  const nextBtn = document.getElementById("nextbutton");
+
   const url = getUrl();
+
+  prevBtn.disabled = true;
+  nextBtn.disabled = true;
+
   const response = await fetch(url);
 
   const serverErrorStatus = response.headers.get("serverError");
@@ -94,6 +116,8 @@ async function generateGraph() {
     });
   })
   getGraphDisplay(graphNodes, graphEdges);
+  prevBtn.disabled = false;
+  nextBtn.disabled = false;
   return;
 }
 
@@ -264,10 +288,12 @@ function getTooltipContent(node) {
 function navigateGraph(amount) {
   currGraphNum += amount;
   if(currGraphNum < 0) {
-    currGraphNum = 0;
+    setCurrGraphNum(0);
+    return;
   }
-  if(currGraphNum >= numMutations) {
-    currGraphNum = numMutations;
+  if(currGraphNum > numMutations) {
+    setCurrGraphNum(numMutations);
+    return;
   }
   generateGraph();
   updateButtons();
