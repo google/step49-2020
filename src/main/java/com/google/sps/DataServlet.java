@@ -15,6 +15,7 @@
 package com.google.sps;
 
 import java.io.IOException;
+import java.io.*;
 import java.util.List;
 import java.util.Map;
 
@@ -100,7 +101,7 @@ public class DataServlet extends HttpServlet {
       // InputStreamReader(getServletContext().getResourceAsStream("/WEB-INF/mutations.textproto"));
       // MutationList.Builder mutBuilder = MutationList.newBuilder();
       // TextFormat.merge(mutReader, mutBuilder);
-      // List<Mutation> mutList = mutBuilder.build().getMutationList();
+      // mutList = mutBuilder.build().getMutationList();
       /*
        * This code is used to read a mutation list specified in proto binary format.
        */
@@ -112,7 +113,6 @@ public class DataServlet extends HttpServlet {
 
     // Parameter for the nodeName the user searched for in the frontend
     String nodeNameParam = request.getParameter("nodeName");
-    System.out.println(nodeNameParam);
 
     currDataGraph =
         Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
@@ -122,7 +122,8 @@ public class DataServlet extends HttpServlet {
       return;
     }
 
-    MutableGraph<GraphNode> truncatedGraph;
+    MutableGraph<GraphNode> truncatedGraph; // issue: has to get the truncated graph everytime
+    List<Mutation> truncatedMutList;
 
     // If a node is searched, get the graph with just the node. Otherwise, use the
     // whole graph

@@ -381,7 +381,6 @@ abstract class DataGraph {
 
           // Adds the children
           for (GraphNode child : graph.successors(curr)) {
-            System.out.println(child);
             if (!visited.containsKey(child)) {
               nextLayer.add(child);
             }
