@@ -155,7 +155,7 @@ public class ReachableNodesTest {
     Assert.assertTrue(graphNodes.contains(gNodeC));
     Assert.assertTrue(graphNodes.contains(gNodeD));
     Assert.assertFalse(graphNodes.contains(gNodeE));
-   
+
     Assert.assertEquals(2, graphEdges.size());
   }
 
@@ -185,10 +185,7 @@ public class ReachableNodesTest {
     Assert.assertEquals(2, graphEdges.size());
   }
 
-  /**
-   * This test mirrors the example graph we have in graph.txt after the mutations
-   * specified.
-   */
+  /** This test mirrors the example graph we have in graph.txt after the mutations specified. */
   @Test
   public void complexGraph() {
     nodeA.addChildren("B");

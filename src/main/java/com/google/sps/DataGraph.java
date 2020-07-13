@@ -356,19 +356,19 @@ abstract class DataGraph {
 
     MutableGraph<GraphNode> graph = this.graph();
     GraphNode tgtNode = graphNodesMap.get(name);
-    
+
     if (tgtNode == null) {
       System.out.println("it should not be getting here bc this is a useless check");
       return getGraphWithMaxDepth(radius);
     }
 
     Map<GraphNode, Boolean> visited = new HashMap<>();
-    
+
     HashSet<GraphNode> nextLayer;
     ArrayDeque<GraphNode> queue = new ArrayDeque<>();
 
     queue.add(tgtNode); // Adds the searched node to the queue
- 
+
     for (int i = 0; i <= radius; i++) {
       if (queue.size() == 0) {
         break;
