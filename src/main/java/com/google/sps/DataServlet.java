@@ -49,7 +49,7 @@ public class DataServlet extends HttpServlet {
       String error = "Improper depth parameter, cannot generate graph";
       response.setHeader("serverError", error);
       return;
-    } else if(mutationParam == null) {
+    } else if (mutationParam == null) {
       String error = "Improper mutation number parameter, cannot generate graph";
       response.setHeader("serverError", error);
       return;

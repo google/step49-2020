@@ -501,7 +501,6 @@ public final class MutationTest {
     Assert.assertTrue(graph.hasEdgeConnecting(newNodeB, gNodeC));
     Assert.assertEquals(newNodeB.tokenList(), newTokens);
 
-
     // The original node should not be modified by the mutation (nodes are immutable)
     Assert.assertTrue(gNodeB.tokenList().size() == 0);
   }
@@ -566,7 +565,6 @@ public final class MutationTest {
     Assert.assertTrue(graph.hasEdgeConnecting(newNodeA, gNodeB));
     Assert.assertTrue(graph.hasEdgeConnecting(gNodeB, gNodeC));
     Assert.assertEquals(newNodeA.tokenList(), newTokens);
-
 
     // The original node should not be modified by the mutation (nodes are immutable)
     Assert.assertTrue(gNodeA.tokenList().size() == 4);

@@ -92,8 +92,7 @@ abstract class DataGraph {
   /**
    * Return a shallow copy of the given data graph
    *
-   * @return a shallow copy of the given data graph containing shallow copies
-   * of its attributes
+   * @return a shallow copy of the given data graph containing shallow copies of its attributes
    */
   public DataGraph getCopy() {
     MutableGraph<GraphNode> graph = this.graph();
