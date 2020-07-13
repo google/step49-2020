@@ -67,7 +67,6 @@
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.12</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.json</groupId>
@@ -77,6 +76,7 @@
   </dependencies>
 
   <build>
+    <testSourceDirectory>src/main/java/com/google/sps</testSourceDirectory>
     <plugins>
       <!-- Provides `mvn package appengine:run` for local testing
            and `mvn package appengine:deploy` for deploying. -->

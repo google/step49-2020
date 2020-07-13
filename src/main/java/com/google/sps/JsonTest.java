@@ -14,11 +14,11 @@
 
 package com.google.sps;
 
-import com.google.common.graph.*;
-import com.google.gson.Gson;
 import java.util.HashSet;
-import com.google.sps.data.GraphNode;
-import com.google.sps.data.Utility;
+
+import com.google.common.graph.GraphBuilder;
+import com.google.common.graph.MutableGraph;
+import com.google.gson.Gson;
 import com.proto.GraphProtos.Node;
 import com.proto.GraphProtos.Node.Builder;
 
