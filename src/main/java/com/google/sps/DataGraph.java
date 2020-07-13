@@ -345,14 +345,13 @@ abstract class DataGraph {
     if (radius < 0) {
       return GraphBuilder.directed().build(); // If max depth below 0, then return an emtpy graph
     }
-    
+
     HashMap<String, GraphNode> graphNodesMap = this.graphNodesMap();
 
     if (!graphNodesMap.containsKey(name)) {
-      System.out.println("it should not be getting here bc it should contain the key");   
+      System.out.println("it should not be getting here bc it should contain the key");
       return GraphBuilder.directed()
           .build(); // If the specified node is not found, return an empty graph
-       
     }
 
     MutableGraph<GraphNode> graph = this.graph();
