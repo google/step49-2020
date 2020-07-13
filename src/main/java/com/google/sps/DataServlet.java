@@ -127,7 +127,7 @@ public class DataServlet extends HttpServlet {
     // If a node is searched, get the graph with just the node. Otherwise, use the
     // whole graph
     if (nodeNameParam == null || nodeNameParam.length() == 0) {
-      truncatedGraph = currDataGraph.getGraphWithMaxDepth(depthNumber); 
+      truncatedGraph = currDataGraph.getGraphWithMaxDepth(depthNumber);
     } else {
       truncatedGraph = currDataGraph.getReachableNodes(nodeNameParam, depthNumber);
     }
