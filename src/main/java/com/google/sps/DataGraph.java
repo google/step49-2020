@@ -38,10 +38,10 @@ abstract class DataGraph {
    */
   public static DataGraph create() {
     return new AutoValue_DataGraph(
-        GraphBuilder.directed().build(),
-        new HashMap<String, GraphNode>(),
-        new HashSet<String>(),
-        0);
+        /* graph = */ GraphBuilder.directed().build(),
+        /* graphNodesMap = */ new HashMap<String, GraphNode>(),
+        /* roots = */ new HashSet<String>(),
+        /* numMutations = */ 0);
   }
 
   /**
@@ -90,9 +90,10 @@ abstract class DataGraph {
   abstract int numMutations();
 
   /**
-   * Return a deep copy of the given data graph
+   * Return a shallow copy of the given data graph
    *
-   * @return a deep copy of the given data graph
+   * @return a shallow copy of the given data graph containing shallow copies
+   * of its attributes
    */
   public DataGraph getCopy() {
     MutableGraph<GraphNode> graph = this.graph();

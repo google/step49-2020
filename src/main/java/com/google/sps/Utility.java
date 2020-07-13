@@ -73,11 +73,11 @@ public final class Utility {
 
   /**
    * @param original the original graph
+   * @param curr the current (most recently-requested) graph
    * @param mutationNum number of mutations to apply
-   * @param graphNodesMap
    * @param mutList mutation list
-   * @param roots roots, to modify
    * @return the resulting data graph or null if there was an error
+   * Requires that original != curr 
    */
   public static DataGraph getGraphAtMutationNumber(
       DataGraph original, DataGraph curr, int mutationNum, List<Mutation> mutList) {

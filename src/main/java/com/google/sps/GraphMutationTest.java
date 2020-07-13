@@ -90,8 +90,6 @@ public class GraphMutationTest {
     DataGraph mutatedGraph = Utility.getGraphAtMutationNumber(dataGraph, originalCopy, 1, mutList);
 
     MutableGraph<GraphNode> newGraph = mutatedGraph.graph();
-    HashMap<String, GraphNode> newGraphNodesMap = mutatedGraph.graphNodesMap();
-    HashSet<String> newRoots = mutatedGraph.roots();
     Set<GraphNode> newNodes = newGraph.nodes();
     int newNum = mutatedGraph.numMutations();
 
@@ -131,8 +129,6 @@ public class GraphMutationTest {
     DataGraph mutatedGraph = Utility.getGraphAtMutationNumber(dataGraph, originalCopy, 2, mutList);
 
     MutableGraph<GraphNode> newGraph = mutatedGraph.graph();
-    HashMap<String, GraphNode> newGraphNodesMap = mutatedGraph.graphNodesMap();
-    HashSet<String> newRoots = mutatedGraph.roots();
     Set<GraphNode> newNodes = newGraph.nodes();
     int newNum = mutatedGraph.numMutations();
 
@@ -187,7 +183,6 @@ public class GraphMutationTest {
 
     MutableGraph<GraphNode> newGraph = mutatedGraph.graph();
     HashMap<String, GraphNode> newGraphNodesMap = mutatedGraph.graphNodesMap();
-    HashSet<String> newRoots = mutatedGraph.roots();
     Set<GraphNode> newNodes = newGraph.nodes();
     int newNum = mutatedGraph.numMutations();
 
@@ -259,13 +254,13 @@ public class GraphMutationTest {
     mutList.add(removeC);
 
     // Build the current graph (same graph and map)
+    // This graph is the one after adding and removing AB but before removing C
     DataGraph dataGraphMutated = DataGraph.create(origGraph, origGraphNodesMap, origRoots, 2);
 
     DataGraph mutatedGraph =
         Utility.getGraphAtMutationNumber(dataGraph, dataGraphMutated, 1, mutList);
 
     MutableGraph<GraphNode> newGraph = mutatedGraph.graph();
-    HashMap<String, GraphNode> newGraphNodesMap = mutatedGraph.graphNodesMap();
     HashSet<String> newRoots = mutatedGraph.roots();
     Set<GraphNode> newNodes = newGraph.nodes();
     int newNum = mutatedGraph.numMutations();
