@@ -13,17 +13,22 @@
   <h1>
     Graph Visualization Tool
   </h1>
-  <label for="layers">Number of layers (0-20, default is 3):</label>
-  <input type="number" id="num-layers" name="layers"
-       min="0" max="20" value="3">
+  <div id="search-box">
+    <label for="layers">Number of layers (0-20, default is 3):</label>
+    <input type="number" id="num-layers" name="layers" min="0" max="20" value="3">
+    <label for="search-name">Name of node to search for</label>
+    <input type="text" id="node-name" name="search-name" placeholder="Name"></input>
+  </div>
   <button onclick="graph.generateGraph()">Get Graph</button>
-  <br/>
+  <br />
   <div id="graphdiv">
     <div id="graph"></div>
     <p id="buttontext">Navigate to the next and previous graph using the buttons below:</p>
     <div id="buttondiv">
-      <button id="prevbutton" class="nextprev material-icons" onclick="graph.navigateGraph(-1); graph.generateGraph()">navigate_before</button>
-      <button id="nextbutton" class="nextprev material-icons" onclick="graph.navigateGraph(1); graph.generateGraph()">navigate_next</button>
+      <button id="prevbutton" class="nextprev material-icons"
+        onclick="graph.navigateGraph(-1); graph.generateGraph()">navigate_before</button>
+      <button id="nextbutton" class="nextprev material-icons"
+        onclick="graph.navigateGraph(1); graph.generateGraph()">navigate_next</button>
     </div>
   </div>
 </body>

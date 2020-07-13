@@ -128,7 +128,7 @@ async function generateGraph() {
  */
 function getUrl() {
   const depthElem = document.getElementById('num-layers');
-  const nodeName = "placeholder"; // TODO: get the node name
+  const nodeName = document.getElementById('search-name') || null; // TODO: get the node name
   let selectedDepth = 0;
   if (depthElem === null) {
     selectedDepth = 3;
@@ -214,7 +214,7 @@ function getGraphDisplay(graphNodes, graphEdges) {
   cy.nodes().forEach(node => initializeTippy(node));
 
   // When the user clicks on a node, display the token list tooltip for the node
-  cy.on('tap', 'node', function(evt) {
+  cy.on('tap', 'node', function (evt) {
     const node = evt.target;
     node.tip.show();
   });
@@ -255,7 +255,7 @@ function getTooltipContent(node) {
   const closeButton = document.createElement("button");
   closeButton.innerText = "close";
   closeButton.classList.add("material-icons", "close-button");
-  closeButton.addEventListener('click', function() {
+  closeButton.addEventListener('click', function () {
     node.tip.hide();
   }, false);
   content.appendChild(closeButton);
