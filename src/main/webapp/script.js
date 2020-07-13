@@ -62,10 +62,17 @@ async function generateGraph() {
   let graphNodes = [];
   let graphEdges = [];
 
+  // disable buttons
+  const prevBtn = document.getElementById("prevbutton");
+  const nextBtn = document.getElementById("nextbutton");
   prevBtn.disabled = true;
   nextBtn.disabled = true;
 
   const url = getUrl();
+
+  prevBtn.disabled = true;
+  nextBtn.disabled = true;
+
   const response = await fetch(url);
 
   const serverErrorStatus = response.headers.get("serverError");
