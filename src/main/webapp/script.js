@@ -26,7 +26,7 @@ import 'tippy.js/dist/tippy.css';
 import 'tippy.js/dist/backdrop.css';
 import 'tippy.js/animations/shift-away.css';
 
-export { initializeTippy, generateGraph, getUrl, navigateGraph, currGraphNum, numMutations };
+export { initalizeNumMutations, initializeTippy, generateGraph, getUrl, navigateGraph, currGraphNum, numMutations };
 
 cytoscape.use(popper); // register extension
 cytoscape.use(dagre); // register extension
@@ -38,6 +38,10 @@ let currGraphNum = 0;
 // The user cannot click next to a graph beyond this point
 // currently setting to an arbitrary value for testing
 let numMutations = 3;
+
+function initializeNumMutations(num) {
+  numMutations = num; 
+}
 
 /**
  * Submits a fetch request to the /data URL to retrieve the graph
@@ -269,6 +273,7 @@ function navigateGraph(amount) {
   }
   if(currGraphNum >= numMutations) {
     currGraphNum = numMutations;
+    return;
   }
   generateGraph();
   updateButtons();
