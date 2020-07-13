@@ -12,27 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package com.google.sps.servlets;
+package com.google.sps;
 
-import com.google.common.graph.*;
-import com.google.sps.data.DataGraph;
-import com.google.sps.data.GraphNode;
-import com.google.sps.data.Utility;
-import com.proto.GraphProtos.Graph;
-import com.proto.GraphProtos.Node;
-import com.proto.MutationProtos.Mutation;
-import com.proto.MutationProtos.MutationList;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.HashSet;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.google.common.graph.MutableGraph;
+import com.proto.GraphProtos.Graph;
+import com.proto.GraphProtos.Node;
+import com.proto.MutationProtos.Mutation;
+import com.proto.MutationProtos.MutationList;
 
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
@@ -82,25 +79,29 @@ public class DataServlet extends HttpServlet {
           Graph.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/graph.txt"));
       Map<String, Node> protoNodesMap = protoGraph.getNodesMapMap();
       // Originally both set to same data
-      originalDataGraph = new DataGraph();
+      originalDataGraph = DataGraph.create();
       success = originalDataGraph.graphFromProtoNodes(protoNodesMap);
-      currDataGraph = new DataGraph();
-      success = success && currDataGraph.graphFromProtoNodes(protoNodesMap);
+      String error = "Failed to parse input graph into Guava graph - not a DAG!";
+      if (!success) {
+        response.setHeader("serverError", error);
+        return;
+      }
+
+      currDataGraph = DataGraph.create();
+      success = currDataGraph.graphFromProtoNodes(protoNodesMap);
+      if (!success) {
+        response.setHeader("serverError", error);
+        return;
+      }
     } else if (currDataGraph == null || originalDataGraph == null) {
       String error = "Invalid input";
       response.setHeader("serverError", error);
       return;
     }
 
-    if (!success) {
-      String error = "Failed to parse input graph into Guava graph - not a DAG!";
-      response.setHeader("serverError", error);
-      return;
-    }
-
-    MutableGraph<GraphNode> graph = currDataGraph.getGraph();
-    HashMap<String, GraphNode> graphNodesMap = currDataGraph.getGraphNodesMap();
-    HashSet<String> roots = currDataGraph.getRoots();
+    MutableGraph<GraphNode> graph = currDataGraph.graph();
+    HashMap<String, GraphNode> graphNodesMap = currDataGraph.graphNodesMap();
+    HashSet<String> roots = currDataGraph.roots();
 
     // Mutations file hasn't been read yet
     if (mutList == null) {
@@ -132,7 +133,7 @@ public class DataServlet extends HttpServlet {
 
     MutableGraph<GraphNode> truncatedGraph =
         Utility.getGraphWithMaxDepth(graph, roots, graphNodesMap, depthNumber);
-    String graphJson = Utility.graphToJson(truncatedGraph, currDataGraph.getRoots());
+    String graphJson = Utility.graphToJson(truncatedGraph, currDataGraph.roots());
     response.getWriter().println(graphJson);
   }
 }

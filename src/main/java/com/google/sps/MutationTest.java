@@ -14,21 +14,20 @@
 
 package com.google.sps;
 
-import com.google.common.graph.*;
-import com.google.sps.data.Utility;
 import java.util.ArrayList;
-import java.util.Set;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-import com.google.sps.data.DataGraph;
-import com.google.sps.data.GraphNode;
+import com.google.common.graph.GraphBuilder;
+import com.google.common.graph.MutableGraph;
 import com.proto.GraphProtos.Node;
 import com.proto.GraphProtos.Node.Builder;
 import com.proto.MutationProtos.Mutation;
 import com.proto.MutationProtos.TokenMutation;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -437,13 +436,13 @@ public final class MutationTest {
     gNodeB = Utility.protoNodeToGraphNode(pNodeB);
     gNodeC = Utility.protoNodeToGraphNode(pNodeC);
 
-    DataGraph dataGraph = new DataGraph();
+    DataGraph dataGraph = DataGraph.create();
     boolean success = dataGraph.graphFromProtoNodes(protoNodesMap);
     Assert.assertTrue(success);
 
-    MutableGraph<GraphNode> graph = dataGraph.getGraph();
-    HashMap<String, GraphNode> graphNodesMap = dataGraph.getGraphNodesMap();
-    HashSet<String> roots = dataGraph.getRoots();
+    MutableGraph<GraphNode> graph = dataGraph.graph();
+    HashMap<String, GraphNode> graphNodesMap = dataGraph.graphNodesMap();
+    HashSet<String> roots = dataGraph.roots();
 
     // MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
     // HashMap<String, GraphNode> graphNodesMap = new HashMap<>();
