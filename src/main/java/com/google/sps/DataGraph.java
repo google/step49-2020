@@ -50,8 +50,8 @@ abstract class DataGraph {
    * @param graph the guava graph
    * @param graphNodesMap the map from node name to node
    * @param roots a set of roots (nodes with no in-edges) of the graph
-   * @param numMutations the maximum number of mutations in the list of mutations this graph is an
-   *     intermediate result of applyiing
+   * @param numMutations the number of mutations applied to the initial graph to get 
+   * this graph
    * @return the data graph with these attributes
    */
   static DataGraph create(
@@ -86,7 +86,8 @@ abstract class DataGraph {
   /**
    * Getter for the number of mutations
    *
-   * @return the max number of mutations
+   * @return the the number of mutations applied to the initial graph to get 
+   * this graph
    */
   abstract int numMutations();
 
