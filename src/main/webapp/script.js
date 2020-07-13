@@ -83,7 +83,7 @@ async function generateGraph() {
   // Graph nodes and edges received from server
   const nodes = JSON.parse(jsonResponse.nodes);
   const edges = JSON.parse(jsonResponse.edges);
-  numMutations = JSON.parse(jsonResponse.numMutations);
+  initializeNumMutations(JSON.parse(jsonResponse.numMutations));
 
   if (!nodes || !edges || !Array.isArray(nodes) || !Array.isArray(edges)) {
     displayError("Malformed graph received from server - edges or nodes are empty");
