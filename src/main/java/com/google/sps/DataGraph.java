@@ -337,7 +337,7 @@ abstract class DataGraph {
    * @param radius the distance from the node to search for parents and children
    * @return a graph comprised of only nodes and edges within a certain distance from the specified node
    */
-  public MutableGraph<GraphNode> nodeSearch(String name, int radius) {
+  public MutableGraph<GraphNode> getReachableNodes(String name, int radius) {
     if (radius < 0) {
       return GraphBuilder.directed().build(); // If max depth below 0, then return an emtpy graph
     }
