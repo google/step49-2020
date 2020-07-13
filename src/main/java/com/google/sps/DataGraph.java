@@ -352,24 +352,32 @@ abstract class DataGraph {
 
     Map<GraphNode, Boolean> visited = new HashMap<>();
     HashSet<GraphNode> nextLayer;
-    ArrayDeque<GraphNode> queue = new ArrayDeque<GraphNode>();
+    ArrayDeque<GraphNode> queue = new ArrayDeque<>();
 
     queue.add(tgtNode); // Adds the searched node to the queue
 
     for (int i = 0; i < radius; i++) {
+      if (queue.isEmpty()) {
+        break;
+      }
       nextLayer = new HashSet<>();
       while (!queue.isEmpty()) {
         GraphNode curr = queue.poll();
+
         if (!visited.containsKey(curr)) {
           visited.put(curr, true);
 
+          // Adds the children
           for (GraphNode child : graph.successors(curr)) {
             if (!visited.containsKey(child)) {
               nextLayer.add(child);
             }
           }
+          // Adds the parents
           for (GraphNode parent : graph.predecessors(curr)) {
-            nextLayer.add(parent);
+            if (!visited.containsKey(parent)) {
+              nextLayer.add(parent);
+            }
           }
         }
       }
@@ -379,4 +387,5 @@ abstract class DataGraph {
 
     return graphToReturn;
   }
+
 }
