@@ -250,9 +250,6 @@ describe("Pressing next and previous buttons associated with a graph", function(
 
     prevButton.click();
     expect(currGraphNum).toBe(0);
-
-    prevButton.click();
-    expect(currGraphNum).toBe(0);
     expect(nextButton.disabled).toBe(false);
     expect(prevButton.disabled).toBe(true);
  
