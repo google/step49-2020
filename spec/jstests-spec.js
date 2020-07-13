@@ -247,6 +247,8 @@ describe("Pressing next and previous buttons associated with a graph", function(
 
     prevButton.click();
     expect(currGraphNum).toBe(0);
+    expect(nextButton.disabled).toBe(false);
+    expect(prevButton.disabled).toBe(true);
 
     prevButton.click();
     expect(currGraphNum).toBe(0);
@@ -256,7 +258,7 @@ describe("Pressing next and previous buttons associated with a graph", function(
     nextButton.click();
     expect(currGraphNum).toBe(1);
     expect(nextButton.disabled).toBe(false);
-    expect(prevButton.disabled).toBe(false); 
+    expect(prevButton.disabled).toBe(false);  
   });
 });
 
