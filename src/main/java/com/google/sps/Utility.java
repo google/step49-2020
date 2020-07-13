@@ -1,4 +1,18 @@
-package com.google.sps.data;
+// Copyright 2020 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package com.google.sps;
 
 import com.google.common.graph.*;
 import com.google.gson.Gson;
@@ -23,12 +37,11 @@ public final class Utility {
     // Should not be called
   }
 
-  /*
-   * Converts a proto node object into a graph node object that does not store the
-   * names of the child nodes but may store additional information.
+  /**
+   * Converts a proto node object into a graph node object that does not store the names of the
+   * child nodes but may store additional information.
    *
    * @param thisNode the input data Node object
-   *
    * @return a useful node used to construct the Guava Graph
    */
   public static GraphNode protoNodeToGraphNode(Node thisNode) {
@@ -38,9 +51,9 @@ public final class Utility {
     return GraphNode.create(thisNode.getName(), newTokenList, newMetadata);
   }
 
-  /*
-   * Converts a Guava graph into a String encoding of a JSON Object. The object
-   * contains nodes, edges, and the roots of the graph.
+  /**
+   * Converts a Guava graph into a String encoding of a JSON Object. The object contains nodes,
+   * edges, and the roots of the graph.
    *
    * @param graph the graph to convert into a JSON String
    */
@@ -61,16 +74,13 @@ public final class Utility {
     return allJson;
   }
 
-  /*
-   * Changes the graph according to the given mutation object. The parameters are
-   * mutated in place.
+  /**
+   * Changes the graph according to the given mutation object. The parameters are mutated in place.
    *
    * @param mut the mutation to affect
    * @param graph the Guava graph to mutate
    * @param graphNodesMap a reference of existing nodes, also to be mutated
-   * @param roots the roots of the graph before the mutation. Changed if
-   * necessary.
-   *
+   * @param roots the roots of the graph before the mutation. Changed if necessary.
    * @return true if the mutation was successful, false otherwise
    */
   public static boolean mutateGraph(
@@ -89,9 +99,8 @@ public final class Utility {
 
     switch (mut.getType()) {
       case ADD_NODE:
+        // Don't add duplicate nodes
         if (!graphNodesMap.containsKey(startName)) {
-          // Don't add duplicate nodes
-
           // New lone node is a root
           roots.add(startName);
           // Create a new node with the given name and add it to the graph and the map
@@ -147,13 +156,12 @@ public final class Utility {
     return true;
   }
 
-  /*
-   * Modify the list of tokens for graph node 'node' to accomodate the mutation
-   * 'tokenMut'. This could involve adding or removing tokens from the list.
+  /**
+   * Modify the list of tokens for graph node 'node' to accomodate the mutation 'tokenMut'. This
+   * could involve adding or removing tokens from the list.
    *
    * @param node the node in the graph to change the tokens of
    * @param tokenMut the kind of mutation to perform on node of the graph
-   *
    * @return true if the change is successful, false otherwise
    */
   private static boolean changeNodeToken(GraphNode node, TokenMutation tokenMut) {

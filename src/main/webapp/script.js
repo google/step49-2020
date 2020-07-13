@@ -26,7 +26,7 @@ import 'tippy.js/dist/tippy.css';
 import 'tippy.js/dist/backdrop.css';
 import 'tippy.js/animations/shift-away.css';
 
-export { initializeTippy, generateGraph, getUrl, navigateGraph, currGraphNum, numMutations };
+export { initializeNumMutations, setCurrGraphNum, initializeTippy, generateGraph, getUrl, navigateGraph, currGraphNum, numMutations, updateButtons };
 
 cytoscape.use(popper); // register extension
 cytoscape.use(dagre); // register extension
@@ -37,7 +37,21 @@ let currGraphNum = 0;
 // Stores the number of mutations in the list this graph is applying
 // The user cannot click next to a graph beyond this point
 // currently setting to an arbitrary value for testing
-let numMutations = 3;
+let numMutations = 0;
+
+/**
+ * Initializes the number of mutations
+ */
+function initializeNumMutations(num) {
+  numMutations = num;
+}
+
+/**
+ * Sets the current graph number
+ */
+function setCurrGraphNum(num) {
+  currGraphNum = num;
+}
 
 /**
  * Submits a fetch request to the /data URL to retrieve the graph
@@ -47,6 +61,9 @@ async function generateGraph() {
   // Arrays to store the cytoscape graph node and edge objects
   let graphNodes = [];
   let graphEdges = [];
+
+  prevBtn.disabled = true;
+  nextBtn.disabled = true;
 
   const url = getUrl();
   const response = await fetch(url);
@@ -94,6 +111,7 @@ async function generateGraph() {
     });
   })
   getGraphDisplay(graphNodes, graphEdges);
+  updateButtons();
   return;
 }
 
@@ -104,7 +122,7 @@ async function generateGraph() {
 function getUrl() {
   const depthElem = document.getElementById('num-layers');
   let selectedDepth = 0;
-  if(depthElem === null) {
+  if (depthElem === null) {
     selectedDepth = 3;
   }
   else {
@@ -118,7 +136,7 @@ function getUrl() {
       selectedDepth = 0;
     } else if (selectedDepth > 20) {
       selectedDepth = 20;
-    } 
+    }
   }
   const url = `/data?depth=${selectedDepth}&mutationNum=${currGraphNum}`;
   return url;
@@ -203,9 +221,9 @@ function initializeTippy(node) {
   // a dummy element must be passed as tippy only accepts a dom element as the target
   const dummyDomEle = document.createElement('div');
 
-  node.tip = tippy(dummyDomEle, { 
+  node.tip = tippy(dummyDomEle, {
     trigger: 'manual',
-    lazy: false, 
+    lazy: false,
     onCreate: instance => { instance.popperInstance.reference = tipPosition; },
 
     content: () => getTooltipContent(node),
@@ -263,14 +281,12 @@ function getTooltipContent(node) {
  */
 function navigateGraph(amount) {
   currGraphNum += amount;
-  if(currGraphNum < 0) {
+  if (currGraphNum <= 0) {
     currGraphNum = 0;
   }
-  if(currGraphNum >= numMutations) {
+  if (currGraphNum >= numMutations) {
     currGraphNum = numMutations;
   }
-  generateGraph();
-  updateButtons();
 }
 
 /**
@@ -280,12 +296,12 @@ function navigateGraph(amount) {
  * Assumes currGraphNum is between 0 and numMutations
  */
 function updateButtons() {
-  if(currGraphNum === 0) {
+  if (currGraphNum === 0) {
     document.getElementById("prevbutton").disabled = true;
   } else {
     document.getElementById("prevbutton").disabled = false;
   }
-  if(currGraphNum === numMutations) {
+  if (currGraphNum === numMutations) {
     document.getElementById("nextbutton").disabled = true;
   } else {
     document.getElementById("nextbutton").disabled = false;
