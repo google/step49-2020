@@ -22,7 +22,10 @@ import java.util.List;
 import java.util.ArrayList;
 import com.google.protobuf.Struct;
 import java.util.Set;
+import java.util.HashMap;
 import com.proto.MutationProtos.Mutation;
+import com.proto.MutationProtos.Mutation;
+import com.proto.MutationProtos.TokenMutation;
 import com.google.common.reflect.TypeToken;
 import java.lang.reflect.Type;
 import org.json.JSONObject;
@@ -106,5 +109,54 @@ public final class Utility {
       return DataGraph.create(
           originalCopy.graph(), originalCopy.graphNodesMap(), originalCopy.roots(), mutationNum);
     }
+  }
+
+  public static Mutation diffBetween(List<Mutation> mutList, int currIndex, int nextIndex) {
+    if(Math.abs(currIndex - nextIndex) != 1) {
+      return null;
+    } else if(nextIndex - currIndex == 1) {
+      return mutList.get(currIndex);
+    } else {
+      return invertMutation(mutList.get(nextIndex));
+    }
+  }
+
+  private static Mutation invertMutation(Mutation mut) {
+    Mutation.Builder invertedMut = Mutation.newBuilder(mut);
+    Mutation.Type invertedMutType;
+    switch (mut.getType()) {
+      case ADD_NODE:
+        invertedMutType = DELETE_NODE;
+        break;
+      case DELETE_NODE:
+        invertedMutType = ADD_NODE;
+        break;
+      case ADD_EDGE:
+        invertedMutType = DELETE_EDGE;
+        break;
+      case DELETE_EDGE:
+        invertedMutType = ADD_EDGE;
+        break;
+      case CHANGE_TOKEN:
+        invertedMutType = CHANGE_TOKEN;
+        invertedMut.setTokenChange(invertTokenChange(mut.getTokenChange()));
+        break;
+      default:
+        return null;
+    }
+    invertedMut.setType(invertedMutType).build();
+    return invertedMut;
+  }
+
+  private static TokenMutation invertTokenChange(TokenMutation tokenMut) {
+    TokenMutation.Builder invertedMut = TokenMutation.newBuilder(mut);
+    if(tokenMut.getType() == TokenMutation.Type.ADD_TOKEN) {
+      invertedMut.setType(TokenMutation.Type.DELETE_TOKEN);
+    } else if(tokenMut.getType() == TokenMutation.Type.DELETE_TOKEN) {
+      invertedMut.setType(TokenMutation.Type.ADD_TOKEN);
+    } else {
+      return null;
+    }
+    invertedMut.build();
   }
 }
