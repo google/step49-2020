@@ -1,4 +1,4 @@
-package com.google.sps.data;
+package com.google.sps;
 
 import com.google.auto.value.AutoValue;
 import com.google.protobuf.Struct;
