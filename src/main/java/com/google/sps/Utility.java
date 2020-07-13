@@ -90,7 +90,8 @@ public final class Utility {
           return null;
         }
       }
-      return DataGraph.create(originalCopy.graph(), originalCopy.graphNodesMap(), originalCopy.roots(), mutationNum);
+      return DataGraph.create(
+          originalCopy.graph(), originalCopy.graphNodesMap(), originalCopy.roots(), mutationNum);
     }
   }
 }
