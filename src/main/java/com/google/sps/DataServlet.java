@@ -153,8 +153,9 @@ public class DataServlet extends HttpServlet {
       int newNum = Utility.getNextGreatestNum(relevantMutationIndices, oldNumMutations);
 
       // Maybe make a copy instead of making this the currDataGraph
-     
-      DataGraph tempData = Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, newNum, mutList);
+
+      DataGraph tempData =
+          Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, newNum, mutList);
 
       // If the truncated graph is empty, it doesn't exist on the page. Check if there
       // are any
