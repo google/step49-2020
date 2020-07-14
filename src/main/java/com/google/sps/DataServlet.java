@@ -47,9 +47,12 @@ public class DataServlet extends HttpServlet {
     response.setContentType("application/json");
     String depthParam = request.getParameter("depth");
     String mutationParam = request.getParameter("mutationNum");
-
-    if (depthParam == null || mutationParam == null) {
+    if (depthParam == null) {
       String error = "Improper depth parameter, cannot generate graph";
+      response.setHeader("serverError", error);
+      return;
+    } else if (mutationParam == null) {
+      String error = "Improper mutation number parameter, cannot generate graph";
       response.setHeader("serverError", error);
       return;
     }
@@ -131,12 +134,12 @@ public class DataServlet extends HttpServlet {
     currDataGraph =
         Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
     if (currDataGraph == null) {
-      String error = "Failed to apply mutation!";
+      String error = "Failed to apply mutations!";
       response.setHeader("serverError", error);
       return;
     }
 
-    MutableGraph<GraphNode> truncatedGraph; // issue: has to get the truncated graph everytime
+    MutableGraph<GraphNode> truncatedGraph;
 
     // If a node is searched, get the graph with just the node. Otherwise, use the
     // whole graph
