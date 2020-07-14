@@ -17,8 +17,10 @@ package com.google.sps;
 import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.MutableGraph;
 import com.google.gson.Gson;
+import com.google.protobuf.InvalidProtocolBufferException;
 import com.proto.GraphProtos.Node;
 import com.proto.GraphProtos.Node.Builder;
+import com.proto.MutationProtos.MultiMutation;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -29,8 +31,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 /**
- * Since we don't manually build the JSON, we can just check all of the fields in the JSON are
- * present.
+ * Since we don't manually build the JSON, we can just check all of the fields
+ * in the JSON are present.
  */
 @RunWith(JUnit4.class)
 public final class JsonTest {
@@ -89,17 +91,18 @@ public final class JsonTest {
     graph.putEdge(gNodeA, gNodeB);
     graph.putEdge(gNodeA, gNodeC);
 
-    String result = Utility.graphToJson(graph, 0);
+    String result = Utility.graphToJson(graph, 0, MultiMutation.newBuilder().build());
     JSONObject jsonObject = new JSONObject(result);
 
-    Assert.assertEquals(jsonObject.length(), 3);
+    Assert.assertEquals(jsonObject.length(), 4);
 
     JSONArray elements = jsonObject.names();
-    Assert.assertEquals(elements.length(), 3);
+    Assert.assertEquals(elements.length(), 4);
 
     Assert.assertTrue(jsonObject.has("nodes"));
     Assert.assertTrue(jsonObject.has("edges"));
     Assert.assertTrue(jsonObject.has("numMutations"));
     Assert.assertEquals(jsonObject.get("numMutations"), 0);
+    Assert.assertTrue(jsonObject.has("mutationDiff"));
   }
 }

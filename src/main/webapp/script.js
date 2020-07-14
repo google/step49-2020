@@ -87,6 +87,7 @@ async function generateGraph() {
   const nodes = JSON.parse(jsonResponse.nodes);
   const edges = JSON.parse(jsonResponse.edges);
   initializeNumMutations(JSON.parse(jsonResponse.numMutations));
+  const mutList = jsonResponse["mutationDiff"].length === 0 ? null : JSON.parse(jsonResponse["mutationDiff"]);
 
   if (!nodes || !edges || !Array.isArray(nodes) || !Array.isArray(edges)) {
     displayError("Malformed graph received from server - edges or nodes are empty");
@@ -117,9 +118,74 @@ async function generateGraph() {
       }
     });
   })
-  getGraphDisplay(graphNodes, graphEdges);
+  getGraphDisplay(graphNodes, graphEdges, mutList);
   updateButtons();
   return;
+}
+
+function highlightDiff(cy, mutList) {
+  if (!mutList) {
+    return;
+  }
+  var revMutList = mutList.reverse();
+  revMutList.forEach(mutation => affectMutationOnGraph(cy, mutation));
+}
+
+function affectMutationOnGraph(cy, mutation) {
+  const type = mutation["type_"] || -1;
+  let startNode, endNode;
+  switch (type) {
+    case 1:
+      // add node
+      console.log("here");
+      startNode = mutation["startNode_"];
+      cy.getElementById(startNode).style('background-color', 'green');
+      break;
+    case 2:
+      // add edge
+      console.log("here2");
+      startNode = mutation["startNode_"];
+      endNode = mutation["endNode_"];
+      cy.getElementById(`edge${startNode}${endNode}`).style('line-color', 'green');
+      cy.getElementById(`edge${startNode}${endNode}`).style('target-arrow-color', 'green');
+      break;
+    case 3:
+      // delete node
+      startNode = mutation["startNode_"];
+      console.log(startNode);
+      if (startNode.length !== 0) {
+        cy.add({
+          group: "nodes",
+          data: { id: startNode }
+        });
+        cy.getElementById(startNode).style('background-color', 'red');
+      }
+      break;
+    case 4:
+      // delete edge
+      startNode = mutation["startNode_"];
+      endNode = mutation["endNode_"];
+      if (startNode.length !== 0 && endNode.length !== 0) {
+        cy.add({
+          group: "edges",
+          data: {
+            id: `edge${startNode}${endNode}`,
+            target: endNode,
+            source: startNode
+          }
+        });
+        cy.getElementById(`edge${startNode}${endNode}`).style('line-color', 'red');
+        cy.getElementById(`edge${startNode}${endNode}`).style('target-arrow-color', 'red');
+      }
+      break;
+    case 5:
+      // change node
+      startNode = mutation["startNode_"];
+      cy.getElementById(startNode).style('background-color', 'yellow');
+      break;
+    default:
+      return;
+  }
 }
 
 /**
@@ -169,7 +235,8 @@ function displayError(errorMsg) {
  * Takes in graph nodes and edges and creates a cytoscape graph with this
  * data. Assumes that the graph is a DAG to display it in the optimal layout.
  */
-function getGraphDisplay(graphNodes, graphEdges) {
+function getGraphDisplay(graphNodes, graphEdges, mutDiff) {
+  console.log(mutDiff);
   const cy = cytoscape({
     container: document.getElementById("graph"),
     elements: {
@@ -208,15 +275,21 @@ function getGraphDisplay(graphNodes, graphEdges) {
     minZoom: .25,
     maxZoom: 2.5
   });
+  highlightDiff(cy, mutDiff);
 
   // Initialize content of node's token list popup
   cy.nodes().forEach(node => initializeTippy(node));
 
   // When the user clicks on a node, display the token list tooltip for the node
-  cy.on('tap', 'node', function(evt) {
+  cy.on('tap', 'node', function (evt) {
     const node = evt.target;
     node.tip.show();
   });
+
+
+  cy.layout({
+    name: 'dagre'
+  }).run();
 }
 
 /**
@@ -254,13 +327,13 @@ function getTooltipContent(node) {
   const closeButton = document.createElement("button");
   closeButton.innerText = "close";
   closeButton.classList.add("material-icons", "close-button");
-  closeButton.addEventListener('click', function() {
+  closeButton.addEventListener('click', function () {
     node.tip.hide();
   }, false);
   content.appendChild(closeButton);
 
   const nodeTokens = node.data("tokens");
-  if (nodeTokens.length === 0) {
+  if (nodeTokens === undefined || nodeTokens.length === 0) {
     // The node has an empty token list
     const noTokenMsg = document.createElement("p");
     noTokenMsg.innerText = "No tokens";

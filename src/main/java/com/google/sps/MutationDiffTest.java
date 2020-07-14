@@ -356,6 +356,15 @@ public class MutationDiffTest {
 
     MultiMutation result = Utility.diffBetween(multiMutList, 1, 2);
     Assert.assertEquals(result, deleteBM);
+    // List<Mutation> mutList = result.getMutationList();
+
+    // Assert.assertEquals(mutList.size(), 2);
+    // Mutation firstMut = mutList.get(0);
+
+    // Assert.assertEquals(firstMut, removeB);
+
+    // Mutation secondMut = mutList.get(1);
+    // Assert.assertEquals(secondMut, removeAB);
   }
 
   /*
