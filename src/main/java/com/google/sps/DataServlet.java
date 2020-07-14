@@ -37,6 +37,8 @@ public class DataServlet extends HttpServlet {
   private DataGraph currDataGraph = null;
   private DataGraph originalDataGraph = null;
 
+  private String latestSearchNode = null;
+
   /*
    * Called when a client submits a GET request to the /data URL
    */
@@ -112,6 +114,19 @@ public class DataServlet extends HttpServlet {
 
     // Parameter for the nodeName the user searched for in the frontend
     String nodeNameParam = request.getParameter("nodeName");
+    List<Mutation> truncatedMutList;
+
+    // No query
+    if (nodeNameParam == null || nodeNameParam.length() == 0) {
+      // truncatedGraph = currDataGraph.getGraphWithMaxDepth(depthNumber);
+      truncatedMutList = mutList;
+    } else {
+      // truncatedGraph = currDataGraph.getReachableNodes(nodeNameParam, depthNumber);
+      truncatedMutList = Utility.getMutationsOfNode(nodeNameParam, mutList);
+      currDataGraph =
+        Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
+    }
+
 
     currDataGraph =
         Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
@@ -122,16 +137,16 @@ public class DataServlet extends HttpServlet {
     }
 
     MutableGraph<GraphNode> truncatedGraph; // issue: has to get the truncated graph everytime
-    List<Mutation> truncatedMutList;
+    
 
     // If a node is searched, get the graph with just the node. Otherwise, use the
     // whole graph
     if (nodeNameParam == null || nodeNameParam.length() == 0) {
       truncatedGraph = currDataGraph.getGraphWithMaxDepth(depthNumber);
-      truncatedMutList = mutList;
+      // truncatedMutList = mutList;
     } else {
       truncatedGraph = currDataGraph.getReachableNodes(nodeNameParam, depthNumber);
-      truncatedMutList = Utility.getMutationsOfNode(nodeNameParam, mutList);
+      // truncatedMutList = Utility.getMutationsOfNode(nodeNameParam, mutList);
     }
 
     String graphJson = Utility.graphToJson(truncatedGraph, truncatedMutList.size());
