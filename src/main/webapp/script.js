@@ -310,7 +310,7 @@ function updateButtons() {
   } else {
     document.getElementById("prevbutton").disabled = false;
   }
-  if (currGraphNum === numMutations) {
+  if (currGraphNum === numMutations - 1 || numMutations === 0) {
     document.getElementById("nextbutton").disabled = true;
   } else {
     document.getElementById("nextbutton").disabled = false;
