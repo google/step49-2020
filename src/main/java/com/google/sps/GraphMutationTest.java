@@ -206,7 +206,7 @@ public class GraphMutationTest {
     Assert.assertEquals(newNodeA.tokenList(), newTokenList);
   }
 
-  /** Mutation Number requested exceeds the length of the mutation list */
+  /** Mutation Number requested exceeds the length of the mutation list, should return the last mutation */
   @Test
   public void numberRequestedTooBig() {
     HashMap<String, Node> protoNodesMap = new HashMap<>();
@@ -220,7 +220,14 @@ public class GraphMutationTest {
     List<Mutation> mutList = new ArrayList<>();
 
     DataGraph mutatedGraph = Utility.getGraphAtMutationNumber(dataGraph, dataGraph, 2, mutList);
-    Assert.assertNull(mutatedGraph);
+    MutableGraph<GraphNode> newGraph = mutatedGraph.graph();
+    HashSet<String> newRoots = mutatedGraph.roots();
+    Set<GraphNode> newNodes = newGraph.nodes();
+    int newNum = mutatedGraph.numMutations();
+
+    Assert.assertEquals(0, newNum);
+    Assert.assertEquals(3, newNodes.size());
+    Assert.assertEquals(3, newRoots.size());
   }
 
   /** The current graph node is at a mutation AFTER the one requested. */
@@ -301,5 +308,31 @@ public class GraphMutationTest {
 
     DataGraph mutatedGraph = Utility.getGraphAtMutationNumber(dataGraph, dataGraph, -2, mutList);
     Assert.assertNull(mutatedGraph);
+  }
+
+  @Test
+  public void getMutationsOfBasic() {
+      Mutation addAB =
+        Mutation.newBuilder()
+            .setType(Mutation.Type.ADD_EDGE)
+            .setStartNode("A")
+            .setEndNode("B")
+            .build();
+    Mutation removeAB =
+        Mutation.newBuilder()
+            .setType(Mutation.Type.DELETE_EDGE)
+            .setStartNode("A")
+            .setEndNode("B")
+            .build();
+    Mutation removeC =
+        Mutation.newBuilder().setType(Mutation.Type.DELETE_NODE).setStartNode("C").build();
+    List<Mutation> mutList = new ArrayList<>();
+    mutList.add(addAB);
+    mutList.add(removeAB);
+    mutList.add(removeC);
+    List<Mutation> truncatedList = Utility.getMutationsOfNode("A", mutList);
+
+    Assert.assertEquals(2, truncatedList.size());
+    Assert.assertFalse(truncatedList.contains(removeC));
   }
 }

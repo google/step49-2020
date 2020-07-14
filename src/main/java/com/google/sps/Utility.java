@@ -115,11 +115,17 @@ public final class Utility {
 
   /**
    * Returns a new mutation list with only the mutations relevant to a specified node
-   * @param nodeName
-   * @param origList
-   * @return
+   *
+   * @param nodeName the name of the node to filter 
+   * @param origList the original list of mutations
+   * @return a list of mutations that affect a given node
    */
   public static List<Mutation> getMutationsOfNode(String nodeName, List<Mutation> origList) {
+
+    // Shouldn't happen, but in case the nodeName is null the original list is returned
+    if (nodeName == null) {
+      return origList;
+    }
     List<Mutation> lst = new ArrayList<>();
     for (Mutation mut : origList) {
       String startName = mut.getStartNode();
