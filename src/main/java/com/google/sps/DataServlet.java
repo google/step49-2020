@@ -112,7 +112,8 @@ public class DataServlet extends HttpServlet {
           MutationList.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/mutations.txt"))
               .getMutationList();
     }
-    MultiMutation mutDiff = Utility.diffBetween(mutList, currDataGraph.numMutations(), mutationNumber);
+    MultiMutation mutDiff =
+        Utility.diffBetween(mutList, currDataGraph.numMutations(), mutationNumber);
 
     currDataGraph =
         Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
