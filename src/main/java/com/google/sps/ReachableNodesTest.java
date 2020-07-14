@@ -155,7 +155,7 @@ public class ReachableNodesTest {
     Assert.assertTrue(graphNodes.contains(gNodeC));
     Assert.assertTrue(graphNodes.contains(gNodeD));
     Assert.assertFalse(graphNodes.contains(gNodeE));
-   
+
     Assert.assertEquals(2, graphEdges.size());
   }
 
