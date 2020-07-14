@@ -210,9 +210,12 @@ public class ReachableNodesTest {
     Assert.assertEquals(1, graphEdges.size());
   }
 
-  /** This test mirrors the example graph we have in graph.txt after the mutations specified. */
+  /**
+   * This test mirrors the example graph we have, tests that only parents of
+   * parents (and not children of parents) are added.
+   */
   @Test
-  public void complexGraph() {
+  public void linearNodesOnly() {
     nodeA.addChildren("B");
     nodeA.addChildren("C");
     nodeB.addChildren("D");
@@ -237,16 +240,16 @@ public class ReachableNodesTest {
     Set<GraphNode> graphNodes = truncatedGraph.nodes();
     Set<EndpointPair<GraphNode>> graphEdges = truncatedGraph.edges();
 
-    Assert.assertEquals(5, graphNodes.size());
+    Assert.assertEquals(4, graphNodes.size());
     Assert.assertTrue(graphNodes.contains(gNodeA));
     Assert.assertTrue(graphNodes.contains(gNodeB));
-    Assert.assertTrue(graphNodes.contains(gNodeC));
+    Assert.assertFalse(graphNodes.contains(gNodeC)); // Child of Parent, should not be in the graph
     Assert.assertTrue(graphNodes.contains(gNodeD));
     Assert.assertTrue(graphNodes.contains(gNodeG));
     Assert.assertFalse(graphNodes.contains(gNodeE));
     Assert.assertFalse(graphNodes.contains(gNodeH));
 
-    Assert.assertEquals(4, graphEdges.size());
+    Assert.assertEquals(3, graphEdges.size());
 
     // Test encapsulation, original graph isn't modified
     Assert.assertEquals(7, graph.nodes().size());
