@@ -182,11 +182,14 @@ function getGraphDisplay(graphNodes, graphEdges) {
   document.getElementById('search-token-button').onclick = function() { search(cy, "token", searchToken, graphNodes) };
 }
 
+/**
+ * Searches based on type (node or token)
+ */
 function search(cy, type, searchFunction, nodes) {
   resetNodes(cy);
   let errorText;
   let query = document.getElementById(type + '-search').value;
-  if (searchFunction(cy, query, nodes)) {
+  if (query == "" || searchFunction(cy, query, nodes)) {
     errorText = "";
   } else {
     errorText = type + " does not exist.";
@@ -198,7 +201,6 @@ function search(cy, type, searchFunction, nodes) {
  * Zooms in on specific node
  */
 function searchNode(cy, query) {
-
   if (query) {
     const target = cy.$('#'+query);
     if (target.length != 0) {
