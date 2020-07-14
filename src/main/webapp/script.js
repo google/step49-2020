@@ -175,48 +175,38 @@ function getGraphDisplay(graphNodes, graphEdges) {
     node.tip.show();
   });
 
-  let searchElement = document.getElementById('searchnode');
-  searchElement.onchange = function() {
-    if (searchNode(cy, searchElement.value)) {
-      document.getElementById('searcherror').innerText = "";
-    } else {
-      document.getElementById('searcherror').innerText = "Node does not exist.";
-    }
-  };
+  document.getElementById('reset').onclick = function(){ resetNodes(cy) };
+
+  document.getElementById('search-button').onclick = function() { search(cy, "node", searchNode, graphNodes) };
   
-  let searchTokenElement = document.getElementById('searchtoken');
-  searchTokenElement.onchange = function() {
-    if (searchToken(cy, graphNodes, searchTokenElement.value)) {
-      document.getElementById('tokenerror').innerText = "";
-    } else {
-      document.getElementById('tokenerror').innerText = "Token does not exist.";
-    }
-  };
+  document.getElementById('search-token-button').onclick = function() { search(cy, "token", searchToken, graphNodes) };
+}
+
+function search(cy, type, searchFunction, nodes) {
+  resetNodes(cy);
+  let errorText;
+  let query = document.getElementById(type + '-search').value;
+  if (searchFunction(cy, query, nodes)) {
+    errorText = "";
+  } else {
+    errorText = type + " does not exist.";
+  }
+  document.getElementById(type + '-error').innerText = errorText;
 }
 
 /**
  * Zooms in on specific node
  */
 function searchNode(cy, query) {
-  let target = findNodeInGraph(cy, query);
-  if (target) {
-    cy.fit(target, 50);
-    return true;
-  } else {
-    cy.reset();
-    return false;
-  }
-}
 
-/**
- * Finds element in cy graph by id
- */
-function findNodeInGraph(cy, id) {
-  let target = cy.$('#'+id);
-  if (target.length != 0) {
-    return target;
-  } else {
-    return null;
+  if (query) {
+    const target = cy.$('#'+query);
+    if (target.length != 0) {
+      highlightNodes(cy, target);
+      cy.fit(target, 50);
+      return true;
+    }
+    return false;
   }
 }
 
@@ -224,23 +214,40 @@ function findNodeInGraph(cy, id) {
  * Constructs list of nodes that contain specified token
  * and zooms in on
  */
-function searchToken(cy, nodes, query) {
+function searchToken(cy, query, nodes) {
   let target = [];
-  console.log(cy.nodes());
   nodes.forEach(node => {
     if (node.data.tokens.includes(query)) {
-      target.push(node);
+      target.push(cy.$('#'+node.data.id));
     }
   });
   if (target.length > 0) {
-    let showNode = cy.$('#'+target[0].data.id);
-    console.log(showNode[0]);
-    cy.fit(showNode);
-    showNode[0].tip.show();
+    let showNode = target[0][0];
+    showNode.tip.show();
+    highlightNodes(cy, target);
     return true;
-  } else {
-    return false;
   }
+  return false;
+}
+
+function highlightNodes(cy, target) {
+  // set all nodes to background state
+  cy.nodes().forEach(node => node.style('opacity', '0.25'));
+
+  // highlight desired nodes
+  target.forEach(node => {
+    node.style('background-color', 'olive');
+    node.style('opacity', '1');
+  });
+  cy.fit(target, 50);
+}
+
+function resetNodes(cy) {
+  cy.nodes().forEach(node => {
+    node.style('background-color', 'blue');
+    node.style('opacity', '1')
+  });
+  cy.fit(cy.nodes(), 50);
 }
 
 /**
