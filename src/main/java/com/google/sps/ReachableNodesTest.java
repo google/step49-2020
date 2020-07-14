@@ -186,7 +186,7 @@ public class ReachableNodesTest {
   }
 
   /** Test nodes in a different connected component are not reachable */
-  @Test 
+  @Test
   public void diffConnectedComponentNotReachable() {
     nodeA.addChildren("B");
 
@@ -210,10 +210,7 @@ public class ReachableNodesTest {
     Assert.assertEquals(1, graphEdges.size());
   }
 
-  /**
-   * This test mirrors the example graph we have in graph.txt after the mutations
-   * specified.
-   */
+  /** This test mirrors the example graph we have in graph.txt after the mutations specified. */
   @Test
   public void complexGraph() {
     nodeA.addChildren("B");
