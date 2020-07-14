@@ -332,8 +332,8 @@ abstract class DataGraph {
 
   /**
    * Returns a MutableGraph with nodes that are at most a certain radius from a given node. If the
-   * radius is less than 0 or the node specified isn't present, return an empty graph. Since maxDepth
-   * was implemented as DFS, we use BFS for *diversity*
+   * radius is less than 0 or the node specified isn't present, return an empty graph. Since
+   * maxDepth was implemented as DFS, we use BFS for *diversity*
    *
    * @param name the name of the node to search for
    * @param radius the distance from the node to search for parents and children
