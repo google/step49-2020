@@ -310,6 +310,7 @@ public class GraphMutationTest {
     Assert.assertNull(mutatedGraph);
   }
 
+  /** Basic test for including mutliple relevant nodes */
   @Test
   public void getMutationsOfBasic() {
       Mutation addAB =
@@ -336,6 +337,7 @@ public class GraphMutationTest {
     Assert.assertFalse(truncatedList.contains(removeC));
   }
 
+  /** Test that a null query returns all the mutations in the list */
   @Test
   public void getMutationsOfNull() {
     Mutation addAB =
