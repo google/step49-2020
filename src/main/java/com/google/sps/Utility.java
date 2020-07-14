@@ -82,8 +82,8 @@ public final class Utility {
    * @param mutList mutation list
    * @return the resulting data graph or null if there was an error Requires that original != curr
    */
-  public static DataGraph getGraphAtMutationNumber(DataGraph original, DataGraph curr, int mutationNum,
-      List<MultiMutation> mutList) {
+  public static DataGraph getGraphAtMutationNumber(
+      DataGraph original, DataGraph curr, int mutationNum, List<MultiMutation> mutList) {
     boolean success = true;
     if (mutationNum > mutList.size() || mutationNum < 0) {
       return null;
@@ -120,17 +120,19 @@ public final class Utility {
     }
   }
 
-  public static MultiMutation diffBetween(List<MultiMutation> multiMutList, int currIndex, int nextIndex) {
+  public static MultiMutation diffBetween(
+      List<MultiMutation> multiMutList, int currIndex, int nextIndex) {
     if (Math.abs(currIndex - nextIndex) != 1) {
       return null;
     } else if (nextIndex - currIndex == 1) {
       return multiMutList.get(currIndex);
-      
+
     } else {
       MultiMutation multiMut = multiMutList.get(nextIndex);
       List<Mutation> mutList = multiMut.getMutationList();
-      MultiMutation.Builder resultMultiMut = MultiMutation.newBuilder().setReason(multiMut.getReason());
-      for(Mutation mut : mutList) {
+      MultiMutation.Builder resultMultiMut =
+          MultiMutation.newBuilder().setReason(multiMut.getReason());
+      for (Mutation mut : mutList) {
         Mutation invertedMut = invertMutation(mut);
         resultMultiMut.addMutation(invertedMut);
       }

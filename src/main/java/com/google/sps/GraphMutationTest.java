@@ -89,7 +89,8 @@ public class GraphMutationTest {
     List<MultiMutation> multiMutList = new ArrayList<>();
     multiMutList.add(addABM);
 
-    DataGraph mutatedGraph = Utility.getGraphAtMutationNumber(dataGraph, originalCopy, 1, multiMutList);
+    DataGraph mutatedGraph =
+        Utility.getGraphAtMutationNumber(dataGraph, originalCopy, 1, multiMutList);
 
     MutableGraph<GraphNode> newGraph = mutatedGraph.graph();
     Set<GraphNode> newNodes = newGraph.nodes();
@@ -131,7 +132,8 @@ public class GraphMutationTest {
     multiMutList.add(addABM);
     multiMutList.add(removeCM);
 
-    DataGraph mutatedGraph = Utility.getGraphAtMutationNumber(dataGraph, originalCopy, 2, multiMutList);
+    DataGraph mutatedGraph =
+        Utility.getGraphAtMutationNumber(dataGraph, originalCopy, 2, multiMutList);
 
     MutableGraph<GraphNode> newGraph = mutatedGraph.graph();
     Set<GraphNode> newNodes = newGraph.nodes();
@@ -190,7 +192,8 @@ public class GraphMutationTest {
     multiMutList.add(addABM);
     multiMutList.add(addToAM);
 
-    DataGraph mutatedGraph = Utility.getGraphAtMutationNumber(dataGraph, originalCopy, 2, multiMutList);
+    DataGraph mutatedGraph =
+        Utility.getGraphAtMutationNumber(dataGraph, originalCopy, 2, multiMutList);
 
     MutableGraph<GraphNode> newGraph = mutatedGraph.graph();
     HashMap<String, GraphNode> newGraphNodesMap = mutatedGraph.graphNodesMap();
@@ -225,7 +228,8 @@ public class GraphMutationTest {
 
     List<MultiMutation> multiMutList = new ArrayList<>();
 
-    DataGraph mutatedGraph = Utility.getGraphAtMutationNumber(dataGraph, dataGraph, 2, multiMutList);
+    DataGraph mutatedGraph =
+        Utility.getGraphAtMutationNumber(dataGraph, dataGraph, 2, multiMutList);
     Assert.assertNull(mutatedGraph);
   }
 
