@@ -335,4 +335,21 @@ public class GraphMutationTest {
     Assert.assertEquals(2, truncatedList.size());
     Assert.assertFalse(truncatedList.contains(removeC));
   }
+
+  @Test
+  public void getMutationsOfNull() {
+    Mutation addAB =
+        Mutation.newBuilder()
+            .setType(Mutation.Type.ADD_EDGE)
+            .setStartNode("A")
+            .setEndNode("B")
+            .build();
+    List<Mutation> mutList = new ArrayList<>();
+    mutList.add(addAB);
+
+    List<Mutation> truncatedList = Utility.getMutationsOfNode(null, mutList);
+
+    Assert.assertEquals(1, truncatedList.size());
+    Assert.assertTrue(truncatedList.contains(addAB));
+  }
 }
