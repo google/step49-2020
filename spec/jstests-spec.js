@@ -1,4 +1,4 @@
-import { initializeNumMutations, setCurrGraphNum, initializeTippy, generateGraph, getUrl, navigateGraph, currGraphNum, numMutations, updateButtons } from "../src/main/webapp/script.js";
+import { initializeNumMutations, setCurrGraphNum, initializeTippy, generateGraph, getUrl, navigateGraph, currGraphNum, numMutations, updateButtons, highlightDiff } from "../src/main/webapp/script.js";
 import cytoscape from "cytoscape";
 
 describe("Checking that depth in fetch url is correct", function() {
@@ -280,5 +280,37 @@ describe("Check initializing variables are passed correctly", function() {
     expect(constructedUrl.get("depth")).toBe("3");
     expect(constructedUrl.has("mutationNum")).toBe(true);
     expect(constructedUrl.get("mutationNum")).toBe("1");
+  });
+});
+
+describe("Ensuring correct nodes are highlighted in mutated graph", function () {
+  it("highlights an added node in green", function() {
+    document.body.innerHTML = `
+    <div id="cy"></div>`;
+    const cy = cytoscape({
+      elements: [{
+        group: "nodes", 
+        data: {
+          id: "A"
+        }
+      },
+      {
+        group: "nodes", 
+        data: {
+          id: "B"
+        }
+      }
+      ]
+    });
+  const mutObj = {
+    "type_" : 1,
+    "startNode_" : "A"
+  };
+  const mutList = [];
+  mutList.push(mutObj);
+  highlightDiff(cy, mutList);
+  const thisNode = cy.nodes()[0];;
+  // console.log(thisNode.css().json()); 
+  // // expect(cy.getElementById("A").style('background-color')).toBe('green');
   });
 });

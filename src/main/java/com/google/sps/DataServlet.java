@@ -15,6 +15,7 @@
 package com.google.sps;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.common.graph.MutableGraph;
+import com.google.protobuf.TextFormat;
 import com.proto.GraphProtos.Graph;
 import com.proto.GraphProtos.Node;
 import com.proto.MutationProtos.MultiMutation;
@@ -103,12 +105,12 @@ public class DataServlet extends HttpServlet {
       // InputStreamReader(getServletContext().getResourceAsStream("/WEB-INF/mutations.textproto"));
       // MutationList.Builder mutBuilder = MutationList.newBuilder();
       // TextFormat.merge(mutReader, mutBuilder);
-      // List<MultiMutation> mutList = mutBuilder.build().getMutationList();
+      // mutList = mutBuilder.build().getMutationList();
       /*
        * This code is used to read a mutation list specified in proto binary format.
        */
       // Parse the contents of mutation.txt into a list of mutations
-      mutList =
+      // mutList =
           MutationList.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/mutations.txt"))
               .getMutationList();
     }

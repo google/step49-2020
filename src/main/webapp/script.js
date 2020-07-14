@@ -26,7 +26,7 @@ import 'tippy.js/dist/tippy.css';
 import 'tippy.js/dist/backdrop.css';
 import 'tippy.js/animations/shift-away.css';
 
-export { initializeNumMutations, setCurrGraphNum, initializeTippy, generateGraph, getUrl, navigateGraph, currGraphNum, numMutations, updateButtons };
+export { initializeNumMutations, setCurrGraphNum, initializeTippy, generateGraph, getUrl, navigateGraph, currGraphNum, numMutations, updateButtons, highlightDiff };
 
 cytoscape.use(popper); // register extension
 cytoscape.use(dagre); // register extension
@@ -123,71 +123,6 @@ async function generateGraph() {
   return;
 }
 
-function highlightDiff(cy, mutList) {
-  if (!mutList) {
-    return;
-  }
-  var revMutList = mutList.reverse();
-  revMutList.forEach(mutation => affectMutationOnGraph(cy, mutation));
-}
-
-function affectMutationOnGraph(cy, mutation) {
-  const type = mutation["type_"] || -1;
-  let startNode, endNode;
-  switch (type) {
-    case 1:
-      // add node
-      console.log("here");
-      startNode = mutation["startNode_"];
-      cy.getElementById(startNode).style('background-color', 'green');
-      break;
-    case 2:
-      // add edge
-      console.log("here2");
-      startNode = mutation["startNode_"];
-      endNode = mutation["endNode_"];
-      cy.getElementById(`edge${startNode}${endNode}`).style('line-color', 'green');
-      cy.getElementById(`edge${startNode}${endNode}`).style('target-arrow-color', 'green');
-      break;
-    case 3:
-      // delete node
-      startNode = mutation["startNode_"];
-      console.log(startNode);
-      if (startNode.length !== 0) {
-        cy.add({
-          group: "nodes",
-          data: { id: startNode }
-        });
-        cy.getElementById(startNode).style('background-color', 'red');
-      }
-      break;
-    case 4:
-      // delete edge
-      startNode = mutation["startNode_"];
-      endNode = mutation["endNode_"];
-      if (startNode.length !== 0 && endNode.length !== 0) {
-        cy.add({
-          group: "edges",
-          data: {
-            id: `edge${startNode}${endNode}`,
-            target: endNode,
-            source: startNode
-          }
-        });
-        cy.getElementById(`edge${startNode}${endNode}`).style('line-color', 'red');
-        cy.getElementById(`edge${startNode}${endNode}`).style('target-arrow-color', 'red');
-      }
-      break;
-    case 5:
-      // change node
-      startNode = mutation["startNode_"];
-      cy.getElementById(startNode).style('background-color', 'yellow');
-      break;
-    default:
-      return;
-  }
-}
-
 /**
  * Returns the url string given the user input
  * Ensures that the depth is an integer between 0 and 20
@@ -236,7 +171,6 @@ function displayError(errorMsg) {
  * data. Assumes that the graph is a DAG to display it in the optimal layout.
  */
 function getGraphDisplay(graphNodes, graphEdges, mutDiff) {
-  console.log(mutDiff);
   const cy = cytoscape({
     container: document.getElementById("graph"),
     elements: {
@@ -290,6 +224,78 @@ function getGraphDisplay(graphNodes, graphEdges, mutDiff) {
   cy.layout({
     name: 'dagre'
   }).run();
+}
+
+function highlightDiff(cy, mutList) {
+  if (!mutList) {
+    return;
+  }
+  mutList.forEach(mutation => affectMutationOnGraph(cy, mutation));
+}
+
+function affectMutationOnGraph(cy, mutation) {
+  const type = mutation["type_"] || -1;
+  let startNode = mutation["startNode_"];
+  let endNode = mutation["endNode_"];
+  switch (type) {
+    case 1:
+      // add node
+      // color this node green
+      cy.getElementById(startNode).style('background-color', 'green');
+      console.log(cy.getElementById(startNode).style().json());
+      break;
+    case 2:
+      // add edge
+      // color this edge green
+      cy.getElementById(`edge${startNode}${endNode}`).style('line-color', 'green');
+      cy.getElementById(`edge${startNode}${endNode}`).style('target-arrow-color', 'green');
+      break;
+    case 3:
+      // add a phantom node and color it red
+      if(cy.getElementById(startNode).length === 0) {
+        cy.add({
+          group: "nodes",
+          data: { id: startNode }
+        });
+      }
+      cy.getElementById(startNode).style('background-color', 'red');
+      cy.getElementById(startNode).style('opacity', 0.25);
+      break;
+    case 4:
+      // delete edge
+      // if corresponding nodes don't exist, add them
+      if (cy.getElementById(startNode).length === 0) {
+        cy.add({
+          group: "nodes",
+          data: { id: startNode }
+        });
+      }
+      if (cy.getElementById(endNode).length === 0) {
+        cy.add({
+          group: "nodes",
+          data: { id: endNode }
+        });
+      }
+      cy.add({
+        group: "edges",
+        data: {
+          id: `edge${startNode}${endNode}`,
+          target: endNode,
+          source: startNode
+        }
+      });
+      // Add a phantom edge and color it red
+      cy.getElementById(`edge${startNode}${endNode}`).style('line-color', 'red');
+      cy.getElementById(`edge${startNode}${endNode}`).style('target-arrow-color', 'red');
+      cy.getElementById(`edge${startNode}${endNode}`).style('opacity', 0.25);
+      break;
+    case 5:
+      // change node
+      cy.getElementById(startNode).style('background-color', 'yellow');
+      break;
+    default:
+      return;
+  }
 }
 
 /**
