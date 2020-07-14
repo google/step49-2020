@@ -39,10 +39,10 @@ abstract class DataGraph {
    */
   public static DataGraph create() {
     return new AutoValue_DataGraph(
-        GraphBuilder.directed().build(),
-        new HashMap<String, GraphNode>(),
-        new HashSet<String>(),
-        0);
+        /* graph = */ GraphBuilder.directed().build(),
+        /* graphNodesMap = */ new HashMap<String, GraphNode>(),
+        /* roots = */ new HashSet<String>(),
+        /* numMutations = */ 0);
   }
 
   /**
@@ -51,8 +51,7 @@ abstract class DataGraph {
    * @param graph the guava graph
    * @param graphNodesMap the map from node name to node
    * @param roots a set of roots (nodes with no in-edges) of the graph
-   * @param numMutations the maximum number of mutations in the list of mutations this graph is an
-   *     intermediate result of applyiing
+   * @param numMutations the number of mutations applied to the initial graph to get this graph
    * @return the data graph with these attributes
    */
   static DataGraph create(
@@ -87,14 +86,14 @@ abstract class DataGraph {
   /**
    * Getter for the number of mutations
    *
-   * @return the max number of mutations
+   * @return the the number of mutations applied to the initial graph to get this graph
    */
   abstract int numMutations();
 
   /**
-   * Return a deep copy of the given data graph
+   * Return a shallow copy of the given data graph
    *
-   * @return a deep copy of the given data graph
+   * @return a shallow copy of the given data graph containing shallow copies of its attributes
    */
   public DataGraph getCopy() {
     MutableGraph<GraphNode> graph = this.graph();
