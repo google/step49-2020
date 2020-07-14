@@ -121,22 +121,24 @@ public final class Utility {
   }
 
   /**
-   * Returns a multi-mutation (list of mutations) that need to be applied to get from the graph
-   * at currIndex to the graph at nextIndex as long as the indices are consecutive
+   * Returns a multi-mutation (list of mutations) that need to be applied to get from the graph at
+   * currIndex to the graph at nextIndex as long as the indices are consecutive
    *
    * @param multiMutList the list of multi-mutations that are to be applied to the initial graph
    * @param currIndex the index in the above list the current graph is at
    * @param nextIndex the next index to generate a graph for
    * @return a multimutation with all the changes to apply to the current graph to get the next
-   * graph
+   *     graph
    */
   public static MultiMutation diffBetween(
       List<MultiMutation> multiMutList, int currIndex, int nextIndex) {
-    if(currIndex < 0 || currIndex > multiMutList.size() || nextIndex < 0 || nextIndex > multiMutList.size()) {
+    if (currIndex < 0
+        || currIndex > multiMutList.size()
+        || nextIndex < 0
+        || nextIndex > multiMutList.size()) {
       // Out of bounds indices
       return null;
-    }
-    else if (Math.abs(currIndex - nextIndex) != 1) {
+    } else if (Math.abs(currIndex - nextIndex) != 1) {
       // Non-adjacent indices
       return null;
     } else if (nextIndex - currIndex == 1) {
@@ -150,16 +152,16 @@ public final class Utility {
       MultiMutation multiMut = multiMutList.get(nextIndex);
       List<Mutation> mutList = multiMut.getMutationList();
 
-      // Create a resulting multimutation with the same reason 
+      // Create a resulting multimutation with the same reason
       MultiMutation.Builder resultMultiMut =
           MultiMutation.newBuilder().setReason(multiMut.getReason());
 
       /*
-       * Invert each mutation in the list and apply them in reverse order. For example, deleting a node and all 
+       * Invert each mutation in the list and apply them in reverse order. For example, deleting a node and all
        * adjacent edges involves first deleting all edges and then deleting the node. To reverse this, first
        * add the node and then add all the edges
        */
-      for(int i = mutList.size() - 1; i >=0; i--) {
+      for (int i = mutList.size() - 1; i >= 0; i--) {
         Mutation mut = mutList.get(i);
         Mutation invertedMut = invertMutation(mut);
         resultMultiMut.addMutation(invertedMut);
@@ -169,9 +171,9 @@ public final class Utility {
   }
 
   /**
-   * Returns the complement of a given mutation. For example, add node becomes delete node, delete edge
-   * becomes add edge, change token remains change token but with the token change inverted
-   * 
+   * Returns the complement of a given mutation. For example, add node becomes delete node, delete
+   * edge becomes add edge, change token remains change token but with the token change inverted
+   *
    * @param mut the mutation to invert
    * @return the inverted mutation or null if the mutation type is not recognized
    */
@@ -204,9 +206,9 @@ public final class Utility {
   }
 
   /**
-   * Returns the complement of a given token mutation. For example, add tokens becomes
-   * remove tokens and vice versa.
-   * 
+   * Returns the complement of a given token mutation. For example, add tokens becomes remove tokens
+   * and vice versa.
+   *
    * @param mut the token mutation to invert
    * @return the inverted token mutation or null if the mutation type is not recognized
    */
