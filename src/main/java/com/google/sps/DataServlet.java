@@ -78,8 +78,7 @@ public class DataServlet extends HttpServlet {
       /*
        * This code is used to read a graph specified in proto binary format.
        */
-      Graph protoGraph =
-          Graph.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/graph.txt"));
+      Graph protoGraph = Graph.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/graph.txt"));
       Map<String, Node> protoNodesMap = protoGraph.getNodesMapMap();
       // Originally both set to same data
       originalDataGraph = DataGraph.create();
@@ -95,7 +94,8 @@ public class DataServlet extends HttpServlet {
       response.setHeader("serverError", error);
       return;
     }
-
+    // Relevant mutation indicies, start as everything
+    List<Integer> relevantMutationIndices; // should originally be everything
     // Mutations file hasn't been read yet
     if (mutList == null) {
       /*
@@ -110,18 +110,17 @@ public class DataServlet extends HttpServlet {
        * This code is used to read a mutation list specified in proto binary format.
        */
       // Parse the contents of mutation.txt into a list of mutations
-      mutList =
-          MutationList.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/mutations.txt"))
-              .getMutationList();
+      mutList = MutationList.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/mutations.txt"))
+          .getMutationList();
     }
 
     // Parameter for the nodeName the user searched for in the frontend
     String nodeNameParam = request.getParameter("nodeName");
 
     // The current graph at the specified index
-    currDataGraph =
-        Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
+    currDataGraph = Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
 
+    // Current mutation number
     int oldNumMutations = currDataGraph.numMutations(); // The old mutation number
 
     // returns null if either mutation isn't able to be applied or if num < 0
@@ -131,7 +130,9 @@ public class DataServlet extends HttpServlet {
       return;
     }
 
+
     List<Mutation> truncatedMutList;
+
     MutableGraph<GraphNode> truncatedGraph;
     // If a node is searched, get the graph with just the node. Otherwise, use the
     // whole graph
@@ -143,15 +144,20 @@ public class DataServlet extends HttpServlet {
     } else {
       // This is the single search
       truncatedGraph = currDataGraph.getReachableNodes(nodeNameParam, depthNumber);
-      // If the truncated graph is empty, it doesn't exist on the page. Check if there are any
+
+      // Indicies of relevant mutations
+      relevantMutationIndices = Utility.getMutationIndicesOfNode(nodeNameParam, mutList);
+
+      // If the truncated graph is empty, it doesn't exist on the page. Check if there
+      // are any
       // mutations that affect it
-      truncatedMutList =
-          Utility.getMutationsOfNode(nodeNameParam, mutList); // only mutations relevant to the node
+      truncatedMutList = Utility.getMutationsFromIndices(relevantMutationIndices, mutList); // only mutations relevant to the node
 
       // oldNumMutations is the number of mutations that were applied.
       // you want to see where this falls in the new one
 
-      // If the graph is empty and there are no relevant mutations, then we give a server error.
+      // If the graph is empty and there are no relevant mutations, then we give a
+      // server error.
       if (truncatedGraph.nodes().isEmpty() && truncatedMutList.isEmpty()) {
         // If the truncated mutList is empty, then it is nowhere to be found!
         String error = "There are no nodes anywhere on this graph!";
