@@ -331,14 +331,14 @@ abstract class DataGraph {
   }
 
   /**
-   * Returns a MutableGraph with nodes that are at most a certain radius from a given node If the
-   * radius is less than 0 or the node specified isn't present, return an emptu graph Since maxDepth
+   * Returns a MutableGraph with nodes that are at most a certain radius from a given node. If the
+   * radius is less than 0 or the node specified isn't present, return an empty graph. Since maxDepth
    * was implemented as DFS, we use BFS for *diversity*
    *
    * @param name the name of the node to search for
    * @param radius the distance from the node to search for parents and children
    * @return a graph comprised of only nodes and edges within a certain distance from the specified
-   *     node
+   *     node. Empty if radius is less than 0 or if the node isn't found.
    */
   public MutableGraph<GraphNode> getReachableNodes(String name, int radius) {
     if (radius < 0) {
