@@ -99,17 +99,16 @@ public final class Utility {
 
     switch (mut.getType()) {
       case ADD_NODE:
-        if (graphNodesMap.containsKey(startName)) {
-          // adding a duplicate node
-          return false;
+        // Don't add duplicate nodes
+        if (!graphNodesMap.containsKey(startName)) {
+          // New lone node is a root
+          roots.add(startName);
+          // Create a new node with the given name and add it to the graph and the map
+          GraphNode newGraphNode =
+              GraphNode.create(startName, new ArrayList<>(), Struct.newBuilder().build());
+          graph.addNode(newGraphNode);
+          graphNodesMap.put(startName, newGraphNode);
         }
-        // New lone node is a root
-        roots.add(startName);
-        // Create a new node with the given name and add it to the graph and the map
-        GraphNode newGraphNode =
-            GraphNode.create(startName, new ArrayList<>(), Struct.newBuilder().build());
-        graph.addNode(newGraphNode);
-        graphNodesMap.put(startName, newGraphNode);
         break;
       case ADD_EDGE:
         if (startNode == null || endNode == null) { // Check nodes exist before adding an edge

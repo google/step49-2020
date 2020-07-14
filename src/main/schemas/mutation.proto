@@ -36,20 +36,20 @@ message Mutation {
    * is ADD_EDGE/DELETE_EDGE, this is the start of the
    * directed edge.
    */
-  string startNode = 2;
+  string start_node = 2;
 
   /**
    * Not specified if the type is ADD_NODE, DELETE_NODE,
    * or CHANGE_TOKEN. If the type is ADD_EDGE/DELETE_EDGE,
    * this is the name of the end of the directed edge
    */
-  string endNode = 3;
+  string end_node = 3;
 
   /**
    * If the type of the mutation is CHANGE_TOKEN, the 
    * change to the list of tokens of the node
    */
-  TokenMutation tokenChange = 4;
+  TokenMutation token_change = 4;
   
   /** Reason the mutation happened */
   string reason = 5;

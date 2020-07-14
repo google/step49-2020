@@ -1,0 +1,40 @@
+{
+  "name": "step49-2020",
+  "version": "1.0.0",
+  "description": "### Objective:  Create a generic graph visualization tool that makes debugging easier for developers by helping them track mutations in graph structures.",
+  "main": "src/main/webapp/script.js",
+  "scripts": {
+    "start": "./node_modules/.bin/webpack; mvn package appengine:run",
+    "test": "karma start karma.conf.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/googleinterns/step49-2020.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/googleinterns/step49-2020/issues"
+  },
+  "homepage": "https://github.com/googleinterns/step49-2020#readme",
+  "dependencies": {
+    "cytoscape": "^3.15.1",
+    "cytoscape-dagre": "^2.2.2",
+    "cytoscape-popper": "^1.0.7",
+    "karma-webpack": "^4.0.2",
+    "requirejs": "^2.3.6",
+    "tippy.js": "^5.2.1"
+  },
+  "devDependencies": {
+    "css-loader": "^3.6.0",
+    "jasmine": "^3.5.0",
+    "karma": "^5.1.0",
+    "karma-chrome-launcher": "^3.1.0",
+    "karma-jasmine": "^3.3.1",
+    "karma-phantomjs-launcher": "^1.0.4",
+    "karma-requirejs": "^1.1.0",
+    "style-loader": "^1.2.1",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.12"
+  }
+}

@@ -17,6 +17,21 @@
  * nodes and edges of the graph, renders the graph in a container on the page using
  * the cytoscape.js library
  */
+
+import cytoscape from 'cytoscape';
+import dagre from 'cytoscape-dagre';
+import popper from 'cytoscape-popper';
+import tippy, { sticky } from 'tippy.js';
+import 'tippy.js/dist/tippy.css';
+import 'tippy.js/dist/backdrop.css';
+import 'tippy.js/animations/shift-away.css';
+
+export { initializeTippy, generateGraph, getUrl, searchNode };
+
+
+cytoscape.use(popper); // register extension
+cytoscape.use(dagre); // register extension
+
 async function generateGraph() {
   // Arrays to store the cytoscape graph node and edge objects
   let graphNodes = [];
@@ -35,8 +50,8 @@ async function generateGraph() {
 
   const jsonResponse = await response.json();
   // Graph nodes and edges received from server
-  let nodes = JSON.parse(jsonResponse.nodes);
-  let edges = JSON.parse(jsonResponse.edges);
+  const nodes = JSON.parse(jsonResponse.nodes);
+  const edges = JSON.parse(jsonResponse.edges);
 
   if (!nodes || !edges || !Array.isArray(nodes) || !Array.isArray(edges)) {
     displayError("Malformed graph received from server - edges or nodes are empty");
@@ -52,12 +67,12 @@ async function generateGraph() {
   nodes.forEach(node =>
     graphNodes.push({
       group: "nodes",
-      data: { id: node["name"] }
+      data: { id: node["name"], metadata: node["metadata"], tokens: node["tokenList"] }
     }))
   // and edge to array of cytoscape edges
   edges.forEach(edge => {
-    let start = edge["nodeU"]["name"];
-    let end = edge["nodeV"]["name"];
+    const start = edge["nodeU"]["name"];
+    const end = edge["nodeV"]["name"];
     graphEdges.push({
       group: "edges",
       data: {
@@ -112,7 +127,7 @@ function displayError(errorMsg) {
  * data. Assumes that the graph is a DAG to display it in the optimal layout.
  */
 function getGraphDisplay(graphNodes, graphEdges) {
-  cytoscape({
+  const cy = cytoscape({
     container: document.getElementById("graph"),
     elements: {
       nodes: graphNodes,
@@ -124,7 +139,6 @@ function getGraphDisplay(graphNodes, graphEdges) {
         style: {
           width: '50px',
           height: '50px',
-          shape: 'square',
           'background-color': 'blue',
           'label': 'data(id)',
           'color': 'white',
@@ -144,13 +158,128 @@ function getGraphDisplay(graphNodes, graphEdges) {
         }
       }],
     layout: {
-      name: 'breadthfirst',
-      maximal: true,
-      directed: true,
-      padding: 10,
-      avoidOverlap: true,
-      spacingFactor: 2,
-      zoom: .75
-    }
+      name: 'dagre'
+    },
+    zoom: 0.75,
+    pan: { x: 0, y: 0 },
+    minZoom: .25,
+    maxZoom: 2.5
   });
+
+  // Initialize content of node's token list popup
+  cy.nodes().forEach(node => initializeTippy(node));
+
+  // When the user clicks on a node, display the token list tooltip for the node
+  cy.on('tap', 'node', function(evt) {
+    const node = evt.target;
+    node.tip.show();
+  });
+
+  const searchElement = document.getElementById('search');
+  document.getElementById('search-button').onclick = function() {
+    if (searchNode(cy, searchElement.value) || searchElement.value == "") {
+      document.getElementById('search-error').innerText = "";
+    } else {
+      document.getElementById('search-error').innerText = "Node does not exist.";
+    }
+  };
+  
+}
+
+/**
+ * Zooms in on specific node
+ */
+function searchNode(cy, query) {
+  // reset nodes to default color
+  cy.nodes().forEach(node => {
+    node.style('background-color', 'blue');
+    node.style('opacity', '1')
+  });
+  const target = findNodeInGraph(cy, query);
+  if (target) {
+    cy.nodes().forEach(node => node.style('opacity', '0.25'));
+    target.style('background-color', 'olive');
+    target.style('opacity', '1');
+    cy.fit(target, 50);
+    return true;
+  } else {
+    // fits all nodes on screen
+    cy.fit(cy.nodes(), 50);
+    return false;
+  }
+}
+
+/**
+ * Finds element in cy graph by id
+ */
+function findNodeInGraph(cy, id) {
+  if (id.length != 0) {
+    const target = cy.$('#'+id);
+    if (target.length != 0) {
+      return target;
+    }
+  }
+  return null;
+}
+
+/**
+ * Initializes a tooltip containing the node's token list
+ */
+function initializeTippy(node) {
+  const tipPosition = node.popperRef(); // used only for positioning
+
+  // a dummy element must be passed as tippy only accepts a dom element as the target
+  const dummyDomEle = document.createElement('div');
+
+  node.tip = tippy(dummyDomEle, { 
+    trigger: 'manual',
+    lazy: false, 
+    onCreate: instance => { instance.popperInstance.reference = tipPosition; },
+
+    content: () => getTooltipContent(node),
+    interactive: true,
+    appendTo: document.body,
+    // the tooltip  adheres to the node if the graph is zoomed in on
+    sticky: true,
+    plugins: [sticky]
+  });
+}
+
+/**
+ * Takes in a node and returns an HTML element containing the element's
+ * tokens formatted into an HTML unordered list with a close button if
+ * the node has tokens and a message indicating so if it doesn't.
+ */
+function getTooltipContent(node) {
+  const content = document.createElement("div");
+
+  // Create button that will close the tooltip
+  const closeButton = document.createElement("button");
+  closeButton.innerText = "close";
+  closeButton.classList.add("material-icons", "close-button");
+  closeButton.addEventListener('click', function() {
+    node.tip.hide();
+  }, false);
+  content.appendChild(closeButton);
+
+  const nodeTokens = node.data("tokens");
+  if (nodeTokens.length === 0) {
+    // The node has an empty token list
+    const noTokenMsg = document.createElement("p");
+    noTokenMsg.innerText = "No tokens";
+    content.appendChild(noTokenMsg);
+  } else {
+    // The node has some tokens
+    const tokenList = document.createElement("ul");
+    nodeTokens.forEach(token => {
+      const tokenItem = document.createElement("li");
+      tokenItem.innerText = token;
+      tokenList.appendChild(tokenItem);
+    });
+    tokenList.className = "tokenlist";
+    content.appendChild(tokenList);
+  }
+  content.className = "metadata";
+
+  return content;
 }

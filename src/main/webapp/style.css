@@ -1,12 +1,34 @@
+body {
+  margin: 50px;
+}
+
 #graph {
-    width: 90%;
-    height: 90vh;
-    position: absolute;
-    margin: 20px;
-    border: solid 1px black;
+  width: 90%;
+  height: 90vh;
+  position: absolute;
+  margin: 20px;
+  border: solid 1px black;
 }
 
 #errortext {
   color: red;
-  font-size: 40px;
+  font-size: 25px;
+}
+
+.metadata {
+  overflow-y: auto;
+  overflow-x: auto;
+  white-space: nowrap;
+  width: 400px;
+  height: 200px;
+  font-size: 30px;
+}
+
+.tokenlist {
+  list-style-type: none;
+  padding-left: 0px;
+}
+
+.close-button {
+  float: right;
 }

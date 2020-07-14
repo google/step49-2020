@@ -15,6 +15,7 @@
 package com.google.sps;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -26,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.common.graph.MutableGraph;
+import com.google.protobuf.TextFormat;
 import com.proto.GraphProtos.Graph;
 import com.proto.GraphProtos.Node;
 import com.proto.MutationProtos.Mutation;
@@ -58,9 +60,21 @@ public class DataServlet extends HttpServlet {
     // Initialize variables if any are null. Ideally should all be null or none
     // should be null
     if (currDataGraph == null && originalDataGraph == null) {
+      // PROTO Data structure:
+      // Parse the contents of graph.txt into a proto Graph object, and extract
+      // information from the proto object into a map. This is used to store the proto
+      // input and isn't updated with mutations.
 
-      Graph protoGraph =
-          Graph.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/graph.txt"));
+      /*
+       * The below code is used to read a graph specified in textproto form
+       */
+      InputStreamReader graphReader =
+          new InputStreamReader(
+              getServletContext().getResourceAsStream("/WEB-INF/graph.textproto"));
+      Graph.Builder graphBuilder = Graph.newBuilder();
+      TextFormat.merge(graphReader, graphBuilder);
+      Graph protoGraph = graphBuilder.build();
+
       Map<String, Node> protoNodesMap = protoGraph.getNodesMapMap();
       // Originally both set to same data
       originalDataGraph = DataGraph.create();
@@ -89,10 +103,16 @@ public class DataServlet extends HttpServlet {
 
     // Mutations file hasn't been read yet
     if (mutList == null) {
-      // Parse the contents of mutation.txt into a list of mutations
-      mutList =
-          MutationList.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/mutations.txt"))
-              .getMutationList();
+      /*
+       * The below code is used to read a mutation list specified in textproto form
+       */
+      InputStreamReader mutReader =
+          new InputStreamReader(
+              getServletContext().getResourceAsStream("/WEB-INF/mutation.textproto"));
+      MutationList.Builder mutBuilder = MutationList.newBuilder();
+      TextFormat.merge(mutReader, mutBuilder);
+      List<Mutation> mutList = mutBuilder.build().getMutationList();
+
       // Only apply mutations once
       for (Mutation mut : mutList) {
         success = Utility.mutateGraph(mut, graph, graphNodesMap, roots);

@@ -84,10 +84,11 @@ public final class MutationTest {
   }
 
   /*
-   * Check that adding duplicate nodes is not allowed
+   * Check that adding duplicate nodes does not cause an error
+   * but does not make any change to the graph
    */
   @Test
-  public void noAddDuplicates() {
+  public void duplicateAddNoChange() {
     MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
     graph.addNode(gNodeA);
     HashMap<String, GraphNode> graphNodesMap = new HashMap<>();
@@ -96,7 +97,10 @@ public final class MutationTest {
     Mutation addA = Mutation.newBuilder().setType(Mutation.Type.ADD_NODE).setStartNode("A").build();
     HashSet<String> roots = new HashSet<>();
     boolean success = Utility.mutateGraph(addA, graph, graphNodesMap, roots);
-    Assert.assertFalse(success);
+    Assert.assertTrue(success);
+    Set<GraphNode> graphNodes = graph.nodes();
+    Assert.assertEquals(graphNodes.size(), 1);
+    Assert.assertTrue(graphNodes.contains(gNodeA));
   }
 
   /*
