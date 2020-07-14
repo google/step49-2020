@@ -136,5 +136,13 @@ public final class Utility {
     return lst;
   }
 
-  public static void findFirstInstanceOfNode(String nodeName, List<Mutation> origList) {}
+  public static int findFirstInstanceOfNode(String nodeName, List<Mutation> origList) {
+    List<Mutation> newList = new ArrayList<>();
+    for (int i = 0; i < origList.size(); i++) {
+      Mutation mut = origList.get(i);
+      String startName = mut.getStartNode();
+      return i;
+    }
+    return -1;
+  }
 }
