@@ -210,7 +210,7 @@ describe("Node search", function() {
   });
 
   it("should be a successful search", function() {
-    let result = searchNode(cy, "A");
+    const result = searchNode(cy, "A");
 
     // search should find node
     expect(result).toBe(true);
