@@ -123,7 +123,6 @@ public class DataServlet extends HttpServlet {
     }
 
     MutableGraph<GraphNode> truncatedGraph; // issue: has to get the truncated graph everytime
-    List<Mutation> truncatedMutList;
 
     // If a node is searched, get the graph with just the node. Otherwise, use the
     // whole graph

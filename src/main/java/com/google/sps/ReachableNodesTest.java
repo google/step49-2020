@@ -185,6 +185,31 @@ public class ReachableNodesTest {
     Assert.assertEquals(2, graphEdges.size());
   }
 
+  /** Test nodes in a different connected component are not reachable */
+  @Test 
+  public void diffConnectedComponentNotReachable() {
+    nodeA.addChildren("B");
+
+    HashMap<String, Node> protoNodesMap = new HashMap<>();
+    protoNodesMap.put("A", nodeA.build());
+    protoNodesMap.put("B", nodeB.build());
+    protoNodesMap.put("C", nodeC.build());
+
+    DataGraph dataGraph = DataGraph.create();
+    dataGraph.graphFromProtoNodes(protoNodesMap);
+
+    MutableGraph<GraphNode> truncatedGraph = dataGraph.getReachableNodes("B", 5);
+    Set<GraphNode> graphNodes = truncatedGraph.nodes();
+    Set<EndpointPair<GraphNode>> graphEdges = truncatedGraph.edges();
+
+    Assert.assertEquals(2, graphNodes.size());
+    Assert.assertTrue(graphNodes.contains(gNodeA));
+    Assert.assertTrue(graphNodes.contains(gNodeB));
+    Assert.assertFalse(graphNodes.contains(gNodeC));
+
+    Assert.assertEquals(1, graphEdges.size());
+  }
+
   /**
    * This test mirrors the example graph we have in graph.txt after the mutations
    * specified.

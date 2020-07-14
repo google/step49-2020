@@ -370,6 +370,7 @@ abstract class DataGraph {
     queue.add(tgtNode); // Adds the searched node to the queue
  
     for (int i = 0; i <= radius; i++) {
+      // Break out early if queue is empty
       if (queue.size() == 0) {
         break;
       }
