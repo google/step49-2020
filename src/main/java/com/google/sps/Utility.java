@@ -175,4 +175,24 @@ public final class Utility {
     }
     return lst;
   }
+
+  public static int getNextGreatest(List<Integer> searchList, int tgt) {
+    int start = 0;
+    int end = searchList.size() - 1;  
+
+    int ans = -1;  
+    while (start <= end) {  
+        int mid = (start + end) / 2;  
+        // Target is greater, move to right side  
+        if (searchList.get(mid) <= tgt) {  
+            start = mid + 1;  
+        }  
+        // Move left side.  
+        else {  
+            ans = mid;  
+            end = mid - 1;  
+        }  
+    }  
+    return ans; 
+  }
 }
