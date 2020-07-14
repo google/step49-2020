@@ -211,8 +211,8 @@ public class ReachableNodesTest {
   }
 
   /**
-   * This test mirrors the example graph we have, tests that only parents of
-   * parents (and not children of parents) are added.
+   * This test mirrors the example graph we have, tests that only parents of parents (and not
+   * children of parents) are added.
    */
   @Test
   public void linearNodesOnly() {
