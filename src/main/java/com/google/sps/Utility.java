@@ -16,17 +16,13 @@ package com.google.sps;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
 import com.google.common.graph.EndpointPair;
 import com.google.common.graph.MutableGraph;
 import com.google.common.reflect.TypeToken;
-import com.google.protobuf.util.JsonFormat;
 import com.google.gson.Gson;
-import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Struct;
 import com.proto.GraphProtos.Node;
 import com.proto.MutationProtos.MultiMutation;
@@ -42,8 +38,8 @@ public final class Utility {
   }
 
   /**
-   * Converts a proto node object into a graph node object that does not store the
-   * names of the child nodes but may store additional information.
+   * Converts a proto node object into a graph node object that does not store the names of the
+   * child nodes but may store additional information.
    *
    * @param thisNode the input data Node object
    * @return a useful node used to construct the Guava Graph
@@ -56,24 +52,24 @@ public final class Utility {
   }
 
   /**
-   * Converts a Guava graph into a String encoding of a JSON Object. The object
-   * contains nodes and edges of the graph.
+   * Converts a Guava graph into a String encoding of a JSON Object. The object contains nodes and
+   * edges of the graph.
    *
-   * @param graph        the graph to convert into a JSON String
+   * @param graph the graph to convert into a JSON String
    * @param maxMutations the length of the list of mutations
-   * @param mutDiff      the difference between the current graph and the
-   *                     requested graph
-   * @return a JSON object containing as entries the nodes and edges of this graph
-   *         as well as the length of the list of mutations this graph is an
-   *         intermediate result of applying
+   * @param mutDiff the difference between the current graph and the requested graph
+   * @return a JSON object containing as entries the nodes and edges of this graph as well as the
+   *     length of the list of mutations this graph is an intermediate result of applying
    */
-  public static String graphToJson(MutableGraph<GraphNode> graph, int maxMutations, MultiMutation mutDiff) {
+  public static String graphToJson(
+      MutableGraph<GraphNode> graph, int maxMutations, MultiMutation mutDiff) {
     Type typeOfNode = new TypeToken<Set<GraphNode>>() {}.getType();
     Type typeOfEdge = new TypeToken<Set<EndpointPair<GraphNode>>>() {}.getType();
     Gson gson = new Gson();
     String nodeJson = gson.toJson(graph.nodes(), typeOfNode);
     String edgeJson = gson.toJson(graph.edges(), typeOfEdge);
-    String mutDiffJson = (mutDiff == null || !mutDiff.isInitialized()) ? "" : gson.toJson(mutDiff.getMutationList());
+    String mutDiffJson =
+        (mutDiff == null || !mutDiff.isInitialized()) ? "" : gson.toJson(mutDiff.getMutationList());
     String resultJson =
         new JSONObject()
             .put("nodes", nodeJson)

@@ -17,7 +17,6 @@ package com.google.sps;
 import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.MutableGraph;
 import com.google.gson.Gson;
-import com.google.protobuf.InvalidProtocolBufferException;
 import com.proto.GraphProtos.Node;
 import com.proto.GraphProtos.Node.Builder;
 import com.proto.MutationProtos.MultiMutation;
@@ -31,8 +30,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 /**
- * Since we don't manually build the JSON, we can just check all of the fields
- * in the JSON are present.
+ * Since we don't manually build the JSON, we can just check all of the fields in the JSON are
+ * present.
  */
 @RunWith(JUnit4.class)
 public final class JsonTest {
