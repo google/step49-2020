@@ -331,14 +331,16 @@ abstract class DataGraph {
   }
 
   /**
-   * Returns a MutableGraph with nodes that are at most a certain radius from a given node If the
-   * radius is less than 0 or the node specified isn't present, return an emptu graph Since maxDepth
-   * was implemented as DFS, we use BFS for *diversity*
+   * Returns a MutableGraph with nodes that are at most a certain radius from a given node. If the
+   * radius is less than 0 or the node specified isn't present, return an empty graph. Since
+   * maxDepth was implemented as DFS, we use BFS for *diversity*.
+   *
+   * <p>Here, we only consider children of children and parents of parents.
    *
    * @param name the name of the node to search for
    * @param radius the distance from the node to search for parents and children
    * @return a graph comprised of only nodes and edges within a certain distance from the specified
-   *     node
+   *     node. Empty if radius is less than 0 or if the node isn't found.
    */
   public MutableGraph<GraphNode> getReachableNodes(String name, int radius) {
     if (radius < 0) {
@@ -355,43 +357,79 @@ abstract class DataGraph {
     MutableGraph<GraphNode> graph = this.graph();
     GraphNode tgtNode = graphNodesMap.get(name);
 
-    Map<GraphNode, Boolean> visited = new HashMap<>();
+    // HashSet should have expected O(1) lookup, changed from HashMap for space
+    // Two different sets are needed because of cases where a node is both a parents
+    // and a child
+    HashSet<GraphNode> visitedChildren = new HashSet<>();
+    HashSet<GraphNode> visitedParents = new HashSet<>();
 
-    HashSet<GraphNode> nextLayer;
-    ArrayDeque<GraphNode> queue = new ArrayDeque<>();
+    HashSet<GraphNode> nextLayerChildren;
+    HashSet<GraphNode> nextLayerParents;
 
-    queue.add(tgtNode); // Adds the searched node to the queue
+    ArrayDeque<GraphNode> queueChildren = new ArrayDeque<>();
+    ArrayDeque<GraphNode> queueParents = new ArrayDeque<>();
+
+    queueChildren.add(tgtNode); // Adds the searched node to the queue
+    queueParents.add(tgtNode);
 
     for (int i = 0; i <= radius; i++) {
       // Break out early if queue is empty
-      if (queue.size() == 0) {
+      if (queueChildren.isEmpty() && queueParents.isEmpty()) {
         break;
       }
-      nextLayer = new HashSet<>();
-      while (!queue.isEmpty()) {
-        GraphNode curr = queue.poll();
 
-        if (!visited.containsKey(curr)) {
-          visited.put(curr, true);
+      // Helper function used to avoid duplicate code
+      nextLayerChildren = getNextLayer(visitedChildren, queueChildren, true);
+      nextLayerParents = getNextLayer(visitedParents, queueParents, false);
 
+      queueChildren.addAll(nextLayerChildren);
+      queueParents.addAll(nextLayerParents);
+    }
+
+    HashSet<GraphNode> visited = new HashSet<>();
+    visited.addAll(visitedChildren);
+    visited.addAll(visitedParents);
+    MutableGraph<GraphNode> graphToReturn = Graphs.inducedSubgraph(graph, visited);
+
+    return graphToReturn;
+  }
+
+  /**
+   * Helper function that gets the next layer of nodes based on what's visited, a queue, and whether
+   * we're looking for children
+   *
+   * @param visited A Hashset of visited nodes
+   * @param queue the queue of nodes to visit in the current layer
+   * @param isChild whether we're looking for children. True means we look for the children, and
+   *     False means we look for parents.
+   * @return the nodes relevant to the next layer
+   */
+  private HashSet<GraphNode> getNextLayer(
+      HashSet<GraphNode> visited, ArrayDeque<GraphNode> queue, boolean isChild) {
+    HashSet<GraphNode> nextLayer = new HashSet<>();
+    while (!queue.isEmpty()) {
+      GraphNode curr = queue.poll();
+
+      if (!visited.contains(curr)) {
+        visited.add(curr);
+
+        if (isChild) {
           // Adds the children
-          for (GraphNode child : graph.successors(curr)) {
-            if (!visited.containsKey(child)) {
+          for (GraphNode child : this.graph().successors(curr)) {
+            if (!visited.contains(child)) {
               nextLayer.add(child);
             }
           }
+        } else {
           // Adds the parents
-          for (GraphNode parent : graph.predecessors(curr)) {
-            if (!visited.containsKey(parent)) {
+          for (GraphNode parent : graph().predecessors(curr)) {
+            if (!visited.contains(parent)) {
               nextLayer.add(parent);
             }
           }
         }
       }
-      queue.addAll(nextLayer);
     }
-    MutableGraph<GraphNode> graphToReturn = Graphs.inducedSubgraph(graph, visited.keySet());
-
-    return graphToReturn;
+    return nextLayer;
   }
 }
