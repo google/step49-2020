@@ -124,9 +124,9 @@ public class DataServlet extends HttpServlet {
       // truncatedGraph = currDataGraph.getReachableNodes(nodeNameParam, depthNumber);
       truncatedMutList = Utility.getMutationsOfNode(nodeNameParam, mutList);
       currDataGraph =
-        Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
+          Utility.getGraphAtMutationNumber(
+              originalDataGraph, currDataGraph, mutationNumber, mutList);
     }
-
 
     currDataGraph =
         Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
@@ -137,7 +137,6 @@ public class DataServlet extends HttpServlet {
     }
 
     MutableGraph<GraphNode> truncatedGraph; // issue: has to get the truncated graph everytime
-    
 
     // If a node is searched, get the graph with just the node. Otherwise, use the
     // whole graph

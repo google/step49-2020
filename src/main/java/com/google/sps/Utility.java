@@ -116,7 +116,7 @@ public final class Utility {
   /**
    * Returns a new mutation list with only the mutations relevant to a specified node
    *
-   * @param nodeName the name of the node to filter 
+   * @param nodeName the name of the node to filter
    * @param origList the original list of mutations
    * @return a list of mutations that affect a given node
    */

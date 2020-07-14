@@ -206,7 +206,10 @@ public class GraphMutationTest {
     Assert.assertEquals(newNodeA.tokenList(), newTokenList);
   }
 
-  /** Mutation Number requested exceeds the length of the mutation list, should return the last mutation */
+  /**
+   * Mutation Number requested exceeds the length of the mutation list, should return the last
+   * mutation
+   */
   @Test
   public void numberRequestedTooBig() {
     HashMap<String, Node> protoNodesMap = new HashMap<>();
@@ -313,7 +316,7 @@ public class GraphMutationTest {
   /** Basic test for including mutliple relevant nodes */
   @Test
   public void getMutationsOfBasic() {
-      Mutation addAB =
+    Mutation addAB =
         Mutation.newBuilder()
             .setType(Mutation.Type.ADD_EDGE)
             .setStartNode("A")
