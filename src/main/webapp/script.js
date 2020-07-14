@@ -26,7 +26,8 @@ import 'tippy.js/dist/tippy.css';
 import 'tippy.js/dist/backdrop.css';
 import 'tippy.js/animations/shift-away.css';
 
-export { initializeTippy, generateGraph, getUrl };
+export { initializeTippy, generateGraph, getUrl, searchNode };
+
 
 cytoscape.use(popper); // register extension
 cytoscape.use(dagre); // register extension
@@ -49,8 +50,8 @@ async function generateGraph() {
 
   const jsonResponse = await response.json();
   // Graph nodes and edges received from server
-  let nodes = JSON.parse(jsonResponse.nodes);
-  let edges = JSON.parse(jsonResponse.edges);
+  const nodes = JSON.parse(jsonResponse.nodes);
+  const edges = JSON.parse(jsonResponse.edges);
 
   if (!nodes || !edges || !Array.isArray(nodes) || !Array.isArray(edges)) {
     displayError("Malformed graph received from server - edges or nodes are empty");
@@ -70,8 +71,8 @@ async function generateGraph() {
     }))
   // and edge to array of cytoscape edges
   edges.forEach(edge => {
-    let start = edge["nodeU"]["name"];
-    let end = edge["nodeV"]["name"];
+    const start = edge["nodeU"]["name"];
+    const end = edge["nodeV"]["name"];
     graphEdges.push({
       group: "edges",
       data: {
@@ -178,7 +179,7 @@ function getGraphDisplay(graphNodes, graphEdges) {
   document.getElementById('reset').onclick = function(){ resetNodes(cy) };
 
   document.getElementById('search-button').onclick = function() { search(cy, "node", searchNode, graphNodes) };
-  
+
   document.getElementById('search-token-button').onclick = function() { search(cy, "token", searchToken, graphNodes) };
 }
 
@@ -208,10 +209,9 @@ function searchNode(cy, query) {
       cy.fit(target, 50);
       return true;
     }
-    return false;
   }
+  return false;
 }
-
 /**
  * Constructs list of nodes that contain specified token
  * and zooms in
@@ -256,10 +256,10 @@ function resetNodes(cy) {
  * Initializes a tooltip containing the node's token list
  */
 function initializeTippy(node) {
-  let tipPosition = node.popperRef(); // used only for positioning
+  const tipPosition = node.popperRef(); // used only for positioning
 
   // a dummy element must be passed as tippy only accepts a dom element as the target
-  let dummyDomEle = document.createElement('div');
+  const dummyDomEle = document.createElement('div');
 
   node.tip = tippy(dummyDomEle, { 
     trigger: 'manual',
@@ -277,14 +277,14 @@ function initializeTippy(node) {
 
 /**
  * Takes in a node and returns an HTML element containing the element's
- * tokens formatted into an HTML unordered list witha  close button if
+ * tokens formatted into an HTML unordered list with a close button if
  * the node has tokens and a message indicating so if it doesn't.
  */
 function getTooltipContent(node) {
-  let content = document.createElement("div");
+  const content = document.createElement("div");
 
   // Create button that will close the tooltip
-  let closeButton = document.createElement("button");
+  const closeButton = document.createElement("button");
   closeButton.innerText = "close";
   closeButton.classList.add("material-icons", "close-button");
   closeButton.addEventListener('click', function() {
@@ -292,17 +292,17 @@ function getTooltipContent(node) {
   }, false);
   content.appendChild(closeButton);
 
-  let nodeTokens = node.data("tokens");
+  const nodeTokens = node.data("tokens");
   if (nodeTokens.length === 0) {
     // The node has an empty token list
-    let noTokenMsg = document.createElement("p");
+    const noTokenMsg = document.createElement("p");
     noTokenMsg.innerText = "No tokens";
     content.appendChild(noTokenMsg);
   } else {
     // The node has some tokens
-    let tokenList = document.createElement("ul");
+    const tokenList = document.createElement("ul");
     nodeTokens.forEach(token => {
-      let tokenItem = document.createElement("li");
+      const tokenItem = document.createElement("li");
       tokenItem.innerText = token;
       tokenList.appendChild(tokenItem);
     });

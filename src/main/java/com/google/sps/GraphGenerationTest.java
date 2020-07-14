@@ -14,18 +14,17 @@
 
 package com.google.sps;
 
-import com.google.common.graph.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import com.google.common.graph.MutableGraph;
 import com.google.protobuf.Struct;
 import com.google.protobuf.Value;
-import com.google.sps.servlets.DataServlet;
-import java.util.Set;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.List;
-import com.google.sps.data.GraphNode;
 import com.proto.GraphProtos.Node;
 import com.proto.GraphProtos.Node.Builder;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,9 +34,6 @@ import org.junit.runners.JUnit4;
 /** */
 @RunWith(JUnit4.class)
 public final class GraphGenerationTest {
-
-  DataServlet servlet;
-
   // Proto nodes to construct graph with
   Builder nodeA = Node.newBuilder().setName("A");
   Builder nodeB = Node.newBuilder().setName("B");
@@ -55,13 +51,12 @@ public final class GraphGenerationTest {
 
   @Before
   public void setUp() {
-    servlet = new DataServlet();
-    gNodeA = servlet.protoNodeToGraphNode(nodeA.build());
-    gNodeB = servlet.protoNodeToGraphNode(nodeB.build());
-    gNodeC = servlet.protoNodeToGraphNode(nodeC.build());
-    gNodeD = servlet.protoNodeToGraphNode(nodeD.build());
-    gNodeE = servlet.protoNodeToGraphNode(nodeE.build());
-    gNodeF = servlet.protoNodeToGraphNode(nodeF.build());
+    gNodeA = Utility.protoNodeToGraphNode(nodeA.build());
+    gNodeB = Utility.protoNodeToGraphNode(nodeB.build());
+    gNodeC = Utility.protoNodeToGraphNode(nodeC.build());
+    gNodeD = Utility.protoNodeToGraphNode(nodeD.build());
+    gNodeE = Utility.protoNodeToGraphNode(nodeE.build());
+    gNodeF = Utility.protoNodeToGraphNode(nodeF.build());
   }
 
   /*
@@ -70,7 +65,7 @@ public final class GraphGenerationTest {
    */
   @Test
   public void correctProtoToGraphNoData() {
-    GraphNode graphNode = servlet.protoNodeToGraphNode(nodeA.build());
+    GraphNode graphNode = Utility.protoNodeToGraphNode(nodeA.build());
     Assert.assertEquals(graphNode.name(), "A");
     Assert.assertEquals(graphNode.tokenList().size(), 0);
     Assert.assertEquals(graphNode.metadata().getFieldsCount(), 0);
@@ -86,7 +81,7 @@ public final class GraphGenerationTest {
     nodeA.addToken("2");
     nodeA.addToken("3");
 
-    GraphNode graphNode = servlet.protoNodeToGraphNode(nodeA.build());
+    GraphNode graphNode = Utility.protoNodeToGraphNode(nodeA.build());
     List<String> tokenList = graphNode.tokenList();
 
     Assert.assertEquals(graphNode.name(), "A");
@@ -114,7 +109,7 @@ public final class GraphGenerationTest {
         Struct.newBuilder().putFields("row", rowValue).putFields("column", colValue).build();
     nodeA.setMetadata(metadata);
 
-    GraphNode graphNode = servlet.protoNodeToGraphNode(nodeA.build());
+    GraphNode graphNode = Utility.protoNodeToGraphNode(nodeA.build());
     List<String> tokenList = graphNode.tokenList();
     Struct generatedMetadata = graphNode.metadata();
 
@@ -154,15 +149,16 @@ public final class GraphGenerationTest {
     protoNodesMap.put("B", pNodeB);
     protoNodesMap.put("C", pNodeC);
 
-    gNodeA = servlet.protoNodeToGraphNode(pNodeA);
-    gNodeB = servlet.protoNodeToGraphNode(pNodeB);
-    gNodeC = servlet.protoNodeToGraphNode(pNodeC);
+    gNodeA = Utility.protoNodeToGraphNode(pNodeA);
+    gNodeB = Utility.protoNodeToGraphNode(pNodeB);
+    gNodeC = Utility.protoNodeToGraphNode(pNodeC);
 
-    MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
-    HashMap<String, GraphNode> graphNodesMap = new HashMap<>();
-    HashSet<String> roots = new HashSet<>();
-    boolean success = servlet.graphFromProtoNodes(protoNodesMap, graph, graphNodesMap, roots);
+    DataGraph dataGraph = DataGraph.create();
+    boolean success = dataGraph.graphFromProtoNodes(protoNodesMap);
     Assert.assertTrue(success);
+
+    MutableGraph<GraphNode> graph = dataGraph.graph();
+    HashMap<String, GraphNode> graphNodesMap = dataGraph.graphNodesMap();
 
     Set<GraphNode> graphNodes = graph.nodes();
     Assert.assertEquals(graphNodes.size(), 3);
@@ -197,10 +193,8 @@ public final class GraphGenerationTest {
     protoNodesMap.put("A", nodeA.build());
     protoNodesMap.put("B", nodeB.build());
 
-    MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
-    HashMap<String, GraphNode> graphNodesMap = new HashMap<>();
-    HashSet<String> roots = new HashSet<>();
-    boolean success = servlet.graphFromProtoNodes(protoNodesMap, graph, graphNodesMap, roots);
+    DataGraph dataGraph = DataGraph.create();
+    boolean success = dataGraph.graphFromProtoNodes(protoNodesMap);
     Assert.assertFalse(success);
   }
 }

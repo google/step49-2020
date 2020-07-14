@@ -1,128 +1,139 @@
-import  {initializeTippy, generateGraph, getUrl } from "../src/main/webapp/script.js";
+import  {initializeTippy, generateGraph, getUrl, searchNode} from "../src/main/webapp/script.js";
 import cytoscape from "cytoscape";
 
-describe("Checking that fetch url is correctly constructed", function() {
+describe("Modifying value of depth input", function() {
   let numLayers = {};
+
   beforeEach(function () {
     numLayers = document.createElement("input");
     numLayers.id = "num-layers";
-  })
+  });
+
   afterEach(function () {
     document.body.innerHTML = '';
-  })
-  it("Input valid large value for depth", function() {
+  });
+
+  it("accepts a large valid depth value", function() {
     numLayers.value = 15;
     document.body.appendChild(numLayers);
 
-    let requestString = getUrl();
-    let requestParams = requestString.substring(requestString.indexOf("?"));
+    const requestString = getUrl();
+    const requestParams = requestString.substring(requestString.indexOf("?"));
     
-    let constructedUrl = new URLSearchParams(requestParams);
+    const constructedUrl = new URLSearchParams(requestParams);
     expect(constructedUrl.has("depth")).toBe(true);
     expect(constructedUrl.get("depth")).toBe("15");
   });
-  it("Input valid small value for depth", function() {
+
+  it("accepts a small valid depth value", function() {
     numLayers.value = 2;
     document.body.appendChild(numLayers);
 
-    let requestString = getUrl();
-    let requestParams = requestString.substring(requestString.indexOf("?"));
+    const requestString = getUrl();
+    const requestParams = requestString.substring(requestString.indexOf("?"));
     
-    let constructedUrl = new URLSearchParams(requestParams);
+    const constructedUrl = new URLSearchParams(requestParams);
     expect(constructedUrl.has("depth")).toBe(true);
     expect(constructedUrl.get("depth")).toBe("2");
   });
-  it("Input no value for depth", function() {
+
+  it("fills in default value if input has no value", function() {
     document.body.appendChild(numLayers);
 
-    let requestString = getUrl();
-    let requestParams = requestString.substring(requestString.indexOf("?"));
+    const requestString = getUrl();
+    const requestParams = requestString.substring(requestString.indexOf("?"));
     
-    let constructedUrl = new URLSearchParams(requestParams);
+    const constructedUrl = new URLSearchParams(requestParams);
     expect(constructedUrl.has("depth")).toBe(true);
     expect(constructedUrl.get("depth")).toBe("3");
 
   });
-  it("Input negative value for depth", function() {
+
+  it("rounds up negative depths to 0", function() {
     numLayers.value = -5;
     document.body.appendChild(numLayers);
 
-    let requestString = getUrl();
-    let requestParams = requestString.substring(requestString.indexOf("?"));
+    const requestString = getUrl();
+    const requestParams = requestString.substring(requestString.indexOf("?"));
     
-    let constructedUrl = new URLSearchParams(requestParams);
+    const constructedUrl = new URLSearchParams(requestParams);
     expect(constructedUrl.has("depth")).toBe(true);
     expect(constructedUrl.get("depth")).toBe("0");
   });
-  it("Input too large value for depth", function() {
+
+  it("rounds down depths larger than 20 to 20", function() {
     numLayers.value = 80;
     document.body.appendChild(numLayers);
 
-    let requestString = getUrl();
-    let requestParams = requestString.substring(requestString.indexOf("?"));
+    const requestString = getUrl();
+    const requestParams = requestString.substring(requestString.indexOf("?"));
     
-    let constructedUrl = new URLSearchParams(requestParams);
+    const constructedUrl = new URLSearchParams(requestParams);
     expect(constructedUrl.has("depth")).toBe(true);
     expect(constructedUrl.get("depth")).toBe("20");
   });
-  it("Input decimal for depth", function() {
+
+  it("rounds a decimal depth value to the nearest number", function() {
     numLayers.value = 2.8;
     document.body.appendChild(numLayers);
 
-    let requestString = getUrl();
-    let requestParams = requestString.substring(requestString.indexOf("?"));
+    const requestString = getUrl();
+    const requestParams = requestString.substring(requestString.indexOf("?"));
     
-    let constructedUrl = new URLSearchParams(requestParams);
+    const constructedUrl = new URLSearchParams(requestParams);
     expect(constructedUrl.has("depth")).toBe(true);
     expect(constructedUrl.get("depth")).toBe("3");
   });
-  it("Input negative decimal for depth", function() {
+
+  it("rounds up negative decimals to 0", function() {
     numLayers.value = -2.8;
     document.body.appendChild(numLayers);
 
-    let requestString = getUrl();
-    let requestParams = requestString.substring(requestString.indexOf("?"));
+    const requestString = getUrl();
+    const requestParams = requestString.substring(requestString.indexOf("?"));
     
-    let constructedUrl = new URLSearchParams(requestParams);
+    const constructedUrl = new URLSearchParams(requestParams);
     expect(constructedUrl.has("depth")).toBe(true);
     expect(constructedUrl.get("depth")).toBe("0");
   });
-  it("Input large decimal for depth", function() {
+
+  it("rounds up decimals above 20 to 20", function() {
     numLayers.value = 200.8;
     document.body.appendChild(numLayers);
 
-    let requestString = getUrl();
-    let requestParams = requestString.substring(requestString.indexOf("?"));
+    const requestString = getUrl();
+    const requestParams = requestString.substring(requestString.indexOf("?"));
     
-    let constructedUrl = new URLSearchParams(requestParams);
+    const constructedUrl = new URLSearchParams(requestParams);
     expect(constructedUrl.has("depth")).toBe(true);
     expect(constructedUrl.get("depth")).toBe("20");
   });
 })
 
 
-describe("Checking that tooltip is correctly initialized", function() {
-  it("Node with tokens", function() {
+describe("Initializing tooltips", function() {
+
+  it("initializes the tooltip of a node with tokens as a list of tokens", function() {
     document.body.innerHTML = `
     <div id="cy"></div>`;
-    let cy = cytoscape({
+    const cy = cytoscape({
       elements: [
       ]
     });
-    let nodeWithToken = {};
+    const nodeWithToken = {};
     nodeWithToken["data"] = {};
     nodeWithToken["data"]["id"] = "A";
     nodeWithToken["data"]["tokens"] = ["a.js", "b.js", "c.js"];
     cy.add(nodeWithToken);
-    let myNode = cy.nodes()[0];
+    const myNode = cy.nodes()[0];
     initializeTippy(myNode);
-    let content = myNode.tip.popperChildren.content.firstChild;
+    const content = myNode.tip.popperChildren.content.firstChild;
     expect(content.nodeName).toBe("DIV");
     expect(content.classList.contains("metadata")).toBe(true);
 
-    let children = content.childNodes;
+    const children = content.childNodes;
     expect(children.length).toBe(2);
-    let closeButton =  children[0];
+    const closeButton =  children[0];
     expect(closeButton.nodeName).toBe("BUTTON");
 
     // Click on node and make sure tippy shows
@@ -134,9 +145,9 @@ describe("Checking that tooltip is correctly initialized", function() {
     expect(myNode.tip.state.isVisible).toBe(false);
 
     // Make assertions about tooltip content
-    let tokenList = children[1];
+    const tokenList = children[1];
     expect(tokenList.nodeName).toBe("UL");
-    let tokens = tokenList.childNodes;
+    const tokens = tokenList.childNodes;
     expect(tokens.length).toBe(3);
     expect(tokens[0].nodeName).toBe("LI");
     expect(tokens[0].textContent).toBe("a.js");
@@ -145,27 +156,28 @@ describe("Checking that tooltip is correctly initialized", function() {
     expect(tokens[2].nodeName).toBe("LI");
     expect(tokens[2].textContent).toBe("c.js");
   });
-  it("Node without tokens", function() {
+
+  it("indicates that a node without tokens has no tokens", function() {
     document.body.innerHTML = `
     <div id="cy"></div>`;
-    let cy = cytoscape({
+    const cy = cytoscape({
       elements: [
       ]
     });
-    let nodeWithoutToken = {};
+    const nodeWithoutToken = {};
     nodeWithoutToken["data"] = {};
     nodeWithoutToken["data"]["id"] = "B";
     nodeWithoutToken["data"]["tokens"] = [];
     cy.add(nodeWithoutToken);
-    let myNode = cy.nodes()[0];
+    const myNode = cy.nodes()[0];
     initializeTippy(myNode);
-    let content = myNode.tip.popperChildren.content.firstChild;
+    const content = myNode.tip.popperChildren.content.firstChild;
     expect(content.nodeName).toBe("DIV");
     expect(content.classList.contains("metadata")).toBe(true);
 
-    let children = content.childNodes;
+    const children = content.childNodes;
     expect(children.length).toBe(2);
-    let closeButton =  children[0];
+    const closeButton =  children[0];
     expect(closeButton.nodeName).toBe("BUTTON");
 
     // Click on node and make sure tippy shows
@@ -177,9 +189,45 @@ describe("Checking that tooltip is correctly initialized", function() {
     expect(myNode.tip.state.isVisible).toBe(false);
 
     // Make assertions about tooltip content
-    let tokenMsg = children[1];
+    const tokenMsg = children[1];
     expect(tokenMsg.nodeName).toBe("P");
     expect(tokenMsg.textContent).toBe("No tokens");
+  });
+});
+
+describe("Node search", function() {
+  const cy = cytoscape({ 
+    elements: [
+    { data: { id: "A" } },
+    { data: { id: "B" } },
+    {
+      data: {
+        id: "AB",
+        source: "A",
+        target: "B"
+      }
+    }]
+  });
+
+  it("should be a successful search", function() {
+    const result = searchNode(cy, "A");
+
+    // search should find node
+    expect(result).toBe(true);
+  });
+
+  it("should be an unsuccessful search", function() {
+    let result = searchNode(cy, "C");
+
+    // search should not find node
+    expect(result).toBe(false);
+  });
+
+  it("should not search at all", function() {
+    let result = searchNode(cy, "");
+
+    // search should not find node
+    expect(result).toBe(false);
   });
 });
 
