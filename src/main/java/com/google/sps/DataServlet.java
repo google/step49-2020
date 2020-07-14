@@ -126,13 +126,17 @@ public class DataServlet extends HttpServlet {
     } else {
       // truncatedGraph = currDataGraph.getReachableNodes(nodeNameParam, depthNumber);
       truncatedMutList = Utility.getMutationsOfNode(nodeNameParam, mutList);
-      currDataGraph =
-          Utility.getGraphAtMutationNumber(
-              originalDataGraph, currDataGraph, mutationNumber, mutList);
     }
+    // Handle when the current graph does NOT have the nodeName - then you want to see the first option with something
 
+    // Node searched is not in the current graph, and no mutation affects it
+    if (truncatedMutList.isEmpty() && !currDataGraph.graphNodesMap().containsKey(nodeNameParam)) {
+
+    } else if (!currDataGraph.graphNodesMap().containsKey(nodeNameParam)) { // CURRENT graph does not have node, go forward
+
+    }
     currDataGraph =
-        Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
+        Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, truncatedMutList);
 
     // returns null if either mutation isn't able to be applied or if num < 0
     if (currDataGraph == null) {
@@ -147,10 +151,8 @@ public class DataServlet extends HttpServlet {
     // whole graph
     if (nodeNameParam == null || nodeNameParam.length() == 0) {
       truncatedGraph = currDataGraph.getGraphWithMaxDepth(depthNumber);
-      // truncatedMutList = mutList;
     } else {
       truncatedGraph = currDataGraph.getReachableNodes(nodeNameParam, depthNumber);
-      // truncatedMutList = Utility.getMutationsOfNode(nodeNameParam, mutList);
     }
 
     String graphJson = Utility.graphToJson(truncatedGraph, truncatedMutList.size());
