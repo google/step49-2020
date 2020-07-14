@@ -43,6 +43,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 0;
+  margin: 0;
 }
 
 #graphdiv {
@@ -50,7 +52,8 @@ body {
 }
 
 .nextprev {
-  margin: 20px;
+  margin: 0px 20px;
+  padding: 0;
 }
 
 #search-box {

@@ -315,4 +315,6 @@ function updateButtons() {
   } else {
     document.getElementById("nextbutton").disabled = false;
   }
+  const numElement = document.getElementById("num-mutation-display");
+  numElement.innerText = `Displaying ${currGraphNum + 1} out of ${numMutations}`;
 }
