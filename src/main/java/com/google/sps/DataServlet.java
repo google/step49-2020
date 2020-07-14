@@ -143,20 +143,21 @@ public class DataServlet extends HttpServlet {
     } else {
       // This is the single search
       truncatedGraph = currDataGraph.getReachableNodes(nodeNameParam, depthNumber);
-      // If the truncated graph is empty, it doesn't exist on the page. Check if there are any mutations that affect it
-      truncatedMutList = Utility.getMutationsOfNode(nodeNameParam, mutList); // only mutations relevant to the node
-      
+      // If the truncated graph is empty, it doesn't exist on the page. Check if there are any
+      // mutations that affect it
+      truncatedMutList =
+          Utility.getMutationsOfNode(nodeNameParam, mutList); // only mutations relevant to the node
+
       // oldNumMutations is the number of mutations that were applied.
       // you want to see where this falls in the new one
 
       // If the graph is empty and there are no relevant mutations, then we give a server error.
       if (truncatedGraph.nodes().isEmpty() && truncatedMutList.isEmpty()) {
-        // If the truncated mutList is empty, then it is nowhere to be found! 
+        // If the truncated mutList is empty, then it is nowhere to be found!
         String error = "There are no nodes anywhere on this graph!";
         response.setHeader("serverError", error);
         return;
       }
-      
     }
 
     String graphJson = Utility.graphToJson(truncatedGraph, truncatedMutList.size());
