@@ -136,7 +136,5 @@ public final class Utility {
     return lst;
   }
 
-  public static void findFirstInstanceOfNode(String nodeName, List<Mutation> origList) {
-    
-  }
+  public static void findFirstInstanceOfNode(String nodeName, List<Mutation> origList) {}
 }

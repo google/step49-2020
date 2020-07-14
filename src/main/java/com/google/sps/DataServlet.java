@@ -78,7 +78,8 @@ public class DataServlet extends HttpServlet {
       /*
        * This code is used to read a graph specified in proto binary format.
        */
-      Graph protoGraph = Graph.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/graph.txt"));
+      Graph protoGraph =
+          Graph.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/graph.txt"));
       Map<String, Node> protoNodesMap = protoGraph.getNodesMapMap();
       // Originally both set to same data
       originalDataGraph = DataGraph.create();
@@ -109,8 +110,9 @@ public class DataServlet extends HttpServlet {
        * This code is used to read a mutation list specified in proto binary format.
        */
       // Parse the contents of mutation.txt into a list of mutations
-      mutList = MutationList.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/mutations.txt"))
-          .getMutationList();
+      mutList =
+          MutationList.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/mutations.txt"))
+              .getMutationList();
     }
 
     // Parameter for the nodeName the user searched for in the frontend
@@ -124,10 +126,13 @@ public class DataServlet extends HttpServlet {
     } else {
       // truncatedGraph = currDataGraph.getReachableNodes(nodeNameParam, depthNumber);
       truncatedMutList = Utility.getMutationsOfNode(nodeNameParam, mutList);
-      currDataGraph = Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
+      currDataGraph =
+          Utility.getGraphAtMutationNumber(
+              originalDataGraph, currDataGraph, mutationNumber, mutList);
     }
 
-    currDataGraph = Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
+    currDataGraph =
+        Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
 
     // returns null if either mutation isn't able to be applied or if num < 0
     if (currDataGraph == null) {
