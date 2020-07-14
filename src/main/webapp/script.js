@@ -177,7 +177,7 @@ function getGraphDisplay(graphNodes, graphEdges) {
 
   const searchElement = document.getElementById('search');
   document.getElementById('search-button').onclick = function() {
-    if (searchElement.value == "" || searchNode(cy, searchElement.value)) {
+    if (searchNode(cy, searchElement.value) || searchElement.value == "") {
       document.getElementById('search-error').innerText = "";
     } else {
       document.getElementById('search-error').innerText = "Node does not exist.";
