@@ -68,8 +68,9 @@ public class DataServlet extends HttpServlet {
       /*
        * The below code is used to read a graph specified in textproto form
        */
-      InputStreamReader graphReader = new
-      InputStreamReader(getServletContext().getResourceAsStream("/WEB-INF/graph.textproto"));
+      InputStreamReader graphReader =
+          new InputStreamReader(
+              getServletContext().getResourceAsStream("/WEB-INF/graph.textproto"));
       Graph.Builder graphBuilder = Graph.newBuilder();
       TextFormat.merge(graphReader, graphBuilder);
       Graph protoGraph = graphBuilder.build();
@@ -105,12 +106,13 @@ public class DataServlet extends HttpServlet {
       /*
        * The below code is used to read a mutation list specified in textproto form
        */
-      InputStreamReader mutReader = new
-      InputStreamReader(getServletContext().getResourceAsStream("/WEB-INF/mutation.textproto"));
+      InputStreamReader mutReader =
+          new InputStreamReader(
+              getServletContext().getResourceAsStream("/WEB-INF/mutation.textproto"));
       MutationList.Builder mutBuilder = MutationList.newBuilder();
       TextFormat.merge(mutReader, mutBuilder);
       List<Mutation> mutList = mutBuilder.build().getMutationList();
-      
+
       // Only apply mutations once
       for (Mutation mut : mutList) {
         success = Utility.mutateGraph(mut, graph, graphNodesMap, roots);
