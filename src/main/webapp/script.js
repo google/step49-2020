@@ -198,7 +198,7 @@ function search(cy, type, searchFunction, nodes) {
 }
 
 /**
- * Zooms in on specific node
+ * Finds specific node and zooms in
  */
 function searchNode(cy, query) {
   if (query) {
@@ -214,7 +214,7 @@ function searchNode(cy, query) {
 
 /**
  * Constructs list of nodes that contain specified token
- * and zooms in on
+ * and zooms in
  */
 function searchToken(cy, query, nodes) {
   let target = [];
