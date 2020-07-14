@@ -108,4 +108,22 @@ public final class Utility {
           originalCopy.graph(), originalCopy.graphNodesMap(), originalCopy.roots(), mutationNum);
     }
   }
+
+  /**
+   * Returns a new mutation list with only the mutations relevant to a specified node
+   * @param nodeName
+   * @param origList
+   * @return
+   */
+  public static List<Mutation> getMutationsOfNode(String nodeName, List<Mutation> origList) {
+    List<Mutation> lst = new ArrayList<>();
+    for (Mutation mut : origList) {
+      String startName = mut.getStartNode();
+      String endName = mut.getEndNode();
+      if (nodeName.equals(startName) || nodeName.equals(endName)) {
+        lst.add(mut);
+      }
+    }
+    return lst;
+  }
 }

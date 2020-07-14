@@ -15,7 +15,6 @@
 package com.google.sps;
 
 import java.io.IOException;
-import java.io.*;
 import java.util.List;
 import java.util.Map;
 
@@ -123,16 +122,19 @@ public class DataServlet extends HttpServlet {
     }
 
     MutableGraph<GraphNode> truncatedGraph; // issue: has to get the truncated graph everytime
+    List<Mutation> truncatedMutList;
 
     // If a node is searched, get the graph with just the node. Otherwise, use the
     // whole graph
     if (nodeNameParam == null || nodeNameParam.length() == 0) {
       truncatedGraph = currDataGraph.getGraphWithMaxDepth(depthNumber);
+      truncatedMutList = mutList;
     } else {
       truncatedGraph = currDataGraph.getReachableNodes(nodeNameParam, depthNumber);
+      truncatedMutList = Utility.getMutationsOfNode(nodeNameParam, mutList);
     }
 
-    String graphJson = Utility.graphToJson(truncatedGraph, mutList.size());
+    String graphJson = Utility.graphToJson(truncatedGraph, truncatedMutList.size());
     response.getWriter().println(graphJson);
   }
 }
