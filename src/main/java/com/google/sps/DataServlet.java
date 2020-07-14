@@ -103,7 +103,7 @@ public class DataServlet extends HttpServlet {
       // InputStreamReader(getServletContext().getResourceAsStream("/WEB-INF/mutations.textproto"));
       // MutationList.Builder mutBuilder = MutationList.newBuilder();
       // TextFormat.merge(mutReader, mutBuilder);
-      // List<Mutation> mutList = mutBuilder.build().getMutationList();
+      // List<MultiMutation> mutList = mutBuilder.build().getMutationList();
       /*
        * This code is used to read a mutation list specified in proto binary format.
        */
@@ -112,7 +112,7 @@ public class DataServlet extends HttpServlet {
           MutationList.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/mutations.txt"))
               .getMutationList();
     }
-    System.out.println(Utility.diffBetween(mutList, currDataGraph.numMutations(), mutationNumber));
+    // Utility.diffBetween(mutList, currDataGraph.numMutations(), mutationNumber);
 
     currDataGraph =
         Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
