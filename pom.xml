@@ -76,7 +76,7 @@
   </dependencies>
 
   <build>
-    <!-- <testSourceDirectory>src/main/java/com/google/sps</testSourceDirectory> -->
+    <testSourceDirectory>src/main/java/com/google/sps</testSourceDirectory>
     <plugins>
       <!-- Provides `mvn package appengine:run` for local testing
            and `mvn package appengine:deploy` for deploying. -->

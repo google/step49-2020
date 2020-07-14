@@ -25,6 +25,7 @@ import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.protobuf.Struct;
 import com.proto.GraphProtos.Node;
+import com.proto.MutationProtos.MultiMutation;
 import com.proto.MutationProtos.Mutation;
 import com.proto.MutationProtos.TokenMutation;
 
@@ -82,7 +83,7 @@ public final class Utility {
    *         original != curr
    */
   public static DataGraph getGraphAtMutationNumber(DataGraph original, DataGraph curr, int mutationNum,
-      List<Mutation> mutList) {
+      List<MultiMutation> mutList) {
     boolean success = true;
     if (mutationNum > mutList.size() || mutationNum < 0) {
       return null;
@@ -91,9 +92,13 @@ public final class Utility {
     if (curr.numMutations() <= mutationNum) { // going forward
       for (int i = curr.numMutations(); i < mutationNum; i++) {
         // Mutate graph operates in place
-        success = curr.mutateGraph(mutList.get(i));
-        if (!success) {
-          return null;
+        MultiMutation multiMut = mutList.get(i);
+        List<Mutation> mutations = multiMut.getMutationList();
+        for (Mutation mut : mutations) {
+          success = curr.mutateGraph(mut);
+          if (!success) {
+            return null;
+          }
         }
       }
       return DataGraph.create(curr.graph(), curr.graphNodesMap(), curr.roots(), mutationNum);
@@ -101,22 +106,34 @@ public final class Utility {
       // Create a copy of the original graph and start from the original graph
       DataGraph originalCopy = original.getCopy();
       for (int i = 0; i < mutationNum; i++) {
-        success = originalCopy.mutateGraph(mutList.get(i));
-        if (!success) {
-          return null;
+        MultiMutation multiMut = mutList.get(i);
+        List<Mutation> mutations = multiMut.getMutationList();
+        for (Mutation mut : mutations) {
+          success = originalCopy.mutateGraph(mut);
+          if (!success) {
+            return null;
+          }
         }
       }
       return DataGraph.create(originalCopy.graph(), originalCopy.graphNodesMap(), originalCopy.roots(), mutationNum);
     }
   }
 
-  public static Mutation diffBetween(List<Mutation> mutList, int currIndex, int nextIndex) {
+  public static MultiMutation diffBetween(List<MultiMutation> multiMutList, int currIndex, int nextIndex) {
     if (Math.abs(currIndex - nextIndex) != 1) {
       return null;
     } else if (nextIndex - currIndex == 1) {
-      return mutList.get(currIndex);
+      return multiMutList.get(currIndex);
+      
     } else {
-      return invertMutation(mutList.get(nextIndex));
+      MultiMutation multiMut = multiMutList.get(nextIndex);
+      List<Mutation> mutList = multiMut.getMutationList();
+      MultiMutation.Builder resultMultiMut = MultiMutation.newBuilder().setReason(multiMut.getReason());
+      for(Mutation mut : mutList) {
+        Mutation invertedMut = invertMutation(mut);
+        resultMultiMut.addMutation(invertedMut);
+      }
+      return resultMultiMut.build();
     }
   }
 

@@ -26,13 +26,13 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.common.graph.MutableGraph;
 import com.proto.GraphProtos.Graph;
 import com.proto.GraphProtos.Node;
-import com.proto.MutationProtos.Mutation;
+import com.proto.MutationProtos.MultiMutation;
 import com.proto.MutationProtos.MutationList;
 
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
 
-  private List<Mutation> mutList = null;
+  private List<MultiMutation> mutList = null;
 
   private DataGraph currDataGraph = null;
   private DataGraph originalDataGraph = null;
