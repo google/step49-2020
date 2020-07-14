@@ -69,9 +69,6 @@ async function generateGraph() {
 
   const url = getUrl();
 
-  prevBtn.disabled = true;
-  nextBtn.disabled = true;
-
   const response = await fetch(url);
 
   const serverErrorStatus = response.headers.get("serverError");

@@ -117,26 +117,12 @@ public class DataServlet extends HttpServlet {
 
     // Parameter for the nodeName the user searched for in the frontend
     String nodeNameParam = request.getParameter("nodeName");
-    List<Mutation> truncatedMutList;
 
-    // No query
-    if (nodeNameParam == null || nodeNameParam.length() == 0) {
-      // truncatedGraph = currDataGraph.getGraphWithMaxDepth(depthNumber);
-      truncatedMutList = mutList;
-    } else {
-      // truncatedGraph = currDataGraph.getReachableNodes(nodeNameParam, depthNumber);
-      truncatedMutList = Utility.getMutationsOfNode(nodeNameParam, mutList);
-    }
-    // Handle when the current graph does NOT have the nodeName - then you want to see the first option with something
-
-    // Node searched is not in the current graph, and no mutation affects it
-    if (truncatedMutList.isEmpty() && !currDataGraph.graphNodesMap().containsKey(nodeNameParam)) {
-
-    } else if (!currDataGraph.graphNodesMap().containsKey(nodeNameParam)) { // CURRENT graph does not have node, go forward
-
-    }
+    // The current graph at the specified index
     currDataGraph =
-        Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, truncatedMutList);
+        Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
+
+    int oldNumMutations = currDataGraph.numMutations(); // The old mutation number
 
     // returns null if either mutation isn't able to be applied or if num < 0
     if (currDataGraph == null) {
@@ -145,14 +131,32 @@ public class DataServlet extends HttpServlet {
       return;
     }
 
+    List<Mutation> truncatedMutList;
     MutableGraph<GraphNode> truncatedGraph;
-
     // If a node is searched, get the graph with just the node. Otherwise, use the
     // whole graph
+
+    // No query
     if (nodeNameParam == null || nodeNameParam.length() == 0) {
       truncatedGraph = currDataGraph.getGraphWithMaxDepth(depthNumber);
+      truncatedMutList = mutList;
     } else {
+      // This is the single search
       truncatedGraph = currDataGraph.getReachableNodes(nodeNameParam, depthNumber);
+      // If the truncated graph is empty, it doesn't exist on the page. Check if there are any mutations that affect it
+      truncatedMutList = Utility.getMutationsOfNode(nodeNameParam, mutList); // only mutations relevant to the node
+      
+      // oldNumMutations is the number of mutations that were applied.
+      // you want to see where this falls in the new one
+
+      // If the graph is empty and there are no relevant mutations, then we give a server error.
+      if (truncatedGraph.nodes().isEmpty() && truncatedMutList.isEmpty()) {
+        // If the truncated mutList is empty, then it is nowhere to be found! 
+        String error = "There are no nodes anywhere on this graph!";
+        response.setHeader("serverError", error);
+        return;
+      }
+      
     }
 
     String graphJson = Utility.graphToJson(truncatedGraph, truncatedMutList.size());
