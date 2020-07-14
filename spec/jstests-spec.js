@@ -262,13 +262,17 @@ describe("Pressing next and previous buttons associated with a graph", function(
   });
 });
 
-describe("Check initializing variables are passed correctly", function() {
+describe("Check correct url params", function() {
+  let nodeName = {}; 
   beforeEach(function() {
     setCurrGraphNum(1);
+    nodeName = document.createElement("input");
+    nodeName.id = "node-name";
   });
 
   afterEach(function() {
     setCurrGraphNum(0);
+     document.body.innerHTML = '';
   });
 
   it("passes correct value of the mutations number in the fetch request", function() {
@@ -280,5 +284,20 @@ describe("Check initializing variables are passed correctly", function() {
     expect(constructedUrl.get("depth")).toBe("3");
     expect(constructedUrl.has("mutationNum")).toBe(true);
     expect(constructedUrl.get("mutationNum")).toBe("1");
+
+    // Not on page here, should be empty
+    expect(constructedUrl.has("nodeName")).toBe(true);
+    expect(constructedUrl.get("nodeName")).toBe("");
   });
+  it ("passes correct nodeName when nodeName has a value", function () {
+    nodeName.value = "A";
+    document.body.appendChild(nodeName);
+
+    const requestString = getUrl();
+    const requestParams = requestString.substring(requestString.indexOf("?"));
+
+    const constructedUrl = new URLSearchParams(requestParams);
+    expect(constructedUrl.has("nodeName")).toBe(true);
+    expect(constructedUrl.get("nodeName")).toBe("A"); 
+  })
 });
