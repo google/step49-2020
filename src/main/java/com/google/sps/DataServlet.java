@@ -15,7 +15,6 @@
 package com.google.sps;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Map;
 
@@ -25,7 +24,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.common.graph.MutableGraph;
-import com.google.protobuf.TextFormat;
 import com.proto.GraphProtos.Graph;
 import com.proto.GraphProtos.Node;
 import com.proto.MutationProtos.MultiMutation;
@@ -111,8 +109,8 @@ public class DataServlet extends HttpServlet {
        */
       // Parse the contents of mutation.txt into a list of mutations
       // mutList =
-          MutationList.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/mutations.txt"))
-              .getMutationList();
+      MutationList.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/mutations.txt"))
+          .getMutationList();
     }
     MultiMutation mutDiff =
         Utility.diffBetween(mutList, currDataGraph.numMutations(), mutationNumber);

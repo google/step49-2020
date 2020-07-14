@@ -27,7 +27,6 @@ import com.google.protobuf.Struct;
 import com.proto.GraphProtos.Node;
 import com.proto.MutationProtos.MultiMutation;
 import com.proto.MutationProtos.Mutation;
-import com.proto.MutationProtos.TokenMutation;
 
 import org.json.JSONObject;
 
@@ -143,11 +142,11 @@ public final class Utility {
         || nextIndex > multiMutList.size()) {
       // Out of bounds indices
       return null;
-    } 
+    }
     if (nextIndex - currIndex == 1) {
       // Non-adjacent indices
       return multiMutList.get(currIndex);
-    } 
+    }
     return null;
   }
 }
