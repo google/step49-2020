@@ -130,7 +130,6 @@ public class DataServlet extends HttpServlet {
       return;
     }
 
-
     List<Mutation> truncatedMutList;
 
     MutableGraph<GraphNode> truncatedGraph;
@@ -142,16 +141,24 @@ public class DataServlet extends HttpServlet {
       truncatedGraph = currDataGraph.getGraphWithMaxDepth(depthNumber);
       truncatedMutList = mutList;
     } else {
-      // This is the single search
-      truncatedGraph = currDataGraph.getReachableNodes(nodeNameParam, depthNumber);
 
       // Indicies of relevant mutations
       relevantMutationIndices = Utility.getMutationIndicesOfNode(nodeNameParam, mutList);
+
+      // TODO: find the index that's the next greatest on this list with binary search
+      // That is, change the mutation num!!!
+      int newNum = Utility.getNextGreatestNum(relevantMutationIndices, oldNumMutations);
+
+      // Maybe make a copy instead of making this the currDataGraph
+      currDataGraph = Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, newNum, mutList);
 
       // If the truncated graph is empty, it doesn't exist on the page. Check if there
       // are any
       // mutations that affect it
       truncatedMutList = Utility.getMutationsFromIndices(relevantMutationIndices, mutList); // only mutations relevant to the node
+
+      // This is the single search
+      truncatedGraph = currDataGraph.getReachableNodes(nodeNameParam, depthNumber);
 
       // oldNumMutations is the number of mutations that were applied.
       // you want to see where this falls in the new one

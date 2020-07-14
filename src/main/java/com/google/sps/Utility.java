@@ -176,7 +176,7 @@ public final class Utility {
     return lst;
   }
 
-  public static int getNextGreatest(List<Integer> searchList, int tgt) {
+  public static int getNextGreatestNum(List<Integer> searchList, int tgt) {
     int start = 0;
     int end = searchList.size() - 1;  
 
