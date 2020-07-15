@@ -126,7 +126,8 @@ public class DataServlet extends HttpServlet {
     // Parameter for the nodeName the user searched for in the frontend
     String nodeNameParam = request.getParameter("nodeName");
 
-    // At this point, currDataGraph is basically Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, oldNumMutations, mutList);
+    // At this point, currDataGraph is basically Utility.getGraphAtMutationNumber(originalDataGraph,
+    // currDataGraph, oldNumMutations, mutList);
 
     oldNumMutations = currDataGraph.numMutations(); // The old mutation number, will change
 
