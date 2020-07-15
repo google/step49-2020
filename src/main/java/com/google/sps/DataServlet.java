@@ -15,6 +15,7 @@
 package com.google.sps;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -37,7 +38,11 @@ public class DataServlet extends HttpServlet {
   private DataGraph currDataGraph = null;
   private DataGraph originalDataGraph = null;
 
+  List<Integer> relevantMutationIndices = new ArrayList<>(); // should originally be everything
+  List<Integer> defaultIndices = new ArrayList<>();
+
   int oldNumMutations = 0;
+  String lastNodeName = "";
 
   /*
    * Called when a client submits a GET request to the /data URL
@@ -59,6 +64,7 @@ public class DataServlet extends HttpServlet {
 
     int depthNumber = Integer.parseInt(depthParam);
     int mutationNumber = Integer.parseInt(mutationParam);
+    System.out.println(mutationNumber);
 
     boolean success = true; // Innocent until proven guilty; successful until proven a failure
 
@@ -96,7 +102,8 @@ public class DataServlet extends HttpServlet {
       return;
     }
     // Relevant mutation indicies, start as everything
-    List<Integer> relevantMutationIndices; // should originally be everything
+    
+    
     // Mutations file hasn't been read yet
     if (mutList == null) {
       /*
@@ -114,6 +121,11 @@ public class DataServlet extends HttpServlet {
       mutList =
           MutationList.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/mutations.txt"))
               .getMutationList();
+      relevantMutationIndices = new ArrayList<>();
+      for (int i = 0; i < mutList.size(); i++) {
+        defaultIndices.add(i);
+      }
+      relevantMutationIndices = defaultIndices;
     }
 
     // Parameter for the nodeName the user searched for in the frontend
@@ -143,29 +155,42 @@ public class DataServlet extends HttpServlet {
     if (nodeNameParam == null || nodeNameParam.length() == 0) {
       truncatedGraph = currDataGraph.getGraphWithMaxDepth(depthNumber);
       truncatedMutList = mutList;
+      relevantMutationIndices = defaultIndices;
     } else {
 
-      // Indicies of relevant mutations
+      // Indicies of relevant mutations from the entire mutList
       relevantMutationIndices = Utility.getMutationIndicesOfNode(nodeNameParam, mutList);
-      // System.out.println(mutList);
-      System.out.println(relevantMutationIndices);
 
       // TODO: find the index that's the next greatest on this list with binary search
       // That is, change the mutation num!!!
       if (!currDataGraph.graphNodesMap().containsKey(nodeNameParam)) {
-        int newNum = Utility.getNextGreatestNum(relevantMutationIndices, oldNumMutations);
+        int newNumIndex = Utility.getNextGreatestNumIndex(relevantMutationIndices, oldNumMutations);
+        int newNum = relevantMutationIndices.get(newNumIndex);
         if (newNum == -1) {
           //handle it
         }
         System.out.println(nodeNameParam);
         System.out.println(newNum);
+
+        if (lastNodeName.equals(nodeNameParam)) {
+          // searched for the same node at last time. don't want to truncate the mutList
+
+        } else {
+          relevantMutationIndices = relevantMutationIndices.subList(newNumIndex, relevantMutationIndices.size());
+          relevantMutationIndices.add(0, oldNumMutations);
+
+        }
         // Maybe make a copy instead of making this the currDataGraph
         currDataGraph =
             Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, newNum, mutList);
         // Add null check?
         oldNumMutations = newNum;
+        lastNodeName = nodeNameParam;
+      } else {
+        // Current graph has the node
+        // So relevant indices are ok
       }
-
+      
       // If the truncated graph is empty, it doesn't exist on the page. Check if there
       // are any
       // mutations that affect it
@@ -174,8 +199,8 @@ public class DataServlet extends HttpServlet {
               relevantMutationIndices, mutList); // only mutations relevant to the node
 
       // This is the single search
-      // truncatedGraph = currDataGraph.getReachableNodes(nodeNameParam, depthNumber);
-      truncatedGraph = currDataGraph.graph(); // TODO: change back to line above
+      truncatedGraph = currDataGraph.getReachableNodes(nodeNameParam, depthNumber);
+      // truncatedGraph = currDataGraph.graph(); // TODO: change back to line above
 
       // If the graph is empty and there are no relevant mutations, then we give a
       // server error.
@@ -187,7 +212,7 @@ public class DataServlet extends HttpServlet {
       }
     }
 
-    String graphJson = Utility.graphToJson(truncatedGraph, truncatedMutList.size());
+    String graphJson = Utility.graphToJson(truncatedGraph, truncatedMutList.size(), relevantMutationIndices);
     response.getWriter().println(graphJson);
   }
 }

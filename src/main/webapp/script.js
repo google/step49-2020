@@ -31,12 +31,15 @@ export { initializeNumMutations, setCurrGraphNum, initializeTippy, generateGraph
 cytoscape.use(popper); // register extension
 cytoscape.use(dagre); // register extension
 
+let currGraphIndex = 0;
 // Stores the index of the graph (in sequence of mutations) currently
 // displayed on the screen. Must be >= 0.
 let currGraphNum = 0;
 // Stores the number of mutations in the list this graph is applying
 // The user cannot click next to a graph beyond this point
 let numMutations = 0;
+
+let relevantIndices = [];
 
 /**
  * Initializes the number of mutations
@@ -83,7 +86,11 @@ async function generateGraph() {
   // Graph nodes and edges received from server
   const nodes = JSON.parse(jsonResponse.nodes);
   const edges = JSON.parse(jsonResponse.edges);
-  initializeNumMutations(JSON.parse(jsonResponse.numMutations));
+  const indices = JSON.parse(jsonResponse.relevantIndices);
+  relevantIndices = indices;
+  console.log(indices);
+  // initializeNumMutations(JSON.parse(jsonResponse.numMutations));
+  initializeNumMutations(relevantIndices.length);
 
   if (!nodes || !edges || !Array.isArray(nodes) || !Array.isArray(edges)) {
     displayError("Malformed graph received from server - edges or nodes are empty");
@@ -91,7 +98,7 @@ async function generateGraph() {
   }
 
   if (nodes.length === 0 && numMutations === 0) {
-    displayError("Nothing to display EVER!");
+    displayError("Nothing to display from this point forward!");
     return;
   } else if (nodes.length === 0) {
     displayError("Nothing to display FOR NOW!");
@@ -290,13 +297,25 @@ function getTooltipContent(node) {
  * graph is requested from the server.
  */
 function navigateGraph(amount) {
-  currGraphNum += amount;
-  if (currGraphNum <= 0) {
-    currGraphNum = 0;
+  currGraphIndex += amount;
+
+  if (currGraphIndex <= 0 || numMutations == 0) {
+    currGraphIndex = 0;
   }
-  if (currGraphNum >= numMutations) {
-    currGraphNum = numMutations;
+  if (currGraphIndex >= numMutations) {
+    currGraphIndex = numMutations - 1;
   }
+  currGraphNum = relevantIndices[currGraphIndex];
+  if (!currGraphNum) {
+
+    currGraphNum = currGraphIndex;
+  }
+  // if (currGraphNum <= 0) {
+  //   currGraphNum = 0;
+  // }
+  // if (currGraphNum >= numMutations) {
+  //   currGraphNum = numMutations;
+  // }
 }
 
 /**
@@ -317,5 +336,5 @@ function updateButtons() {
     document.getElementById("nextbutton").disabled = false;
   }
   const numElement = document.getElementById("num-mutation-display");
-  numElement.innerText = `Displaying ${currGraphNum + 1} out of ${numMutations}`;
+  numElement.innerText = `Displaying ${currGraphIndex + 1} out of ${numMutations}`;
 }
