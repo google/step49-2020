@@ -296,7 +296,8 @@ public class GetGraphAtMutationNumberTest {
 
     List<Mutation> mutList = new ArrayList<>();
 
-    DataGraph mutatedGraph = Utility.getGraphAtMutationNumber(dataGraph, dataGraphCopy, -2, mutList);
+    DataGraph mutatedGraph =
+        Utility.getGraphAtMutationNumber(dataGraph, dataGraphCopy, -2, mutList);
     Assert.assertNull(mutatedGraph);
   }
 
@@ -313,6 +314,8 @@ public class GetGraphAtMutationNumberTest {
 
     List<Mutation> mutList = new ArrayList<>();
 
-    Assert.assertThrows(IllegalArgumentException.class, () -> Utility.getGraphAtMutationNumber(dataGraph, dataGraph, 0, mutList));
+    Assert.assertThrows(
+        IllegalArgumentException.class,
+        () -> Utility.getGraphAtMutationNumber(dataGraph, dataGraph, 0, mutList));
   }
 }

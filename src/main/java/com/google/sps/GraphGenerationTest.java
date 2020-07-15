@@ -233,7 +233,7 @@ public final class GraphGenerationTest {
     Assert.assertFalse(nodeMapOrig == nodeMapCopy);
 
     // Make sure that nodes in the two maps are the same (by reference)
-    for(String nodeName : nodeMapOrig.keySet()) {
+    for (String nodeName : nodeMapOrig.keySet()) {
       GraphNode nodeInOrig = nodeMapOrig.get(nodeName);
       GraphNode nodeInCopy = nodeMapCopy.get(nodeName);
       Assert.assertSame(nodeInOrig, nodeInCopy);

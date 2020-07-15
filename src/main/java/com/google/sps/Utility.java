@@ -77,11 +77,12 @@ public final class Utility {
    * @param curr the current (most recently-requested) graph (requires that original != curr)
    * @param mutationNum number of mutations to apply
    * @param mutList mutation list
-   * @return the resulting data graph or null if there was an error 
+   * @return the resulting data graph or null if there was an error
    */
   public static DataGraph getGraphAtMutationNumber(
       DataGraph original, DataGraph curr, int mutationNum, List<Mutation> mutList) {
-    Preconditions.checkArgument(original != curr, "The current graph and the original graph refer to the same object");
+    Preconditions.checkArgument(
+        original != curr, "The current graph and the original graph refer to the same object");
 
     if (mutationNum > mutList.size() || mutationNum < 0) {
       return null;
