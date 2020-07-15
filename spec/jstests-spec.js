@@ -1,5 +1,5 @@
 
-import { initializeNumMutations, setCurrGraphNum, setRelevantIndices, initializeTippy, generateGraph, getUrl, navigateGraph, currGraphNum, numMutations, updateButtons, searchNode } from "../src/main/webapp/script.js";
+import { initializeNumMutations, setCurrGraphNum, currGraphIndex, setRelevantIndices, initializeTippy, generateGraph, getUrl, navigateGraph, currGraphNum, numMutations, updateButtons, searchNode } from "../src/main/webapp/script.js";
 
 import cytoscape from "cytoscape";
 
@@ -210,7 +210,8 @@ describe("Pressing next and previous buttons associated with a graph", function(
   it("correctly updates mutation tracking variables and buttons on click", function() {
     document.body.appendChild(numDisplay); 
     initializeNumMutations(3);
-    setRelevantIndices([0, 1, 2]);
+    // Relevant indices are different from actual indices!
+    setRelevantIndices([0, 1, 3]);
     const prevButton = document.createElement("button");
     prevButton.id = "prevbutton";
     prevButton.onclick = () => { navigateGraph(-1); updateButtons(); };
@@ -221,62 +222,67 @@ describe("Pressing next and previous buttons associated with a graph", function(
     document.body.appendChild(nextButton);
 
     expect(currGraphNum).toBe(0);
+    expect(currGraphIndex).toBe(0);
     expect(numMutations).toBe(3); 
 
     nextButton.click();
     expect(currGraphNum).toBe(1);
+    expect(currGraphIndex).toBe(1);
     expect(nextButton.disabled).toBe(false);
     expect(prevButton.disabled).toBe(false);
 
     nextButton.click();
-    expect(currGraphNum).toBe(2);
+    expect(currGraphNum).toBe(3);
+    expect(currGraphIndex).toBe(2);
     expect(nextButton.disabled).toBe(true);
     expect(prevButton.disabled).toBe(false);
 
     nextButton.click();
-    expect(currGraphNum).toBe(2);
+    expect(currGraphNum).toBe(3);
+    expect(currGraphIndex).toBe(2);
     expect(nextButton.disabled).toBe(true);
     expect(prevButton.disabled).toBe(false);
-
+ 
     prevButton.click();
     expect(currGraphNum).toBe(1);
+    expect(currGraphIndex).toBe(1);
     expect(nextButton.disabled).toBe(false);
     expect(prevButton.disabled).toBe(false);
 
     prevButton.click();
     expect(currGraphNum).toBe(0);
+    expect(currGraphIndex).toBe(0);
     expect(nextButton.disabled).toBe(false);
     expect(prevButton.disabled).toBe(true);
 
     nextButton.click();
     expect(currGraphNum).toBe(1);
+    expect(currGraphIndex).toBe(1);
     expect(nextButton.disabled).toBe(false);
     expect(prevButton.disabled).toBe(false);
 
     prevButton.click();
     expect(currGraphNum).toBe(0);
+    expect(currGraphIndex).toBe(0);
     expect(nextButton.disabled).toBe(false);
     expect(prevButton.disabled).toBe(true);
 
     prevButton.click();
     expect(currGraphNum).toBe(0);
-    expect(nextButton.disabled).toBe(false);
-    expect(prevButton.disabled).toBe(true);
-
-    prevButton.click();
-    expect(currGraphNum).toBe(0);
+    expect(currGraphIndex).toBe(0);
     expect(nextButton.disabled).toBe(false);
     expect(prevButton.disabled).toBe(true);
 
     nextButton.click();
     expect(currGraphNum).toBe(1);
+    expect(currGraphIndex).toBe(1);
     expect(nextButton.disabled).toBe(false);
     expect(prevButton.disabled).toBe(false);
   });  
 });
 
 describe("Check correct url params", function() {
-  let nodeName = {}; 
+  let nodeName = {};  
   beforeEach(function() {
     setCurrGraphNum(1);
     nodeName = document.createElement("input");
