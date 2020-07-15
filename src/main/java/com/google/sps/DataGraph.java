@@ -123,7 +123,6 @@ abstract class DataGraph {
 
     for (String nodeName : protoNodesMap.keySet()) {
       Node thisNode = protoNodesMap.get(nodeName);
-
       // Convert thisNode into a graph node that may store additional information
       GraphNode graphNode = Utility.protoNodeToGraphNode(thisNode);
 
