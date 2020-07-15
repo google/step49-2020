@@ -69,12 +69,14 @@ public final class Utility {
     String edgeJson = gson.toJson(graph.edges(), typeOfEdge);
     String mutDiffJson =
         (mutDiff == null || !mutDiff.isInitialized()) ? "" : gson.toJson(mutDiff.getMutationList());
+    String reason = (mutDiff == null || !mutDiff.isInitialized()) ? "" : mutDiff.getReason();
     String resultJson =
         new JSONObject()
             .put("nodes", nodeJson)
             .put("edges", edgeJson)
             .put("numMutations", maxMutations)
             .put("mutationDiff", mutDiffJson)
+            .put("reason", reason)
             .toString();
     return resultJson;
   }

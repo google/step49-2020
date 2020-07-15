@@ -88,6 +88,7 @@ async function generateGraph() {
   const edges = JSON.parse(jsonResponse.edges);
   initializeNumMutations(JSON.parse(jsonResponse.numMutations));
   const mutList = jsonResponse["mutationDiff"].length === 0 ? null : JSON.parse(jsonResponse["mutationDiff"]);
+  const reason = jsonResponse["reason"].length === 0 ? "" : JSON.parse(jsonResponse["reason"]);
 
   if (!nodes || !edges || !Array.isArray(nodes) || !Array.isArray(edges)) {
     displayError("Malformed graph received from server - edges or nodes are empty");
@@ -118,7 +119,7 @@ async function generateGraph() {
       }
     });
   })
-  getGraphDisplay(graphNodes, graphEdges, mutList);
+  getGraphDisplay(graphNodes, graphEdges, mutList, reason);
   updateButtons();
   return;
 }
@@ -170,7 +171,7 @@ function displayError(errorMsg) {
  * Takes in graph nodes and edges and creates a cytoscape graph with this
  * data. Assumes that the graph is a DAG to display it in the optimal layout.
  */
-function getGraphDisplay(graphNodes, graphEdges, mutDiff) {
+function getGraphDisplay(graphNodes, graphEdges, mutDiff, reason) {
   const cy = cytoscape({
     container: document.getElementById("graph"),
     elements: {
@@ -209,7 +210,7 @@ function getGraphDisplay(graphNodes, graphEdges, mutDiff) {
     minZoom: .25,
     maxZoom: 2.5
   });
-  highlightDiff(cy, mutDiff);
+  highlightDiff(cy, mutDiff, reason);
 
   // Initialize content of node's token list popup
   cy.nodes().forEach(node => initializeTippy(node));
@@ -226,23 +227,25 @@ function getGraphDisplay(graphNodes, graphEdges, mutDiff) {
   }).run();
 }
 
-function highlightDiff(cy, mutList) {
+function highlightDiff(cy, mutList, reason = "") {
   if (!mutList) {
     return;
   }
-  mutList.forEach(mutation => affectMutationOnGraph(cy, mutation));
+  mutList.forEach(mutation => affectMutationOnGraph(cy, mutation, reason));
 }
 
-function affectMutationOnGraph(cy, mutation) {
+function affectMutationOnGraph(cy, mutation, reason) {
   const type = mutation["type_"] || -1;
   let startNode = mutation["startNode_"];
   let endNode = mutation["endNode_"];
+  let modifiedObj = null;
   switch (type) {
     case 1:
       // add node
       if (cy.getElementById(startNode).length !== 0) {
         // color this node green
         cy.getElementById(startNode).style('background-color', 'green');
+        modifiedObj = cy.getElementById(startNode);
       }
       break;
     case 2:
@@ -251,6 +254,7 @@ function affectMutationOnGraph(cy, mutation) {
         // color this edge green
         cy.getElementById(`edge${startNode}${endNode}`).style('line-color', 'green');
         cy.getElementById(`edge${startNode}${endNode}`).style('target-arrow-color', 'green');
+        modifiedObj = cy.getElementById(`edge${startNode}${endNode}`);
       }
       break;
     case 3:
@@ -263,6 +267,7 @@ function affectMutationOnGraph(cy, mutation) {
       }
       cy.getElementById(startNode).style('background-color', 'red');
       cy.getElementById(startNode).style('opacity', 0.25);
+      modifiedObj = cy.getElementById(startNode);
       break;
     case 4:
       // delete edge
@@ -291,16 +296,50 @@ function affectMutationOnGraph(cy, mutation) {
       cy.getElementById(`edge${startNode}${endNode}`).style('line-color', 'red');
       cy.getElementById(`edge${startNode}${endNode}`).style('target-arrow-color', 'red');
       cy.getElementById(`edge${startNode}${endNode}`).style('opacity', 0.25);
+      modifiedObj = cy.getElementById(`edge${startNode}${endNode}`);
       break;
     case 5:
       // change node
       if (cy.getElementById(startNode).length !== 0) {
         cy.getElementById(startNode).style('background-color', 'yellow');
+        modifiedObj = cy.getElementById(startNode);
       }
       break;
     default:
       return;
   }
+  if(modifiedObj !== null) {
+    const objId = `#${modifiedObj.id()}`
+    initializeReasonTippy(modifiedObj, reason)
+    cy.on('mouseover', objId, () => modifiedObj.reasonTip.show());
+    cy.on('mouseout', objId, () => modifiedObj.reasonTip.hide());
+  }
+}
+
+/**
+ * Initializes a tooltip containing the node's token list
+ */
+function initializeReasonTippy(obj, reason) {
+  const tipPosition = obj.popperRef(); // used only for positioning
+
+  // a dummy element must be passed as tippy only accepts a dom element as the target
+  const dummyDomEle = document.createElement('div');
+
+  obj.reasonTip = tippy(dummyDomEle, {
+    trigger: 'manual',
+    lazy: false,
+    onCreate: instance => { instance.popperInstance.reference = tipPosition; },
+
+    content: () => getReasonTooltipContent(reason),
+    sticky: true,
+    plugins: [sticky]
+  });
+}
+
+function getReasonTooltipContent(reason) {
+  let text = document.createElement("p");
+  text.innerText = !reason ? "No reason specified" : reason;
+  return text;
 }
 
 /**
