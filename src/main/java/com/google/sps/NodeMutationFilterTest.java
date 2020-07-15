@@ -26,48 +26,48 @@ import org.junit.runners.JUnit4;
 
 @RunWith(JUnit4.class)
 public class NodeMutationFilterTest {
-    /** Basic test for including mutliple relevant nodes */
-    @Test
-    public void getMutationsOfBasic() {
-      Mutation addAB =
-          Mutation.newBuilder()
-              .setType(Mutation.Type.ADD_EDGE)
-              .setStartNode("A")
-              .setEndNode("B")
-              .build();
-      Mutation removeAB =
-          Mutation.newBuilder()
-              .setType(Mutation.Type.DELETE_EDGE)
-              .setStartNode("A")
-              .setEndNode("B")
-              .build();
-      Mutation removeC =
-          Mutation.newBuilder().setType(Mutation.Type.DELETE_NODE).setStartNode("C").build();
-      List<Mutation> mutList = new ArrayList<>();
-      mutList.add(addAB);
-      mutList.add(removeAB);
-      mutList.add(removeC);
-      List<Mutation> truncatedList = Utility.getMutationsOfNode("A", mutList);
-  
-      Assert.assertEquals(2, truncatedList.size());
-      Assert.assertFalse(truncatedList.contains(removeC));
-    }
-  
-    /** Test that a null query returns all the mutations in the list */
-    @Test
-    public void getMutationsOfNull() {
-      Mutation addAB =
-          Mutation.newBuilder()
-              .setType(Mutation.Type.ADD_EDGE)
-              .setStartNode("A")
-              .setEndNode("B")
-              .build();
-      List<Mutation> mutList = new ArrayList<>();
-      mutList.add(addAB);
-  
-      List<Mutation> truncatedList = Utility.getMutationsOfNode(null, mutList);
-  
-      Assert.assertEquals(1, truncatedList.size());
-      Assert.assertTrue(truncatedList.contains(addAB));
-    }
+  /** Basic test for including mutliple relevant nodes */
+  @Test
+  public void getMutationsOfBasic() {
+    Mutation addAB =
+        Mutation.newBuilder()
+            .setType(Mutation.Type.ADD_EDGE)
+            .setStartNode("A")
+            .setEndNode("B")
+            .build();
+    Mutation removeAB =
+        Mutation.newBuilder()
+            .setType(Mutation.Type.DELETE_EDGE)
+            .setStartNode("A")
+            .setEndNode("B")
+            .build();
+    Mutation removeC =
+        Mutation.newBuilder().setType(Mutation.Type.DELETE_NODE).setStartNode("C").build();
+    List<Mutation> mutList = new ArrayList<>();
+    mutList.add(addAB);
+    mutList.add(removeAB);
+    mutList.add(removeC);
+    List<Mutation> truncatedList = Utility.getMutationsOfNode("A", mutList);
+
+    Assert.assertEquals(2, truncatedList.size());
+    Assert.assertFalse(truncatedList.contains(removeC));
+  }
+
+  /** Test that a null query returns all the mutations in the list */
+  @Test
+  public void getMutationsOfNull() {
+    Mutation addAB =
+        Mutation.newBuilder()
+            .setType(Mutation.Type.ADD_EDGE)
+            .setStartNode("A")
+            .setEndNode("B")
+            .build();
+    List<Mutation> mutList = new ArrayList<>();
+    mutList.add(addAB);
+
+    List<Mutation> truncatedList = Utility.getMutationsOfNode(null, mutList);
+
+    Assert.assertEquals(1, truncatedList.size());
+    Assert.assertTrue(truncatedList.contains(addAB));
+  }
 }

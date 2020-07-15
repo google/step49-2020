@@ -186,7 +186,7 @@ public final class Utility {
 
   /**
    * Finds the INDEX of the element in searchList that is strictly GREATER than tgt in a SORTED list
-   * 
+   *
    * @param searchList a list of integers to search through. Assumes it's sorted
    * @param tgt the number to find the next biggest number from
    * @return the INDEX of the next greater number. -1 if none
