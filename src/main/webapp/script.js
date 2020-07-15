@@ -176,7 +176,7 @@ function getGraphDisplay(graphNodes, graphEdges) {
     node.tip.show();
   });
 
-  document.getElementById('reset').onclick = function(){ resetNodes(cy) };
+  document.getElementById('reset').onclick = function(){ resetElements(cy) };
 
   document.getElementById('search-button').onclick = function() { search(cy, "node", searchNode) };
 
@@ -187,7 +187,7 @@ function getGraphDisplay(graphNodes, graphEdges) {
  * Searches based on type (node or token)
  */
 function search(cy, type, searchFunction) {
-  resetNodes(cy);
+  resetElements(cy);
   let errorText;
   let query = document.getElementById(type + '-search').value;
   if (query == "" || searchFunction(cy, query)) {
@@ -203,9 +203,9 @@ function search(cy, type, searchFunction) {
  */
 function searchNode(cy, query) {
   if (query) {
-    const target = cy.filter('[id = "' + query + '"]');
+    const target = cy.$id(query);
     if (target.length != 0) {
-      highlightNodes(cy, target);
+      highlightElements(cy, target);
       cy.fit(target, 50);
       return true;
     }
@@ -217,42 +217,58 @@ function searchNode(cy, query) {
  * and zooms in
  */
 function searchToken(cy, query) {
-  let target = [];
+  let target = cy.collection();
   cy.nodes().forEach(node => {
     if (node.data().tokens.includes(query)) {
-      target.push(cy.filter('[id = "' + node.data().id + '"]'));
+      target = target.add(cy.$id(node.data().id));
     }
   });
   if (target.length > 0) {
     let showNode = target[0][0];
     showNode.tip.show();
-    highlightNodes(cy, target);
+    highlightElements(cy, target);
     return true;
   }
   return false;
 }
 
-function highlightNodes(cy, target) {
+/**
+ * Highlights collection of nodes and edges
+ */
+function highlightElements(cy, target) {
   // set all nodes to background state
   cy.nodes().forEach(node => node.style('opacity', '0.25'));
 
   // highlight desired nodes
   target.forEach(node => {
-    console.log(node);
     node.style('background-color', 'olive');
     node.style('opacity', '1');
   });
   cy.fit(target[0], 50);
   document.getElementById('num-selected').innerText = "Number of nodes selected: " + target.length;
+
+  // highlight adjacent edges
+  target.connectedEdges().forEach(edge => {
+    edge.style('line-color', 'black');
+    edge.style('target-arrow-color', 'black');
+  });
 }
 
-function resetNodes(cy) {
+/**
+ * Resets elements to default state
+ */
+function resetElements(cy) {
   cy.nodes().forEach(node => {
     node.style('background-color', 'blue');
     node.style('opacity', '1')
   });
   cy.fit(cy.nodes(), 50);
   document.getElementById('num-selected').innerText = "Number of nodes selected: 0";
+  // reset edge color
+  cy.edges().forEach(edge => {
+    edge.style('line-color', '#ccc');
+    edge.style('target-arrow-color', '#ccc');
+  });
 }
 
 /**
