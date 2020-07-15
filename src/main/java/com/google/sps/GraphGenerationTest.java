@@ -227,7 +227,16 @@ public final class GraphGenerationTest {
     Assert.assertEquals(dataGraph.roots(), dataGraphCopy.roots());
     Assert.assertFalse(dataGraph.roots() == dataGraphCopy.roots());
 
-    Assert.assertEquals(dataGraph.graphNodesMap(), dataGraphCopy.graphNodesMap());
-    Assert.assertFalse(dataGraph.graphNodesMap() == dataGraphCopy.graphNodesMap());
+    HashMap<String, GraphNode> nodeMapOrig = dataGraph.graphNodesMap();
+    HashMap<String, GraphNode> nodeMapCopy = dataGraphCopy.graphNodesMap();
+    Assert.assertEquals(nodeMapOrig, nodeMapCopy);
+    Assert.assertFalse(nodeMapOrig == nodeMapCopy);
+
+    // Make sure that nodes in the two maps are the same (by reference)
+    for (String nodeName : nodeMapOrig.keySet()) {
+      GraphNode nodeInOrig = nodeMapOrig.get(nodeName);
+      GraphNode nodeInCopy = nodeMapCopy.get(nodeName);
+      Assert.assertSame(nodeInOrig, nodeInCopy);
+    }
   }
 }

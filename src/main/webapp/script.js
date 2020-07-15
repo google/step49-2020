@@ -227,6 +227,52 @@ function getGraphDisplay(graphNodes, graphEdges) {
     const node = evt.target;
     node.tip.show();
   });
+
+  const searchElement = document.getElementById('search');
+  document.getElementById('search-button').onclick = function() {
+    if (searchNode(cy, searchElement.value) || searchElement.value == "") {
+      document.getElementById('search-error').innerText = "";
+    } else {
+      document.getElementById('search-error').innerText = "Node does not exist.";
+    }
+  };
+  
+}
+
+/**
+ * Zooms in on specific node
+ */
+function searchNode(cy, query) {
+  // reset nodes to default color
+  cy.nodes().forEach(node => {
+    node.style('background-color', 'blue');
+    node.style('opacity', '1')
+  });
+  const target = findNodeInGraph(cy, query);
+  if (target) {
+    cy.nodes().forEach(node => node.style('opacity', '0.25'));
+    target.style('background-color', 'olive');
+    target.style('opacity', '1');
+    cy.fit(target, 50);
+    return true;
+  } else {
+    // fits all nodes on screen
+    cy.fit(cy.nodes(), 50);
+    return false;
+  }
+}
+
+/**
+ * Finds element in cy graph by id
+ */
+function findNodeInGraph(cy, id) {
+  if (id.length != 0) {
+    const target = cy.$('#'+id);
+    if (target.length != 0) {
+      return target;
+    }
+  }
+  return null;
 }
 
 /**

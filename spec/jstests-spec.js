@@ -1,4 +1,6 @@
+
 import { initializeNumMutations, setCurrGraphNum, initializeTippy, generateGraph, getUrl, navigateGraph, currGraphNum, numMutations, updateButtons } from "../src/main/webapp/script.js";
+
 import cytoscape from "cytoscape";
 
 describe("Checking that depth in fetch url is correct", function() {
@@ -289,6 +291,7 @@ describe("Check correct url params", function() {
     expect(constructedUrl.has("nodeName")).toBe(true);
     expect(constructedUrl.get("nodeName")).toBe("");
   });
+
   it ("passes correct nodeName when nodeName has a value", function () {
     nodeName.value = "A";
     document.body.appendChild(nodeName);
@@ -301,3 +304,43 @@ describe("Check correct url params", function() {
     expect(constructedUrl.get("nodeName")).toBe("A"); 
   })
 });
+
+});
+
+describe("Node search", function() {
+  const cy = cytoscape({ 
+    elements: [
+    { data: { id: "A" } },
+    { data: { id: "B" } },
+    {
+      data: {
+        id: "AB",
+        source: "A",
+        target: "B"
+      }
+    }]
+  });
+
+  it("should be a successful search", function() {
+    const result = searchNode(cy, "A");
+
+    // search should find node
+    expect(result).toBe(true);
+  });
+
+  it("should be an unsuccessful search", function() {
+    let result = searchNode(cy, "C");
+
+    // search should not find node
+    expect(result).toBe(false);
+  });
+
+  it("should not search at all", function() {
+    let result = searchNode(cy, "");
+
+    // search should not find node
+    expect(result).toBe(false);
+  });
+});
+
+

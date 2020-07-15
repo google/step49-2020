@@ -16,6 +16,9 @@ package com.google.sps;
 
 import java.io.IOException;
 import java.util.ArrayList;
+
+import java.io.InputStreamReader;
+
 import java.util.List;
 import java.util.Map;
 
@@ -25,6 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.common.graph.MutableGraph;
+import com.google.protobuf.TextFormat;
 import com.proto.GraphProtos.Graph;
 import com.proto.GraphProtos.Node;
 import com.proto.MutationProtos.Mutation;
@@ -75,17 +79,12 @@ public class DataServlet extends HttpServlet {
       /*
        * The below code is used to read a graph specified in textproto form
        */
-      // InputStreamReader graphReader = new
-      // InputStreamReader(getServletContext().getResourceAsStream("/WEB-INF/initial_graph.textproto"));
-      // Graph.Builder graphBuilder = Graph.newBuilder();
-      // TextFormat.merge(graphReader, graphBuilder);
-      // Graph protoGraph = graphBuilder.build();
+      InputStreamReader graphReader = new InputStreamReader(
+          getServletContext().getResourceAsStream("/WEB-INF/graph.textproto"));
+      Graph.Builder graphBuilder = Graph.newBuilder();
+      TextFormat.merge(graphReader, graphBuilder);
+      Graph protoGraph = graphBuilder.build();
 
-      /*
-       * This code is used to read a graph specified in proto binary format.
-       */
-      Graph protoGraph =
-          Graph.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/graph.txt"));
       Map<String, Node> protoNodesMap = protoGraph.getNodesMapMap();
       // Originally both set to same data
       originalDataGraph = DataGraph.create();
@@ -108,31 +107,25 @@ public class DataServlet extends HttpServlet {
       /*
        * The below code is used to read a mutation list specified in textproto form
        */
-      // InputStreamReader mutReader = new
-      // InputStreamReader(getServletContext().getResourceAsStream("/WEB-INF/mutations.textproto"));
-      // MutationList.Builder mutBuilder = MutationList.newBuilder();
-      // TextFormat.merge(mutReader, mutBuilder);
-      // mutList = mutBuilder.build().getMutationList();
-      /*
-       * This code is used to read a mutation list specified in proto binary format.
-       */
-      // Parse the contents of mutation.txt into a list of mutations
-      mutList =
-          MutationList.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/mutations.txt"))
-              .getMutationList();
+
+      InputStreamReader mutReader = new InputStreamReader(
+          getServletContext().getResourceAsStream("/WEB-INF/mutation.textproto"));
+      MutationList.Builder mutBuilder = MutationList.newBuilder();
+      TextFormat.merge(mutReader, mutBuilder);
+      mutList = mutBuilder.build().getMutationList();
       relevantMutationIndices = new ArrayList<>();
       for (int i = 0; i < mutList.size(); i++) {
         defaultIndices.add(i);
       }
       relevantMutationIndices = defaultIndices;
+
     }
 
     // Parameter for the nodeName the user searched for in the frontend
     String nodeNameParam = request.getParameter("nodeName");
 
     // The current graph at the specified index
-    currDataGraph =
-        Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
+    currDataGraph = Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
 
     // Current mutation number
     oldNumMutations = currDataGraph.numMutations(); // The old mutation number
@@ -175,13 +168,11 @@ public class DataServlet extends HttpServlet {
           // searched for the same node at last time. don't want to truncate the mutList
 
         } else {
-          relevantMutationIndices =
-              relevantMutationIndices.subList(newNumIndex, relevantMutationIndices.size());
+          relevantMutationIndices = relevantMutationIndices.subList(newNumIndex, relevantMutationIndices.size());
           relevantMutationIndices.add(0, oldNumMutations);
         }
         // Maybe make a copy instead of making this the currDataGraph
-        currDataGraph =
-            Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, newNum, mutList);
+        currDataGraph = Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, newNum, mutList);
         // Add null check?
         oldNumMutations = newNum;
         lastNodeName = nodeNameParam;
@@ -193,9 +184,8 @@ public class DataServlet extends HttpServlet {
       // If the truncated graph is empty, it doesn't exist on the page. Check if there
       // are any
       // mutations that affect it
-      truncatedMutList =
-          Utility.getMutationsFromIndices(
-              relevantMutationIndices, mutList); // only mutations relevant to the node
+      truncatedMutList = Utility.getMutationsFromIndices(relevantMutationIndices, mutList); // only mutations relevant
+                                                                                            // to the node
 
       // This is the single search
       truncatedGraph = currDataGraph.getReachableNodes(nodeNameParam, depthNumber);
@@ -211,8 +201,7 @@ public class DataServlet extends HttpServlet {
       }
     }
 
-    String graphJson =
-        Utility.graphToJson(truncatedGraph, truncatedMutList.size(), relevantMutationIndices);
+    String graphJson = Utility.graphToJson(truncatedGraph, truncatedMutList.size(), relevantMutationIndices);
     response.getWriter().println(graphJson);
   }
 }

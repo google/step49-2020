@@ -21,7 +21,7 @@
   </div>
   <button onclick="graph.generateGraph()">Get Graph</button>
   <br />
-  <div id="num-mutation-display">Displaying</div>
+  <div id="num-mutation-display"></div>
   <div id="graphdiv">
     <div id="graph"></div>
     <p id="buttontext">Navigate to the next and previous graph using the buttons below:</p>
@@ -32,6 +32,13 @@
         onclick="graph.navigateGraph(1); graph.generateGraph()">navigate_next</button>
     </div>
   </div>
+
+  <div id="graph"></div>
+  <label>Search by Node: </label>
+  <input type="text" id="search" name="search"></input>
+  <button id="search-button">Search</button>
+  <label id="search-error"></label>
+
 </body>
 
 </html>
