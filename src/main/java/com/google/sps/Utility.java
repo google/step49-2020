@@ -184,6 +184,13 @@ public final class Utility {
     return lst;
   }
 
+  /**
+   * Finds the INDEX of the element in searchList that is strictly GREATER than tgt in a SORTED list
+   * 
+   * @param searchList a list of integers to search through. Assumes it's sorted
+   * @param tgt the number to find the next biggest number from
+   * @return the INDEX of the next greater number. -1 if none
+   */
   public static int getNextGreatestNumIndex(List<Integer> searchList, int tgt) {
     int start = 0;
     int end = searchList.size() - 1;
@@ -191,11 +198,11 @@ public final class Utility {
     int ans = -1;
     while (start <= end) {
       int mid = (start + end) / 2;
-      // Target is greater, move to right side
+      // tgt is not less, so gotta go to the right
       if (searchList.get(mid) <= tgt) {
         start = mid + 1;
       }
-      // Move left side.
+      // go to the left otherwise
       else {
         ans = mid;
         end = mid - 1;
