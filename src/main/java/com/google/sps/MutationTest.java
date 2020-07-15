@@ -170,7 +170,7 @@ public final class MutationTest {
     DataGraph dataGraph = DataGraph.create(graph, graphNodesMap, roots, 0);
 
     boolean success = dataGraph.mutateGraph(addAB).length() == 0;
-    //Assert.assertFalse(success);
+    // Assert.assertFalse(success);
 
     Set<GraphNode> graphNodes = graph.nodes();
     Assert.assertEquals(graphNodes.size(), 2);

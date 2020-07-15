@@ -109,7 +109,7 @@ public class DataServlet extends HttpServlet {
 
     List<Object> ret =
         Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
-     if(ret.size() == 2) {
+    if (ret.size() == 2) {
       String error = (String) (ret.get(1));
       response.setHeader("serverError", error);
     }
