@@ -37,7 +37,7 @@ public class DataServlet extends HttpServlet {
   private DataGraph currDataGraph = null;
   private DataGraph originalDataGraph = null;
 
-  private String latestSearchNode = null;
+  int oldNumMutations = 0;
 
   /*
    * Called when a client submits a GET request to the /data URL
@@ -124,7 +124,7 @@ public class DataServlet extends HttpServlet {
         Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
 
     // Current mutation number
-    int oldNumMutations = currDataGraph.numMutations(); // The old mutation number
+    oldNumMutations = currDataGraph.numMutations(); // The old mutation number
 
     // returns null if either mutation isn't able to be applied or if num < 0
     if (currDataGraph == null) {
@@ -150,12 +150,16 @@ public class DataServlet extends HttpServlet {
 
       // TODO: find the index that's the next greatest on this list with binary search
       // That is, change the mutation num!!!
-      int newNum = Utility.getNextGreatestNum(relevantMutationIndices, oldNumMutations);
-
-      // Maybe make a copy instead of making this the currDataGraph
-
-      DataGraph tempData =
+      if (!currDataGraph.graphNodesMap().containsKey(nodeNameParam)) {
+        int newNum = Utility.getNextGreatestNum(relevantMutationIndices, oldNumMutations);
+        System.out.println(nodeNameParam);
+        System.out.println(newNum);
+        // Maybe make a copy instead of making this the currDataGraph
+        currDataGraph =
           Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, newNum, mutList);
+          // Add null check?
+        oldNumMutations = newNum;
+      }
 
       // If the truncated graph is empty, it doesn't exist on the page. Check if there
       // are any
@@ -165,10 +169,7 @@ public class DataServlet extends HttpServlet {
               relevantMutationIndices, mutList); // only mutations relevant to the node
 
       // This is the single search
-      truncatedGraph = tempData.getReachableNodes(nodeNameParam, depthNumber);
-
-      // oldNumMutations is the number of mutations that were applied.
-      // you want to see where this falls in the new one
+      truncatedGraph = currDataGraph.getReachableNodes(nodeNameParam, depthNumber);
 
       // If the graph is empty and there are no relevant mutations, then we give a
       // server error.
