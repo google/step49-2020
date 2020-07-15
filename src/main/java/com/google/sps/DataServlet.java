@@ -68,7 +68,6 @@ public class DataServlet extends HttpServlet {
 
     int depthNumber = Integer.parseInt(depthParam);
     int mutationNumber = Integer.parseInt(mutationParam);
-    // System.out.println(mutationNumber);
 
     boolean success = true; // Innocent until proven guilty; successful until proven a failure
 
@@ -101,14 +100,12 @@ public class DataServlet extends HttpServlet {
       response.setHeader("serverError", error);
       return;
     }
-    // Relevant mutation indicies, start as everything
 
     // Mutations file hasn't been read yet
     if (mutList == null) {
       /*
        * The below code is used to read a mutation list specified in textproto form
        */
-
       InputStreamReader mutReader =
           new InputStreamReader(
               getServletContext().getResourceAsStream("/WEB-INF/mutations.textproto"));
@@ -122,15 +119,14 @@ public class DataServlet extends HttpServlet {
       for (int i = 0; i < mutList.size(); i++) {
         defaultIndices.add(i);
       }
+      // Relevant mutation indicies start as everything
       relevantMutationIndices = defaultIndices;
     }
 
     // Parameter for the nodeName the user searched for in the frontend
     String nodeNameParam = request.getParameter("nodeName");
 
-    // The current graph at the specified index
-    currDataGraph =
-        Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, oldNumMutations, mutList);
+    // At this point, currDataGraph is basically Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, oldNumMutations, mutList);
 
     oldNumMutations = currDataGraph.numMutations(); // The old mutation number, will change
 
@@ -149,7 +145,8 @@ public class DataServlet extends HttpServlet {
       // Just get the specified deptg, the mutation list, and relevant mutations as
       // they are
       currDataGraph =
-        Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
+          Utility.getGraphAtMutationNumber(
+              originalDataGraph, currDataGraph, mutationNumber, mutList);
       truncatedGraph = currDataGraph.getGraphWithMaxDepth(depthNumber);
       relevantMutationIndices = defaultIndices;
     } else { // A node is searched
@@ -190,9 +187,6 @@ public class DataServlet extends HttpServlet {
         // The index of the next mutation to look at in the ORIGINAL mutlist
         int newNum = relevantMutationIndices.get(newNumIndex);
 
-        System.out.println(nodeNameParam);
-        // System.out.println(newNum);
-
         // only get the indices AFTER this one
         relevantMutationIndices =
             relevantMutationIndices.subList(newNumIndex, relevantMutationIndices.size());
@@ -208,8 +202,9 @@ public class DataServlet extends HttpServlet {
       } else {
         // case 3: node is in the current graph. then relevant mutationIndices is ok
         currDataGraph =
-          Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
-          oldNumMutations = mutationNumber;
+            Utility.getGraphAtMutationNumber(
+                originalDataGraph, currDataGraph, mutationNumber, mutList);
+        oldNumMutations = mutationNumber;
       }
       // This is the single search
       truncatedGraph = currDataGraph.getReachableNodes(nodeNameParam, depthNumber);
