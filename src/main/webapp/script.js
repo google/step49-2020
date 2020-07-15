@@ -31,9 +31,10 @@ export { initializeNumMutations, setCurrGraphNum, initializeTippy, generateGraph
 cytoscape.use(popper); // register extension
 cytoscape.use(dagre); // register extension
 
-let currGraphIndex = 0;
-// Stores the index of the graph (in sequence of mutations) currently
+// Stores the index of the graph in relevantIndices (in sequence of mutations) currently
 // displayed on the screen. Must be >= 0.
+let currGraphIndex = 0;
+
 let currGraphNum = 0;
 // Stores the number of mutations in the list this graph is applying
 // The user cannot click next to a graph beyond this point
@@ -371,12 +372,12 @@ function navigateGraph(amount) {
  * Assumes currGraphNum is between 0 and numMutations
  */
 function updateButtons() {
-  if (currGraphNum === 0) {
+  if (currGraphIndex === 0) {
     document.getElementById("prevbutton").disabled = true;
   } else {
     document.getElementById("prevbutton").disabled = false;
   }
-  if (currGraphNum === numMutations - 1 || numMutations === 0) {
+  if (currGraphIndex === numMutations - 1 || numMutations === 0) {
     document.getElementById("nextbutton").disabled = true;
   } else {
     document.getElementById("nextbutton").disabled = false;
