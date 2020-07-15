@@ -147,11 +147,16 @@ public class DataServlet extends HttpServlet {
 
       // Indicies of relevant mutations
       relevantMutationIndices = Utility.getMutationIndicesOfNode(nodeNameParam, mutList);
+      // System.out.println(mutList);
+      System.out.println(relevantMutationIndices);
 
       // TODO: find the index that's the next greatest on this list with binary search
       // That is, change the mutation num!!!
       if (!currDataGraph.graphNodesMap().containsKey(nodeNameParam)) {
         int newNum = Utility.getNextGreatestNum(relevantMutationIndices, oldNumMutations);
+        if (newNum == -1) {
+          //handle it
+        }
         System.out.println(nodeNameParam);
         System.out.println(newNum);
         // Maybe make a copy instead of making this the currDataGraph
@@ -169,7 +174,8 @@ public class DataServlet extends HttpServlet {
               relevantMutationIndices, mutList); // only mutations relevant to the node
 
       // This is the single search
-      truncatedGraph = currDataGraph.getReachableNodes(nodeNameParam, depthNumber);
+      // truncatedGraph = currDataGraph.getReachableNodes(nodeNameParam, depthNumber);
+      truncatedGraph = currDataGraph.graph(); // TODO: change back to line above
 
       // If the graph is empty and there are no relevant mutations, then we give a
       // server error.

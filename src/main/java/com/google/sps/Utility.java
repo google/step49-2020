@@ -195,6 +195,7 @@ public final class Utility {
         end = mid - 1;
       }
     }
-    return ans;
+    if (ans == -1) return -1;
+    return searchList.get(ans);
   }
 }
