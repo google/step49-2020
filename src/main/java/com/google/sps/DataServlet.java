@@ -108,8 +108,7 @@ public class DataServlet extends HttpServlet {
        * This code is used to read a mutation list specified in proto binary format.
        */
       // Parse the contents of mutation.txt into a list of mutations
-      // mutList =
-      MutationList.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/mutations.txt"))
+      mutList = MutationList.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/mutations.txt"))
           .getMutationList();
     }
     MultiMutation mutDiff =

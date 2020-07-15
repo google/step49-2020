@@ -283,34 +283,99 @@ describe("Check initializing variables are passed correctly", function() {
   });
 });
 
-describe("Ensuring correct nodes are highlighted in mutated graph", function () {
-  it("highlights an added node in green", function() {
+describe("Ensuring correct nodes are highlighted in mutated graph", function() {
+  let cy;
+  beforeEach(function() {
     document.body.innerHTML = `
     <div id="cy"></div>`;
-    const cy = cytoscape({
+    cy = cytoscape({
+      container: document.getElementById("cy"),
       elements: [{
-        group: "nodes", 
+        group: "nodes",
         data: {
           id: "A"
         }
       },
       {
-        group: "nodes", 
+        group: "nodes",
         data: {
           id: "B"
         }
-      }
-      ]
+      },
+      {
+        group: "nodes",
+        data: {
+          id: "edgeAB",
+          source: "A",
+          target: "B"
+        }
+      },
+      ],
     });
-  const mutObj = {
-    "type_" : 1,
-    "startNode_" : "A"
-  };
-  const mutList = [];
-  mutList.push(mutObj);
-  highlightDiff(cy, mutList);
-  const thisNode = cy.nodes()[0];;
-  // console.log(thisNode.css().json()); 
-  // // expect(cy.getElementById("A").style('background-color')).toBe('green');
+  })
+  it("highlights an added node in green", function() {
+    const mutObj = {
+      "type_": 1,
+      "startNode_": "A"
+    };
+    const mutList = [];
+    mutList.push(mutObj);
+    highlightDiff(cy, mutList);
+    // expect node to be green
+    expect(cy.getElementById("A").style("background-color")).toBe('rgb(0,128,0)');
+  });
+  it("highlights an added edge in green", function() {
+    const mutObj = {
+      "type_": 2,
+      "startNode_": "A",
+      "endNode_": "B"
+    };
+    const mutList = [];
+    mutList.push(mutObj);
+    highlightDiff(cy, mutList);
+    // expect node to be green
+    expect(cy.getElementById("edgeAB").style("line-color")).toBe('rgb(0,128,0)');
+    expect(cy.getElementById("edgeAB").style("target-arrow-color")).toBe('rgb(0,128,0)');
+  });
+  it("highlights a deleted node + edges in red", function() {
+    const deleteNode = {
+      "type_": 3,
+      "startNode_": "C",
+    };
+    const deleteEdge1 = {
+      "type_": 4,
+      "startNode_": "B",
+      "endNode_": "C",
+    };
+    const deleteEdge2 = {
+      "type_": 4,
+      "startNode_": "C",
+      "endNode_": "A",
+    };
+    const mutList = [];
+    mutList.push(deleteNode, deleteEdge1, deleteEdge2);
+    highlightDiff(cy, mutList);
+    // expect node and associated edges to be red and transparent
+    expect(cy.getElementById("C").length).toBe(1);
+    expect(cy.getElementById("C").style("background-color")).toBe("rgb(255,0,0)");
+    expect(cy.getElementById("C").style("opacity")).toBe("0.25");
+    expect(cy.getElementById("edgeBC").length).toBe(1);
+    expect(cy.getElementById("edgeBC").style("line-color")).toBe('rgb(255,0,0)');
+    expect(cy.getElementById("edgeBC").style("target-arrow-color")).toBe('rgb(255,0,0)');
+    expect(cy.getElementById("edgeBC").style("opacity")).toBe('0.25');
+    expect(cy.getElementById("edgeCA").style("line-color")).toBe('rgb(255,0,0)');
+    expect(cy.getElementById("edgeCA").style("target-arrow-color")).toBe('rgb(255,0,0)');
+    expect(cy.getElementById("edgeCA").style("opacity")).toBe('0.25');
+  });
+  it("highlights a changed node in yellow", function() {
+    const mutObj = {
+      "type_": 5,
+      "startNode_": "A",
+    };
+    const mutList = [];
+    mutList.push(mutObj);
+    highlightDiff(cy, mutList);
+    // expect node to be yellow
+    expect(cy.getElementById("A").style("background-color")).toBe("rgb(255,255,0)");
   });
 });

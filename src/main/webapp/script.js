@@ -215,7 +215,7 @@ function getGraphDisplay(graphNodes, graphEdges, mutDiff) {
   cy.nodes().forEach(node => initializeTippy(node));
 
   // When the user clicks on a node, display the token list tooltip for the node
-  cy.on('tap', 'node', function (evt) {
+  cy.on('tap', 'node', function(evt) {
     const node = evt.target;
     node.tip.show();
   });
@@ -240,19 +240,22 @@ function affectMutationOnGraph(cy, mutation) {
   switch (type) {
     case 1:
       // add node
-      // color this node green
-      cy.getElementById(startNode).style('background-color', 'green');
-      console.log(cy.getElementById(startNode).style().json());
+      if (cy.getElementById(startNode).length !== 0) {
+        // color this node green
+        cy.getElementById(startNode).style('background-color', 'green');
+      }
       break;
     case 2:
       // add edge
-      // color this edge green
-      cy.getElementById(`edge${startNode}${endNode}`).style('line-color', 'green');
-      cy.getElementById(`edge${startNode}${endNode}`).style('target-arrow-color', 'green');
+      if (cy.getElementById(startNode).length !== 0 && cy.getElementById(endNode).length !== 0) {
+        // color this edge green
+        cy.getElementById(`edge${startNode}${endNode}`).style('line-color', 'green');
+        cy.getElementById(`edge${startNode}${endNode}`).style('target-arrow-color', 'green');
+      }
       break;
     case 3:
       // add a phantom node and color it red
-      if(cy.getElementById(startNode).length === 0) {
+      if (cy.getElementById(startNode).length === 0) {
         cy.add({
           group: "nodes",
           data: { id: startNode }
@@ -291,7 +294,9 @@ function affectMutationOnGraph(cy, mutation) {
       break;
     case 5:
       // change node
-      cy.getElementById(startNode).style('background-color', 'yellow');
+      if (cy.getElementById(startNode).length !== 0) {
+        cy.getElementById(startNode).style('background-color', 'yellow');
+      }
       break;
     default:
       return;
@@ -333,7 +338,7 @@ function getTooltipContent(node) {
   const closeButton = document.createElement("button");
   closeButton.innerText = "close";
   closeButton.classList.add("material-icons", "close-button");
-  closeButton.addEventListener('click', function () {
+  closeButton.addEventListener('click', function() {
     node.tip.hide();
   }, false);
   content.appendChild(closeButton);
