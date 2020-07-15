@@ -1,5 +1,5 @@
 
-import { initializeNumMutations, setCurrGraphNum, initializeTippy, generateGraph, getUrl, navigateGraph, currGraphNum, numMutations, updateButtons } from "../src/main/webapp/script.js";
+import { initializeNumMutations, setCurrGraphNum, setRelevantIndices, initializeTippy, generateGraph, getUrl, navigateGraph, currGraphNum, numMutations, updateButtons, searchNode } from "../src/main/webapp/script.js";
 
 import cytoscape from "cytoscape";
 
@@ -198,8 +198,19 @@ describe("Initializing tooltips", function() {
 });
 
 describe("Pressing next and previous buttons associated with a graph", function() {
+  let numDisplay = {};
+  beforeEach(function() {
+    numDisplay = document.createElement("div");
+    numDisplay.id = "num-mutation-display";
+  });
+
+  afterEach(function() {
+    document.body.innerHTML = ''; 
+  });
   it("correctly updates mutation tracking variables and buttons on click", function() {
+    document.body.appendChild(numDisplay); 
     initializeNumMutations(3);
+    setRelevantIndices([0, 1, 2]);
     const prevButton = document.createElement("button");
     prevButton.id = "prevbutton";
     prevButton.onclick = () => { navigateGraph(-1); updateButtons(); };
@@ -210,7 +221,7 @@ describe("Pressing next and previous buttons associated with a graph", function(
     document.body.appendChild(nextButton);
 
     expect(currGraphNum).toBe(0);
-    expect(numMutations).toBe(3);
+    expect(numMutations).toBe(3); 
 
     nextButton.click();
     expect(currGraphNum).toBe(1);
@@ -219,30 +230,25 @@ describe("Pressing next and previous buttons associated with a graph", function(
 
     nextButton.click();
     expect(currGraphNum).toBe(2);
-    expect(nextButton.disabled).toBe(false);
+    expect(nextButton.disabled).toBe(true);
     expect(prevButton.disabled).toBe(false);
 
     nextButton.click();
-    expect(currGraphNum).toBe(3);
+    expect(currGraphNum).toBe(2);
     expect(nextButton.disabled).toBe(true);
     expect(prevButton.disabled).toBe(false);
 
     prevButton.click();
-    expect(currGraphNum).toBe(2);
-    expect(nextButton.disabled).toBe(false);
-    expect(prevButton.disabled).toBe(false);
-
-    prevButton.click();
     expect(currGraphNum).toBe(1);
     expect(nextButton.disabled).toBe(false);
     expect(prevButton.disabled).toBe(false);
 
-    nextButton.click();
-    expect(currGraphNum).toBe(2);
-    expect(nextButton.disabled).toBe(false);
-    expect(prevButton.disabled).toBe(false);
-
     prevButton.click();
+    expect(currGraphNum).toBe(0);
+    expect(nextButton.disabled).toBe(false);
+    expect(prevButton.disabled).toBe(true);
+
+    nextButton.click();
     expect(currGraphNum).toBe(1);
     expect(nextButton.disabled).toBe(false);
     expect(prevButton.disabled).toBe(false);
@@ -257,11 +263,16 @@ describe("Pressing next and previous buttons associated with a graph", function(
     expect(nextButton.disabled).toBe(false);
     expect(prevButton.disabled).toBe(true);
 
+    prevButton.click();
+    expect(currGraphNum).toBe(0);
+    expect(nextButton.disabled).toBe(false);
+    expect(prevButton.disabled).toBe(true);
+
     nextButton.click();
     expect(currGraphNum).toBe(1);
     expect(nextButton.disabled).toBe(false);
     expect(prevButton.disabled).toBe(false);
-  });
+  });  
 });
 
 describe("Check correct url params", function() {
