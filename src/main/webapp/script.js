@@ -178,19 +178,19 @@ function getGraphDisplay(graphNodes, graphEdges) {
 
   document.getElementById('reset').onclick = function(){ resetNodes(cy) };
 
-  document.getElementById('search-button').onclick = function() { search(cy, "node", searchNode, graphNodes) };
+  document.getElementById('search-button').onclick = function() { search(cy, "node", searchNode) };
 
-  document.getElementById('search-token-button').onclick = function() { search(cy, "token", searchToken, graphNodes) };
+  document.getElementById('search-token-button').onclick = function() { search(cy, "token", searchToken) };
 }
 
 /**
  * Searches based on type (node or token)
  */
-function search(cy, type, searchFunction, nodes) {
+function search(cy, type, searchFunction) {
   resetNodes(cy);
   let errorText;
   let query = document.getElementById(type + '-search').value;
-  if (query == "" || searchFunction(cy, query, nodes)) {
+  if (query == "" || searchFunction(cy, query)) {
     errorText = "";
   } else {
     errorText = type + " does not exist.";
@@ -203,7 +203,7 @@ function search(cy, type, searchFunction, nodes) {
  */
 function searchNode(cy, query) {
   if (query) {
-    const target = cy.$('#'+query);
+    const target = cy.filter('[id = "' + query + '"]');
     if (target.length != 0) {
       highlightNodes(cy, target);
       cy.fit(target, 50);
@@ -216,11 +216,11 @@ function searchNode(cy, query) {
  * Constructs list of nodes that contain specified token
  * and zooms in
  */
-function searchToken(cy, query, nodes) {
+function searchToken(cy, query) {
   let target = [];
-  nodes.forEach(node => {
-    if (node.data.tokens.includes(query)) {
-      target.push(cy.$('#'+node.data.id));
+  cy.nodes().forEach(node => {
+    if (node.data().tokens.includes(query)) {
+      target.push(cy.filter('[id = "' + node.data().id + '"]'));
     }
   });
   if (target.length > 0) {
@@ -238,10 +238,12 @@ function highlightNodes(cy, target) {
 
   // highlight desired nodes
   target.forEach(node => {
+    console.log(node);
     node.style('background-color', 'olive');
     node.style('opacity', '1');
   });
-  cy.fit(target, 50);
+  cy.fit(target[0], 50);
+  document.getElementById('num-selected').innerText = "Number of nodes selected: " + target.length;
 }
 
 function resetNodes(cy) {
@@ -250,6 +252,7 @@ function resetNodes(cy) {
     node.style('opacity', '1')
   });
   cy.fit(cy.nodes(), 50);
+  document.getElementById('num-selected').innerText = "Number of nodes selected: 0";
 }
 
 /**
