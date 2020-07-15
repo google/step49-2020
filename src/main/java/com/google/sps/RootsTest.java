@@ -17,7 +17,6 @@ package com.google.sps;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import com.google.common.graph.MutableGraph;
 import com.proto.GraphProtos.Node;
 import com.proto.GraphProtos.Node.Builder;
 import com.proto.MutationProtos.Mutation;
@@ -80,8 +79,6 @@ public class RootsTest {
 
     DataGraph dataGraph = DataGraph.create();
     dataGraph.graphFromProtoNodes(protoNodesMap);
-    MutableGraph<GraphNode> graph = dataGraph.graph();
-    HashMap<String, GraphNode> graphNodesMap = dataGraph.graphNodesMap();
     HashSet<String> roots = dataGraph.roots();
 
     // Before mutation
@@ -96,7 +93,7 @@ public class RootsTest {
             .setEndNode("B")
             .build();
 
-    Utility.mutateGraph(addAB, graph, graphNodesMap, roots);
+    dataGraph.mutateGraph(addAB);
 
     Assert.assertEquals(roots.size(), 1);
     Assert.assertTrue(roots.contains("A"));
@@ -112,8 +109,6 @@ public class RootsTest {
 
     DataGraph dataGraph = DataGraph.create();
     dataGraph.graphFromProtoNodes(protoNodesMap);
-    MutableGraph<GraphNode> graph = dataGraph.graph();
-    HashMap<String, GraphNode> graphNodesMap = dataGraph.graphNodesMap();
     HashSet<String> roots = dataGraph.roots();
 
     // Before mutation
@@ -121,7 +116,7 @@ public class RootsTest {
     Assert.assertTrue(roots.contains("A"));
 
     Mutation addB = Mutation.newBuilder().setType(Mutation.Type.ADD_NODE).setStartNode("B").build();
-    Utility.mutateGraph(addB, graph, graphNodesMap, roots);
+    dataGraph.mutateGraph(addB);
 
     Assert.assertEquals(roots.size(), 2);
     Assert.assertTrue(roots.contains("A"));
@@ -140,8 +135,6 @@ public class RootsTest {
 
     DataGraph dataGraph = DataGraph.create();
     dataGraph.graphFromProtoNodes(protoNodesMap);
-    MutableGraph<GraphNode> graph = dataGraph.graph();
-    HashMap<String, GraphNode> graphNodesMap = dataGraph.graphNodesMap();
     HashSet<String> roots = dataGraph.roots();
 
     // Before mutation
@@ -154,7 +147,7 @@ public class RootsTest {
             .setStartNode("A")
             .setEndNode("B")
             .build();
-    Utility.mutateGraph(removeAB, graph, graphNodesMap, roots);
+    dataGraph.mutateGraph(removeAB);
 
     Assert.assertEquals(roots.size(), 2);
     Assert.assertTrue(roots.contains("A"));
@@ -178,8 +171,6 @@ public class RootsTest {
 
     DataGraph dataGraph = DataGraph.create();
     dataGraph.graphFromProtoNodes(protoNodesMap);
-    MutableGraph<GraphNode> graph = dataGraph.graph();
-    HashMap<String, GraphNode> graphNodesMap = dataGraph.graphNodesMap();
     HashSet<String> roots = dataGraph.roots();
 
     // Before mutation
@@ -192,7 +183,7 @@ public class RootsTest {
             .setStartNode("B")
             .setEndNode("C")
             .build();
-    Utility.mutateGraph(removeBC, graph, graphNodesMap, roots);
+    dataGraph.mutateGraph(removeBC);
 
     // After mutation
     Assert.assertEquals(roots.size(), 1);
@@ -210,8 +201,6 @@ public class RootsTest {
 
     DataGraph dataGraph = DataGraph.create();
     dataGraph.graphFromProtoNodes(protoNodesMap);
-    MutableGraph<GraphNode> graph = dataGraph.graph();
-    HashMap<String, GraphNode> graphNodesMap = dataGraph.graphNodesMap();
     HashSet<String> roots = dataGraph.roots();
 
     // Before mutation
@@ -220,7 +209,7 @@ public class RootsTest {
 
     Mutation removeB =
         Mutation.newBuilder().setType(Mutation.Type.DELETE_NODE).setStartNode("B").build();
-    Utility.mutateGraph(removeB, graph, graphNodesMap, roots);
+    dataGraph.mutateGraph(removeB);
 
     // After mutation
     Assert.assertEquals(roots.size(), 1);
@@ -240,8 +229,6 @@ public class RootsTest {
 
     DataGraph dataGraph = DataGraph.create();
     dataGraph.graphFromProtoNodes(protoNodesMap);
-    MutableGraph<GraphNode> graph = dataGraph.graph();
-    HashMap<String, GraphNode> graphNodesMap = dataGraph.graphNodesMap();
     HashSet<String> roots = dataGraph.roots();
 
     // Before mutation
@@ -250,7 +237,7 @@ public class RootsTest {
 
     Mutation removeA =
         Mutation.newBuilder().setType(Mutation.Type.DELETE_NODE).setStartNode("A").build();
-    Utility.mutateGraph(removeA, graph, graphNodesMap, roots);
+    dataGraph.mutateGraph(removeA);
 
     // After mutation
     Assert.assertEquals(roots.size(), 2);

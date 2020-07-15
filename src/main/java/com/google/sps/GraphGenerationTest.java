@@ -15,10 +15,12 @@
 package com.google.sps;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.MutableGraph;
 import com.google.protobuf.Struct;
 import com.google.protobuf.Value;
@@ -196,5 +198,45 @@ public final class GraphGenerationTest {
     DataGraph dataGraph = DataGraph.create();
     boolean success = dataGraph.graphFromProtoNodes(protoNodesMap);
     Assert.assertFalse(success);
+  }
+
+  /*
+   * Make sure a data graph's copy function returns a copy of the original data graph
+   */
+  @Test
+  public void copyDataGraph() {
+    MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
+    graph.addNode(gNodeA);
+    graph.addNode(gNodeB);
+    HashMap<String, GraphNode> graphNodesMap = new HashMap<>();
+    graphNodesMap.put("A", gNodeA);
+    graphNodesMap.put("B", gNodeB);
+    HashSet<String> roots = new HashSet<>();
+    roots.add("A");
+    roots.add("B");
+
+    DataGraph dataGraph = DataGraph.create(graph, graphNodesMap, roots, 0);
+    DataGraph dataGraphCopy = dataGraph.getCopy();
+
+    Assert.assertEquals(dataGraph, dataGraphCopy);
+    Assert.assertFalse(dataGraph == dataGraphCopy);
+
+    Assert.assertEquals(dataGraph.graph(), dataGraphCopy.graph());
+    Assert.assertFalse(dataGraph.graph() == dataGraphCopy.graph());
+
+    Assert.assertEquals(dataGraph.roots(), dataGraphCopy.roots());
+    Assert.assertFalse(dataGraph.roots() == dataGraphCopy.roots());
+
+    HashMap<String, GraphNode> nodeMapOrig = dataGraph.graphNodesMap();
+    HashMap<String, GraphNode> nodeMapCopy = dataGraphCopy.graphNodesMap();
+    Assert.assertEquals(nodeMapOrig, nodeMapCopy);
+    Assert.assertFalse(nodeMapOrig == nodeMapCopy);
+
+    // Make sure that nodes in the two maps are the same (by reference)
+    for (String nodeName : nodeMapOrig.keySet()) {
+      GraphNode nodeInOrig = nodeMapOrig.get(nodeName);
+      GraphNode nodeInCopy = nodeMapCopy.get(nodeName);
+      Assert.assertSame(nodeInOrig, nodeInCopy);
+    }
   }
 }

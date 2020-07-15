@@ -26,18 +26,52 @@ import 'tippy.js/dist/tippy.css';
 import 'tippy.js/dist/backdrop.css';
 import 'tippy.js/animations/shift-away.css';
 
-export { initializeTippy, generateGraph, getUrl, search, searchNode, searchToken };
-
+export { initializeNumMutations, setCurrGraphNum, initializeTippy, generateGraph, getUrl, navigateGraph, currGraphNum, numMutations, updateButtons, search, searchNode, searchToken };
 
 cytoscape.use(popper); // register extension
 cytoscape.use(dagre); // register extension
 
+// Stores the index of the graph (in sequence of mutations) currently
+// displayed on the screen. Must be >= 0.
+let currGraphNum = 0;
+// Stores the number of mutations in the list this graph is applying
+// The user cannot click next to a graph beyond this point
+let numMutations = 0;
+
+/**
+ * Initializes the number of mutations
+ */
+function initializeNumMutations(num) {
+  numMutations = num;
+}
+
+/** 
+ * Sets the current graph number
+ */
+function setCurrGraphNum(num) {
+  currGraphNum = num;
+}
+
+/**
+ * Submits a fetch request to the /data URL to retrieve the graph
+ * and then displays it on the page
+ */
 async function generateGraph() {
   // Arrays to store the cytoscape graph node and edge objects
   let graphNodes = [];
   let graphEdges = [];
 
+  // disable buttons
+  const prevBtn = document.getElementById("prevbutton");
+  const nextBtn = document.getElementById("nextbutton");
+  prevBtn.disabled = true;
+  nextBtn.disabled = true;
+
   const url = getUrl();
+
+  prevBtn.disabled = true;
+  nextBtn.disabled = true;
+
   const response = await fetch(url);
 
   const serverErrorStatus = response.headers.get("serverError");
@@ -52,6 +86,7 @@ async function generateGraph() {
   // Graph nodes and edges received from server
   const nodes = JSON.parse(jsonResponse.nodes);
   const edges = JSON.parse(jsonResponse.edges);
+  initializeNumMutations(JSON.parse(jsonResponse.numMutations));
 
   if (!nodes || !edges || !Array.isArray(nodes) || !Array.isArray(edges)) {
     displayError("Malformed graph received from server - edges or nodes are empty");
@@ -83,6 +118,7 @@ async function generateGraph() {
     });
   })
   getGraphDisplay(graphNodes, graphEdges);
+  updateButtons();
   return;
 }
 
@@ -91,18 +127,27 @@ async function generateGraph() {
  * Ensures that the depth is an integer between 0 and 20
  */
 function getUrl() {
-  let selectedDepth = document.getElementById('num-layers').value;
-  if (selectedDepth.length === 0) {
+  const depthElem = document.getElementById('num-layers');
+  const nodeName = document.getElementById('node-name') ? document.getElementById('node-name').value || "" : ""; 
+
+  let selectedDepth = 0;
+  if (depthElem === null) {  
     selectedDepth = 3;
-  } else if (!Number.isInteger(selectedDepth)) {
-    selectedDepth = Math.round(selectedDepth);
   }
-  if (selectedDepth < 0) { // Extra validation for bounds
-    selectedDepth = 0;
-  } else if (selectedDepth > 20) {
-    selectedDepth = 20;
-  } 
-  const url = `/data?depth=${selectedDepth}`
+  else {
+    selectedDepth = depthElem.value
+    if (selectedDepth.length === 0) {
+      selectedDepth = 3;
+    } else if (!Number.isInteger(selectedDepth)) {
+      selectedDepth = Math.round(selectedDepth);
+    }
+    if (selectedDepth < 0) { // Extra validation for bounds
+      selectedDepth = 0;
+    } else if (selectedDepth > 20) {
+      selectedDepth = 20;
+    }
+  }
+  const url = `/data?depth=${selectedDepth}&mutationNum=${currGraphNum}&nodeName=${nodeName}`;
   return url;
 }
 /**
@@ -170,7 +215,7 @@ function getGraphDisplay(graphNodes, graphEdges) {
   cy.nodes().forEach(node => initializeTippy(node));
 
   // When the user clicks on a node, display the token list tooltip for the node
-  cy.on('tap', 'node', function(evt) {
+  cy.on('tap', 'node', function (evt) {
     const node = evt.target;
     console.log(node);
     node.tip.show();
@@ -282,9 +327,9 @@ function initializeTippy(node) {
   // a dummy element must be passed as tippy only accepts a dom element as the target
   const dummyDomEle = document.createElement('div');
 
-  node.tip = tippy(dummyDomEle, { 
+  node.tip = tippy(dummyDomEle, {
     trigger: 'manual',
-    lazy: false, 
+    lazy: false,
     onCreate: instance => { instance.popperInstance.reference = tipPosition; },
 
     content: () => getTooltipContent(node),
@@ -308,7 +353,7 @@ function getTooltipContent(node) {
   const closeButton = document.createElement("button");
   closeButton.innerText = "close";
   closeButton.classList.add("material-icons", "close-button");
-  closeButton.addEventListener('click', function() {
+  closeButton.addEventListener('click', function () {
     node.tip.hide();
   }, false);
   content.appendChild(closeButton);
@@ -333,4 +378,38 @@ function getTooltipContent(node) {
   content.className = "metadata";
 
   return content;
+}
+
+/**
+ * When a next/previous button is clicked, modifies the mutation index of the
+ * current graph to represent the new state. Then, the corresponding
+ * graph is requested from the server.
+ */
+function navigateGraph(amount) {
+  currGraphNum += amount;
+  if (currGraphNum <= 0) {
+    currGraphNum = 0;
+  }
+  if (currGraphNum >= numMutations) {
+    currGraphNum = numMutations;
+  }
+}
+
+/**
+ * Updates next and previous buttons of the graph to prevent user
+ * from clicking previous for the initial graph and next for the 
+ * final graph
+ * Assumes currGraphNum is between 0 and numMutations
+ */
+function updateButtons() {
+  if (currGraphNum === 0) {
+    document.getElementById("prevbutton").disabled = true;
+  } else {
+    document.getElementById("prevbutton").disabled = false;
+  }
+  if (currGraphNum === numMutations) {
+    document.getElementById("nextbutton").disabled = true;
+  } else {
+    document.getElementById("nextbutton").disabled = false;
+  }
 }

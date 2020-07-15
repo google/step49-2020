@@ -14,8 +14,6 @@
 
 package com.google.sps;
 
-import java.util.HashSet;
-
 import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.MutableGraph;
 import com.google.gson.Gson;
@@ -91,10 +89,7 @@ public final class JsonTest {
     graph.putEdge(gNodeA, gNodeB);
     graph.putEdge(gNodeA, gNodeC);
 
-    HashSet<String> roots = new HashSet<>();
-    roots.add("A");
-
-    String result = Utility.graphToJson(graph, roots);
+    String result = Utility.graphToJson(graph, 0);
     JSONObject jsonObject = new JSONObject(result);
 
     Assert.assertEquals(jsonObject.length(), 3);
@@ -104,6 +99,7 @@ public final class JsonTest {
 
     Assert.assertTrue(jsonObject.has("nodes"));
     Assert.assertTrue(jsonObject.has("edges"));
-    Assert.assertTrue(jsonObject.has("roots"));
+    Assert.assertTrue(jsonObject.has("numMutations"));
+    Assert.assertEquals(jsonObject.get("numMutations"), 0);
   }
 }

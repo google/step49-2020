@@ -1,7 +1,8 @@
-import { initializeTippy, generateGraph, getUrl, search, searchNode, searchToken } from "../src/main/webapp/script.js";
+import { initializeNumMutations, setCurrGraphNum, initializeTippy, generateGraph, getUrl, navigateGraph, currGraphNum, numMutations, updateButtons, search, searchNode, searchToken } from "../src/main/webapp/script.js";
+
 import cytoscape from "cytoscape";
 
-describe("Modifying value of depth input", function() {
+describe("Checking that depth in fetch url is correct", function() {
   let numLayers = {};
 
   beforeEach(function() {
@@ -195,6 +196,114 @@ describe("Initializing tooltips", function() {
   });
 });
 
+describe("Pressing next and previous buttons associated with a graph", function() {
+  it("correctly updates mutation tracking variables and buttons on click", function() {
+    initializeNumMutations(3);
+    const prevButton = document.createElement("button");
+    prevButton.id = "prevbutton";
+    prevButton.onclick = () => { navigateGraph(-1); updateButtons(); };
+    const nextButton = document.createElement("button");
+    nextButton.id = "nextbutton";
+    nextButton.onclick = () => { navigateGraph(1); updateButtons(); };
+    document.body.appendChild(prevButton);
+    document.body.appendChild(nextButton);
+
+    expect(currGraphNum).toBe(0);
+    expect(numMutations).toBe(3);
+
+    nextButton.click();
+    expect(currGraphNum).toBe(1);
+    expect(nextButton.disabled).toBe(false);
+    expect(prevButton.disabled).toBe(false);
+
+    nextButton.click();
+    expect(currGraphNum).toBe(2);
+    expect(nextButton.disabled).toBe(false);
+    expect(prevButton.disabled).toBe(false);
+
+    nextButton.click();
+    expect(currGraphNum).toBe(3);
+    expect(nextButton.disabled).toBe(true);
+    expect(prevButton.disabled).toBe(false);
+
+    prevButton.click();
+    expect(currGraphNum).toBe(2);
+    expect(nextButton.disabled).toBe(false);
+    expect(prevButton.disabled).toBe(false);
+
+    prevButton.click();
+    expect(currGraphNum).toBe(1);
+    expect(nextButton.disabled).toBe(false);
+    expect(prevButton.disabled).toBe(false);
+
+    nextButton.click();
+    expect(currGraphNum).toBe(2);
+    expect(nextButton.disabled).toBe(false);
+    expect(prevButton.disabled).toBe(false);
+
+    prevButton.click();
+    expect(currGraphNum).toBe(1);
+    expect(nextButton.disabled).toBe(false);
+    expect(prevButton.disabled).toBe(false);
+
+    prevButton.click();
+    expect(currGraphNum).toBe(0);
+    expect(nextButton.disabled).toBe(false);
+    expect(prevButton.disabled).toBe(true);
+
+    prevButton.click();
+    expect(currGraphNum).toBe(0);
+    expect(nextButton.disabled).toBe(false);
+    expect(prevButton.disabled).toBe(true);
+
+    nextButton.click();
+    expect(currGraphNum).toBe(1);
+    expect(nextButton.disabled).toBe(false);
+    expect(prevButton.disabled).toBe(false);
+  });
+});
+
+describe("Check correct url params", function() {
+  let nodeName = {}; 
+  beforeEach(function() {
+    setCurrGraphNum(1);
+    nodeName = document.createElement("input");
+    nodeName.id = "node-name";
+  });
+
+  afterEach(function() {
+    setCurrGraphNum(0);
+     document.body.innerHTML = '';
+  });
+
+  it("passes correct value of the mutations number in the fetch request", function() {
+    const requestString = getUrl();
+    const requestParams = requestString.substring(requestString.indexOf("?"));
+
+    const constructedUrl = new URLSearchParams(requestParams);
+    expect(constructedUrl.has("depth")).toBe(true);
+    expect(constructedUrl.get("depth")).toBe("3");
+    expect(constructedUrl.has("mutationNum")).toBe(true);
+    expect(constructedUrl.get("mutationNum")).toBe("1");
+
+    // Not on page here, should be empty
+    expect(constructedUrl.has("nodeName")).toBe(true);
+    expect(constructedUrl.get("nodeName")).toBe("");
+  });
+
+  it ("passes correct nodeName when nodeName has a value", function () {
+    nodeName.value = "A";
+    document.body.appendChild(nodeName);
+
+    const requestString = getUrl();
+    const requestParams = requestString.substring(requestString.indexOf("?"));
+
+    const constructedUrl = new URLSearchParams(requestParams);
+    expect(constructedUrl.has("nodeName")).toBe(true);
+    expect(constructedUrl.get("nodeName")).toBe("A"); 
+  })
+});
+
 describe("Node search", function() {
   const cy = cytoscape({
     elements: [
@@ -317,4 +426,5 @@ describe("Token search", function() {
     expect(result).toBeUndefined();
   });
 });
+
 

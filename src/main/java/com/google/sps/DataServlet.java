@@ -15,9 +15,9 @@
 package com.google.sps;
 
 import java.io.IOException;
+
 import java.io.InputStreamReader;
-import java.util.HashMap;
-import java.util.HashSet;
+
 import java.util.List;
 import java.util.Map;
 
@@ -48,22 +48,25 @@ public class DataServlet extends HttpServlet {
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     response.setContentType("application/json");
     String depthParam = request.getParameter("depth");
+    String mutationParam = request.getParameter("mutationNum");
     if (depthParam == null) {
       String error = "Improper depth parameter, cannot generate graph";
+      response.setHeader("serverError", error);
+      return;
+    } else if (mutationParam == null) {
+      String error = "Improper mutation number parameter, cannot generate graph";
       response.setHeader("serverError", error);
       return;
     }
 
     int depthNumber = Integer.parseInt(depthParam);
+    int mutationNumber = Integer.parseInt(mutationParam);
+
     boolean success = true; // Innocent until proven guilty; successful until proven a failure
 
     // Initialize variables if any are null. Ideally should all be null or none
     // should be null
     if (currDataGraph == null && originalDataGraph == null) {
-      // PROTO Data structure:
-      // Parse the contents of graph.txt into a proto Graph object, and extract
-      // information from the proto object into a map. This is used to store the proto
-      // input and isn't updated with mutations.
 
       /*
        * The below code is used to read a graph specified in textproto form
@@ -84,49 +87,49 @@ public class DataServlet extends HttpServlet {
         response.setHeader("serverError", error);
         return;
       }
-
-      currDataGraph = DataGraph.create();
-      success = currDataGraph.graphFromProtoNodes(protoNodesMap);
-      if (!success) {
-        response.setHeader("serverError", error);
-        return;
-      }
+      currDataGraph = originalDataGraph.getCopy();
     } else if (currDataGraph == null || originalDataGraph == null) {
       String error = "Invalid input";
       response.setHeader("serverError", error);
       return;
     }
 
-    MutableGraph<GraphNode> graph = currDataGraph.graph();
-    HashMap<String, GraphNode> graphNodesMap = currDataGraph.graphNodesMap();
-    HashSet<String> roots = currDataGraph.roots();
-
     // Mutations file hasn't been read yet
     if (mutList == null) {
       /*
        * The below code is used to read a mutation list specified in textproto form
        */
+
       InputStreamReader mutReader =
           new InputStreamReader(
               getServletContext().getResourceAsStream("/WEB-INF/mutation.textproto"));
       MutationList.Builder mutBuilder = MutationList.newBuilder();
       TextFormat.merge(mutReader, mutBuilder);
-      List<Mutation> mutList = mutBuilder.build().getMutationList();
-
-      // Only apply mutations once
-      for (Mutation mut : mutList) {
-        success = Utility.mutateGraph(mut, graph, graphNodesMap, roots);
-        if (!success) {
-          String error = "Failed to apply mutation " + mut.toString() + " to graph";
-          response.setHeader("serverError", error);
-          return;
-        }
-      }
+      mutList = mutBuilder.build().getMutationList();
     }
 
-    MutableGraph<GraphNode> truncatedGraph =
-        Utility.getGraphWithMaxDepth(graph, roots, graphNodesMap, depthNumber);
-    String graphJson = Utility.graphToJson(truncatedGraph, currDataGraph.roots());
+    // Parameter for the nodeName the user searched for in the frontend
+    String nodeNameParam = request.getParameter("nodeName");
+
+    currDataGraph =
+        Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
+    if (currDataGraph == null) {
+      String error = "Failed to apply mutations!";
+      response.setHeader("serverError", error);
+      return;
+    }
+
+    MutableGraph<GraphNode> truncatedGraph;
+
+    // If a node is searched, get the graph with just the node. Otherwise, use the
+    // whole graph
+    if (nodeNameParam == null || nodeNameParam.length() == 0) {
+      truncatedGraph = currDataGraph.getGraphWithMaxDepth(depthNumber);
+    } else {
+      truncatedGraph = currDataGraph.getReachableNodes(nodeNameParam, depthNumber);
+    }
+
+    String graphJson = Utility.graphToJson(truncatedGraph, mutList.size());
     response.getWriter().println(graphJson);
   }
 }
