@@ -305,7 +305,6 @@ describe("Check correct url params", function() {
   })
 });
 
-});
 
 describe("Node search", function() {
   const cy = cytoscape({ 

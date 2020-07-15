@@ -33,9 +33,13 @@ cytoscape.use(dagre); // register extension
 
 // Stores the index of the graph in relevantIndices (in sequence of mutations) currently
 // displayed on the screen. Must be >= 0.
+// THis is different from the graph number, since the graphNumber is what's located at the index.
+// in other words, currGraphNum = relevantIndices[currGraphIndex]
 let currGraphIndex = 0;
 
+// Stores the actual graph number we're on
 let currGraphNum = 0;
+
 // Stores the number of mutations in the list this graph is applying
 // The user cannot click next to a graph beyond this point
 let numMutations = 0;
@@ -54,6 +58,20 @@ function initializeNumMutations(num) {
  */
 function setCurrGraphNum(num) {
   currGraphNum = num;
+}
+
+/**
+ * Sets the current graph index
+ */
+function setCurrGraphIndex(num) {
+  currGraphIndex = num;
+}
+
+/**
+ * Sets the relevant indices from the mutation list
+ */
+function setRelevantIndices(lst) {
+  relevantIndices = lst;
 }
 
 /**
@@ -88,9 +106,9 @@ async function generateGraph() {
   const nodes = JSON.parse(jsonResponse.nodes);
   const edges = JSON.parse(jsonResponse.edges);
   const indices = JSON.parse(jsonResponse.relevantIndices);
-  relevantIndices = indices;
+  setRelevantIndices(indices);
   console.log(indices);
-  // initializeNumMutations(JSON.parse(jsonResponse.numMutations));
+ 
   initializeNumMutations(relevantIndices.length);
 
   if (!nodes || !edges || !Array.isArray(nodes) || !Array.isArray(edges)) {
@@ -354,15 +372,8 @@ function navigateGraph(amount) {
   }
   currGraphNum = relevantIndices[currGraphIndex];
   if (!currGraphNum) {
-
     currGraphNum = currGraphIndex;
   }
-  // if (currGraphNum <= 0) {
-  //   currGraphNum = 0;
-  // }
-  // if (currGraphNum >= numMutations) {
-  //   currGraphNum = numMutations;
-  // }
 }
 
 /**
