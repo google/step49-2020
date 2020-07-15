@@ -167,7 +167,7 @@ public class DataServlet extends HttpServlet {
         int newNumIndex = Utility.getNextGreatestNumIndex(relevantMutationIndices, oldNumMutations);
         int newNum = relevantMutationIndices.get(newNumIndex);
         if (newNum == -1) {
-          //handle it
+          // handle it
         }
         System.out.println(nodeNameParam);
         System.out.println(newNum);
