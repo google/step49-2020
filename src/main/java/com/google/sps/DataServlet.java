@@ -129,8 +129,6 @@ public class DataServlet extends HttpServlet {
     // At this point, currDataGraph is basically Utility.getGraphAtMutationNumber(originalDataGraph,
     // currDataGraph, oldNumMutations, mutList);
 
-    oldNumMutations = currDataGraph.numMutations(); // The old mutation number, will change
-
     // returns null if either mutation isn't able to be applied or if num < 0
     if (currDataGraph == null) {
       String error = "Failed to apply mutations!";
