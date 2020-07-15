@@ -79,8 +79,9 @@ public class DataServlet extends HttpServlet {
       /*
        * The below code is used to read a graph specified in textproto form
        */
-      InputStreamReader graphReader = new InputStreamReader(
-          getServletContext().getResourceAsStream("/WEB-INF/graph.textproto"));
+      InputStreamReader graphReader =
+          new InputStreamReader(
+              getServletContext().getResourceAsStream("/WEB-INF/graph.textproto"));
       Graph.Builder graphBuilder = Graph.newBuilder();
       TextFormat.merge(graphReader, graphBuilder);
       Graph protoGraph = graphBuilder.build();
@@ -108,8 +109,9 @@ public class DataServlet extends HttpServlet {
        * The below code is used to read a mutation list specified in textproto form
        */
 
-      InputStreamReader mutReader = new InputStreamReader(
-          getServletContext().getResourceAsStream("/WEB-INF/mutation.textproto"));
+      InputStreamReader mutReader =
+          new InputStreamReader(
+              getServletContext().getResourceAsStream("/WEB-INF/mutation.textproto"));
       MutationList.Builder mutBuilder = MutationList.newBuilder();
       TextFormat.merge(mutReader, mutBuilder);
       mutList = mutBuilder.build().getMutationList();
@@ -127,7 +129,8 @@ public class DataServlet extends HttpServlet {
     String nodeNameParam = request.getParameter("nodeName");
 
     // The current graph at the specified index
-    currDataGraph = Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
+    currDataGraph =
+        Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
 
     oldNumMutations = currDataGraph.numMutations(); // The old mutation number, will change
 
@@ -162,7 +165,6 @@ public class DataServlet extends HttpServlet {
       // relevant indices (no need to change indices)
       // Could either be the same node or a different node
 
-
       // Indicies of relevant mutations from the entire mutList
       relevantMutationIndices = Utility.getMutationIndicesOfNode(nodeNameParam, mutList);
 
@@ -170,7 +172,8 @@ public class DataServlet extends HttpServlet {
       truncatedGraph = currDataGraph.getReachableNodes(nodeNameParam, depthNumber);
 
       // case 1: Node is not in the current graph or any graph
-      if (!currDataGraph.graphNodesMap().containsKey(nodeNameParam) && relevantMutationIndices.isEmpty()) {
+      if (!currDataGraph.graphNodesMap().containsKey(nodeNameParam)
+          && relevantMutationIndices.isEmpty()) {
         String error = "There are no nodes anywhere on this graph!";
         response.setHeader("serverError", error);
         return;
@@ -178,9 +181,10 @@ public class DataServlet extends HttpServlet {
       // case 2: Node is not in the current graph (case 2)
       if (!currDataGraph.graphNodesMap().containsKey(nodeNameParam)) {
 
-        // index of the next element in relevantMutationsIndices that is greater than oldNumMutations
+        // index of the next element in relevantMutationsIndices that is greater than
+        // oldNumMutations
         int newNumIndex = Utility.getNextGreatestNumIndex(relevantMutationIndices, oldNumMutations);
-        
+
         // shouldn't happen, but we're back to case 1.
         if (newNumIndex == -1) {
           String error = "There are no nodes anywhere on this graph!";
@@ -194,11 +198,13 @@ public class DataServlet extends HttpServlet {
         System.out.println(newNum);
 
         // only get the indices AFTER this one
-        relevantMutationIndices = relevantMutationIndices.subList(newNumIndex, relevantMutationIndices.size());
+        relevantMutationIndices =
+            relevantMutationIndices.subList(newNumIndex, relevantMutationIndices.size());
         relevantMutationIndices.add(0, oldNumMutations);
 
         // Update the current graph
-        currDataGraph = Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, newNum, mutList);
+        currDataGraph =
+            Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, newNum, mutList);
 
         // Add null check?
         oldNumMutations = newNum;
@@ -211,7 +217,8 @@ public class DataServlet extends HttpServlet {
       // If the truncated graph is empty, it doesn't exist on the page. Check if there
       // are any
       // mutations that affect it
-      // truncatedMutList = Utility.getMutationsFromIndices(relevantMutationIndices, mutList); // only mutations relevant
+      // truncatedMutList = Utility.getMutationsFromIndices(relevantMutationIndices, mutList); //
+      // only mutations relevant
 
       // If the graph is empty and there are no relevant mutations, then we give a
       // server error.
@@ -223,7 +230,9 @@ public class DataServlet extends HttpServlet {
       // }
     }
 
-    String graphJson = Utility.graphToJson(truncatedGraph, relevantMutationIndices.size(), relevantMutationIndices);
+    String graphJson =
+        Utility.graphToJson(
+            truncatedGraph, relevantMutationIndices.size(), relevantMutationIndices);
     response.getWriter().println(graphJson);
   }
 }
