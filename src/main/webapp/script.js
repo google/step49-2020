@@ -26,7 +26,7 @@ import 'tippy.js/dist/tippy.css';
 import 'tippy.js/dist/backdrop.css';
 import 'tippy.js/animations/shift-away.css';
 
-export { initializeNumMutations, setCurrGraphNum, initializeTippy, generateGraph, getUrl, navigateGraph, currGraphNum, numMutations, updateButtons, highlightDiff };
+export { searchNode, initializeNumMutations, setCurrGraphNum, initializeTippy, generateGraph, getUrl, navigateGraph, currGraphNum, numMutations, updateButtons, highlightDiff };
 
 cytoscape.use(popper); // register extension
 cytoscape.use(dagre); // register extension
@@ -79,7 +79,7 @@ async function generateGraph() {
   // Error on server side
   if (serverErrorStatus !== null) {
     displayError(serverErrorStatus);
-    return;
+    //return;
   }
 
   const jsonResponse = await response.json();
@@ -88,7 +88,7 @@ async function generateGraph() {
   const edges = JSON.parse(jsonResponse.edges);
   initializeNumMutations(JSON.parse(jsonResponse.numMutations));
   const mutList = jsonResponse["mutationDiff"].length === 0 ? null : JSON.parse(jsonResponse["mutationDiff"]);
-  const reason = jsonResponse["reason"].length === 0 ? "" : JSON.parse(jsonResponse["reason"]);
+  const reason = jsonResponse["reason"].length === 0 ? "" : jsonResponse["reason"];
 
   if (!nodes || !edges || !Array.isArray(nodes) || !Array.isArray(edges)) {
     displayError("Malformed graph received from server - edges or nodes are empty");
@@ -154,17 +154,21 @@ function getUrl() {
  * Takes an error message and creates a text element on the page to display this message
  */
 function displayError(errorMsg) {
-  // Create text to display the error
-  const errorText = document.createElement("p");
-  errorText.innerText = errorMsg;
-  errorText.id = "errortext";
+  // // Create text to display the error
+  // const errorText = document.createElement("p");
+  // errorText.innerText = errorMsg;
+  // errorText.id = "errortext";
 
-  const graphDiv = document.getElementById("graph");
-  while (graphDiv.lastChild) {
-    graphDiv.removeChild(graphDiv.lastChild);
-  }
-  graphDiv.appendChild(errorText);
-  return;
+  // const graphDiv = document.getElementById("graph");
+  // while (graphDiv.lastChild) {
+  //   graphDiv.removeChild(graphDiv.lastChild);
+  // }
+  // graphDiv.appendChild(errorText);
+  // return;
+  const list = document.getElementById("error-log");
+  const errorText = document.createElement("li");
+  errorText.innerText = errorMsg;
+  list.insertBefore(errorText, list.firstChild);
 }
 
 /**
@@ -210,7 +214,6 @@ function getGraphDisplay(graphNodes, graphEdges, mutDiff, reason) {
     minZoom: .25,
     maxZoom: 2.5
   });
-  highlightDiff(cy, mutDiff, reason);
 
   // Initialize content of node's token list popup
   cy.nodes().forEach(node => initializeTippy(node));
@@ -221,20 +224,35 @@ function getGraphDisplay(graphNodes, graphEdges, mutDiff, reason) {
     node.tip.show();
   });
 
+  const searchElement = document.getElementById('search');
+  document.getElementById('search-button').onclick = function() {
+    if (searchNode(cy, searchElement.value) || searchElement.value == "") {
+      document.getElementById('search-error').innerText = "";
+    } else {
+      document.getElementById('search-error').innerText = "Node does not exist.";
+    }
+  };
 
+
+  const objsToHighglight = highlightDiff(cy, mutDiff, reason);
   cy.layout({
     name: 'dagre'
   }).run();
+  cy.fit(objsToHighglight, 10000);
 }
 
 function highlightDiff(cy, mutList, reason = "") {
   if (!mutList) {
     return;
   }
-  mutList.forEach(mutation => affectMutationOnGraph(cy, mutation, reason));
+  let fitTo = cy.collection();
+  mutList.forEach(mutation => {
+    fitTo = affectMutationOnGraph(cy, mutation, reason, fitTo);
+  });
+  return fitTo;
 }
 
-function affectMutationOnGraph(cy, mutation, reason) {
+function affectMutationOnGraph(cy, mutation, reason, fitTo) {
   const type = mutation["type_"] || -1;
   let startNode = mutation["startNode_"];
   let endNode = mutation["endNode_"];
@@ -246,6 +264,8 @@ function affectMutationOnGraph(cy, mutation, reason) {
         // color this node green
         cy.getElementById(startNode).style('background-color', 'green');
         modifiedObj = cy.getElementById(startNode);
+        console.log(`Added node ${startNode}`);
+        fitTo = fitTo.union(cy.getElementById(startNode));
       }
       break;
     case 2:
@@ -255,6 +275,8 @@ function affectMutationOnGraph(cy, mutation, reason) {
         cy.getElementById(`edge${startNode}${endNode}`).style('line-color', 'green');
         cy.getElementById(`edge${startNode}${endNode}`).style('target-arrow-color', 'green');
         modifiedObj = cy.getElementById(`edge${startNode}${endNode}`);
+        console.log(`Added edge ${startNode}${endNode}`);
+        fitTo = fitTo.union(cy.getElementById(`edge${startNode}${endNode}`));
       }
       break;
     case 3:
@@ -268,6 +290,9 @@ function affectMutationOnGraph(cy, mutation, reason) {
       cy.getElementById(startNode).style('background-color', 'red');
       cy.getElementById(startNode).style('opacity', 0.25);
       modifiedObj = cy.getElementById(startNode);
+      cy.fit(cy.getElementById(startNode), 50);
+      console.log(`Deleted node ${startNode}`);
+      fitTo = fitTo.union(cy.getElementById(startNode));
       break;
     case 4:
       // delete edge
@@ -297,6 +322,8 @@ function affectMutationOnGraph(cy, mutation, reason) {
       cy.getElementById(`edge${startNode}${endNode}`).style('target-arrow-color', 'red');
       cy.getElementById(`edge${startNode}${endNode}`).style('opacity', 0.25);
       modifiedObj = cy.getElementById(`edge${startNode}${endNode}`);
+      console.log(`Deleted edge ${startNode}${endNode}`);
+      fitTo = fitTo.union(cy.getElementById(`edge${startNode}${endNode}`));
       break;
     case 5:
       // change node
@@ -304,16 +331,20 @@ function affectMutationOnGraph(cy, mutation, reason) {
         cy.getElementById(startNode).style('background-color', 'yellow');
         modifiedObj = cy.getElementById(startNode);
       }
+      console.log(`Changed node ${startNode}`);
+      fitTo = fitTo.union(cy.getElementById(startNode));
       break;
     default:
-      return;
+      break;
   }
   if(modifiedObj !== null) {
     const objId = `#${modifiedObj.id()}`
     initializeReasonTippy(modifiedObj, reason)
     cy.on('mouseover', objId, () => modifiedObj.reasonTip.show());
     cy.on('mouseout', objId, () => modifiedObj.reasonTip.hide());
+    return fitTo;
   }
+  return fitTo;
 }
 
 /**
@@ -340,6 +371,44 @@ function getReasonTooltipContent(reason) {
   let text = document.createElement("p");
   text.innerText = !reason ? "No reason specified" : reason;
   return text;
+
+  
+}
+
+/**
+ * Zooms in on specific node
+ */
+function searchNode(cy, query) {
+  // reset nodes to default color
+  cy.nodes().forEach(node => {
+    node.style('background-color', 'blue');
+    node.style('opacity', '1')
+  });
+  const target = findNodeInGraph(cy, query);
+  if (target) {
+    cy.nodes().forEach(node => node.style('opacity', '0.25'));
+    target.style('background-color', 'olive');
+    target.style('opacity', '1');
+    cy.fit(target, 50);
+    return true;
+  } else {
+    // fits all nodes on screen
+    cy.fit(cy.nodes(), 50);
+    return false;
+  }
+}
+
+/**
+ * Finds element in cy graph by id
+ */
+function findNodeInGraph(cy, id) {
+  if (id.length != 0) {
+    const target = cy.getElementById(id);
+    if (target.length != 0) {
+      return target;
+    }
+  }
+  return null;
 }
 
 /**

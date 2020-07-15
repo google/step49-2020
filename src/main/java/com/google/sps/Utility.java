@@ -17,6 +17,8 @@ package com.google.sps;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import com.google.protobuf.Struct;
+import com.google.common.base.Preconditions;
 import java.util.Set;
 
 import com.google.common.graph.EndpointPair;
@@ -83,14 +85,19 @@ public final class Utility {
 
   /**
    * @param original the original graph
-   * @param curr the current (most recently-requested) graph
+   * @param curr the current (most recently-requested) graph (requires that original != curr)
    * @param mutationNum number of mutations to apply
    * @param mutList mutation list
-   * @return the resulting data graph or null if there was an error Requires that original != curr
+   * @return the resulting data graph or null if there was an error
    */
-  public static DataGraph getGraphAtMutationNumber(
-      DataGraph original, DataGraph curr, int mutationNum, List<MultiMutation> mutList) {
-    boolean success = true;
+  public static List<Object> getGraphAtMutationNumber(
+      DataGraph original, DataGraph curr, int mutationNum, List<MultiMutation> mutList)
+      throws IllegalArgumentException {
+    Preconditions.checkArgument(
+        original != curr, "The current graph and the original graph refer to the same object");
+
+    List<Object> ret = new ArrayList<>();
+    String error = "";
     if (mutationNum > mutList.size() || mutationNum < 0) {
       return null;
     }
@@ -101,13 +108,16 @@ public final class Utility {
         MultiMutation multiMut = mutList.get(i);
         List<Mutation> mutations = multiMut.getMutationList();
         for (Mutation mut : mutations) {
-          success = curr.mutateGraph(mut);
-          if (!success) {
-            return null;
+          String thisError = curr.mutateGraph(mut);
+          if (thisError.length() != 0) {
+            error += thisError;
           }
         }
       }
-      return DataGraph.create(curr.graph(), curr.graphNodesMap(), curr.roots(), mutationNum);
+      ret.add(DataGraph.create(curr.graph(), curr.graphNodesMap(), curr.roots(), mutationNum));
+      if (error.length() != 0) {
+        ret.add(error);
+      }
     } else {
       // Create a copy of the original graph and start from the original graph
       DataGraph originalCopy = original.getCopy();
@@ -115,15 +125,23 @@ public final class Utility {
         MultiMutation multiMut = mutList.get(i);
         List<Mutation> mutations = multiMut.getMutationList();
         for (Mutation mut : mutations) {
-          success = originalCopy.mutateGraph(mut);
-          if (!success) {
-            return null;
+          String thisError = originalCopy.mutateGraph(mut);
+          if (thisError.length() != 0) {
+            error += thisError;
           }
         }
       }
-      return DataGraph.create(
-          originalCopy.graph(), originalCopy.graphNodesMap(), originalCopy.roots(), mutationNum);
+      ret.add(
+          DataGraph.create(
+              originalCopy.graph(),
+              originalCopy.graphNodesMap(),
+              originalCopy.roots(),
+              mutationNum));
+      if (error.length() != 0) {
+        ret.add(error);
+      }
     }
+    return ret;
   }
 
   /**
