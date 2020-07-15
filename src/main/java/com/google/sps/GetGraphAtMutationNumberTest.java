@@ -32,7 +32,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 @RunWith(JUnit4.class)
-public class GraphMutationTest {
+public class GetGraphAtMutationNumberTest {
 
   // Proto nodes to construct graph with
   Builder nodeA = Node.newBuilder().setName("A");
@@ -211,10 +211,11 @@ public class GraphMutationTest {
 
     DataGraph dataGraph = DataGraph.create();
     dataGraph.graphFromProtoNodes(protoNodesMap);
+    DataGraph dataGraphCopy = dataGraph.getCopy();
 
     List<Mutation> mutList = new ArrayList<>();
 
-    DataGraph mutatedGraph = Utility.getGraphAtMutationNumber(dataGraph, dataGraph, 2, mutList);
+    DataGraph mutatedGraph = Utility.getGraphAtMutationNumber(dataGraph, dataGraphCopy, 2, mutList);
     Assert.assertNull(mutatedGraph);
   }
 
@@ -291,10 +292,30 @@ public class GraphMutationTest {
 
     DataGraph dataGraph = DataGraph.create();
     dataGraph.graphFromProtoNodes(protoNodesMap);
+    DataGraph dataGraphCopy = dataGraph.getCopy();
 
     List<Mutation> mutList = new ArrayList<>();
 
-    DataGraph mutatedGraph = Utility.getGraphAtMutationNumber(dataGraph, dataGraph, -2, mutList);
+    DataGraph mutatedGraph =
+        Utility.getGraphAtMutationNumber(dataGraph, dataGraphCopy, -2, mutList);
     Assert.assertNull(mutatedGraph);
+  }
+
+  /** Original and current graphs being referentially equal is not allowed */
+  @Test
+  public void originalAndCurrentNotCopies() {
+    HashMap<String, Node> protoNodesMap = new HashMap<>();
+    protoNodesMap.put("A", nodeA.build());
+    protoNodesMap.put("B", nodeB.build());
+    protoNodesMap.put("C", nodeC.build());
+
+    DataGraph dataGraph = DataGraph.create();
+    dataGraph.graphFromProtoNodes(protoNodesMap);
+
+    List<Mutation> mutList = new ArrayList<>();
+
+    Assert.assertThrows(
+        IllegalArgumentException.class,
+        () -> Utility.getGraphAtMutationNumber(dataGraph, dataGraph, 0, mutList));
   }
 }
