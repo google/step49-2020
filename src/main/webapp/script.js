@@ -90,8 +90,12 @@ async function generateGraph() {
     return;
   }
 
-  if (nodes.length === 0) {
-    displayError("Nothing to display!");
+  if (nodes.length === 0 && numMutations === 0) {
+    displayError("Nothing to display EVER!");
+    return;
+  } else if (nodes.length === 0) {
+    displayError("Nothing to display FOR NOW!");
+    nextBtn.disabled = false;
     return;
   }
 
