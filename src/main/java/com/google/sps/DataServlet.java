@@ -101,7 +101,7 @@ public class DataServlet extends HttpServlet {
               getServletContext().getResourceAsStream("/WEB-INF/mutation.textproto"));
       MutationList.Builder mutBuilder = MutationList.newBuilder();
       TextFormat.merge(mutReader, mutBuilder);
-      List<Mutation> mutList = mutBuilder.build().getMutationList();
+      mutList = mutBuilder.build().getMutationList();
 
       // Only apply mutations once
       for (Mutation mut : mutList) {
