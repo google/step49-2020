@@ -68,7 +68,7 @@ public class DataServlet extends HttpServlet {
 
     int depthNumber = Integer.parseInt(depthParam);
     int mutationNumber = Integer.parseInt(mutationParam);
-    System.out.println(mutationNumber);
+    // System.out.println(mutationNumber);
 
     boolean success = true; // Innocent until proven guilty; successful until proven a failure
 
@@ -81,7 +81,7 @@ public class DataServlet extends HttpServlet {
        */
       InputStreamReader graphReader =
           new InputStreamReader(
-              getServletContext().getResourceAsStream("/WEB-INF/graph.textproto"));
+              getServletContext().getResourceAsStream("/WEB-INF/initial_graph.textproto"));
       Graph.Builder graphBuilder = Graph.newBuilder();
       TextFormat.merge(graphReader, graphBuilder);
       Graph protoGraph = graphBuilder.build();
@@ -111,7 +111,7 @@ public class DataServlet extends HttpServlet {
 
       InputStreamReader mutReader =
           new InputStreamReader(
-              getServletContext().getResourceAsStream("/WEB-INF/mutation.textproto"));
+              getServletContext().getResourceAsStream("/WEB-INF/mutations.textproto"));
       MutationList.Builder mutBuilder = MutationList.newBuilder();
       TextFormat.merge(mutReader, mutBuilder);
       mutList = mutBuilder.build().getMutationList();
@@ -129,8 +129,8 @@ public class DataServlet extends HttpServlet {
     String nodeNameParam = request.getParameter("nodeName");
 
     // The current graph at the specified index
-    // currDataGraph =
-    //     Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
+    currDataGraph =
+        Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, oldNumMutations, mutList);
 
     oldNumMutations = currDataGraph.numMutations(); // The old mutation number, will change
 
@@ -191,7 +191,7 @@ public class DataServlet extends HttpServlet {
         int newNum = relevantMutationIndices.get(newNumIndex);
 
         System.out.println(nodeNameParam);
-        System.out.println(newNum);
+        // System.out.println(newNum);
 
         // only get the indices AFTER this one
         relevantMutationIndices =
