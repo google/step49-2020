@@ -1,0 +1,47 @@
+mutation {
+  type: DELETE_EDGE
+  start_node: "E"
+  end_node: "F"
+}
+
+mutation {
+  type: DELETE_NODE
+  start_node: "F"
+}
+
+mutation {
+  type: ADD_NODE
+  start_node: "G"
+}
+
+mutation {
+  type: ADD_EDGE
+  start_node: "E"
+  end_node: "G"
+}
+
+mutation {
+  type: ADD_NODE
+  start_node: "H"
+}
+
+mutation {
+  type: ADD_EDGE
+  start_node: "H"
+  end_node: "G"
+}
+
+mutation {
+  type: ADD_EDGE
+  start_node: "D"
+  end_node: "G"
+}
+mutation {
+  type: CHANGE_TOKEN
+  start_node: "B"
+  token_change {
+    type: ADD_TOKEN
+    token_name: "d.js"
+    token_name: "e.js"
+  }
+}
