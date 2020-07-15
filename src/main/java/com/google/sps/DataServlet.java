@@ -104,7 +104,7 @@ public class DataServlet extends HttpServlet {
       TextFormat.merge(mutReader, mutBuilder);
       mutList = mutBuilder.build().getMutationList();
     }
-    
+
     currDataGraph =
         Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
     if (currDataGraph == null) {
