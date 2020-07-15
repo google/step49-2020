@@ -123,7 +123,6 @@ abstract class DataGraph {
 
     for (String nodeName : protoNodesMap.keySet()) {
       Node thisNode = protoNodesMap.get(nodeName);
-
       // Convert thisNode into a graph node that may store additional information
       GraphNode graphNode = Utility.protoNodeToGraphNode(thisNode);
 
@@ -173,86 +172,95 @@ abstract class DataGraph {
     GraphNode startNode = graphNodesMap.get(startName);
     GraphNode endNode = graphNodesMap.get(endName);
 
-    Set<GraphNode> successors;
-
     switch (mut.getType()) {
       case ADD_NODE:
-        // adding a duplicate node doesn't make any change
-        if (!graphNodesMap.containsKey(startName)) {
-          // New lone node is a root
-          roots.add(startName);
-          // Create a new node with the given name and add it to the graph and the map
-          GraphNode newGraphNode =
-              GraphNode.create(startName, new ArrayList<>(), Struct.newBuilder().build());
-          graph.addNode(newGraphNode);
-          graphNodesMap.put(startName, newGraphNode);
-        }
-        break;
-      case ADD_EDGE:
-        if (startNode == null || endNode == null) { // Check nodes exist before adding an edge
-          return false;
-        }
-        // The target cannot be a root since it has an in-edge
-        roots.remove(endName);
-        graph.putEdge(startNode, endNode);
-        break;
-      case DELETE_NODE:
-        if (startNode == null) { // Check node exists before removing
-          return false;
-        }
-        // Check whether any successor will have no in-edges after this node is removed
-        // If so, make them roots
-        successors = graph.successors(startNode);
-        for (GraphNode succ : successors) {
-          if (graph.inDegree(succ) == 1) {
-            roots.add(succ.name());
+        {
+          // adding a duplicate node doesn't make any change
+          if (!graphNodesMap.containsKey(startName)) {
+            // New lone node is a root
+            roots.add(startName);
+            // Create a new node with the given name and add it to the graph and the map
+            GraphNode newGraphNode =
+                GraphNode.create(startName, new ArrayList<>(), Struct.newBuilder().build());
+            graph.addNode(newGraphNode);
+            graphNodesMap.put(startName, newGraphNode);
           }
+          break;
         }
-        roots.remove(startName);
-        graph.removeNode(startNode); // This will remove all edges associated with startNode
-        graphNodesMap.remove(startName);
-        break;
+      case ADD_EDGE:
+        {
+          if (startNode == null || endNode == null) { // Check nodes exist before adding an edge
+            return false;
+          }
+          // The target cannot be a root since it has an in-edge
+          roots.remove(endName);
+          graph.putEdge(startNode, endNode);
+          break;
+        }
+      case DELETE_NODE:
+        {
+          if (startNode == null) { // Check node exists before removing
+            return false;
+          }
+          // Check whether any successor will have no in-edges after this node is removed
+          // If so, make them roots
+
+          Set<GraphNode> successors = graph.successors(startNode);
+          for (GraphNode succ : successors) {
+            if (graph.inDegree(succ) == 1) {
+              roots.add(succ.name());
+            }
+          }
+          roots.remove(startName);
+          graph.removeNode(startNode); // This will remove all edges associated with startNode
+          graphNodesMap.remove(startName);
+          break;
+        }
       case DELETE_EDGE:
-        if (startNode == null || endNode == null) { // Check nodes exist before removing edge
-          return false;
+        {
+          if (startNode == null || endNode == null) { // Check nodes exist before removing edge
+            return false;
+          }
+          // If the target now has no in-edges, it becomes a root
+          if (graph.inDegree(endNode) == 1) {
+            roots.add(endName);
+          }
+          graph.removeEdge(startNode, endNode);
+          break;
         }
-        // If the target now has no in-edges, it becomes a root
-        if (graph.inDegree(endNode) == 1) {
-          roots.add(endName);
-        }
-        graph.removeEdge(startNode, endNode);
-        break;
       case CHANGE_TOKEN:
-        if (startNode == null) {
-          return false;
+        {
+          if (startNode == null) {
+            return false;
+          }
+          GraphNode newNode = changeNodeToken(startNode, mut.getTokenChange());
+
+          if (newNode == null) {
+            return false;
+          }
+
+          graphNodesMap.put(startName, newNode);
+
+          Set<GraphNode> successors = graph.successors(startNode);
+          Set<GraphNode> predecessors = graph.predecessors(startNode);
+          graph.removeNode(startNode);
+
+          graph.addNode(newNode);
+          for (GraphNode succ : successors) {
+            graph.putEdge(newNode, succ);
+          }
+          for (GraphNode pred : predecessors) {
+            graph.putEdge(pred, newNode);
+          }
+          break;
         }
-        GraphNode newNode = changeNodeToken(startNode, mut.getTokenChange());
-
-        if (newNode == null) {
-          return false;
-        }
-
-        graphNodesMap.put(startName, newNode);
-
-        successors = graph.successors(startNode);
-        Set<GraphNode> predecessors = graph.predecessors(startNode);
-        graph.removeNode(startNode);
-
-        graph.addNode(newNode);
-        for (GraphNode succ : successors) {
-          graph.putEdge(newNode, succ);
-        }
-        for (GraphNode pred : predecessors) {
-          graph.putEdge(pred, newNode);
-        }
-
-        break;
       default:
         // unrecognized mutation type
         return false;
     }
     return true;
   }
+
   /**
    * Modifies the list of tokens of this node to either add or remove tokens contained in tokenMut
    *
@@ -277,8 +285,7 @@ abstract class DataGraph {
       // unrecognized mutation
       return null;
     }
-    GraphNode newNode = GraphNode.create(node.name(), tokenList, node.metadata());
-    return newNode;
+    return GraphNode.create(node.name(), tokenList, node.metadata());
   }
 
   /**

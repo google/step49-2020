@@ -379,3 +379,39 @@ describe("Ensuring correct nodes are highlighted in mutated graph", function() {
     expect(cy.getElementById("A").style("background-color")).toBe("rgb(255,255,0)");
   });
 });
+describe("Node search", function() {
+  const cy = cytoscape({ 
+    elements: [
+    { data: { id: "A" } },
+    { data: { id: "B" } },
+    {
+      data: {
+        id: "AB",
+        source: "A",
+        target: "B"
+      }
+    }]
+  });
+
+  it("should be a successful search", function() {
+    const result = searchNode(cy, "A");
+
+    // search should find node
+    expect(result).toBe(true);
+  });
+
+  it("should be an unsuccessful search", function() {
+    let result = searchNode(cy, "C");
+
+    // search should not find node
+    expect(result).toBe(false);
+  });
+
+  it("should not search at all", function() {
+    let result = searchNode(cy, "");
+
+    // search should not find node
+    expect(result).toBe(false);
+  });
+});
+

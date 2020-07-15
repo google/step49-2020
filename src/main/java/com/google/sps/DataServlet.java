@@ -15,6 +15,7 @@
 package com.google.sps;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.common.graph.MutableGraph;
+import com.google.protobuf.TextFormat;
 import com.proto.GraphProtos.Graph;
 import com.proto.GraphProtos.Node;
 import com.proto.MutationProtos.MultiMutation;
@@ -67,17 +69,13 @@ public class DataServlet extends HttpServlet {
       /*
        * The below code is used to read a graph specified in textproto form
        */
-      // InputStreamReader graphReader = new
-      // InputStreamReader(getServletContext().getResourceAsStream("/WEB-INF/initial_graph.textproto"));
-      // Graph.Builder graphBuilder = Graph.newBuilder();
-      // TextFormat.merge(graphReader, graphBuilder);
-      // Graph protoGraph = graphBuilder.build();
+      InputStreamReader graphReader =
+          new InputStreamReader(
+              getServletContext().getResourceAsStream("/WEB-INF/graph.textproto"));
+      Graph.Builder graphBuilder = Graph.newBuilder();
+      TextFormat.merge(graphReader, graphBuilder);
+      Graph protoGraph = graphBuilder.build();
 
-      /*
-       * This code is used to read a graph specified in proto binary format.
-       */
-      Graph protoGraph =
-          Graph.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/graph.txt"));
       Map<String, Node> protoNodesMap = protoGraph.getNodesMapMap();
       // Originally both set to same data
       originalDataGraph = DataGraph.create();
@@ -99,18 +97,12 @@ public class DataServlet extends HttpServlet {
       /*
        * The below code is used to read a mutation list specified in textproto form
        */
-      // InputStreamReader mutReader = new
-      // InputStreamReader(getServletContext().getResourceAsStream("/WEB-INF/mutations.textproto"));
-      // MutationList.Builder mutBuilder = MutationList.newBuilder();
-      // TextFormat.merge(mutReader, mutBuilder);
-      // mutList = mutBuilder.build().getMutationList();
-      /*
-       * This code is used to read a mutation list specified in proto binary format.
-       */
-      // Parse the contents of mutation.txt into a list of mutations
-      mutList =
-          MutationList.parseFrom(getServletContext().getResourceAsStream("/WEB-INF/mutations.txt"))
-              .getMutationList();
+      InputStreamReader mutReader =
+          new InputStreamReader(
+              getServletContext().getResourceAsStream("/WEB-INF/mutation.textproto"));
+      MutationList.Builder mutBuilder = MutationList.newBuilder();
+      TextFormat.merge(mutReader, mutBuilder);
+      mutList = mutBuilder.build().getMutationList();
     }
     MultiMutation mutDiff =
         Utility.diffBetween(mutList, currDataGraph.numMutations(), mutationNumber);
