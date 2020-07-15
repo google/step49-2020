@@ -56,10 +56,11 @@ public final class Utility {
    * @return a JSON object containing as entries the nodes and edges of this graph as well as the
    *     length of the list of mutations this graph is an intermediate result of applying
    */
-  public static String graphToJson(MutableGraph<GraphNode> graph, int maxMutations, List<Integer> indices) {
+  public static String graphToJson(
+      MutableGraph<GraphNode> graph, int maxMutations, List<Integer> indices) {
     Type typeOfNode = new TypeToken<Set<GraphNode>>() {}.getType();
     Type typeOfEdge = new TypeToken<Set<EndpointPair<GraphNode>>>() {}.getType();
-    Type typeOfIndices = new TypeToken<List<Integer>>(){}.getType();
+    Type typeOfIndices = new TypeToken<List<Integer>>() {}.getType();
     Gson gson = new Gson();
     String nodeJson = gson.toJson(graph.nodes(), typeOfNode);
     String edgeJson = gson.toJson(graph.edges(), typeOfEdge);

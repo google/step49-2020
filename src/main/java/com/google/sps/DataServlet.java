@@ -102,8 +102,7 @@ public class DataServlet extends HttpServlet {
       return;
     }
     // Relevant mutation indicies, start as everything
-    
-    
+
     // Mutations file hasn't been read yet
     if (mutList == null) {
       /*
@@ -176,9 +175,9 @@ public class DataServlet extends HttpServlet {
           // searched for the same node at last time. don't want to truncate the mutList
 
         } else {
-          relevantMutationIndices = relevantMutationIndices.subList(newNumIndex, relevantMutationIndices.size());
+          relevantMutationIndices =
+              relevantMutationIndices.subList(newNumIndex, relevantMutationIndices.size());
           relevantMutationIndices.add(0, oldNumMutations);
-
         }
         // Maybe make a copy instead of making this the currDataGraph
         currDataGraph =
@@ -190,7 +189,7 @@ public class DataServlet extends HttpServlet {
         // Current graph has the node
         // So relevant indices are ok
       }
-      
+
       // If the truncated graph is empty, it doesn't exist on the page. Check if there
       // are any
       // mutations that affect it
@@ -212,7 +211,8 @@ public class DataServlet extends HttpServlet {
       }
     }
 
-    String graphJson = Utility.graphToJson(truncatedGraph, truncatedMutList.size(), relevantMutationIndices);
+    String graphJson =
+        Utility.graphToJson(truncatedGraph, truncatedMutList.size(), relevantMutationIndices);
     response.getWriter().println(graphJson);
   }
 }
