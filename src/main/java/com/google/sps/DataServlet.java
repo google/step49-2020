@@ -156,8 +156,8 @@ public class DataServlet extends HttpServlet {
         System.out.println(newNum);
         // Maybe make a copy instead of making this the currDataGraph
         currDataGraph =
-          Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, newNum, mutList);
-          // Add null check?
+            Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, newNum, mutList);
+        // Add null check?
         oldNumMutations = newNum;
       }
 
