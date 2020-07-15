@@ -129,8 +129,8 @@ public class DataServlet extends HttpServlet {
     String nodeNameParam = request.getParameter("nodeName");
 
     // The current graph at the specified index
-    currDataGraph =
-        Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
+    // currDataGraph =
+    //     Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
 
     oldNumMutations = currDataGraph.numMutations(); // The old mutation number, will change
 
@@ -142,16 +142,15 @@ public class DataServlet extends HttpServlet {
     }
 
     // Truncated version of the graph and mutation list, for returning to the client
-
-    List<Mutation> truncatedMutList;
     MutableGraph<GraphNode> truncatedGraph;
 
     // No node is searched, so use the whole graph
     if (nodeNameParam == null || nodeNameParam.length() == 0) {
       // Just get the specified deptg, the mutation list, and relevant mutations as
       // they are
+      currDataGraph =
+        Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
       truncatedGraph = currDataGraph.getGraphWithMaxDepth(depthNumber);
-      truncatedMutList = mutList;
       relevantMutationIndices = defaultIndices;
     } else { // A node is searched
 
@@ -167,9 +166,6 @@ public class DataServlet extends HttpServlet {
 
       // Indicies of relevant mutations from the entire mutList
       relevantMutationIndices = Utility.getMutationIndicesOfNode(nodeNameParam, mutList);
-
-      // This is the single search
-      truncatedGraph = currDataGraph.getReachableNodes(nodeNameParam, depthNumber);
 
       // case 1: Node is not in the current graph or any graph
       if (!currDataGraph.graphNodesMap().containsKey(nodeNameParam)
@@ -211,23 +207,12 @@ public class DataServlet extends HttpServlet {
         lastNodeName = nodeNameParam;
       } else {
         // case 3: node is in the current graph. then relevant mutationIndices is ok
-
+        currDataGraph =
+          Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
+          oldNumMutations = mutationNumber;
       }
-
-      // If the truncated graph is empty, it doesn't exist on the page. Check if there
-      // are any
-      // mutations that affect it
-      // truncatedMutList = Utility.getMutationsFromIndices(relevantMutationIndices, mutList); //
-      // only mutations relevant
-
-      // If the graph is empty and there are no relevant mutations, then we give a
-      // server error.
-      // if (truncatedGraph.nodes().isEmpty() && truncatedMutList.isEmpty()) {
-      // // If the truncated mutList is empty, then it is nowhere to be found!
-      // String error = "There are no nodes anywhere on this graph!";
-      // response.setHeader("serverError", error);
-      // return;
-      // }
+      // This is the single search
+      truncatedGraph = currDataGraph.getReachableNodes(nodeNameParam, depthNumber);
     }
 
     String graphJson =
