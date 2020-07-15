@@ -130,7 +130,8 @@ public class DataServlet extends HttpServlet {
 
     // The current graph at the specified index
     // currDataGraph =
-    //     Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
+    //     Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber,
+    // mutList);
 
     oldNumMutations = currDataGraph.numMutations(); // The old mutation number, will change
 
@@ -149,7 +150,8 @@ public class DataServlet extends HttpServlet {
       // Just get the specified deptg, the mutation list, and relevant mutations as
       // they are
       currDataGraph =
-        Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
+          Utility.getGraphAtMutationNumber(
+              originalDataGraph, currDataGraph, mutationNumber, mutList);
       truncatedGraph = currDataGraph.getGraphWithMaxDepth(depthNumber);
       relevantMutationIndices = defaultIndices;
     } else { // A node is searched
@@ -208,8 +210,9 @@ public class DataServlet extends HttpServlet {
       } else {
         // case 3: node is in the current graph. then relevant mutationIndices is ok
         currDataGraph =
-          Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
-          oldNumMutations = mutationNumber;
+            Utility.getGraphAtMutationNumber(
+                originalDataGraph, currDataGraph, mutationNumber, mutList);
+        oldNumMutations = mutationNumber;
       }
       // This is the single search
       truncatedGraph = currDataGraph.getReachableNodes(nodeNameParam, depthNumber);
