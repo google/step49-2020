@@ -18,11 +18,22 @@
        min="0" max="20" value="3">
   <button onclick="graph.generateGraph()">Get Graph</button>
   <br/>
+
+  <div id="graphdiv">
+    <div id="graph"></div>
+    <p id="buttontext">Navigate to the next and previous graph using the buttons below:</p>
+    <div id="buttondiv">
+      <button id="prevbutton" class="nextprev material-icons" onclick="graph.navigateGraph(-1); graph.generateGraph()">navigate_before</button>
+      <button id="nextbutton" class="nextprev material-icons" onclick="graph.navigateGraph(1); graph.generateGraph()">navigate_next</button>
+    </div>
+  </div>
+
   <div id="graph"></div>
   <label>Search by Node: </label>
   <input type="text" id="search" name="search"></input>
   <button id="search-button">Search</button>
   <label id="search-error"></label>
+
 </body>
 
 </html>

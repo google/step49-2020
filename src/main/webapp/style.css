@@ -1,13 +1,19 @@
 body {
   margin: 50px;
+  font-size: 25px;
 }
 
 #graph {
   width: 90%;
   height: 90vh;
-  position: absolute;
-  margin: 20px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 40px;
+  margin-bottom: 40px;
   border: solid 1px black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 #errortext {
@@ -31,4 +37,18 @@ body {
 
 .close-button {
   float: right;
+}
+
+#buttondiv, #buttontext {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#graphdiv {
+  display: block;
+}
+
+.nextprev {
+  margin: 20px;
 }
