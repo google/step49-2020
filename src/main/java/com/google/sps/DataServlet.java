@@ -106,7 +106,6 @@ public class DataServlet extends HttpServlet {
       MutationList.Builder mutBuilder = MutationList.newBuilder();
       TextFormat.merge(mutReader, mutBuilder);
       mutList = mutBuilder.build().getMutationList();
-
     }
 
     // Parameter for the nodeName the user searched for in the frontend
