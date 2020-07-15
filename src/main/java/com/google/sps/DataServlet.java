@@ -71,7 +71,7 @@ public class DataServlet extends HttpServlet {
        */
       InputStreamReader graphReader =
           new InputStreamReader(
-              getServletContext().getResourceAsStream("/WEB-INF/graph.textproto"));
+              getServletContext().getResourceAsStream("/WEB-INF/initial_graph.textproto"));
       Graph.Builder graphBuilder = Graph.newBuilder();
       TextFormat.merge(graphReader, graphBuilder);
       Graph protoGraph = graphBuilder.build();
@@ -99,7 +99,7 @@ public class DataServlet extends HttpServlet {
        */
       InputStreamReader mutReader =
           new InputStreamReader(
-              getServletContext().getResourceAsStream("/WEB-INF/mutation.textproto"));
+              getServletContext().getResourceAsStream("/WEB-INF/mutations.textproto"));
       MutationList.Builder mutBuilder = MutationList.newBuilder();
       TextFormat.merge(mutReader, mutBuilder);
       mutList = mutBuilder.build().getMutationList();
@@ -107,13 +107,13 @@ public class DataServlet extends HttpServlet {
     MultiMutation mutDiff =
         Utility.diffBetween(mutList, currDataGraph.numMutations(), mutationNumber);
 
-    currDataGraph =
+    List<Object> ret =
         Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
-    if (currDataGraph == null) {
-      String error = "Failed to apply mutations!";
+     if(ret.size() == 2) {
+      String error = (String) (ret.get(1));
       response.setHeader("serverError", error);
-      return;
     }
+    currDataGraph = (DataGraph) (ret.get(0));
 
     MutableGraph<GraphNode> truncatedGraph = currDataGraph.getGraphWithMaxDepth(depthNumber);
     String graphJson = Utility.graphToJson(truncatedGraph, mutList.size(), mutDiff);
