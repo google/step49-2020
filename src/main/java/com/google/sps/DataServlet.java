@@ -155,7 +155,7 @@ public class DataServlet extends HttpServlet {
       if (!currDataGraph.graphNodesMap().containsKey(nodeNameParam)) {
         int newNum = Utility.getNextGreatestNum(relevantMutationIndices, oldNumMutations);
         if (newNum == -1) {
-          //handle it
+          // handle it
         }
         System.out.println(nodeNameParam);
         System.out.println(newNum);
