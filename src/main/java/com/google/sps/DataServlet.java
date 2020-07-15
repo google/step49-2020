@@ -79,8 +79,9 @@ public class DataServlet extends HttpServlet {
       /*
        * The below code is used to read a graph specified in textproto form
        */
-      InputStreamReader graphReader = new InputStreamReader(
-          getServletContext().getResourceAsStream("/WEB-INF/graph.textproto"));
+      InputStreamReader graphReader =
+          new InputStreamReader(
+              getServletContext().getResourceAsStream("/WEB-INF/graph.textproto"));
       Graph.Builder graphBuilder = Graph.newBuilder();
       TextFormat.merge(graphReader, graphBuilder);
       Graph protoGraph = graphBuilder.build();
@@ -108,8 +109,9 @@ public class DataServlet extends HttpServlet {
        * The below code is used to read a mutation list specified in textproto form
        */
 
-      InputStreamReader mutReader = new InputStreamReader(
-          getServletContext().getResourceAsStream("/WEB-INF/mutation.textproto"));
+      InputStreamReader mutReader =
+          new InputStreamReader(
+              getServletContext().getResourceAsStream("/WEB-INF/mutation.textproto"));
       MutationList.Builder mutBuilder = MutationList.newBuilder();
       TextFormat.merge(mutReader, mutBuilder);
       mutList = mutBuilder.build().getMutationList();
@@ -118,14 +120,14 @@ public class DataServlet extends HttpServlet {
         defaultIndices.add(i);
       }
       relevantMutationIndices = defaultIndices;
-
     }
 
     // Parameter for the nodeName the user searched for in the frontend
     String nodeNameParam = request.getParameter("nodeName");
 
     // The current graph at the specified index
-    currDataGraph = Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
+    currDataGraph =
+        Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
 
     // Current mutation number
     oldNumMutations = currDataGraph.numMutations(); // The old mutation number
@@ -168,11 +170,13 @@ public class DataServlet extends HttpServlet {
           // searched for the same node at last time. don't want to truncate the mutList
 
         } else {
-          relevantMutationIndices = relevantMutationIndices.subList(newNumIndex, relevantMutationIndices.size());
+          relevantMutationIndices =
+              relevantMutationIndices.subList(newNumIndex, relevantMutationIndices.size());
           relevantMutationIndices.add(0, oldNumMutations);
         }
         // Maybe make a copy instead of making this the currDataGraph
-        currDataGraph = Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, newNum, mutList);
+        currDataGraph =
+            Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, newNum, mutList);
         // Add null check?
         oldNumMutations = newNum;
         lastNodeName = nodeNameParam;
@@ -184,8 +188,10 @@ public class DataServlet extends HttpServlet {
       // If the truncated graph is empty, it doesn't exist on the page. Check if there
       // are any
       // mutations that affect it
-      truncatedMutList = Utility.getMutationsFromIndices(relevantMutationIndices, mutList); // only mutations relevant
-                                                                                            // to the node
+      truncatedMutList =
+          Utility.getMutationsFromIndices(
+              relevantMutationIndices, mutList); // only mutations relevant
+      // to the node
 
       // This is the single search
       truncatedGraph = currDataGraph.getReachableNodes(nodeNameParam, depthNumber);
@@ -201,7 +207,8 @@ public class DataServlet extends HttpServlet {
       }
     }
 
-    String graphJson = Utility.graphToJson(truncatedGraph, truncatedMutList.size(), relevantMutationIndices);
+    String graphJson =
+        Utility.graphToJson(truncatedGraph, truncatedMutList.size(), relevantMutationIndices);
     response.getWriter().println(graphJson);
   }
 }

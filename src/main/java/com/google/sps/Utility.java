@@ -35,8 +35,8 @@ public final class Utility {
   }
 
   /**
-   * Converts a proto node object into a graph node object that does not store the
-   * names of the child nodes but may store additional information.
+   * Converts a proto node object into a graph node object that does not store the names of the
+   * child nodes but may store additional information.
    *
    * @param thisNode the input data Node object
    * @return a useful node used to construct the Guava Graph
@@ -49,42 +49,44 @@ public final class Utility {
   }
 
   /**
-   * Converts a Guava graph into a String encoding of a JSON Object. The object
-   * contains nodes and edges of the graph.
+   * Converts a Guava graph into a String encoding of a JSON Object. The object contains nodes and
+   * edges of the graph.
    *
-   * @param graph        the graph to convert into a JSON String
+   * @param graph the graph to convert into a JSON String
    * @param maxMutations the length of the list of mutations
-   * @return a JSON object containing as entries the nodes and edges of this graph
-   *         as well as the length of the list of mutations this graph is an
-   *         intermediate result of applying
+   * @return a JSON object containing as entries the nodes and edges of this graph as well as the
+   *     length of the list of mutations this graph is an intermediate result of applying
    */
-  public static String graphToJson(MutableGraph<GraphNode> graph, int maxMutations, List<Integer> indices) {
-    Type typeOfNode = new TypeToken<Set<GraphNode>>() {
-    }.getType();
-    Type typeOfEdge = new TypeToken<Set<EndpointPair<GraphNode>>>() {
-    }.getType();
-    Type typeOfIndices = new TypeToken<List<Integer>>() {
-    }.getType();
+  public static String graphToJson(
+      MutableGraph<GraphNode> graph, int maxMutations, List<Integer> indices) {
+    Type typeOfNode = new TypeToken<Set<GraphNode>>() {}.getType();
+    Type typeOfEdge = new TypeToken<Set<EndpointPair<GraphNode>>>() {}.getType();
+    Type typeOfIndices = new TypeToken<List<Integer>>() {}.getType();
     Gson gson = new Gson();
     String nodeJson = gson.toJson(graph.nodes(), typeOfNode);
     String edgeJson = gson.toJson(graph.edges(), typeOfEdge);
     String indicesJson = gson.toJson(indices, typeOfIndices);
-    String resultJson = new JSONObject().put("nodes", nodeJson).put("edges", edgeJson).put("numMutations", maxMutations)
-        .put("relevantIndices", indicesJson).toString();
+    String resultJson =
+        new JSONObject()
+            .put("nodes", nodeJson)
+            .put("edges", edgeJson)
+            .put("numMutations", maxMutations)
+            .put("relevantIndices", indicesJson)
+            .toString();
     return resultJson;
   }
 
   /**
-   * @param original    the original graph
-   * @param curr        the current (most recently-requested) graph (requires that
-   *                    original != curr)
+   * @param original the original graph
+   * @param curr the current (most recently-requested) graph (requires that original != curr)
    * @param mutationNum number of mutations to apply
-   * @param mutList     mutation list
+   * @param mutList mutation list
    * @return the resulting data graph or null if there was an error
    */
-  public static DataGraph getGraphAtMutationNumber(DataGraph original, DataGraph curr, int mutationNum,
-      List<Mutation> mutList) {
-    Preconditions.checkArgument(original != curr, "The current graph and the original graph refer to the same object");
+  public static DataGraph getGraphAtMutationNumber(
+      DataGraph original, DataGraph curr, int mutationNum, List<Mutation> mutList) {
+    Preconditions.checkArgument(
+        original != curr, "The current graph and the original graph refer to the same object");
 
     if (mutationNum < 0) {
       return null;
@@ -111,13 +113,13 @@ public final class Utility {
           return null;
         }
       }
-      return DataGraph.create(originalCopy.graph(), originalCopy.graphNodesMap(), originalCopy.roots(), mutationNum);
+      return DataGraph.create(
+          originalCopy.graph(), originalCopy.graphNodesMap(), originalCopy.roots(), mutationNum);
     }
   }
 
   /**
-   * Returns a new mutation list with only the mutations relevant to a specified
-   * node
+   * Returns a new mutation list with only the mutations relevant to a specified node
    *
    * @param nodeName the name of the node to filter
    * @param origList the original list of mutations
@@ -148,7 +150,8 @@ public final class Utility {
    * @param origList the original list of mutations
    * @return a list of indices that are relevant to the node
    */
-  public static ArrayList<Integer> getMutationIndicesOfNode(String nodeName, List<Mutation> origList) {
+  public static ArrayList<Integer> getMutationIndicesOfNode(
+      String nodeName, List<Mutation> origList) {
     ArrayList<Integer> lst = new ArrayList<>();
     // Shouldn't happen, but in case the nodeName is null an empty list is returned
     if (nodeName == null) {
@@ -172,7 +175,8 @@ public final class Utility {
    * @param origList the original mutation list (with all the mutations)
    * @return a list of the Mutations from specified indices
    */
-  public static List<Mutation> getMutationsFromIndices(List<Integer> indicies, List<Mutation> origList) {
+  public static List<Mutation> getMutationsFromIndices(
+      List<Integer> indicies, List<Mutation> origList) {
     List<Mutation> lst = new ArrayList<>();
     for (Integer i : indicies) {
       lst.add(origList.get(i));
@@ -197,8 +201,7 @@ public final class Utility {
         end = mid - 1;
       }
     }
-    if (ans == -1)
-      return -1;
+    if (ans == -1) return -1;
     return ans;
   }
 }
