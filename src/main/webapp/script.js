@@ -26,7 +26,7 @@ import 'tippy.js/dist/tippy.css';
 import 'tippy.js/dist/backdrop.css';
 import 'tippy.js/animations/shift-away.css';
 
-export { initializeTippy, generateGraph, getUrl, searchNode };
+export { initializeTippy, generateGraph, getUrl, search, searchNode, searchToken };
 
 
 cytoscape.use(popper); // register extension
@@ -190,12 +190,14 @@ function search(cy, type, searchFunction) {
   resetElements(cy);
   let errorText;
   let query = document.getElementById(type + '-search').value;
-  if (query == "" || searchFunction(cy, query)) {
+  let result = searchFunction(cy, query);
+  if (query == "" || result) {
     errorText = "";
   } else {
     errorText = type + " does not exist.";
   }
   document.getElementById(type + '-error').innerText = errorText;
+  return result;
 }
 
 /**
@@ -207,10 +209,10 @@ function searchNode(cy, query) {
     if (target.length != 0) {
       highlightElements(cy, target);
       cy.fit(target, 50);
-      return true;
+      return target;
     }
   }
-  return false;
+  //return false;
 }
 /**
  * Constructs list of nodes that contain specified token
@@ -227,9 +229,9 @@ function searchToken(cy, query) {
     let showNode = target[0][0];
     showNode.tip.show();
     highlightElements(cy, target);
-    return true;
+    return target;
   }
-  return false;
+  //return false;
 }
 
 /**
@@ -241,7 +243,7 @@ function highlightElements(cy, target) {
 
   // highlight desired nodes
   target.forEach(node => {
-    node.style('background-color', 'olive');
+    node.style('border-width', '4px');
     node.style('opacity', '1');
   });
   cy.fit(target[0], 50);
@@ -259,7 +261,7 @@ function highlightElements(cy, target) {
  */
 function resetElements(cy) {
   cy.nodes().forEach(node => {
-    node.style('background-color', 'blue');
+    node.style('border-width', '0px');
     node.style('opacity', '1')
   });
   cy.fit(cy.nodes(), 50);

@@ -1,15 +1,15 @@
-import  {initializeTippy, generateGraph, getUrl, searchNode} from "../src/main/webapp/script.js";
+import { initializeTippy, generateGraph, getUrl, search, searchNode, searchToken } from "../src/main/webapp/script.js";
 import cytoscape from "cytoscape";
 
 describe("Modifying value of depth input", function() {
   let numLayers = {};
 
-  beforeEach(function () {
+  beforeEach(function() {
     numLayers = document.createElement("input");
     numLayers.id = "num-layers";
   });
 
-  afterEach(function () {
+  afterEach(function() {
     document.body.innerHTML = '';
   });
 
@@ -19,7 +19,7 @@ describe("Modifying value of depth input", function() {
 
     const requestString = getUrl();
     const requestParams = requestString.substring(requestString.indexOf("?"));
-    
+
     const constructedUrl = new URLSearchParams(requestParams);
     expect(constructedUrl.has("depth")).toBe(true);
     expect(constructedUrl.get("depth")).toBe("15");
@@ -31,7 +31,7 @@ describe("Modifying value of depth input", function() {
 
     const requestString = getUrl();
     const requestParams = requestString.substring(requestString.indexOf("?"));
-    
+
     const constructedUrl = new URLSearchParams(requestParams);
     expect(constructedUrl.has("depth")).toBe(true);
     expect(constructedUrl.get("depth")).toBe("2");
@@ -42,7 +42,7 @@ describe("Modifying value of depth input", function() {
 
     const requestString = getUrl();
     const requestParams = requestString.substring(requestString.indexOf("?"));
-    
+
     const constructedUrl = new URLSearchParams(requestParams);
     expect(constructedUrl.has("depth")).toBe(true);
     expect(constructedUrl.get("depth")).toBe("3");
@@ -55,7 +55,7 @@ describe("Modifying value of depth input", function() {
 
     const requestString = getUrl();
     const requestParams = requestString.substring(requestString.indexOf("?"));
-    
+
     const constructedUrl = new URLSearchParams(requestParams);
     expect(constructedUrl.has("depth")).toBe(true);
     expect(constructedUrl.get("depth")).toBe("0");
@@ -67,7 +67,7 @@ describe("Modifying value of depth input", function() {
 
     const requestString = getUrl();
     const requestParams = requestString.substring(requestString.indexOf("?"));
-    
+
     const constructedUrl = new URLSearchParams(requestParams);
     expect(constructedUrl.has("depth")).toBe(true);
     expect(constructedUrl.get("depth")).toBe("20");
@@ -79,7 +79,7 @@ describe("Modifying value of depth input", function() {
 
     const requestString = getUrl();
     const requestParams = requestString.substring(requestString.indexOf("?"));
-    
+
     const constructedUrl = new URLSearchParams(requestParams);
     expect(constructedUrl.has("depth")).toBe(true);
     expect(constructedUrl.get("depth")).toBe("3");
@@ -91,7 +91,7 @@ describe("Modifying value of depth input", function() {
 
     const requestString = getUrl();
     const requestParams = requestString.substring(requestString.indexOf("?"));
-    
+
     const constructedUrl = new URLSearchParams(requestParams);
     expect(constructedUrl.has("depth")).toBe(true);
     expect(constructedUrl.get("depth")).toBe("0");
@@ -103,7 +103,7 @@ describe("Modifying value of depth input", function() {
 
     const requestString = getUrl();
     const requestParams = requestString.substring(requestString.indexOf("?"));
-    
+
     const constructedUrl = new URLSearchParams(requestParams);
     expect(constructedUrl.has("depth")).toBe(true);
     expect(constructedUrl.get("depth")).toBe("20");
@@ -133,7 +133,7 @@ describe("Initializing tooltips", function() {
 
     const children = content.childNodes;
     expect(children.length).toBe(2);
-    const closeButton =  children[0];
+    const closeButton = children[0];
     expect(closeButton.nodeName).toBe("BUTTON");
 
     // Click on node and make sure tippy shows
@@ -177,7 +177,7 @@ describe("Initializing tooltips", function() {
 
     const children = content.childNodes;
     expect(children.length).toBe(2);
-    const closeButton =  children[0];
+    const closeButton = children[0];
     expect(closeButton.nodeName).toBe("BUTTON");
 
     // Click on node and make sure tippy shows
@@ -196,38 +196,125 @@ describe("Initializing tooltips", function() {
 });
 
 describe("Node search", function() {
-  const cy = cytoscape({ 
+  const cy = cytoscape({
     elements: [
-    { data: { id: "A" } },
-    { data: { id: "B" } },
-    {
-      data: {
-        id: "AB",
-        source: "A",
-        target: "B"
-      }
-    }]
+      { data: { id: "A" } },
+      { data: { id: "B" } },
+      {
+        data: {
+          id: "AB",
+          source: "A",
+          target: "B"
+        }
+      }]
   });
 
-  it("should be a successful search", function() {
-    const result = searchNode(cy, "A");
+  let numSelected;
+  let nodeError;
+  let query;
+  beforeEach(function() {
+    document.body.innerHTML = "";
 
-    // search should find node
-    expect(result).toBe(true);
+    numSelected = document.createElement("label");
+    numSelected.id = "num-selected";
+    document.body.appendChild(numSelected);
+
+    nodeError = document.createElement("label");
+    nodeError.id = "node-error";
+    document.body.appendChild(nodeError);
+
+    query = document.createElement("input");
+    query.id = "node-search";
+    document.body.appendChild(query);
   });
 
-  it("should be an unsuccessful search", function() {
-    let result = searchNode(cy, "C");
 
-    // search should not find node
-    expect(result).toBe(false);
+  it("should be a successful node search", function() {
+    query.value = "A";
+    const result = search(cy, "node", searchNode);
+
+    // should not display error message
+    expect(nodeError.innerText).toBe("");
   });
 
-  it("should not search at all", function() {
-    let result = searchNode(cy, "");
+  it("should be an unsuccessful node search", function() {
+    query.value = "C";
+    const result = search(cy, "node", searchNode);
 
-    // search should not find node
-    expect(result).toBe(false);
+    // should display error message
+    expect(nodeError.innerText).not.toBe("");
+  });
+
+  it("should not search for a node at all", function() {
+    query.value = "";
+    const result = search(cy, "node", searchNode);
+
+    // should not display error message
+    expect(nodeError.innerText).toBe("");
+  });
+});
+
+describe("Token search", function() {
+  let numSelected;
+  let tokenError;
+  let query;
+  let cy;
+
+  beforeEach(function() {
+    document.body.innerHTML = `
+    <div id="cy"></div>`;
+    cy = cytoscape({
+      elements: [
+      ],
+      container: document.getElementById("cy"),
+    });
+    const nodeWithToken = {};
+    nodeWithToken["data"] = {};
+    nodeWithToken["data"]["id"] = "A";
+    nodeWithToken["data"]["tokens"] = ["a.js", "b.js", "c.js"];
+    cy.add(nodeWithToken);
+    const myNode = cy.nodes()[0];
+    initializeTippy(myNode);
+
+    numSelected = document.createElement("label");
+    numSelected.id = "num-selected";
+    document.body.appendChild(numSelected);
+
+    tokenError = document.createElement("label");
+    tokenError.id = "token-error";
+    document.body.appendChild(tokenError);
+
+    query = document.createElement("input");
+    query.id = "token-search";
+    document.body.appendChild(query);
+  });
+
+
+  it("should be a successful token search", function() {
+    query.value = "a.js";
+    const result = search(cy, "token", searchToken);
+
+    // error message should not be displayed
+    expect(tokenError.innerText).toBe("");
+    expect(result.length).toBe(1);
+  });
+
+  it("should be an unsuccessful token search", function() {
+    query.value = "fake_file.js";
+    const result = search(cy, "token", searchToken);
+
+    // error message should be displayed
+    expect(tokenError.innerText).not.toBe("");
+    expect(result).toBeUndefined();
+  });
+
+  it("should not search for a token at all", function() {
+    query.value = "";
+    const result = search(cy, "token", searchToken);
+
+    // error message should not be displayed
+    expect(tokenError.innerText).toBe("");
+    expect(result).toBeUndefined();
   });
 });
 
