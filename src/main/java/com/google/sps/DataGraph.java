@@ -183,7 +183,7 @@ abstract class DataGraph {
           graph.addNode(newGraphNode);
           graphNodesMap.put(startName, newGraphNode);
         } else {
-          error = "Add node: Adding a duplicate node" + startName;
+          error = "Add node: Adding a duplicate node " + startName;
         }
         break;
       }
@@ -194,10 +194,10 @@ abstract class DataGraph {
           graph.putEdge(startNode, endNode);
         } else {
           if (startNode == null) {
-            error = "Add edge: Start node " + startName + " is null";
+            error = "Add edge: Start node " + startName + " doesn't exist\n";
           }
           if (endNode == null) {
-            error += "Add edge: End node " + endName + " is null";
+            error += "Add edge: End node " + endName + " doesn't exist";
           }
         }
         break;
@@ -231,10 +231,10 @@ abstract class DataGraph {
         graph.removeEdge(startNode, endNode);
       } else {
         if (startNode == null) {
-          error = "Delete edge: Start node " + startName + " is null";
+          error = "Delete edge: Start node " + startName + " doesn't exist";
         }
         if (endNode == null) {
-          error += "Delete edge: End node " + endName + " is null";
+          error += "Delete edge: End node " + endName + " doesn't exist";
         }
       }
         break;
@@ -244,10 +244,10 @@ abstract class DataGraph {
           error = "Change node: Changing a non-existent node " + startName;
           break;
         }
-        GraphNode newNode = changeNodeToken(startNode, mut.getTokenChange());
 
+        GraphNode newNode = changeNodeToken(startNode, mut.getTokenChange());
         if (newNode == null) {
-          error = "Change node: Unrecognized mutation " + startName;
+          error = "Change node: Unrecognized token mutation " + mut.getTokenChange().getType();
           break;
         }
 
@@ -268,7 +268,7 @@ abstract class DataGraph {
       }
       default:
         // unrecognized mutation type
-        error = "Unrecognized mutation type " + mut.getType();
+        error = "Unrecognized mutation  " + mut.getType();
         break;
     }
     return error;

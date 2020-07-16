@@ -76,8 +76,8 @@ public final class MutationTest {
     HashSet<String> roots = new HashSet<>();
     DataGraph dataGraph = DataGraph.create(graph, graphNodesMap, roots, 0);
 
-    boolean success = dataGraph.mutateGraph(addA).length() == 0;
-    Assert.assertTrue(success);
+    String error = dataGraph.mutateGraph(addA);
+    Assert.assertEquals(error.length(), 0);
 
     Set<GraphNode> graphNodes = graph.nodes();
     Assert.assertEquals(graphNodes.size(), 1);
@@ -101,8 +101,9 @@ public final class MutationTest {
     HashSet<String> roots = new HashSet<>();
     DataGraph dataGraph = DataGraph.create(graph, graphNodesMap, roots, 0);
 
-    boolean success = dataGraph.mutateGraph(addA).length() == 0;
-    Assert.assertFalse(success);
+    
+    String error = dataGraph.mutateGraph(addA);
+    Assert.assertEquals(error, "Add node: Adding a duplicate node A");
 
     Set<GraphNode> graphNodes = graph.nodes();
     Assert.assertEquals(graphNodes.size(), 1);
@@ -132,8 +133,8 @@ public final class MutationTest {
     HashSet<String> roots = new HashSet<>();
     DataGraph dataGraph = DataGraph.create(graph, graphNodesMap, roots, 0);
 
-    boolean success = dataGraph.mutateGraph(addAB).length() == 0;
-    Assert.assertTrue(success);
+    String error = dataGraph.mutateGraph(addAB);
+    Assert.assertEquals(error.length(), 0);
 
     Set<GraphNode> graphNodes = graph.nodes();
     Assert.assertEquals(graphNodes.size(), 2);
@@ -169,8 +170,8 @@ public final class MutationTest {
     HashSet<String> roots = new HashSet<>();
     DataGraph dataGraph = DataGraph.create(graph, graphNodesMap, roots, 0);
 
-    boolean success = dataGraph.mutateGraph(addAB).length() == 0;
-    //Assert.assertFalse(success);
+    String error = dataGraph.mutateGraph(addAB);
+    Assert.assertEquals(error, "Add edge: End node C doesn't exist");
 
     Set<GraphNode> graphNodes = graph.nodes();
     Assert.assertEquals(graphNodes.size(), 2);
@@ -204,8 +205,8 @@ public final class MutationTest {
     HashSet<String> roots = new HashSet<>();
     DataGraph dataGraph = DataGraph.create(graph, graphNodesMap, roots, 0);
 
-    boolean success = dataGraph.mutateGraph(removeA).length() == 0;
-    Assert.assertTrue(success);
+    String error = dataGraph.mutateGraph(removeA);
+    Assert.assertEquals(error.length(), 0);
 
     Set<GraphNode> graphNodes = graph.nodes();
     Assert.assertEquals(graphNodes.size(), 2);
@@ -237,8 +238,8 @@ public final class MutationTest {
     HashSet<String> roots = new HashSet<>();
     DataGraph dataGraph = DataGraph.create(graph, graphNodesMap, roots, 0);
 
-    boolean success = dataGraph.mutateGraph(removeC).length() == 0;
-    Assert.assertFalse(success);
+    String error = dataGraph.mutateGraph(removeC);
+    Assert.assertEquals(error, "Delete node: Deleting a non-existent node C");
 
     Set<GraphNode> graphNodes = graph.nodes();
     Assert.assertEquals(graphNodes.size(), 2);
@@ -276,8 +277,8 @@ public final class MutationTest {
     HashSet<String> roots = new HashSet<>();
     DataGraph dataGraph = DataGraph.create(graph, graphNodesMap, roots, 0);
 
-    boolean success = dataGraph.mutateGraph(removeAB).length() == 0;
-    Assert.assertTrue(success);
+    String error = dataGraph.mutateGraph(removeAB);
+    Assert.assertEquals(error.length(), 0);
 
     Set<GraphNode> graphNodes = graph.nodes();
     Assert.assertEquals(graphNodes.size(), 3);
@@ -313,8 +314,8 @@ public final class MutationTest {
     HashSet<String> roots = new HashSet<>();
     DataGraph dataGraph = DataGraph.create(graph, graphNodesMap, roots, 0);
 
-    boolean success = dataGraph.mutateGraph(removeAX).length() == 0;
-    Assert.assertFalse(success);
+    String error = dataGraph.mutateGraph(removeAX);
+    Assert.assertEquals(error, "Delete edge: End node  doesn't exist");
 
     Set<GraphNode> graphNodes = graph.nodes();
     Assert.assertEquals(graphNodes.size(), 2);
@@ -352,8 +353,8 @@ public final class MutationTest {
     HashSet<String> roots = new HashSet<>();
     DataGraph dataGraph = DataGraph.create(graph, graphNodesMap, roots, 0);
 
-    boolean success = dataGraph.mutateGraph(removeAC).length() == 0;
-    Assert.assertTrue(success);
+    String error = dataGraph.mutateGraph(removeAC);
+    Assert.assertEquals(error.length(), 0);
 
     Set<GraphNode> graphNodes = graph.nodes();
     Assert.assertEquals(graphNodes.size(), 3);
@@ -406,8 +407,8 @@ public final class MutationTest {
     HashSet<String> roots = new HashSet<>();
     DataGraph dataGraph = DataGraph.create(graph, graphNodesMap, roots, 0);
 
-    boolean success = dataGraph.mutateGraph(addTokenToA).length() == 0;
-    Assert.assertTrue(success);
+    String error = dataGraph.mutateGraph(addTokenToA);
+    Assert.assertEquals(error.length(), 0);
 
     Set<GraphNode> graphNodes = graph.nodes();
     Assert.assertTrue(graphNodesMap.containsKey("A"));
@@ -482,8 +483,8 @@ public final class MutationTest {
             .setTokenChange(tokenMut)
             .build();
 
-    success = dataGraph.mutateGraph(addTokenToB).length() == 0;
-    Assert.assertTrue(success);
+    String error = dataGraph.mutateGraph(addTokenToB);
+    Assert.assertEquals(error.length(), 0);
 
     Set<GraphNode> graphNodes = graph.nodes();
     Assert.assertTrue(graphNodesMap.containsKey("B"));
@@ -549,8 +550,8 @@ public final class MutationTest {
     HashSet<String> roots = new HashSet<>();
     DataGraph dataGraph = DataGraph.create(graph, graphNodesMap, roots, 0);
 
-    boolean success = dataGraph.mutateGraph(removeTokenFromA).length() == 0;
-    Assert.assertTrue(success);
+    String error = dataGraph.mutateGraph(removeTokenFromA);
+    Assert.assertEquals(error.length(), 0);
 
     Set<GraphNode> graphNodes = graph.nodes();
     Assert.assertTrue(graphNodesMap.containsKey("A"));
@@ -599,8 +600,8 @@ public final class MutationTest {
     HashSet<String> roots = new HashSet<>();
     DataGraph dataGraph = DataGraph.create(graph, graphNodesMap, roots, 0);
 
-    boolean success = dataGraph.mutateGraph(addToA).length() == 0;
-    Assert.assertFalse(success);
+    String error = dataGraph.mutateGraph(addToA);
+    Assert.assertEquals(error, "Change node: Unrecognized token mutation UNKNOWN");
 
     Set<GraphNode> graphNodes = graph.nodes();
     Assert.assertEquals(graphNodes.size(), 3);
@@ -644,8 +645,8 @@ public final class MutationTest {
     HashSet<String> roots = new HashSet<>();
     DataGraph dataGraph = DataGraph.create(graph, graphNodesMap, roots, 0);
 
-    boolean success = dataGraph.mutateGraph(add).length() == 0;
-    Assert.assertFalse(success);
+    String error = dataGraph.mutateGraph(add);
+    Assert.assertEquals(error, "Change node: Changing a non-existent node ");
 
     Set<GraphNode> graphNodes = graph.nodes();
     Assert.assertEquals(graphNodes.size(), 3);
