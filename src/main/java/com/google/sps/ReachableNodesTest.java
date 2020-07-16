@@ -211,8 +211,8 @@ public class ReachableNodesTest {
   }
 
   /**
-   * This test mirrors the example graph we have, tests that only parents of
-   * parents (and not children of parents) are added.
+   * This test mirrors the example graph we have, tests that only parents of parents (and not
+   * children of parents) are added.
    */
   @Test
   public void linearNodesOnly() {
@@ -287,7 +287,7 @@ public class ReachableNodesTest {
     Assert.assertEquals(5, graphNodes.size());
     Assert.assertTrue(graphNodes.contains(gNodeA)); // Found through C because it's the shorter path
     Assert.assertFalse(graphNodes.contains(gNodeB));
-    Assert.assertTrue(graphNodes.contains(gNodeC)); 
+    Assert.assertTrue(graphNodes.contains(gNodeC));
     Assert.assertTrue(graphNodes.contains(gNodeD));
     Assert.assertTrue(graphNodes.contains(gNodeE));
     Assert.assertTrue(graphNodes.contains(gNodeF));
