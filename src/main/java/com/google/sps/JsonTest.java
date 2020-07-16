@@ -90,17 +90,16 @@ public final class JsonTest {
     graph.putEdge(gNodeA, gNodeB);
     graph.putEdge(gNodeA, gNodeC);
 
-    String result = Utility.graphToJson(graph, 0, new ArrayList<Integer>());
+    String result = Utility.graphToJson(graph, new ArrayList<Integer>());
     JSONObject jsonObject = new JSONObject(result);
 
-    Assert.assertEquals(jsonObject.length(), 4);
+    Assert.assertEquals(jsonObject.length(), 3);
 
     JSONArray elements = jsonObject.names();
-    Assert.assertEquals(elements.length(), 4);
+    Assert.assertEquals(elements.length(), 3);
 
     Assert.assertTrue(jsonObject.has("nodes"));
     Assert.assertTrue(jsonObject.has("edges"));
-    Assert.assertTrue(jsonObject.has("numMutations"));
-    Assert.assertEquals(jsonObject.get("numMutations"), 0);
+    Assert.assertTrue(jsonObject.has("relevantIndices"));
   }
 }

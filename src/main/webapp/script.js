@@ -107,7 +107,6 @@ async function generateGraph() {
   const edges = JSON.parse(jsonResponse.edges);
   const indices = JSON.parse(jsonResponse.relevantIndices);
   setRelevantIndices(indices);
-  console.log(indices);
  
   initializeNumMutations(relevantIndices.length);
 
@@ -246,6 +245,15 @@ function getGraphDisplay(graphNodes, graphEdges) {
     const node = evt.target;
     node.tip.show();
   });
+
+  // If a node is searched, color it (it's fuchsia because I thought it was pretty, but definitely open to change! )
+  const nodeName = document.getElementById("node-name");
+  if (nodeName && nodeName.value) {
+    const target = findNodeInGraph(cy, nodeName.value);
+    if (target) {
+      target.style('background-color', '#FF00FF');
+    }
+  }
 
   const searchElement = document.getElementById('search');
   document.getElementById('search-button').onclick = function() {
@@ -394,5 +402,5 @@ function updateButtons() {
     document.getElementById("nextbutton").disabled = false;
   }
   const numElement = document.getElementById("num-mutation-display");
-  numElement.innerText = `Displaying ${currGraphIndex + 1} out of ${numMutations}`;
+  numElement.innerText = `Displaying ${currGraphIndex + 1} out of ${numMutations} (this is ${currGraphNum} on the original!)`;
 }
