@@ -1,5 +1,80 @@
 mutation {
   mutation {
+    type: ADD_NODE
+    start_node: "KYNZyKGAH1PidtOBvZ1TLMpvF7D3qD9OdsnvzrML1TJOWRUOYcPAP8Le23kvtjzkEs4"
+  }
+  mutation {
+    type: ADD_NODE
+    start_node: "OJhCi6CWBECnZpGLtJpCMSdz6c9ETuRpKCcfBg2Ce1E"
+  }
+  mutation {
+    type: ADD_NODE
+    start_node: "OJhCi6iWElKnbJOBo5FbJxIYLMeiKhdndf25Cl-cbJArpa26pZUAw3h6Eka9KA"
+  }
+  mutation {
+    type: ADD_NODE
+    start_node: "OJhCi5OeHkXmcrSMpZFEJNh7_j0pONs"
+  }
+  mutation {
+    type: ADD_NODE
+    start_node: "KYNZyKGAH1PidtOBvZ1TLMpvF7D3qD99ZcXzxO4xyiEolUQoXFuPuYvgiRLLtup9cyONuQ"
+  }
+  mutation {
+    type: ADD_NODE
+    start_node: "KJ5XwqiSQw_jZIuDopdEKzZ21ON1TNtDjwpSiWDt3EDod-Ms0WaMwVQ2MxPmNNBCGqzZIlojp89oJGPihSgkMGi5L0Q"
+  }
+  mutation {
+    type: ADD_NODE
+    start_node: "KJ5XwqiSQw_jZIuDopdEKzZ21ON1TNtDjwpSiWDt3EDod-Ms0WaMwVQ2MxPmMdBPguqaDfgsid8TGvAMqY4_9KAXtJ0"
+  }
+  mutation {
+    type: ADD_NODE
+    start_node: "KJ5XwqiSQw_jZIuDopdEKzZ21ON1TNtDjwpSiWDt3EDod-Ms0WaDx0ovch6nPMxVamH3D4eyM08"
+  }
+  mutation {
+    type: ADD_NODE
+    start_node: "KJ5XwqiSQw_jZIuDopdEKzZ21ON1TNtDjwpSiWDt3EDod-Ms0WaCy1cuch6nPMxVn7l9A31UAlw"
+  }
+  mutation {
+    type: ADD_NODE
+    start_node: "KJ5XwqiSQw_jZIuDopdEKzZ21ON1TNtDjwpSiWDt3EDod-Ms0WaCy1cuchi-N9FVbTKGwDY"
+  }
+  mutation {
+    type: ADD_NODE
+    start_node: "KJ5XwqiSQw_jZIuDopdEKzZ21ON1TNtDjwpSiWDt3EDod-Ms0WaCy1cuLwi6NN5C7QPB6e6wNFjj25-vFGJC"
+  }
+  mutation {
+    type: ADD_NODE
+    start_node: "KJ5XwqiSQw_jZIuDopdEKzZ21ON1TNtDjwpSiWDt3EDod-Ms0WaCy1cuLwi6NN5C7QPH8OWtNErHHNzX"
+  }
+  mutation {
+    type: ADD_NODE
+    start_node: "KJ5XwqiSQw_jZIuDopdEKzZ21ON1TNtDjwpSiWDt3EDod-Ms0WaCy1cuLwi6NN5C7QPP4-62M0z_yY2TrvSZ6F5Vy2bkjhjfLWoB"
+  }
+  mutation {
+    type: ADD_NODE
+    start_node: "KYNZyKGAH1PidtOBvZ1TLMpvF7D3qD9efs7iyPU4yz9JnzMyZvrkFp4L5fGhgM0hJ9B7ln3T4el4RqhlhQ"
+  }
+  mutation {
+    type: ADD_NODE
+    start_node: "PoRZy7CCHQ_-bIfMpYZTJ5xD8TAKHXfCzm7YkccCSYc9JRiTy9DfcA"
+  }
+  mutation {
+    type: ADD_NODE
+    start_node: "PoRZy7CCHQ_-bIfMpYZTJ5xU7DsbaOzgSQ"
+  }
+  mutation {
+    type: ADD_NODE
+    start_node: "PoRZy7CCHQ_-bIfMpYZTJ5xU7DsbIXfKx0_Yuc4yXppH2YmH4A"
+  }
+  mutation {
+    type: ADD_NODE
+    start_node: "PoRZy7CCHQ_-bIfMpYZTJ5xU7DsbIXfKx03DtN0TXko9HlU"
+  }
+  reason: "Creating auto chunks [globally]"
+}
+mutation {
+  mutation {
     type: DELETE_NODE
     start_node: "Ip5c0KiSL0b7aoiSjtBCJ_Bei72u82e585yCWf_7AjE8gMys4FYvWmJEFcjPPW2BaMvttYI_0dvNZbYjR2ZmPxVIxay3ieHTcsCkmJv0F_U9jPtTVY4Gx0JKcSmrlnsxVA"
   }
