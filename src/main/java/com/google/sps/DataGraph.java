@@ -204,9 +204,7 @@ abstract class DataGraph {
           }
           // Check whether any successor will have no in-edges after this node is removed
           // If so, make them roots
-
-          Set<GraphNode> successors = graph.successors(startNode);
-          for (GraphNode succ : successors) {
+          for (GraphNode succ : graph.successors(startNode)) {
             if (graph.inDegree(succ) == 1) {
               roots.add(succ.name());
             }
