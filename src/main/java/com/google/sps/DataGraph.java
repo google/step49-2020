@@ -422,7 +422,7 @@ abstract class DataGraph {
           }
         } else {
           // Adds the parents
-          for (GraphNode parent : graph().predecessors(curr)) {
+          for (GraphNode parent : this.graph().predecessors(curr)) {
             if (!visited.contains(parent)) {
               nextLayer.add(parent);
             }
