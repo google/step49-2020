@@ -88,7 +88,7 @@ async function generateGraph() {
   const edges = JSON.parse(jsonResponse.edges);
   initializeNumMutations(JSON.parse(jsonResponse.numMutations));
   const mutList = jsonResponse["mutationDiff"].length === 0 ? null : JSON.parse(jsonResponse["mutationDiff"]);
-  const reason = jsonResponse["reason"].length === 0 ? "" : jsonResponse["reason"];
+  const reason = jsonResponse["reason"];
 
   if (!nodes || !edges || !Array.isArray(nodes) || !Array.isArray(edges)) {
     displayError("Malformed graph received from server - edges or nodes are empty");
@@ -172,7 +172,7 @@ function displayError(errorMsg) {
  * data. Assumes that the graph is a DAG to display it in the optimal layout.
  * Returns the cytoscape graph object.
  */
-function getGraphDisplay(graphNodes, graphEdges, mutDiff, reason) {
+function getGraphDisplay(graphNodes, graphEdges, mutList, reason) {
   const cy = cytoscape({
     container: document.getElementById("graph"),
     elements: {
@@ -234,9 +234,9 @@ function getGraphDisplay(graphNodes, graphEdges, mutDiff, reason) {
   const showMutButton = document.getElementById("show-mutations");
   showMutButton.checked = true;
 
-  // Get the objects that will be modified by this mutation
-  const result = highlightDiff(cy, mutDiff, reason);
-  // Break it down into individual constituents
+  // Highlight and retrieve the objects that will be modified by this mutation
+  const result = highlightDiff(cy, mutList, reason);
+  // Break the list down into individual constituents
   const [deletedNodes, deletedEdges, addedNodes, addedEdges, modifiedNodes] = result;
   let elems = cy.collection();
   result.forEach(item => { elems = elems.union(item); })
@@ -283,7 +283,7 @@ function highlightDiff(cy, mutList, reason = "") {
   let addedEdges = cy.collection();
   let modifiedNodes = cy.collection();
 
-  // If the mutation list is empty
+  // If the mutation list is null/undefined
   if (!mutList) {
     return [deletedNodes, deletedEdges, addedNodes, addedEdges, modifiedNodes];
   }
@@ -377,7 +377,7 @@ function highlightDiff(cy, mutList, reason = "") {
         break;
     }
     if (modifiedObj.length !== 0) {
-      initializeReasonTooltip(cy, modifiedObj, reason)
+      initializeReasonTooltip(modifiedObj, reason)
     }
   });
   return [deletedNodes, deletedEdges, addedNodes, addedEdges, modifiedNodes];
@@ -387,11 +387,10 @@ function highlightDiff(cy, mutList, reason = "") {
 /**
  * Initializes a tooltip with reason as its contents that displays when the object
  * is hovered over
- * @param {*} cy the graph object
- * @param {*} obj the object to display the tooltip over when hovered
+ * @param {*} obj the cytoscape object to display the tooltip over when hovered
  * @param {*} reason the reason for the mutation
  */
-function initializeReasonTooltip(cy, obj, reason) {
+function initializeReasonTooltip(obj, reason) {
   const tipPosition = obj.popperRef(); // used only for positioning
 
   // a dummy element must be passed as tippy only accepts a dom element as the target
@@ -404,7 +403,7 @@ function initializeReasonTooltip(cy, obj, reason) {
 
     content: () => {
       let text = document.createElement("p");
-      text.innerText = !reason ? "Reason not specified" : reason;
+      text.innerText = (!reason || reason.length === 0) ? "Reason not specified" : reason;
       return text;
     },
     sticky: true,
@@ -468,7 +467,7 @@ function makeInteractiveAndFocus(cy, elems) {
 }
 
 /**
- * Undoes the highlighted mutations on the graph, displaying only the base graph
+ * Reverts the highlighted mutations on the graph, displaying only the base graph
  * 
  * @param {*} cy the graph to modify
  * @param {*} elems all the elements that were mutated
@@ -480,8 +479,8 @@ function makeInteractiveAndFocus(cy, elems) {
  */
 function hideDiffs(cy, elems, deletedNodes, deletedEdges, addedNodes, addedEdges, modifiedNodes) {
   // Remove phantom nodes and edges
-  cy.remove(deletedNodes);
   cy.remove(deletedEdges);
+  cy.remove(deletedNodes);
 
   // Reset the color of "added" and modified" nodes and edges 
   addedNodes.style("background-color", "blue");
@@ -525,7 +524,7 @@ function searchNode(cy, query) {
  */
 function findNodeInGraph(cy, id) {
   if (id.length != 0) {
-    const target = cy.getElementById(id);
+    const target = cy.$('#' + id);
     if (target.length != 0) {
       return target;
     }

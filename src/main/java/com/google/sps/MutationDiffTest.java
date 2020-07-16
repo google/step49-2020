@@ -36,31 +36,16 @@ public class MutationDiffTest {
   Builder nodeA = Node.newBuilder().setName("A");
   Builder nodeB = Node.newBuilder().setName("B");
   Builder nodeC = Node.newBuilder().setName("C");
-  Builder nodeD = Node.newBuilder().setName("D");
-  Builder nodeE = Node.newBuilder().setName("E");
-  Builder nodeF = Node.newBuilder().setName("F");
-  Builder nodeG = Node.newBuilder().setName("G");
-  Builder nodeH = Node.newBuilder().setName("H");
 
   GraphNode gNodeA;
   GraphNode gNodeB;
   GraphNode gNodeC;
-  GraphNode gNodeD;
-  GraphNode gNodeE;
-  GraphNode gNodeF;
-  GraphNode gNodeG;
-  GraphNode gNodeH;
 
   @Before
   public void setUp() {
     gNodeA = Utility.protoNodeToGraphNode(nodeA.build());
     gNodeB = Utility.protoNodeToGraphNode(nodeB.build());
     gNodeC = Utility.protoNodeToGraphNode(nodeC.build());
-    gNodeD = Utility.protoNodeToGraphNode(nodeD.build());
-    gNodeE = Utility.protoNodeToGraphNode(nodeE.build());
-    gNodeF = Utility.protoNodeToGraphNode(nodeF.build());
-    gNodeG = Utility.protoNodeToGraphNode(nodeG.build());
-    gNodeH = Utility.protoNodeToGraphNode(nodeH.build());
   }
 
   /*
@@ -68,20 +53,10 @@ public class MutationDiffTest {
    */
   @Test
   public void nonConsecutiveIndicesPos() {
-    Mutation addAB =
-        Mutation.newBuilder()
-            .setType(Mutation.Type.ADD_EDGE)
-            .setStartNode("A")
-            .setEndNode("B")
-            .build();
+    Mutation addAB = Mutation.newBuilder().setType(Mutation.Type.ADD_EDGE).setStartNode("A").setEndNode("B").build();
     MultiMutation addABM = MultiMutation.newBuilder().addMutation(addAB).build();
 
-    Mutation addAC =
-        Mutation.newBuilder()
-            .setType(Mutation.Type.ADD_EDGE)
-            .setStartNode("A")
-            .setEndNode("C")
-            .build();
+    Mutation addAC = Mutation.newBuilder().setType(Mutation.Type.ADD_EDGE).setStartNode("A").setEndNode("C").build();
     MultiMutation addACM = MultiMutation.newBuilder().addMutation(addAC).build();
 
     List<MultiMutation> multiMutList = new ArrayList<>();
@@ -99,44 +74,21 @@ public class MutationDiffTest {
    */
   @Test
   public void nonConsecutiveIndicesNeg() {
-    Mutation addAB =
-        Mutation.newBuilder()
-            .setType(Mutation.Type.ADD_EDGE)
-            .setStartNode("A")
-            .setEndNode("B")
-            .build();
+    Mutation addAB = Mutation.newBuilder().setType(Mutation.Type.ADD_EDGE).setStartNode("A").setEndNode("B").build();
     MultiMutation addABM = MultiMutation.newBuilder().addMutation(addAB).build();
 
-    Mutation addAC =
-        Mutation.newBuilder()
-            .setType(Mutation.Type.ADD_EDGE)
-            .setStartNode("A")
-            .setEndNode("C")
-            .build();
+    Mutation addAC = Mutation.newBuilder().setType(Mutation.Type.ADD_EDGE).setStartNode("A").setEndNode("C").build();
     MultiMutation addACM = MultiMutation.newBuilder().addMutation(addAC).build();
-
-    Mutation addAD =
-        Mutation.newBuilder()
-            .setType(Mutation.Type.ADD_EDGE)
-            .setStartNode("A")
-            .setEndNode("D")
-            .build();
-    MultiMutation addADM = MultiMutation.newBuilder().addMutation(addAD).build();
 
     List<MultiMutation> multiMutList = new ArrayList<>();
     multiMutList.add(addABM);
     multiMutList.add(addACM);
-    multiMutList.add(addADM);
 
-    MultiMutation result = Utility.diffBetween(multiMutList, 3, 0);
+    MultiMutation result = Utility.diffBetween(multiMutList, 1, 0);
     Assert.assertNull(result);
-    result = Utility.diffBetween(multiMutList, 2, 0);
+    result = Utility.diffBetween(multiMutList, 1, 1);
     Assert.assertNull(result);
-    result = Utility.diffBetween(multiMutList, 2, 1);
-    Assert.assertNull(result);
-    result = Utility.diffBetween(multiMutList, 2, 2);
-    Assert.assertNull(result);
-    result = Utility.diffBetween(multiMutList, 2, 3);
+    result = Utility.diffBetween(multiMutList, 1, 2);
     Assert.assertNotNull(result);
   }
 
@@ -145,12 +97,7 @@ public class MutationDiffTest {
    */
   @Test
   public void invalidCurrIndex() {
-    Mutation addAB =
-        Mutation.newBuilder()
-            .setType(Mutation.Type.ADD_EDGE)
-            .setStartNode("A")
-            .setEndNode("B")
-            .build();
+    Mutation addAB = Mutation.newBuilder().setType(Mutation.Type.ADD_EDGE).setStartNode("A").setEndNode("B").build();
     MultiMutation addABM = MultiMutation.newBuilder().addMutation(addAB).build();
     List<MultiMutation> multiMutList = new ArrayList<>();
     multiMutList.add(addABM);
@@ -160,54 +107,11 @@ public class MutationDiffTest {
   }
 
   /*
-   * Test that a negative next index is rejected
-   */
-  @Test
-  public void invalidNextIndex() {
-    Mutation addAB =
-        Mutation.newBuilder()
-            .setType(Mutation.Type.ADD_EDGE)
-            .setStartNode("A")
-            .setEndNode("B")
-            .build();
-    MultiMutation addABM = MultiMutation.newBuilder().addMutation(addAB).build();
-    List<MultiMutation> multiMutList = new ArrayList<>();
-    multiMutList.add(addABM);
-
-    MultiMutation result = Utility.diffBetween(multiMutList, 0, -1);
-    Assert.assertNull(result);
-  }
-
-  /*
-   * Test that a current index larger than the number of mutations is rejected
-   */
-  @Test
-  public void tooLargeCurrIndex() {
-    Mutation addAB =
-        Mutation.newBuilder()
-            .setType(Mutation.Type.ADD_EDGE)
-            .setStartNode("A")
-            .setEndNode("B")
-            .build();
-    MultiMutation addABM = MultiMutation.newBuilder().addMutation(addAB).build();
-    List<MultiMutation> multiMutList = new ArrayList<>();
-    multiMutList.add(addABM);
-
-    MultiMutation result = Utility.diffBetween(multiMutList, 2, 1);
-    Assert.assertNull(result);
-  }
-
-  /*
    * Test that a next index larger than the number of mutations is rejected
    */
   @Test
   public void tooLargeNextIndex() {
-    Mutation addAB =
-        Mutation.newBuilder()
-            .setType(Mutation.Type.ADD_EDGE)
-            .setStartNode("A")
-            .setEndNode("B")
-            .build();
+    Mutation addAB = Mutation.newBuilder().setType(Mutation.Type.ADD_EDGE).setStartNode("A").setEndNode("B").build();
     MultiMutation addABM = MultiMutation.newBuilder().addMutation(addAB).build();
     List<MultiMutation> multiMutList = new ArrayList<>();
     multiMutList.add(addABM);
@@ -225,12 +129,7 @@ public class MutationDiffTest {
     Mutation addA = Mutation.newBuilder().setType(Mutation.Type.ADD_NODE).setStartNode("A").build();
     MultiMutation addAM = MultiMutation.newBuilder().addMutation(addA).build();
 
-    Mutation addAB =
-        Mutation.newBuilder()
-            .setType(Mutation.Type.ADD_EDGE)
-            .setStartNode("A")
-            .setEndNode("B")
-            .build();
+    Mutation addAB = Mutation.newBuilder().setType(Mutation.Type.ADD_EDGE).setStartNode("A").setEndNode("B").build();
     MultiMutation addABM = MultiMutation.newBuilder().addMutation(addAB).build();
 
     List<MultiMutation> multiMutList = new ArrayList<>();
@@ -243,19 +142,14 @@ public class MutationDiffTest {
 
   /*
    * Tests that a diff between currIndex and currIndex + 1 just returns the
-   * multi-mutation entry at currIndex - add node
+   * multi-mutation entry at currIndex - add edge
    */
   @Test
   public void forwardMutationAddEdge() {
     Mutation addA = Mutation.newBuilder().setType(Mutation.Type.ADD_NODE).setStartNode("A").build();
     MultiMutation addAM = MultiMutation.newBuilder().addMutation(addA).build();
 
-    Mutation addAB =
-        Mutation.newBuilder()
-            .setType(Mutation.Type.ADD_EDGE)
-            .setStartNode("A")
-            .setEndNode("B")
-            .build();
+    Mutation addAB = Mutation.newBuilder().setType(Mutation.Type.ADD_EDGE).setStartNode("A").setEndNode("B").build();
     MultiMutation addABM = MultiMutation.newBuilder().addMutation(addAB).build();
 
     List<MultiMutation> multiMutList = new ArrayList<>();
@@ -272,28 +166,14 @@ public class MutationDiffTest {
    */
   @Test
   public void forwardMutationChangeToken() {
-    TokenMutation tokenMut =
-        TokenMutation.newBuilder()
-            .setType(TokenMutation.Type.ADD_TOKEN)
-            .addTokenName("1")
-            .addTokenName("2")
-            .addTokenName("3")
-            .build();
+    TokenMutation tokenMut = TokenMutation.newBuilder().setType(TokenMutation.Type.ADD_TOKEN).addTokenName("1")
+        .addTokenName("2").addTokenName("3").build();
 
-    Mutation addTokenToA =
-        Mutation.newBuilder()
-            .setStartNode("A")
-            .setType(Mutation.Type.CHANGE_TOKEN)
-            .setTokenChange(tokenMut)
-            .build();
+    Mutation addTokenToA = Mutation.newBuilder().setStartNode("A").setType(Mutation.Type.CHANGE_TOKEN)
+        .setTokenChange(tokenMut).build();
     MultiMutation addTokenToAM = MultiMutation.newBuilder().addMutation(addTokenToA).build();
 
-    Mutation addAB =
-        Mutation.newBuilder()
-            .setType(Mutation.Type.ADD_EDGE)
-            .setStartNode("A")
-            .setEndNode("B")
-            .build();
+    Mutation addAB = Mutation.newBuilder().setType(Mutation.Type.ADD_EDGE).setStartNode("A").setEndNode("B").build();
     MultiMutation addABM = MultiMutation.newBuilder().addMutation(addAB).build();
 
     List<MultiMutation> multiMutList = new ArrayList<>();
@@ -310,28 +190,15 @@ public class MutationDiffTest {
    */
   @Test
   public void forwardMutationDeleteEdge() {
-    TokenMutation tokenMut =
-        TokenMutation.newBuilder()
-            .setType(TokenMutation.Type.ADD_TOKEN)
-            .addTokenName("1")
-            .addTokenName("2")
-            .addTokenName("3")
-            .build();
+    TokenMutation tokenMut = TokenMutation.newBuilder().setType(TokenMutation.Type.ADD_TOKEN).addTokenName("1")
+        .addTokenName("2").addTokenName("3").build();
 
-    Mutation addTokenToA =
-        Mutation.newBuilder()
-            .setStartNode("A")
-            .setType(Mutation.Type.CHANGE_TOKEN)
-            .setTokenChange(tokenMut)
-            .build();
+    Mutation addTokenToA = Mutation.newBuilder().setStartNode("A").setType(Mutation.Type.CHANGE_TOKEN)
+        .setTokenChange(tokenMut).build();
     MultiMutation addTokenToAM = MultiMutation.newBuilder().addMutation(addTokenToA).build();
 
-    Mutation removeAB =
-        Mutation.newBuilder()
-            .setType(Mutation.Type.DELETE_EDGE)
-            .setStartNode("A")
-            .setEndNode("B")
-            .build();
+    Mutation removeAB = Mutation.newBuilder().setType(Mutation.Type.DELETE_EDGE).setStartNode("A").setEndNode("B")
+        .build();
     MultiMutation removeABM = MultiMutation.newBuilder().addMutation(removeAB).build();
 
     List<MultiMutation> multiMutList = new ArrayList<>();
@@ -348,36 +215,18 @@ public class MutationDiffTest {
    */
   @Test
   public void forwardMutationDeleteNode() {
-    TokenMutation tokenMut =
-        TokenMutation.newBuilder()
-            .setType(TokenMutation.Type.ADD_TOKEN)
-            .addTokenName("1")
-            .addTokenName("2")
-            .addTokenName("3")
-            .build();
+    TokenMutation tokenMut = TokenMutation.newBuilder().setType(TokenMutation.Type.ADD_TOKEN).addTokenName("1")
+        .addTokenName("2").addTokenName("3").build();
 
-    Mutation addTokenToA =
-        Mutation.newBuilder()
-            .setStartNode("A")
-            .setType(Mutation.Type.CHANGE_TOKEN)
-            .setTokenChange(tokenMut)
-            .build();
+    Mutation addTokenToA = Mutation.newBuilder().setStartNode("A").setType(Mutation.Type.CHANGE_TOKEN)
+        .setTokenChange(tokenMut).build();
     MultiMutation addTokenToAM = MultiMutation.newBuilder().addMutation(addTokenToA).build();
 
-    Mutation removeAB =
-        Mutation.newBuilder()
-            .setType(Mutation.Type.DELETE_EDGE)
-            .setStartNode("A")
-            .setEndNode("B")
-            .build();
-    Mutation removeB =
-        Mutation.newBuilder().setType(Mutation.Type.DELETE_NODE).setStartNode("B").build();
-    MultiMutation deleteBM =
-        MultiMutation.newBuilder()
-            .addMutation(removeAB)
-            .addMutation(removeB)
-            .setReason("deleting node B")
-            .build();
+    Mutation removeAB = Mutation.newBuilder().setType(Mutation.Type.DELETE_EDGE).setStartNode("A").setEndNode("B")
+        .build();
+    Mutation removeB = Mutation.newBuilder().setType(Mutation.Type.DELETE_NODE).setStartNode("B").build();
+    MultiMutation deleteBM = MultiMutation.newBuilder().addMutation(removeAB).addMutation(removeB)
+        .setReason("deleting node B").build();
 
     List<MultiMutation> multiMutList = new ArrayList<>();
     multiMutList.add(addTokenToAM);

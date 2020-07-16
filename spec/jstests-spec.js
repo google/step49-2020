@@ -261,6 +261,43 @@ describe("Pressing next and previous buttons associated with a graph", function 
   });
 });
 
+describe("Node search", function () {
+  const cy = cytoscape({
+    elements: [
+      { data: { id: "A" } },
+      { data: { id: "B" } },
+      {
+        data: {
+          id: "AB",
+          source: "A",
+          target: "B"
+        }
+      }]
+  });
+
+  it("should be a successful search", function () {
+    const result = searchNode(cy, "A");
+
+    // search should find node
+    expect(result).toBe(true);
+  });
+
+  it("should be an unsuccessful search", function () {
+    let result = searchNode(cy, "C");
+
+    // search should not find node
+    expect(result).toBe(false);
+  });
+
+  it("should not search at all", function () {
+    let result = searchNode(cy, "");
+
+    // search should not find node
+    expect(result).toBe(false);
+  });
+});
+
+
 describe("Check initializing variables are passed correctly", function () {
   beforeEach(function () {
     setCurrGraphNum(1);
@@ -311,7 +348,8 @@ describe("Ensuring correct nodes are highlighted in mutated graph", function () 
       },
       ],
     });
-  })
+  });
+
   it("highlights an added node in green", function () {
     const mutObj = {
       "type_": 1,
@@ -320,9 +358,11 @@ describe("Ensuring correct nodes are highlighted in mutated graph", function () 
     const mutList = [];
     mutList.push(mutObj);
     highlightDiff(cy, mutList);
+
     // expect node to be green
     expect(cy.getElementById("A").style("background-color")).toBe('rgb(0,128,0)');
   });
+
   it("highlights an added edge in green", function () {
     const mutObj = {
       "type_": 2,
@@ -336,6 +376,7 @@ describe("Ensuring correct nodes are highlighted in mutated graph", function () 
     expect(cy.getElementById("edgeAB").style("line-color")).toBe('rgb(0,128,0)');
     expect(cy.getElementById("edgeAB").style("target-arrow-color")).toBe('rgb(0,128,0)');
   });
+
   it("highlights a deleted node + edges in red", function () {
     const deleteNode = {
       "type_": 3,
@@ -366,6 +407,7 @@ describe("Ensuring correct nodes are highlighted in mutated graph", function () 
     expect(cy.getElementById("edgeCA").style("target-arrow-color")).toBe('rgb(255,0,0)');
     expect(cy.getElementById("edgeCA").style("opacity")).toBe('0.25');
   });
+
   it("highlights a changed node in yellow", function () {
     const mutObj = {
       "type_": 5,
@@ -378,42 +420,6 @@ describe("Ensuring correct nodes are highlighted in mutated graph", function () 
     expect(cy.getElementById("A").style("background-color")).toBe("rgb(255,255,0)");
   });
 });
-describe("Node search", function () {
-  const cy = cytoscape({
-    elements: [
-      { data: { id: "A" } },
-      { data: { id: "B" } },
-      {
-        data: {
-          id: "AB",
-          source: "A",
-          target: "B"
-        }
-      }]
-  });
-
-  it("should be a successful search", function () {
-    const result = searchNode(cy, "A");
-
-    // search should find node
-    expect(result).toBe(true);
-  });
-
-  it("should be an unsuccessful search", function () {
-    let result = searchNode(cy, "C");
-
-    // search should not find node
-    expect(result).toBe(false);
-  });
-
-  it("should not search at all", function () {
-    let result = searchNode(cy, "");
-
-    // search should not find node
-    expect(result).toBe(false);
-  });
-});
-
 
 describe("Initializing mutation reason tooltips", function () {
   it("initializes the tooltip of a node without a specified reason correctly", function () {
@@ -429,7 +435,7 @@ describe("Initializing mutation reason tooltips", function () {
     node["data"]["tokens"] = ["a.js", "b.js", "c.js"];
     cy.add(node);
     const myNode = cy.nodes()[0];
-    initializeReasonTooltip(cy, myNode);
+    initializeReasonTooltip(myNode);
 
     const content = myNode.reasonTip.popperChildren.content.firstChild;
     expect(content.nodeName).toBe("P");
@@ -460,20 +466,22 @@ describe("Initializing mutation reason tooltips", function () {
     edge["data"]["target"] = "B";
     cy.add(edge);
     const myEdge = cy.edges()[0];
-    initializeReasonTooltip(cy, myEdge, "Adding synthetic module");
+    initializeReasonTooltip(myEdge, "Adding synthetic module");
 
     const content = myEdge.reasonTip.popperChildren.content.firstChild;
     expect(content.nodeName).toBe("P");
     expect(content.textContent).toBe("Adding synthetic module");
   });
+});
 
-  it("correctly highlights/hides mutations when checkbox is checked/unchecked", function () {
+describe("Showing and hiding tooltips when checkbox is clicked", function () {
+  it("correctly shows/hides tooltips when checkbox is checked/unchecked", function () {
     document.body.innerHTML = `
     <div id="graph"></div>
     <button id="search-button">Search</button>
     <label id="search-error"></label>
     <input type="checkbox" id="show-mutations"></input>`;
-    
+
     const nodeA = {};
     nodeA["data"] = {};
     nodeA["data"]["id"] = "A";
@@ -486,21 +494,21 @@ describe("Initializing mutation reason tooltips", function () {
     edge["data"]["id"] = "edgeAB";
     edge["data"]["source"] = "A";
     edge["data"]["target"] = "B";
-    
-    let mutAddAB = {};
-    mutAddAB["type_"] = 2;
-    mutAddAB["startNode_"] = "A";
-    mutAddAB["endNode_"] = "B";
 
     let mutAddA = {};
     mutAddA["type_"] = 1;
     mutAddA["startNode_"] = "A";
 
+    let mutAddAB = {};
+    mutAddAB["type_"] = 2;
+    mutAddAB["startNode_"] = "A";
+    mutAddAB["endNode_"] = "B";
+
     const mutList = [mutAddAB, mutAddA];
     const cy = getGraphDisplay([nodeA, nodeB], [edge], mutList, "Add node A with child B");
     const showMutCheckbox = document.getElementById("show-mutations");
-    
-    // Ensure that the checkbox starts out as checked when the graph is displayed first
+
+    // Ensure that the checkbox starts out as checked when the graph is first displayed
     expect(showMutCheckbox.checked).toBe(true);
 
     // and we can hover over nodes and see the reason tooltip
@@ -518,4 +526,4 @@ describe("Initializing mutation reason tooltips", function () {
     gNodeA.trigger("mouseout");
     expect(gNodeA.reasonTip.state.isVisible).toBe(false);
   });
-});
+})

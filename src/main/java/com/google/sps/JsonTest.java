@@ -30,8 +30,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 /**
- * Since we don't manually build the JSON, we can just check all of the fields in the JSON are
- * present.
+ * Since we don't manually build the JSON, we can just check all of the fields
+ * in the JSON are present.
  */
 @RunWith(JUnit4.class)
 public final class JsonTest {
@@ -90,7 +90,7 @@ public final class JsonTest {
     graph.putEdge(gNodeA, gNodeB);
     graph.putEdge(gNodeA, gNodeC);
 
-    String result = Utility.graphToJson(graph, 0, MultiMutation.newBuilder().build());
+    String result = Utility.graphToJson(graph, 0, MultiMutation.newBuilder().setReason("test").build());
     JSONObject jsonObject = new JSONObject(result);
 
     Assert.assertEquals(jsonObject.length(), 5);
@@ -104,5 +104,6 @@ public final class JsonTest {
     Assert.assertEquals(jsonObject.get("numMutations"), 0);
     Assert.assertTrue(jsonObject.has("mutationDiff"));
     Assert.assertTrue(jsonObject.has("reason"));
+    Assert.assertEquals(jsonObject.get("reason"), "test");
   }
 }
