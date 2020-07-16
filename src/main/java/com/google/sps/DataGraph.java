@@ -202,6 +202,23 @@ abstract class DataGraph {
         }
         break;
       }
+      case DELETE_EDGE: {
+        if (startNode != null && endNode != null) { // Check nodes exist before removing edge
+          // If the target now has no in-edges, it becomes a root
+          if (graph.inDegree(endNode) == 1) {
+            roots.add(endName);
+          }
+          graph.removeEdge(startNode, endNode);
+        } else {
+          if (startNode == null) {
+            error = "Delete edge: Start node " + startName + " doesn't exist";
+          }
+          if (endNode == null) {
+            error += "Delete edge: End node " + endName + " doesn't exist";
+          }
+        }
+        break;
+      }
       case DELETE_NODE: {
         if (startNode != null) { // Check node exists before removing
           // Check whether any successor will have no in-edges after this node is removed
@@ -220,32 +237,14 @@ abstract class DataGraph {
           error = "Delete node: Deleting a non-existent node " + startName;
         }
         break;
-
-      }
-      case DELETE_EDGE: {
-        if (startNode != null && endNode != null) { // Check nodes exist before removing edge
-        // If the target now has no in-edges, it becomes a root
-        if (graph.inDegree(endNode) == 1) {
-          roots.add(endName);
-        }
-        graph.removeEdge(startNode, endNode);
-      } else {
-        if (startNode == null) {
-          error = "Delete edge: Start node " + startName + " doesn't exist";
-        }
-        if (endNode == null) {
-          error += "Delete edge: End node " + endName + " doesn't exist";
-        }
-      }
-        break;
       }
       case CHANGE_TOKEN: {
         if (startNode == null) {
           error = "Change node: Changing a non-existent node " + startName;
           break;
         }
-
         GraphNode newNode = changeNodeToken(startNode, mut.getTokenChange());
+
         if (newNode == null) {
           error = "Change node: Unrecognized token mutation " + mut.getTokenChange().getType();
           break;

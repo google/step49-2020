@@ -71,7 +71,7 @@ public class DataServlet extends HttpServlet {
        */
       InputStreamReader graphReader =
           new InputStreamReader(
-              getServletContext().getResourceAsStream("/WEB-INF/graph.textproto"));
+              getServletContext().getResourceAsStream("/WEB-INF/initial_graph.textproto"));
       Graph.Builder graphBuilder = Graph.newBuilder();
       TextFormat.merge(graphReader, graphBuilder);
       Graph protoGraph = graphBuilder.build();
@@ -99,7 +99,7 @@ public class DataServlet extends HttpServlet {
        */
       InputStreamReader mutReader =
           new InputStreamReader(
-              getServletContext().getResourceAsStream("/WEB-INF/mutation.textproto"));
+              getServletContext().getResourceAsStream("/WEB-INF/mutations.textproto"));
       MutationList.Builder mutBuilder = MutationList.newBuilder();
       TextFormat.merge(mutReader, mutBuilder);
       mutList = mutBuilder.build().getMutationList();
