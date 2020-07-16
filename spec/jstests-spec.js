@@ -1,19 +1,19 @@
-import { searchNode, initializeNumMutations, setCurrGraphNum, initializeTippy, generateGraph, getUrl, navigateGraph, currGraphNum, numMutations, updateButtons, highlightDiff } from "../src/main/webapp/script.js";
+import { searchNode, initializeNumMutations, setCurrGraphNum, initializeTippy, generateGraph, getUrl, navigateGraph, currGraphNum, numMutations, updateButtons, highlightDiff, initializeReasonTooltip } from "../src/main/webapp/script.js";
 import cytoscape from "cytoscape";
 
-describe("Checking that depth in fetch url is correct", function() {
+describe("Checking that depth in fetch url is correct", function () {
   let numLayers = {};
 
-  beforeEach(function() {
+  beforeEach(function () {
     numLayers = document.createElement("input");
     numLayers.id = "num-layers";
   });
 
-  afterEach(function() {
+  afterEach(function () {
     document.body.innerHTML = '';
   });
 
-  it("accepts a large valid depth value", function() {
+  it("accepts a large valid depth value", function () {
     numLayers.value = 15;
     document.body.appendChild(numLayers);
 
@@ -25,7 +25,7 @@ describe("Checking that depth in fetch url is correct", function() {
     expect(constructedUrl.get("depth")).toBe("15");
   });
 
-  it("accepts a small valid depth value", function() {
+  it("accepts a small valid depth value", function () {
     numLayers.value = 2;
     document.body.appendChild(numLayers);
 
@@ -37,7 +37,7 @@ describe("Checking that depth in fetch url is correct", function() {
     expect(constructedUrl.get("depth")).toBe("2");
   });
 
-  it("fills in default value if input has no value", function() {
+  it("fills in default value if input has no value", function () {
     document.body.appendChild(numLayers);
 
     const requestString = getUrl();
@@ -49,7 +49,7 @@ describe("Checking that depth in fetch url is correct", function() {
 
   });
 
-  it("rounds up negative depths to 0", function() {
+  it("rounds up negative depths to 0", function () {
     numLayers.value = -5;
     document.body.appendChild(numLayers);
 
@@ -61,7 +61,7 @@ describe("Checking that depth in fetch url is correct", function() {
     expect(constructedUrl.get("depth")).toBe("0");
   });
 
-  it("rounds down depths larger than 20 to 20", function() {
+  it("rounds down depths larger than 20 to 20", function () {
     numLayers.value = 80;
     document.body.appendChild(numLayers);
 
@@ -73,7 +73,7 @@ describe("Checking that depth in fetch url is correct", function() {
     expect(constructedUrl.get("depth")).toBe("20");
   });
 
-  it("rounds a decimal depth value to the nearest number", function() {
+  it("rounds a decimal depth value to the nearest number", function () {
     numLayers.value = 2.8;
     document.body.appendChild(numLayers);
 
@@ -85,7 +85,7 @@ describe("Checking that depth in fetch url is correct", function() {
     expect(constructedUrl.get("depth")).toBe("3");
   });
 
-  it("rounds up negative decimals to 0", function() {
+  it("rounds up negative decimals to 0", function () {
     numLayers.value = -2.8;
     document.body.appendChild(numLayers);
 
@@ -97,7 +97,7 @@ describe("Checking that depth in fetch url is correct", function() {
     expect(constructedUrl.get("depth")).toBe("0");
   });
 
-  it("rounds up decimals above 20 to 20", function() {
+  it("rounds up decimals above 20 to 20", function () {
     numLayers.value = 200.8;
     document.body.appendChild(numLayers);
 
@@ -111,9 +111,8 @@ describe("Checking that depth in fetch url is correct", function() {
 })
 
 
-describe("Initializing tooltips", function() {
-
-  it("initializes the tooltip of a node with tokens as a list of tokens", function() {
+describe("Initializing tooltips", function () {
+  it("initializes the tooltip of a node with tokens as a list of tokens", function () {
     document.body.innerHTML = `
     <div id="cy"></div>`;
     const cy = cytoscape({
@@ -157,7 +156,7 @@ describe("Initializing tooltips", function() {
     expect(tokens[2].textContent).toBe("c.js");
   });
 
-  it("indicates that a node without tokens has no tokens", function() {
+  it("indicates that a node without tokens has no tokens", function () {
     document.body.innerHTML = `
     <div id="cy"></div>`;
     const cy = cytoscape({
@@ -195,8 +194,8 @@ describe("Initializing tooltips", function() {
   });
 });
 
-describe("Pressing next and previous buttons associated with a graph", function() {
-  it("correctly updates mutation tracking variables and buttons on click", function() {
+describe("Pressing next and previous buttons associated with a graph", function () {
+  it("correctly updates mutation tracking variables and buttons on click", function () {
     initializeNumMutations(3);
     const prevButton = document.createElement("button");
     prevButton.id = "prevbutton";
@@ -262,16 +261,16 @@ describe("Pressing next and previous buttons associated with a graph", function(
   });
 });
 
-describe("Check initializing variables are passed correctly", function() {
-  beforeEach(function() {
+describe("Check initializing variables are passed correctly", function () {
+  beforeEach(function () {
     setCurrGraphNum(1);
   });
 
-  afterEach(function() {
+  afterEach(function () {
     setCurrGraphNum(0);
   });
 
-  it("passes correct value of the mutations number in the fetch request", function() {
+  it("passes correct value of the mutations number in the fetch request", function () {
     const requestString = getUrl();
     const requestParams = requestString.substring(requestString.indexOf("?"));
 
@@ -283,9 +282,9 @@ describe("Check initializing variables are passed correctly", function() {
   });
 });
 
-describe("Ensuring correct nodes are highlighted in mutated graph", function() {
+describe("Ensuring correct nodes are highlighted in mutated graph", function () {
   let cy;
-  beforeEach(function() {
+  beforeEach(function () {
     document.body.innerHTML = `
     <div id="cy"></div>`;
     cy = cytoscape({
@@ -313,7 +312,7 @@ describe("Ensuring correct nodes are highlighted in mutated graph", function() {
       ],
     });
   })
-  it("highlights an added node in green", function() {
+  it("highlights an added node in green", function () {
     const mutObj = {
       "type_": 1,
       "startNode_": "A"
@@ -324,7 +323,7 @@ describe("Ensuring correct nodes are highlighted in mutated graph", function() {
     // expect node to be green
     expect(cy.getElementById("A").style("background-color")).toBe('rgb(0,128,0)');
   });
-  it("highlights an added edge in green", function() {
+  it("highlights an added edge in green", function () {
     const mutObj = {
       "type_": 2,
       "startNode_": "A",
@@ -337,7 +336,7 @@ describe("Ensuring correct nodes are highlighted in mutated graph", function() {
     expect(cy.getElementById("edgeAB").style("line-color")).toBe('rgb(0,128,0)');
     expect(cy.getElementById("edgeAB").style("target-arrow-color")).toBe('rgb(0,128,0)');
   });
-  it("highlights a deleted node + edges in red", function() {
+  it("highlights a deleted node + edges in red", function () {
     const deleteNode = {
       "type_": 3,
       "startNode_": "C",
@@ -367,7 +366,7 @@ describe("Ensuring correct nodes are highlighted in mutated graph", function() {
     expect(cy.getElementById("edgeCA").style("target-arrow-color")).toBe('rgb(255,0,0)');
     expect(cy.getElementById("edgeCA").style("opacity")).toBe('0.25');
   });
-  it("highlights a changed node in yellow", function() {
+  it("highlights a changed node in yellow", function () {
     const mutObj = {
       "type_": 5,
       "startNode_": "A",
@@ -379,35 +378,35 @@ describe("Ensuring correct nodes are highlighted in mutated graph", function() {
     expect(cy.getElementById("A").style("background-color")).toBe("rgb(255,255,0)");
   });
 });
-describe("Node search", function() {
-  const cy = cytoscape({ 
+describe("Node search", function () {
+  const cy = cytoscape({
     elements: [
-    { data: { id: "A" } },
-    { data: { id: "B" } },
-    {
-      data: {
-        id: "AB",
-        source: "A",
-        target: "B"
-      }
-    }]
+      { data: { id: "A" } },
+      { data: { id: "B" } },
+      {
+        data: {
+          id: "AB",
+          source: "A",
+          target: "B"
+        }
+      }]
   });
 
-  it("should be a successful search", function() {
+  it("should be a successful search", function () {
     const result = searchNode(cy, "A");
 
     // search should find node
     expect(result).toBe(true);
   });
 
-  it("should be an unsuccessful search", function() {
+  it("should be an unsuccessful search", function () {
     let result = searchNode(cy, "C");
 
     // search should not find node
     expect(result).toBe(false);
   });
 
-  it("should not search at all", function() {
+  it("should not search at all", function () {
     let result = searchNode(cy, "");
 
     // search should not find node
@@ -415,3 +414,68 @@ describe("Node search", function() {
   });
 });
 
+
+describe("Initializing mutation reason tooltips", function () {
+  it("initializes the tooltip of a node without a specified reason correctly", function () {
+    document.body.innerHTML = `
+    <div id="cy"></div>`;
+    const cy = cytoscape({
+      elements: [
+      ]
+    });
+    const node = {};
+    node["data"] = {};
+    node["data"]["id"] = "A";
+    node["data"]["tokens"] = ["a.js", "b.js", "c.js"];
+    cy.add(node);
+    const myNode = cy.nodes()[0];
+    initializeReasonTooltip(cy, myNode);
+
+    const content = myNode.reasonTip.popperChildren.content.firstChild;
+    expect(content.nodeName).toBe("P");
+    expect(content.textContent).toBe("Reason not specified");
+
+    myNode.trigger("mouseover");
+    expect(myNode.reasonTip.state.isVisible).toBe(true);
+
+    myNode.trigger("mouseout");
+    expect(myNode.reasonTip.state.isVisible).toBe(false);
+  });
+
+  it("initializes the tooltip of an edge with a specified reason correctly", function () {
+    document.body.innerHTML = `
+    <div id="cy"></div>`;
+    const cy = cytoscape({
+      elements: [
+      ]
+    });
+    const nodeA = {};
+    nodeA["data"] = {};
+    nodeA["data"]["id"] = "A";
+    const nodeB = {};
+    nodeB["data"] = {};
+    nodeB["data"]["id"] = "B";
+
+    cy.add(nodeA);
+    cy.add(nodeB);
+
+    const edge = {};
+    edge["data"] = {};
+    edge["data"]["id"] = "edgeAB";
+    edge["data"]["source"] = "A";
+    edge["data"]["target"] = "B";
+    cy.add(edge);
+    const myEdge = cy.edges()[0];
+    initializeReasonTooltip(cy, myEdge, "Adding synthetic module");
+
+    const content = myEdge.reasonTip.popperChildren.content.firstChild;
+    expect(content.nodeName).toBe("P");
+    expect(content.textContent).toBe("Adding synthetic module");
+
+    myEdge.trigger("mouseover");
+    expect(myEdge.reasonTip.state.isVisible).toBe(true);
+
+    myEdge.trigger("mouseout");
+    expect(myEdge.reasonTip.state.isVisible).toBe(false);
+  });
+});

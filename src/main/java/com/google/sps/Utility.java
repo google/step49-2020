@@ -90,14 +90,12 @@ public final class Utility {
    * @param mutList mutation list
    * @return the resulting data graph or null if there was an error
    */
-  public static List<Object> getGraphAtMutationNumber(
+  public static DataGraph getGraphAtMutationNumber(
       DataGraph original, DataGraph curr, int mutationNum, List<MultiMutation> mutList)
       throws IllegalArgumentException {
     Preconditions.checkArgument(
         original != curr, "The current graph and the original graph refer to the same object");
 
-    List<Object> ret = new ArrayList<>();
-    String error = "";
     if (mutationNum > mutList.size() || mutationNum < 0) {
       return null;
     }
@@ -108,16 +106,13 @@ public final class Utility {
         MultiMutation multiMut = mutList.get(i);
         List<Mutation> mutations = multiMut.getMutationList();
         for (Mutation mut : mutations) {
-          String thisError = curr.mutateGraph(mut);
-          if (thisError.length() != 0) {
-            error += thisError;
+          String error = curr.mutateGraph(mut);
+          if (error.length() != 0) {
+            throw new IllegalArgumentException(error);
           }
         }
       }
-      ret.add(DataGraph.create(curr.graph(), curr.graphNodesMap(), curr.roots(), mutationNum));
-      if (error.length() != 0) {
-        ret.add(error);
-      }
+      return DataGraph.create(curr.graph(), curr.graphNodesMap(), curr.roots(), mutationNum);
     } else {
       // Create a copy of the original graph and start from the original graph
       DataGraph originalCopy = original.getCopy();
@@ -125,23 +120,15 @@ public final class Utility {
         MultiMutation multiMut = mutList.get(i);
         List<Mutation> mutations = multiMut.getMutationList();
         for (Mutation mut : mutations) {
-          String thisError = originalCopy.mutateGraph(mut);
-          if (thisError.length() != 0) {
-            error += thisError;
+          String error = originalCopy.mutateGraph(mut);
+          if (error.length() != 0) {
+            throw new IllegalArgumentException(error);
           }
         }
       }
-      ret.add(
-          DataGraph.create(
-              originalCopy.graph(),
-              originalCopy.graphNodesMap(),
-              originalCopy.roots(),
-              mutationNum));
-      if (error.length() != 0) {
-        ret.add(error);
-      }
+      return DataGraph.create(
+          originalCopy.graph(), originalCopy.graphNodesMap(), originalCopy.roots(), mutationNum);
     }
-    return ret;
   }
 
   /**

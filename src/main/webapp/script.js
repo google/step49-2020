@@ -26,7 +26,7 @@ import 'tippy.js/dist/tippy.css';
 import 'tippy.js/dist/backdrop.css';
 import 'tippy.js/animations/shift-away.css';
 
-export { searchNode, initializeNumMutations, setCurrGraphNum, initializeTippy, generateGraph, getUrl, navigateGraph, currGraphNum, numMutations, updateButtons, highlightDiff };
+export { searchNode, initializeNumMutations, setCurrGraphNum, initializeTippy, generateGraph, getUrl, navigateGraph, currGraphNum, numMutations, updateButtons, highlightDiff, initializeReasonTooltip };
 
 cytoscape.use(popper); // register extension
 cytoscape.use(dagre); // register extension
@@ -79,7 +79,7 @@ async function generateGraph() {
   // Error on server side
   if (serverErrorStatus !== null) {
     displayError(serverErrorStatus);
-    //return;
+    return;
   }
 
   const jsonResponse = await response.json();
@@ -154,21 +154,17 @@ function getUrl() {
  * Takes an error message and creates a text element on the page to display this message
  */
 function displayError(errorMsg) {
-  // // Create text to display the error
-  // const errorText = document.createElement("p");
-  // errorText.innerText = errorMsg;
-  // errorText.id = "errortext";
-
-  // const graphDiv = document.getElementById("graph");
-  // while (graphDiv.lastChild) {
-  //   graphDiv.removeChild(graphDiv.lastChild);
-  // }
-  // graphDiv.appendChild(errorText);
-  // return;
-  const list = document.getElementById("error-log");
-  const errorText = document.createElement("li");
+  // Create text to display the error
+  const errorText = document.createElement("p");
   errorText.innerText = errorMsg;
-  list.insertBefore(errorText, list.firstChild);
+  errorText.id = "errortext";
+
+  const graphDiv = document.getElementById("graph");
+  while (graphDiv.lastChild) {
+    graphDiv.removeChild(graphDiv.lastChild);
+  }
+  graphDiv.appendChild(errorText);
+  return;
 }
 
 /**
@@ -219,13 +215,13 @@ function getGraphDisplay(graphNodes, graphEdges, mutDiff, reason) {
   cy.nodes().forEach(node => initializeTippy(node));
 
   // When the user clicks on a node, display the token list tooltip for the node
-  cy.on('tap', 'node', function(evt) {
+  cy.on('tap', 'node', function (evt) {
     const node = evt.target;
     node.tip.show();
   });
 
   const searchElement = document.getElementById('search');
-  document.getElementById('search-button').onclick = function() {
+  document.getElementById('search-button').onclick = function () {
     if (searchNode(cy, searchElement.value) || searchElement.value == "") {
       document.getElementById('search-error').innerText = "";
     } else {
@@ -233,30 +229,95 @@ function getGraphDisplay(graphNodes, graphEdges, mutDiff, reason) {
     }
   };
 
+  const showMutButton = document.getElementById("show-mutations");
+  showMutButton.checked = true;
+  const [added, modifiedNodes, modifiedEdges] = highlightDiff(cy, mutDiff, reason);
+  showMutButton.addEventListener("change", () => {
+    if (showMutButton.checked) {
+      highlightDiff(cy, mutDiff, reason);
+    } else {
+      if (added.length != 0) {
+        cy.remove(added);
+      }
+      cy.removeListener('mouseover');
+      cy.removeListener('mouseout');
+      if (modifiedNodes.length !== 0) {
+        modifiedNodes.style("background-color", "blue");
+      }
+      if (modifiedEdges.length !== 0) {
+        modifiedEdges.style("line-color", "#ccc");
+        modifiedEdges.style("target-arrow-color", "#ccc");
+      }
+      cy.fit();
+    }
+  });
+  // if(showMutButton.checked) {
+  //   highlightDiff(cy, mutDiff, reason);
+  // }
+}
 
-  const objsToHighglight = highlightDiff(cy, mutDiff, reason);
+/**
+ * Highlights modified nodes and edges in the graph according to the list
+ * of mutations
+ * 
+ * @param {*} cy the graph 
+ * @param {*} mutList the list of mutations to highlight
+ * @param {*} reason the reason for the mutations
+ * @returns {*} the collection of cytoscape objects (nodes and edges) to zoom in on
+ */
+function highlightDiff(cy, mutList, reason = "") {
+  // Initialize empty collections
+  let added = cy.collection();
+  let modifiedNodes = cy.collection();
+  let modifiedEdges = cy.collection();
+  // If the mutation list is empty
+  if (!mutList) {
+    return [added, modifiedNodes, modifiedEdges];
+  }
+  // Apply each mutation
+  mutList.forEach(mutation => {
+    const result = affectMutationOnGraph(cy, mutation, reason);
+    if (result[1] === 0) {
+      added = added.union(result[0]);
+    } else if (result[1] === 1) {
+      modifiedNodes = modifiedNodes.union(result[0]);
+    } else {
+      modifiedEdges = modifiedEdges.union(result[0]);
+    }
+  });
+
+  // First, run the layout and position items properly
   cy.layout({
     name: 'dagre'
   }).run();
-  cy.fit(objsToHighglight, 10000);
+
+  const elems = added.union(modifiedEdges).union(modifiedNodes)
+  // Then zoom in on the important nodes
+  cy.fit(elems);
+
+  return [added, modifiedNodes, modifiedEdges];
 }
 
-function highlightDiff(cy, mutList, reason = "") {
-  if (!mutList) {
-    return;
-  }
-  let fitTo = cy.collection();
-  mutList.forEach(mutation => {
-    fitTo = affectMutationOnGraph(cy, mutation, reason, fitTo);
-  });
-  return fitTo;
-}
-
-function affectMutationOnGraph(cy, mutation, reason, fitTo) {
+/**
+ * Show the changes brought about by this mutation on the graph and initialize
+ * a tooltip to display the reason for mutation when the mutated element is
+ * hovered over.
+ * @param {*} cy the graph to modify
+ * @param {*} mutation the mutation to affect on the graph
+ * @param {*} reason the reason for the mutation
+ * @returns {*} the modified object, which should be zoomed in on if possible
+ */
+function affectMutationOnGraph(cy, mutation, reason) {
   const type = mutation["type_"] || -1;
-  let startNode = mutation["startNode_"];
-  let endNode = mutation["endNode_"];
-  let modifiedObj = null;
+  const startNode = mutation["startNode_"];
+  const endNode = mutation["endNode_"];
+  let modified = 0;
+  let modifiedObj = cy.collection();
+
+  if (!type || !startNode) {
+    return modifiedObj;
+  }
+
   switch (type) {
     case 1:
       // add node
@@ -264,22 +325,21 @@ function affectMutationOnGraph(cy, mutation, reason, fitTo) {
         // color this node green
         cy.getElementById(startNode).style('background-color', 'green');
         modifiedObj = cy.getElementById(startNode);
-        console.log(`Added node ${startNode}`);
-        fitTo = fitTo.union(cy.getElementById(startNode));
       }
+      modified = 1;
       break;
     case 2:
       // add edge
-      if (cy.getElementById(startNode).length !== 0 && cy.getElementById(endNode).length !== 0) {
+      if (endNode && cy.getElementById(startNode).length !== 0 && cy.getElementById(endNode).length !== 0) {
         // color this edge green
         cy.getElementById(`edge${startNode}${endNode}`).style('line-color', 'green');
         cy.getElementById(`edge${startNode}${endNode}`).style('target-arrow-color', 'green');
         modifiedObj = cy.getElementById(`edge${startNode}${endNode}`);
-        console.log(`Added edge ${startNode}${endNode}`);
-        fitTo = fitTo.union(cy.getElementById(`edge${startNode}${endNode}`));
       }
+      modified = 2;
       break;
     case 3:
+      // delete node
       // add a phantom node and color it red
       if (cy.getElementById(startNode).length === 0) {
         cy.add({
@@ -290,12 +350,12 @@ function affectMutationOnGraph(cy, mutation, reason, fitTo) {
       cy.getElementById(startNode).style('background-color', 'red');
       cy.getElementById(startNode).style('opacity', 0.25);
       modifiedObj = cy.getElementById(startNode);
-      cy.fit(cy.getElementById(startNode), 50);
-      console.log(`Deleted node ${startNode}`);
-      fitTo = fitTo.union(cy.getElementById(startNode));
       break;
     case 4:
       // delete edge
+      if (!endNode) {
+        break;
+      }
       // if corresponding nodes don't exist, add them
       if (cy.getElementById(startNode).length === 0) {
         cy.add({
@@ -322,35 +382,32 @@ function affectMutationOnGraph(cy, mutation, reason, fitTo) {
       cy.getElementById(`edge${startNode}${endNode}`).style('target-arrow-color', 'red');
       cy.getElementById(`edge${startNode}${endNode}`).style('opacity', 0.25);
       modifiedObj = cy.getElementById(`edge${startNode}${endNode}`);
-      console.log(`Deleted edge ${startNode}${endNode}`);
-      fitTo = fitTo.union(cy.getElementById(`edge${startNode}${endNode}`));
       break;
     case 5:
       // change node
       if (cy.getElementById(startNode).length !== 0) {
         cy.getElementById(startNode).style('background-color', 'yellow');
         modifiedObj = cy.getElementById(startNode);
+        modified = 1;
       }
-      console.log(`Changed node ${startNode}`);
-      fitTo = fitTo.union(cy.getElementById(startNode));
       break;
     default:
       break;
   }
-  if(modifiedObj !== null) {
-    const objId = `#${modifiedObj.id()}`
-    initializeReasonTippy(modifiedObj, reason)
-    cy.on('mouseover', objId, () => modifiedObj.reasonTip.show());
-    cy.on('mouseout', objId, () => modifiedObj.reasonTip.hide());
-    return fitTo;
+  if (modifiedObj !== null) {
+    initializeReasonTooltip(cy, modifiedObj, reason)
   }
-  return fitTo;
+  return [modifiedObj, modified];
 }
 
 /**
- * Initializes a tooltip containing the node's token list
+ * Initializes a tooltip with reason as its contents that displays when the object
+ * is hovered over
+ * @param {*} cy the graph object
+ * @param {*} obj the object to display the tooltip over when hovered
+ * @param {*} reason the reason for the mutation
  */
-function initializeReasonTippy(obj, reason) {
+function initializeReasonTooltip(cy, obj, reason) {
   const tipPosition = obj.popperRef(); // used only for positioning
 
   // a dummy element must be passed as tippy only accepts a dom element as the target
@@ -361,18 +418,18 @@ function initializeReasonTippy(obj, reason) {
     lazy: false,
     onCreate: instance => { instance.popperInstance.reference = tipPosition; },
 
-    content: () => getReasonTooltipContent(reason),
+    content: () => {
+      let text = document.createElement("p");
+      text.innerText = !reason ? "Reason not specified" : reason;
+      return text;
+    },
     sticky: true,
     plugins: [sticky]
   });
-}
 
-function getReasonTooltipContent(reason) {
-  let text = document.createElement("p");
-  text.innerText = !reason ? "No reason specified" : reason;
-  return text;
-
-  
+  const objId = `#${obj.id()}`;
+  cy.on('mouseover', objId, () => obj.reasonTip.show());
+  cy.on('mouseout', objId, () => obj.reasonTip.hide());
 }
 
 /**
@@ -446,7 +503,7 @@ function getTooltipContent(node) {
   const closeButton = document.createElement("button");
   closeButton.innerText = "close";
   closeButton.classList.add("material-icons", "close-button");
-  closeButton.addEventListener('click', function() {
+  closeButton.addEventListener('click', function () {
     node.tip.hide();
   }, false);
   content.appendChild(closeButton);

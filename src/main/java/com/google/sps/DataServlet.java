@@ -107,13 +107,15 @@ public class DataServlet extends HttpServlet {
     MultiMutation mutDiff =
         Utility.diffBetween(mutList, currDataGraph.numMutations(), mutationNumber);
 
-    List<Object> ret =
-        Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
-    if (ret.size() == 2) {
-      String error = (String) (ret.get(1));
+    try {
+      currDataGraph =
+          Utility.getGraphAtMutationNumber(
+              originalDataGraph, currDataGraph, mutationNumber, mutList);
+    } catch (IllegalArgumentException e) {
+      String error = e.getMessage();
       response.setHeader("serverError", error);
+      return;
     }
-    currDataGraph = (DataGraph) (ret.get(0));
 
     MutableGraph<GraphNode> truncatedGraph = currDataGraph.getGraphWithMaxDepth(depthNumber);
     String graphJson = Utility.graphToJson(truncatedGraph, mutList.size(), mutDiff);
