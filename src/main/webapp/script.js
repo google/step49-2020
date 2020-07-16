@@ -376,9 +376,10 @@ function navigateGraph(amount) {
     currGraphIndex = 0;
   }
   if (currGraphIndex >= numMutations) {
-    currGraphIndex = numMutations - 1;
+    currGraphIndex = numMutations - 1; 
   }
   currGraphNum = relevantIndices[currGraphIndex];
+  // safety measure so that currGraphNum isn't undefined
   if (!currGraphNum) {
     currGraphNum = currGraphIndex;
   }
@@ -396,11 +397,11 @@ function updateButtons() {
   } else {
     document.getElementById("prevbutton").disabled = false;
   }
-  if (currGraphIndex === numMutations - 1 || numMutations === 0) {
+  if (currGraphIndex === numMutations - 1|| numMutations === 0) {
     document.getElementById("nextbutton").disabled = true;
   } else {
     document.getElementById("nextbutton").disabled = false;
   }
   const numElement = document.getElementById("num-mutation-display");
-  numElement.innerText = `Displaying ${currGraphIndex + 1} out of ${numMutations} (this is ${currGraphNum} on the original!)`;
+  numElement.innerText = `Displaying ${currGraphIndex + 1} out of ${numMutations} (this is ${currGraphNum + 1} on the original!)`;
 }

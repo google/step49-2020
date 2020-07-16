@@ -84,6 +84,7 @@ public final class Utility {
    */
   public static DataGraph getGraphAtMutationNumber(
       DataGraph original, DataGraph curr, int mutationNum, List<Mutation> mutList) {
+
     Preconditions.checkArgument(
         original != curr, "The current graph and the original graph refer to the same object");
 
