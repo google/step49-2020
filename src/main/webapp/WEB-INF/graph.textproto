@@ -1,0 +1,45 @@
+nodes_map {
+  key: "A"
+  value {
+    name: "A"
+    children: "B"
+    children: "C"
+  }
+}
+nodes_map {
+  key: "B"
+  value {
+    name: "B"
+    token: "a.js"
+    token: "b.js"
+    token: "c.js"
+    children: "D"
+  }
+}
+nodes_map {
+  key: "C"
+  value {
+    name: "C"
+  }
+}
+nodes_map {
+  key: "D"
+  value {
+    name: "D"
+    token: "p.js"
+    token: "q.js"
+  }
+}
+nodes_map {
+  key: "E"
+  value {
+    name: "E"
+    children: "F"
+  }
+}
+nodes_map {
+  key: "F"
+  value {
+    name: "F"
+  }
+}

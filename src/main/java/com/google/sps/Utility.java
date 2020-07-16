@@ -21,6 +21,7 @@ import com.google.common.graph.EndpointPair;
 import java.util.List;
 import java.util.ArrayList;
 import com.google.protobuf.Struct;
+import com.google.common.base.Preconditions;
 import java.util.Set;
 import com.proto.MutationProtos.Mutation;
 import com.google.common.reflect.TypeToken;
@@ -73,14 +74,16 @@ public final class Utility {
 
   /**
    * @param original the original graph
-   * @param curr the current (most recently-requested) graph
+   * @param curr the current (most recently-requested) graph (requires that original != curr)
    * @param mutationNum number of mutations to apply
    * @param mutList mutation list
-   * @return the resulting data graph or null if there was an error Requires that original != curr
+   * @return the resulting data graph or null if there was an error
    */
   public static DataGraph getGraphAtMutationNumber(
       DataGraph original, DataGraph curr, int mutationNum, List<Mutation> mutList) {
-    boolean success = true;
+    Preconditions.checkArgument(
+        original != curr, "The current graph and the original graph refer to the same object");
+
     if (mutationNum > mutList.size() || mutationNum < 0) {
       return null;
     }
@@ -88,8 +91,9 @@ public final class Utility {
     if (curr.numMutations() <= mutationNum) { // going forward
       for (int i = curr.numMutations(); i < mutationNum; i++) {
         // Mutate graph operates in place
-        success = curr.mutateGraph(mutList.get(i));
-        if (!success) {
+
+        // Applying the mutation failed
+        if (!curr.mutateGraph(mutList.get(i))) {
           return null;
         }
       }
@@ -98,8 +102,8 @@ public final class Utility {
       // Create a copy of the original graph and start from the original graph
       DataGraph originalCopy = original.getCopy();
       for (int i = 0; i < mutationNum; i++) {
-        success = originalCopy.mutateGraph(mutList.get(i));
-        if (!success) {
+        // Applying the mutation failed
+        if (!originalCopy.mutateGraph(mutList.get(i))) {
           return null;
         }
       }
