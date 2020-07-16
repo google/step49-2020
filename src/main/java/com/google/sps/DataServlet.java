@@ -47,7 +47,7 @@ public class DataServlet extends HttpServlet {
   List<Integer> defaultIndices = new ArrayList<>();
 
   int oldNumMutations = 0;
-  
+
   HashMap<String, List<Integer>> mutationIndicesMap = new HashMap<>();
 
   /*
@@ -216,6 +216,8 @@ public class DataServlet extends HttpServlet {
     String graphJson =
         Utility.graphToJson(
             truncatedGraph, relevantMutationIndices);
+
+    String graphJson = Utility.graphToJson(truncatedGraph, relevantMutationIndices);
     response.getWriter().println(graphJson);
   }
 }
