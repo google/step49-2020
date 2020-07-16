@@ -16,8 +16,6 @@ package com.google.sps;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -60,10 +58,6 @@ public class DataServlet extends HttpServlet {
     // Initialize variables if any are null. Ideally should all be null or none
     // should be null
     if (currDataGraph == null && originalDataGraph == null) {
-      // PROTO Data structure:
-      // Parse the contents of graph.txt into a proto Graph object, and extract
-      // information from the proto object into a map. This is used to store the proto
-      // input and isn't updated with mutations.
 
       /*
        * The below code is used to read a graph specified in textproto form
@@ -97,10 +91,6 @@ public class DataServlet extends HttpServlet {
       return;
     }
 
-    MutableGraph<GraphNode> graph = currDataGraph.graph();
-    HashMap<String, GraphNode> graphNodesMap = currDataGraph.graphNodesMap();
-    HashSet<String> roots = currDataGraph.roots();
-
     // Mutations file hasn't been read yet
     if (mutList == null) {
       /*
@@ -111,11 +101,11 @@ public class DataServlet extends HttpServlet {
               getServletContext().getResourceAsStream("/WEB-INF/mutation.textproto"));
       MutationList.Builder mutBuilder = MutationList.newBuilder();
       TextFormat.merge(mutReader, mutBuilder);
-      List<Mutation> mutList = mutBuilder.build().getMutationList();
+      mutList = mutBuilder.build().getMutationList();
 
       // Only apply mutations once
       for (Mutation mut : mutList) {
-        success = Utility.mutateGraph(mut, graph, graphNodesMap, roots);
+        success = currDataGraph.mutateGraph(mut);
         if (!success) {
           String error = "Failed to apply mutation " + mut.toString() + " to graph";
           response.setHeader("serverError", error);
@@ -124,9 +114,8 @@ public class DataServlet extends HttpServlet {
       }
     }
 
-    MutableGraph<GraphNode> truncatedGraph =
-        Utility.getGraphWithMaxDepth(graph, roots, graphNodesMap, depthNumber);
-    String graphJson = Utility.graphToJson(truncatedGraph, currDataGraph.roots());
+    MutableGraph<GraphNode> truncatedGraph = currDataGraph.getGraphWithMaxDepth(depthNumber);
+    String graphJson = Utility.graphToJson(truncatedGraph);
     response.getWriter().println(graphJson);
   }
 }

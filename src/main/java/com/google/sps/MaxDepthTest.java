@@ -15,7 +15,6 @@
 package com.google.sps;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Set;
 
 import com.google.common.graph.EndpointPair;
@@ -76,12 +75,8 @@ public class MaxDepthTest {
 
     DataGraph dataGraph = DataGraph.create();
     dataGraph.graphFromProtoNodes(protoNodesMap);
-    MutableGraph<GraphNode> graph = dataGraph.graph();
-    HashMap<String, GraphNode> graphNodesMap = dataGraph.graphNodesMap();
-    HashSet<String> roots = dataGraph.roots();
 
-    MutableGraph<GraphNode> truncatedGraph =
-        Utility.getGraphWithMaxDepth(graph, roots, graphNodesMap, 0);
+    MutableGraph<GraphNode> truncatedGraph = dataGraph.getGraphWithMaxDepth(0);
     Set<GraphNode> graphNodes = truncatedGraph.nodes();
     Set<EndpointPair<GraphNode>> graphEdges = truncatedGraph.edges();
 
@@ -103,12 +98,8 @@ public class MaxDepthTest {
 
     DataGraph dataGraph = DataGraph.create();
     dataGraph.graphFromProtoNodes(protoNodesMap);
-    MutableGraph<GraphNode> graph = dataGraph.graph();
-    HashMap<String, GraphNode> graphNodesMap = dataGraph.graphNodesMap();
-    HashSet<String> roots = dataGraph.roots();
 
-    MutableGraph<GraphNode> truncatedGraph =
-        Utility.getGraphWithMaxDepth(graph, roots, graphNodesMap, -2);
+    MutableGraph<GraphNode> truncatedGraph = dataGraph.getGraphWithMaxDepth(-2);
     Set<GraphNode> graphNodes = truncatedGraph.nodes();
     Set<EndpointPair<GraphNode>> graphEdges = truncatedGraph.edges();
 
@@ -129,12 +120,8 @@ public class MaxDepthTest {
 
     DataGraph dataGraph = DataGraph.create();
     dataGraph.graphFromProtoNodes(protoNodesMap);
-    MutableGraph<GraphNode> graph = dataGraph.graph();
-    HashMap<String, GraphNode> graphNodesMap = dataGraph.graphNodesMap();
-    HashSet<String> roots = dataGraph.roots();
 
-    MutableGraph<GraphNode> truncatedGraph =
-        Utility.getGraphWithMaxDepth(graph, roots, graphNodesMap, 1);
+    MutableGraph<GraphNode> truncatedGraph = dataGraph.getGraphWithMaxDepth(1);
     Set<GraphNode> graphNodes = truncatedGraph.nodes();
     Set<EndpointPair<GraphNode>> graphEdges = truncatedGraph.edges();
 
@@ -159,12 +146,8 @@ public class MaxDepthTest {
 
     DataGraph dataGraph = DataGraph.create();
     dataGraph.graphFromProtoNodes(protoNodesMap);
-    MutableGraph<GraphNode> graph = dataGraph.graph();
-    HashMap<String, GraphNode> graphNodesMap = dataGraph.graphNodesMap();
-    HashSet<String> roots = dataGraph.roots();
 
-    MutableGraph<GraphNode> truncatedGraph =
-        Utility.getGraphWithMaxDepth(graph, roots, graphNodesMap, 2);
+    MutableGraph<GraphNode> truncatedGraph = dataGraph.getGraphWithMaxDepth(2);
     Set<GraphNode> graphNodes = truncatedGraph.nodes();
 
     Set<EndpointPair<GraphNode>> graphEdges = truncatedGraph.edges();
@@ -200,12 +183,8 @@ public class MaxDepthTest {
 
     DataGraph dataGraph = DataGraph.create();
     dataGraph.graphFromProtoNodes(protoNodesMap);
-    MutableGraph<GraphNode> graph = dataGraph.graph();
-    HashMap<String, GraphNode> graphNodesMap = dataGraph.graphNodesMap();
-    HashSet<String> roots = dataGraph.roots();
 
-    MutableGraph<GraphNode> truncatedGraph =
-        Utility.getGraphWithMaxDepth(graph, roots, graphNodesMap, 2);
+    MutableGraph<GraphNode> truncatedGraph = dataGraph.getGraphWithMaxDepth(2);
     Set<GraphNode> graphNodes = truncatedGraph.nodes();
     Set<EndpointPair<GraphNode>> graphEdges = truncatedGraph.edges();
 
@@ -233,12 +212,8 @@ public class MaxDepthTest {
 
     DataGraph dataGraph = DataGraph.create();
     dataGraph.graphFromProtoNodes(protoNodesMap);
-    MutableGraph<GraphNode> graph = dataGraph.graph();
-    HashMap<String, GraphNode> graphNodesMap = dataGraph.graphNodesMap();
-    HashSet<String> roots = dataGraph.roots();
 
-    MutableGraph<GraphNode> truncatedGraph =
-        Utility.getGraphWithMaxDepth(graph, roots, graphNodesMap, 0);
+    MutableGraph<GraphNode> truncatedGraph = dataGraph.getGraphWithMaxDepth(0);
     Set<GraphNode> graphNodes = truncatedGraph.nodes();
     Set<EndpointPair<GraphNode>> graphEdges = truncatedGraph.edges();
 
@@ -266,12 +241,8 @@ public class MaxDepthTest {
 
     DataGraph dataGraph = DataGraph.create();
     dataGraph.graphFromProtoNodes(protoNodesMap);
-    MutableGraph<GraphNode> graph = dataGraph.graph();
-    HashMap<String, GraphNode> graphNodesMap = dataGraph.graphNodesMap();
-    HashSet<String> roots = dataGraph.roots();
 
-    MutableGraph<GraphNode> truncatedGraph =
-        Utility.getGraphWithMaxDepth(graph, roots, graphNodesMap, 1);
+    MutableGraph<GraphNode> truncatedGraph = dataGraph.getGraphWithMaxDepth(1);
     Set<GraphNode> graphNodes = truncatedGraph.nodes();
     Set<EndpointPair<GraphNode>> graphEdges = truncatedGraph.edges();
 
@@ -307,11 +278,8 @@ public class MaxDepthTest {
     DataGraph dataGraph = DataGraph.create();
     dataGraph.graphFromProtoNodes(protoNodesMap);
     MutableGraph<GraphNode> graph = dataGraph.graph();
-    HashMap<String, GraphNode> graphNodesMap = dataGraph.graphNodesMap();
-    HashSet<String> roots = dataGraph.roots();
 
-    MutableGraph<GraphNode> truncatedGraph =
-        Utility.getGraphWithMaxDepth(graph, roots, graphNodesMap, 1);
+    MutableGraph<GraphNode> truncatedGraph = dataGraph.getGraphWithMaxDepth(1);
     Set<GraphNode> graphNodes = truncatedGraph.nodes();
     Set<EndpointPair<GraphNode>> graphEdges = truncatedGraph.edges();
 
