@@ -151,8 +151,7 @@ public class DataServlet extends HttpServlet {
     } else { // A node is searched
 
       // CASES:
-      // 1. Node isn't on the current graph, node isn't in any mutations -> server
-      // error?
+      // 1. Node isn't on the current graph, node isn't in any mutations -> error (not fatal)
       // 2. Node is not on the current graph, in a mutation though -> say it's not
       // here, jump to the mutation with it
       // this should only apply when a new node is searched
@@ -170,7 +169,7 @@ public class DataServlet extends HttpServlet {
         response.setHeader("serverError", error);
         return;
       }
-      // case 2: Node is not in the current graph (case 2)
+      // case 2: Node is not in the current graph 
       if (!currDataGraph.graphNodesMap().containsKey(nodeNameParam)) {
 
         // index of the next element in relevantMutationsIndices that is greater than
