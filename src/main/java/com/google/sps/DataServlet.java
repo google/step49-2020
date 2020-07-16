@@ -109,8 +109,9 @@ public class DataServlet extends HttpServlet {
 
     try {
       currDataGraph =
-      Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
-    } catch(IllegalArgumentException e) {
+          Utility.getGraphAtMutationNumber(
+              originalDataGraph, currDataGraph, mutationNumber, mutList);
+    } catch (IllegalArgumentException e) {
       String error = e.getMessage();
       response.setHeader("serverError", error);
       return;

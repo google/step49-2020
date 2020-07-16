@@ -101,7 +101,6 @@ public final class MutationTest {
     HashSet<String> roots = new HashSet<>();
     DataGraph dataGraph = DataGraph.create(graph, graphNodesMap, roots, 0);
 
-    
     String error = dataGraph.mutateGraph(addA);
     Assert.assertEquals(error, "Add node: Adding a duplicate node A");
 

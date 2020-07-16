@@ -90,9 +90,11 @@ public final class Utility {
    * @param mutList mutation list
    * @return the resulting data graph or null if there was an error
    */
-  public static DataGraph getGraphAtMutationNumber(DataGraph original, DataGraph curr, int mutationNum,
-      List<MultiMutation> mutList) throws IllegalArgumentException {
-    Preconditions.checkArgument(original != curr, "The current graph and the original graph refer to the same object");
+  public static DataGraph getGraphAtMutationNumber(
+      DataGraph original, DataGraph curr, int mutationNum, List<MultiMutation> mutList)
+      throws IllegalArgumentException {
+    Preconditions.checkArgument(
+        original != curr, "The current graph and the original graph refer to the same object");
 
     if (mutationNum > mutList.size() || mutationNum < 0) {
       return null;
@@ -124,7 +126,8 @@ public final class Utility {
           }
         }
       }
-      return DataGraph.create(originalCopy.graph(), originalCopy.graphNodesMap(), originalCopy.roots(), mutationNum);
+      return DataGraph.create(
+          originalCopy.graph(), originalCopy.graphNodesMap(), originalCopy.roots(), mutationNum);
     }
   }
 
