@@ -1,4 +1,4 @@
-import { searchNode, initializeNumMutations, setCurrGraphNum, initializeTippy, generateGraph, getUrl, navigateGraph, currGraphNum, numMutations, updateButtons, highlightDiff, initializeReasonTooltip } from "../src/main/webapp/script.js";
+import { searchNode, initializeNumMutations, setCurrGraphNum, initializeTippy, generateGraph, getUrl, navigateGraph, currGraphNum, numMutations, updateButtons, highlightDiff, initializeReasonTooltip, getGraphDisplay } from "../src/main/webapp/script.js";
 import cytoscape from "cytoscape";
 
 describe("Checking that depth in fetch url is correct", function () {
@@ -434,12 +434,6 @@ describe("Initializing mutation reason tooltips", function () {
     const content = myNode.reasonTip.popperChildren.content.firstChild;
     expect(content.nodeName).toBe("P");
     expect(content.textContent).toBe("Reason not specified");
-
-    myNode.trigger("mouseover");
-    expect(myNode.reasonTip.state.isVisible).toBe(true);
-
-    myNode.trigger("mouseout");
-    expect(myNode.reasonTip.state.isVisible).toBe(false);
   });
 
   it("initializes the tooltip of an edge with a specified reason correctly", function () {
@@ -471,11 +465,57 @@ describe("Initializing mutation reason tooltips", function () {
     const content = myEdge.reasonTip.popperChildren.content.firstChild;
     expect(content.nodeName).toBe("P");
     expect(content.textContent).toBe("Adding synthetic module");
+  });
 
-    myEdge.trigger("mouseover");
-    expect(myEdge.reasonTip.state.isVisible).toBe(true);
+  it("correctly highlights/hides mutations when checkbox is checked/unchecked", function () {
+    document.body.innerHTML = `
+    <div id="graph"></div>
+    <button id="search-button">Search</button>
+    <label id="search-error"></label>
+    <input type="checkbox" id="show-mutations"></input>`;
+    
+    const nodeA = {};
+    nodeA["data"] = {};
+    nodeA["data"]["id"] = "A";
+    const nodeB = {};
+    nodeB["data"] = {};
+    nodeB["data"]["id"] = "B";
 
-    myEdge.trigger("mouseout");
-    expect(myEdge.reasonTip.state.isVisible).toBe(false);
+    const edge = {};
+    edge["data"] = {};
+    edge["data"]["id"] = "edgeAB";
+    edge["data"]["source"] = "A";
+    edge["data"]["target"] = "B";
+    
+    let mutAddAB = {};
+    mutAddAB["type_"] = 2;
+    mutAddAB["startNode_"] = "A";
+    mutAddAB["endNode_"] = "B";
+
+    let mutAddA = {};
+    mutAddA["type_"] = 1;
+    mutAddA["startNode_"] = "A";
+
+    const mutList = [mutAddAB, mutAddA];
+    const cy = getGraphDisplay([nodeA, nodeB], [edge], mutList, "Add node A with child B");
+    const showMutCheckbox = document.getElementById("show-mutations");
+    
+    // Ensure that the checkbox starts out as checked when the graph is displayed first
+    expect(showMutCheckbox.checked).toBe(true);
+
+    // and we can hover over nodes and see the reason tooltip
+    const gNodeA = cy.getElementById("A");
+    gNodeA.trigger("mouseover");
+    expect(gNodeA.reasonTip.state.isVisible).toBe(true);
+    gNodeA.trigger("mouseout");
+    expect(gNodeA.reasonTip.state.isVisible).toBe(false);
+
+    // unclick the checkbox
+    showMutCheckbox.click();
+    gNodeA.trigger("mouseover");
+    // and expect tooltips to not show up anymore
+    expect(gNodeA.reasonTip.state.isVisible).toBe(false);
+    gNodeA.trigger("mouseout");
+    expect(gNodeA.reasonTip.state.isVisible).toBe(false);
   });
 });

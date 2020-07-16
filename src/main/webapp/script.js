@@ -26,7 +26,7 @@ import 'tippy.js/dist/tippy.css';
 import 'tippy.js/dist/backdrop.css';
 import 'tippy.js/animations/shift-away.css';
 
-export { searchNode, initializeNumMutations, setCurrGraphNum, initializeTippy, generateGraph, getUrl, navigateGraph, currGraphNum, numMutations, updateButtons, highlightDiff, initializeReasonTooltip };
+export { searchNode, initializeNumMutations, setCurrGraphNum, initializeTippy, generateGraph, getUrl, navigateGraph, currGraphNum, numMutations, updateButtons, highlightDiff, initializeReasonTooltip, getGraphDisplay };
 
 cytoscape.use(popper); // register extension
 cytoscape.use(dagre); // register extension
@@ -170,6 +170,7 @@ function displayError(errorMsg) {
 /**
  * Takes in graph nodes and edges and creates a cytoscape graph with this
  * data. Assumes that the graph is a DAG to display it in the optimal layout.
+ * Returns the cytoscape graph object.
  */
 function getGraphDisplay(graphNodes, graphEdges, mutDiff, reason) {
   const cy = cytoscape({
@@ -234,82 +235,35 @@ function getGraphDisplay(graphNodes, graphEdges, mutDiff, reason) {
   showMutButton.checked = true;
 
   // Get the objects that will be modified by this mutation
-  const [addedNodes, addedEdges, modifiedNodes, modifiedEdges] = highlightDiff(cy, mutDiff, reason);
-  const elems = addedNodes.union(addedEdges).union(modifiedNodes).union(modifiedEdges);
-    // Add listeners to show and hide tooltips
-    elems.on('mouseover', function (evt) {
-      evt.target.reasonTip.show();
-    });
-    elems.on('mouseout', function (evt) {
-      evt.target.reasonTip.hide();
-    });
-  
-    cy.layout({
-      name: 'dagre'
-    }).run();
-  
-    cy.fit(elems);
+  const result = highlightDiff(cy, mutDiff, reason);
+  // Break it down into individual constituents
+  const [deletedNodes, deletedEdges, addedNodes, addedEdges, modifiedNodes] = result;
+  let elems = cy.collection();
+  result.forEach(item => { elems = elems.union(item); })
+
+  // Reposition added elements
+  cy.layout({
+    name: 'dagre'
+  }).run();
+
+  // Zoom in on them and activate their reason tooltips
+  makeInteractiveAndFocus(cy, elems);
 
 
   showMutButton.addEventListener("change", () => {
     if (showMutButton.checked) {
-      showDiffs(cy, elems, addedNodes, addedEdges, modifiedNodes, modifiedEdges);
+      /*
+       * We take advantage of the efficiency of batch operations to avoid calling
+       * highlightDiff again each time the checkbox is clicked
+       */
+      showDiffs(cy, elems, deletedNodes, deletedEdges, addedNodes, addedEdges, modifiedNodes);
     } else {
-      hideDiffs(cy, elems, addedNodes, addedEdges, modifiedNodes, modifiedEdges);
+      hideDiffs(cy, elems, deletedNodes, deletedEdges, addedNodes, addedEdges, modifiedNodes);
     }
   });
+  return cy;
 }
 
-function showDiffs(cy, elems, addedNodes, addedEdges, modifiedNodes, modifiedEdges) {
-  const added = addedEdges.union(addedEdges);
-  cy.add(added);
-
-  // Color "deleted" nodes and edges in red 
-  addedNodes.style("background-color", "red");
-  addedEdges.style("line-color", "red");
-  addedEdges.style("target-arrow-color", "red");
-
-  // Color "added" nodes and edges in green
-  modifiedNodes.style("background-color", "green");
-  modifiedEdges.style("line-color", "green");
-  modifiedEdges.style("target-arrow-color", "green");
-  makeInteractiveAndFocus(cy, elems);
-}
-
-function makeInteractiveAndFocus(cy, elems) {
-  // Add listeners to show and hide tooltips
-  elems.on('mouseover', function (evt) {
-    evt.target.reasonTip.show();
-  });
-  elems.on('mouseout', function (evt) {
-    evt.target.reasonTip.hide();
-  });
-
-  // cy.layout({
-  //   name: 'dagre'
-  // }).run();
-
-  cy.fit(elems);
-}
-
-function hideDiffs(cy, elems, addedNodes, addedEdges, modifiedNodes, modifiedEdges) {
-  const added = addedEdges.union(addedEdges);
-
-  // Remove phantom "deleted" nodes
-  cy.remove(added);
-
-  // Reset the color of "added" nodes and edges 
-  modifiedNodes.style("background-color", "blue");
-  modifiedEdges.style("line-color", "#ccc");
-  modifiedEdges.style("target-arrow-color", "#ccc");
-
-  // Remove event listeners for tooltip manipulation
-  elems.removeListener('mouseover');
-  elems.removeListener('mouseout');
-
-  // zoom out
-  cy.fit();
-}
 
 /**
  * Highlights modified nodes and edges in the graph according to the list
@@ -318,154 +272,117 @@ function hideDiffs(cy, elems, addedNodes, addedEdges, modifiedNodes, modifiedEdg
  * @param {*} cy the graph 
  * @param {*} mutList the list of mutations to highlight
  * @param {*} reason the reason for the mutations
- * @returns {*} the collection of cytoscape objects (nodes and edges) to zoom in on
+ * @returns {*} an array containing in order the deleted nodes, deleted edges, added
+ * nodes, added edges and modified nodes as per the mutationList
  */
 function highlightDiff(cy, mutList, reason = "") {
   // Initialize empty collections
+  let deletedNodes = cy.collection();
+  let deletedEdges = cy.collection();
   let addedNodes = cy.collection();
   let addedEdges = cy.collection();
   let modifiedNodes = cy.collection();
-  let modifiedEdges = cy.collection();
+
   // If the mutation list is empty
   if (!mutList) {
-    return [addedNodes, addedEdges, modifiedNodes, modifiedEdges];
+    return [deletedNodes, deletedEdges, addedNodes, addedEdges, modifiedNodes];
   }
   // Apply each mutation
   mutList.forEach(mutation => {
-    // An array where index 0 has the mutated object (node/edge)
-    // and index 1 has the type of mutation
-    const result = affectMutationOnGraph(cy, mutation, reason);
-    const modifiedObj = result[0];
-    const mutType = result[1];
+    const type = mutation["type_"] || -1;
+    const startNode = mutation["startNode_"];
+    const endNode = mutation["endNode_"];
+    let modifiedObj = cy.collection();
 
-    switch (mutType) {
-      case 0:
-        // Add node
-        console.log("here");
-        addedNodes = addedNodes.union(modifiedObj);
-        break;
+    if (!type || !startNode) {
+      return modifiedObj;
+    }
+
+    switch (type) {
       case 1:
-        // Add edge
-        addedEdges = addedEdges.union(modifiedObj);
+        // add node
+        if (cy.getElementById(startNode).length !== 0) {
+          modifiedObj = cy.getElementById(startNode);
+          // color this node green
+          modifiedObj.style('background-color', 'green');
+          addedNodes = addedNodes.union(modifiedObj);
+        }
         break;
       case 2:
-        // Modify node
-        modifiedNodes = modifiedNodes.union(modifiedObj);
+        // add edge
+        if (endNode && cy.getElementById(startNode).length !== 0 && cy.getElementById(endNode).length !== 0) {
+          modifiedObj = cy.getElementById(`edge${startNode}${endNode}`);
+          // color this edge green
+          modifiedObj.style('line-color', 'green');
+          modifiedObj.style('target-arrow-color', 'green');
+          addedEdges = addedEdges.union(modifiedObj);
+        }
         break;
       case 3:
-        // Modify edge
-        modifiedEdges = modifiedEdges.union(modifiedObj);
+        // delete node
+        // add a phantom node (if it doesn't already exist) and color it red
+        if (cy.getElementById(startNode).length === 0) {
+          cy.add({
+            group: "nodes",
+            data: { id: startNode }
+          });
+        }
+        modifiedObj = cy.getElementById(startNode);
+        modifiedObj.style('background-color', 'red');
+        modifiedObj.style('opacity', 0.25);
+        deletedNodes = deletedNodes.union(modifiedObj);
+        break;
+      case 4:
+        // delete edge
+        if (!endNode) {
+          break;
+        }
+        // if corresponding nodes don't exist, add them
+        if (cy.getElementById(startNode).length === 0) {
+          cy.add({
+            group: "nodes",
+            data: { id: startNode }
+          });
+        }
+        if (cy.getElementById(endNode).length === 0) {
+          cy.add({
+            group: "nodes",
+            data: { id: endNode }
+          });
+        }
+        // Add a phantom edge and color it red
+        cy.add({
+          group: "edges",
+          data: {
+            id: `edge${startNode}${endNode}`,
+            target: endNode,
+            source: startNode
+          }
+        });
+        modifiedObj = cy.getElementById(`edge${startNode}${endNode}`);
+        modifiedObj.style('line-color', 'red');
+        modifiedObj.style('target-arrow-color', 'red');
+        modifiedObj.style('opacity', 0.25);
+        deletedEdges = deletedEdges.union(modifiedObj);
+        break;
+      case 5:
+        // change node
+        if (cy.getElementById(startNode).length !== 0) {
+          modifiedObj = cy.getElementById(startNode);
+          modifiedObj.style('background-color', 'yellow');
+          modifiedNodes = modifiedNodes.union(modifiedObj);
+        }
         break;
       default:
         break;
     }
+    if (modifiedObj.length !== 0) {
+      initializeReasonTooltip(cy, modifiedObj, reason)
+    }
   });
-  return [addedNodes, addedEdges, modifiedNodes, modifiedEdges];
+  return [deletedNodes, deletedEdges, addedNodes, addedEdges, modifiedNodes];
 }
 
-/**
- * Show the changes brought about by this mutation on the graph and initialize
- * a tooltip to display the reason for mutation when the mutated element is
- * hovered over.
- * @param {*} cy the graph to modify
- * @param {*} mutation the mutation to affect on the graph
- * @param {*} reason the reason for the mutation
- * @returns {*} the modified and added nodes and edges, which should be zoomed in on if possible
- */
-function affectMutationOnGraph(cy, mutation, reason) {
-  const type = mutation["type_"] || -1;
-  const startNode = mutation["startNode_"];
-  const endNode = mutation["endNode_"];
-  let mutType = -1;
-  let modifiedObj = cy.collection();
-
-  if (!type || !startNode) {
-    return modifiedObj;
-  }
-
-  switch (type) {
-    case 1:
-      // add node
-      if (cy.getElementById(startNode).length !== 0) {
-        modifiedObj = cy.getElementById(startNode);
-        // color this node green
-        modifiedObj.style('background-color', 'green');
-        mutType = 2;
-      }
-      break;
-    case 2:
-      // add edge
-      if (endNode && cy.getElementById(startNode).length !== 0 && cy.getElementById(endNode).length !== 0) {
-        modifiedObj = cy.getElementById(`edge${startNode}${endNode}`);
-        // color this edge green
-        modifiedObj.style('line-color', 'green');
-        modifiedObj.style('target-arrow-color', 'green');
-        mutType = 3;
-      }
-      break;
-    case 3:
-      // delete node
-      // add a phantom node (if it doesn't already exist) and color it red
-      if (cy.getElementById(startNode).length === 0) {
-        cy.add({
-          group: "nodes",
-          data: { id: startNode }
-        });
-      }
-      modifiedObj = cy.getElementById(startNode);
-      modifiedObj.style('background-color', 'red');
-      modifiedObj.style('opacity', 0.25);
-      mutType = 0;
-      break;
-    case 4:
-      // delete edge
-      if (!endNode) {
-        break;
-      }
-      // if corresponding nodes don't exist, add them
-      if (cy.getElementById(startNode).length === 0) {
-        cy.add({
-          group: "nodes",
-          data: { id: startNode }
-        });
-      }
-      if (cy.getElementById(endNode).length === 0) {
-        cy.add({
-          group: "nodes",
-          data: { id: endNode }
-        });
-      }
-      // Add a phantom edge and color it red
-      cy.add({
-        group: "edges",
-        data: {
-          id: `edge${startNode}${endNode}`,
-          target: endNode,
-          source: startNode
-        }
-      });
-      modifiedObj = cy.getElementById(`edge${startNode}${endNode}`);
-      modifiedObj.style('line-color', 'red');
-      modifiedObj.style('target-arrow-color', 'red');
-      modifiedObj.style('opacity', 0.25);
-      mutType = 1;
-      break;
-    case 5:
-      // change node
-      if (cy.getElementById(startNode).length !== 0) {
-        modifiedObj = cy.getElementById(startNode);
-        modifiedObj.style('background-color', 'yellow');
-        mutType = 2;
-      }
-      break;
-    default:
-      break;
-  }
-  if (modifiedObj.length !== 0) {
-    initializeReasonTooltip(cy, modifiedObj, reason)
-  }
-  return [modifiedObj, mutType];
-}
 
 /**
  * Initializes a tooltip with reason as its contents that displays when the object
@@ -493,10 +410,91 @@ function initializeReasonTooltip(cy, obj, reason) {
     sticky: true,
     plugins: [sticky]
   });
+}
 
-  // const objId = `#${obj.id()}`;
-  // cy.on('mouseover', objId, () => obj.reasonTip.show());
-  // cy.on('mouseout', objId, () => obj.reasonTip.hide());
+/**
+ * Shows the mutations made to this graph by highlighting them and enabling their
+ * tooltips 
+ * 
+ * @param {*} cy the graph to modify
+ * @param {*} elems all the elements to mutate
+ * @param {*} deletedNodes the nodes which were deleted to get this graph (red)
+ * @param {*} deletedEdges the edges which were deleted to get this graph (red)
+ * @param {*} addedNodes the nodes which were added to get this graph (green)
+ * @param {*} addedEdges the edges which were added to get this graph (green)
+ * @param {*} modifiedNodes the nodes which were modified to get this graph (yellow)
+ */
+function showDiffs(cy, elems, deletedNodes, deletedEdges, addedNodes, addedEdges, modifiedNodes) {
+  // Add phantom nodes and edges to represent deleted objects
+  cy.add(deletedNodes);
+  cy.add(deletedEdges);
+
+  // Color "deleted" nodes and edges in red 
+  deletedNodes.style("background-color", "red");
+  deletedEdges.style("line-color", "red");
+  deletedEdges.style("target-arrow-color", "red");
+
+  // Color "added" nodes and edges in green
+  addedNodes.style("background-color", "green");
+  addedEdges.style("line-color", "green");
+  addedEdges.style("target-arrow-color", "green");
+
+  // Color nodes whose metadata changed in yellow
+  modifiedNodes.style("background-color", "yellow");
+
+  // Activate tooltips and zoom in on mutated objects
+  makeInteractiveAndFocus(cy, elems);
+}
+
+/**
+ * Activates tooltips that open on hovering over objects in elems and then zooms 
+ * in on these elements if possible
+ * @param {*} cy the graph to modify
+ * @param {*} elems the elements for which tooltips should be shown on mouseover
+ */
+function makeInteractiveAndFocus(cy, elems) {
+  // Add listeners to show and hide tooltips
+  elems.on('mouseover', function (evt) {
+    if (evt.target.reasonTip) {
+      evt.target.reasonTip.show();
+    }
+  });
+  elems.on('mouseout', function (evt) {
+    if (evt.target.reasonTip) {
+      evt.target.reasonTip.hide();
+    }
+  });
+  cy.fit(elems);
+}
+
+/**
+ * Undoes the highlighted mutations on the graph, displaying only the base graph
+ * 
+ * @param {*} cy the graph to modify
+ * @param {*} elems all the elements that were mutated
+ * @param {*} deletedNodes the nodes which were deleted to get this graph 
+ * @param {*} deletedEdges the edges which were deleted to get this graph 
+ * @param {*} addedNodes the nodes which were added to get this graph 
+ * @param {*} addedEdges the edges which were added to get this graph 
+ * @param {*} modifiedNodes the nodes which were modified to get this graph 
+ */
+function hideDiffs(cy, elems, deletedNodes, deletedEdges, addedNodes, addedEdges, modifiedNodes) {
+  // Remove phantom nodes and edges
+  cy.remove(deletedNodes);
+  cy.remove(deletedEdges);
+
+  // Reset the color of "added" and modified" nodes and edges 
+  addedNodes.style("background-color", "blue");
+  modifiedNodes.style("background-color", "blue");
+  addedEdges.style("line-color", "#ccc");
+  addedEdges.style("target-arrow-color", "#ccc");
+
+  // Remove event listeners for tooltip manipulation
+  elems.removeListener('mouseover');
+  elems.removeListener('mouseout');
+
+  // zoom out
+  cy.fit();
 }
 
 /**

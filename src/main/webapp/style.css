@@ -45,6 +45,10 @@ body {
   justify-content: center;
 }
 
+#show-mutations {
+  margin: auto;
+}
+
 #graphdiv {
   display: block;
 }
