@@ -25,9 +25,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-/**
- * Test for functions within Utility that are used to filter graphs across nodes
- */
+/** Test for functions within Utility that are used to filter graphs across nodes */
 @RunWith(JUnit4.class)
 public class NodeMutationFilterTest {
   // lst1 contains even number of elements
@@ -36,15 +34,23 @@ public class NodeMutationFilterTest {
   List<Integer> lst2 = new ArrayList<>(Arrays.asList(4, 7, 12, 13, 15));
 
   // Following functions test the getMutationIndicesOfNode function in Utility
-  /**
-   * Basic test for including mutliple relevant nodes for getMutationIndicesOfNode
-   */
+  /** Basic test for including mutliple relevant nodes for getMutationIndicesOfNode */
   @Test
   public void getMutationsOfBasic() {
-    Mutation addAB = Mutation.newBuilder().setType(Mutation.Type.ADD_EDGE).setStartNode("A").setEndNode("B").build();
-    Mutation removeAB = Mutation.newBuilder().setType(Mutation.Type.DELETE_EDGE).setStartNode("A").setEndNode("B")
-        .build();
-    Mutation removeC = Mutation.newBuilder().setType(Mutation.Type.DELETE_NODE).setStartNode("C").build();
+    Mutation addAB =
+        Mutation.newBuilder()
+            .setType(Mutation.Type.ADD_EDGE)
+            .setStartNode("A")
+            .setEndNode("B")
+            .build();
+    Mutation removeAB =
+        Mutation.newBuilder()
+            .setType(Mutation.Type.DELETE_EDGE)
+            .setStartNode("A")
+            .setEndNode("B")
+            .build();
+    Mutation removeC =
+        Mutation.newBuilder().setType(Mutation.Type.DELETE_NODE).setStartNode("C").build();
     List<Mutation> mutList = new ArrayList<>();
     mutList.add(addAB);
     mutList.add(removeAB);
@@ -60,7 +66,12 @@ public class NodeMutationFilterTest {
   /** Test that a null query returns an empty list */
   @Test
   public void getMutationsOfNull() {
-    Mutation addAB = Mutation.newBuilder().setType(Mutation.Type.ADD_EDGE).setStartNode("A").setEndNode("B").build();
+    Mutation addAB =
+        Mutation.newBuilder()
+            .setType(Mutation.Type.ADD_EDGE)
+            .setStartNode("A")
+            .setEndNode("B")
+            .build();
     List<Mutation> mutList = new ArrayList<>();
     mutList.add(addAB);
 
@@ -103,8 +114,8 @@ public class NodeMutationFilterTest {
   }
 
   /**
-   * When the tgt value does exist in the middle, value found must get strictly
-   * greater (value's index is returned)
+   * When the tgt value does exist in the middle, value found must get strictly greater (value's
+   * index is returned)
    */
   @Test
   public void testInnerExistsEven() {
@@ -119,8 +130,8 @@ public class NodeMutationFilterTest {
   }
 
   /**
-   * When tgt value does not exist (DNE) in the list, value is just the immediate
-   * greater one. This tests a middle index is returned correctly.
+   * When tgt value does not exist (DNE) in the list, value is just the immediate greater one. This
+   * tests a middle index is returned correctly.
    */
   @Test
   public void testInnerDNEEven() {
