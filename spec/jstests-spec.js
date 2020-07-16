@@ -322,7 +322,6 @@ describe("Check correct url params", function() {
   })
 });
 
-
 describe("Node search", function() {
   const cy = cytoscape({ 
     elements: [
@@ -358,5 +357,3 @@ describe("Node search", function() {
     expect(result).toBe(false);
   });
 });
-
-

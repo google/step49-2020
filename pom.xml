@@ -67,7 +67,8 @@
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.13</version>
-      <!-- <scope>test</scope> -->
+      <!-- The following line is commented out because the tests weren't working for me with it -->
+      <!-- <scope>test</scope> --> 
     </dependency>
 
     <dependency>
