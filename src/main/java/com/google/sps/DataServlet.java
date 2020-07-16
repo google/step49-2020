@@ -195,7 +195,7 @@ public class DataServlet extends HttpServlet {
         // only get the indices AFTER this one
         relevantMutationIndices =
             relevantMutationIndices.subList(newNumIndex, relevantMutationIndices.size());
-        
+
         // Update the current graph
         currDataGraph =
             Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, newNum, mutList);
@@ -212,10 +212,8 @@ public class DataServlet extends HttpServlet {
       // This is the single search
       truncatedGraph = currDataGraph.getReachableNodes(nodeNameParam, depthNumber);
     }
-   
-    String graphJson =
-        Utility.graphToJson(
-            truncatedGraph, relevantMutationIndices);
+
+    String graphJson = Utility.graphToJson(truncatedGraph, relevantMutationIndices);
 
     response.getWriter().println(graphJson);
   }

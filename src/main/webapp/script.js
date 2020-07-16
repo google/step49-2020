@@ -157,7 +157,7 @@ function getUrl() {
   const nodeName = document.getElementById('node-name') ? document.getElementById('node-name').value || "" : ""; 
 
   let selectedDepth = 0;
-  if (depthElem === null) {  
+  if (depthElem === null) {
     selectedDepth = 3;
   }
   else {

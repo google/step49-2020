@@ -21,7 +21,6 @@ import com.proto.GraphProtos.Node;
 import com.proto.MutationProtos.Mutation;
 import com.proto.MutationProtos.TokenMutation;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -369,27 +368,21 @@ abstract class DataGraph {
     HashSet<GraphNode> visitedChildren = new HashSet<>();
     HashSet<GraphNode> visitedParents = new HashSet<>();
 
-    HashSet<GraphNode> nextLayerChildren;
-    HashSet<GraphNode> nextLayerParents;
+    HashSet<GraphNode> nextLayerChildren = new HashSet<GraphNode>();
+    HashSet<GraphNode> nextLayerParents = new HashSet<GraphNode>();
 
-    ArrayDeque<GraphNode> queueChildren = new ArrayDeque<>();
-    ArrayDeque<GraphNode> queueParents = new ArrayDeque<>();
-
-    queueChildren.add(tgtNode); // Adds the searched node to the queue
-    queueParents.add(tgtNode);
+    nextLayerChildren.add(tgtNode);
+    nextLayerParents.add(tgtNode);
 
     for (int i = 0; i <= radius; i++) {
       // Break out early if queue is empty
-      if (queueChildren.isEmpty() && queueParents.isEmpty()) {
+      if (nextLayerChildren.isEmpty() && nextLayerParents.isEmpty()) {
         break;
       }
 
       // Helper function used to avoid duplicate code
-      nextLayerChildren = getNextLayer(visitedChildren, queueChildren, true);
-      nextLayerParents = getNextLayer(visitedParents, queueParents, false);
-
-      queueChildren.addAll(nextLayerChildren);
-      queueParents.addAll(nextLayerParents);
+      nextLayerChildren = getNextLayer(nextLayerChildren, visitedChildren, true);
+      nextLayerParents = getNextLayer(nextLayerParents, visitedParents, false);
     }
 
     HashSet<GraphNode> visited = new HashSet<>();
@@ -404,34 +397,24 @@ abstract class DataGraph {
    * Helper function that gets the next layer of nodes based on what's visited, a queue, and whether
    * we're looking for children
    *
+   * @param layer the layer of nodes to visit
    * @param visited A Hashset of visited nodes
-   * @param queue the queue of nodes to visit in the current layer
    * @param isChild whether we're looking for children. True means we look for the children, and
    *     False means we look for parents.
    * @return the nodes relevant to the next layer
    */
   private HashSet<GraphNode> getNextLayer(
-      HashSet<GraphNode> visited, ArrayDeque<GraphNode> queue, boolean isChild) {
+      HashSet<GraphNode> layer, HashSet<GraphNode> visited, boolean isChild) {
     HashSet<GraphNode> nextLayer = new HashSet<>();
-    while (!queue.isEmpty()) {
-      GraphNode curr = queue.poll();
+    for (GraphNode curr : layer) {
 
       if (!visited.contains(curr)) {
         visited.add(curr);
-
-        if (isChild) {
-          // Adds the children
-          for (GraphNode child : this.graph().successors(curr)) {
-            if (!visited.contains(child)) {
-              nextLayer.add(child);
-            }
-          }
-        } else {
-          // Adds the parents
-          for (GraphNode parent : graph().predecessors(curr)) {
-            if (!visited.contains(parent)) {
-              nextLayer.add(parent);
-            }
+        Set<GraphNode> adjacentNodes =
+            isChild ? this.graph().successors(curr) : this.graph().predecessors(curr);
+        for (GraphNode node : adjacentNodes) {
+          if (!visited.contains(node)) {
+            nextLayer.add(node);
           }
         }
       }
