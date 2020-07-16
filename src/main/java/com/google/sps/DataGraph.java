@@ -173,8 +173,7 @@ abstract class DataGraph {
     GraphNode endNode = graphNodesMap.get(endName);
 
     switch (mut.getType()) {
-      case ADD_NODE:
-        {
+      case ADD_NODE: {
           // adding a duplicate node doesn't make any change
           if (!graphNodesMap.containsKey(startName)) {
             // New lone node is a root
@@ -187,8 +186,7 @@ abstract class DataGraph {
           }
           break;
         }
-      case ADD_EDGE:
-        {
+      case ADD_EDGE: {
           if (startNode == null || endNode == null) { // Check nodes exist before adding an edge
             return false;
           }
@@ -197,16 +195,13 @@ abstract class DataGraph {
           graph.putEdge(startNode, endNode);
           break;
         }
-      case DELETE_NODE:
-        {
+      case DELETE_NODE: {
           if (startNode == null) { // Check node exists before removing
             return false;
           }
           // Check whether any successor will have no in-edges after this node is removed
           // If so, make them roots
-
-          Set<GraphNode> successors = graph.successors(startNode);
-          for (GraphNode succ : successors) {
+          for (GraphNode succ : graph.successors(startNode)) {
             if (graph.inDegree(succ) == 1) {
               roots.add(succ.name());
             }
@@ -216,8 +211,7 @@ abstract class DataGraph {
           graphNodesMap.remove(startName);
           break;
         }
-      case DELETE_EDGE:
-        {
+      case DELETE_EDGE: {
           if (startNode == null || endNode == null) { // Check nodes exist before removing edge
             return false;
           }
@@ -228,8 +222,7 @@ abstract class DataGraph {
           graph.removeEdge(startNode, endNode);
           break;
         }
-      case CHANGE_TOKEN:
-        {
+      case CHANGE_TOKEN: {
           if (startNode == null) {
             return false;
           }
