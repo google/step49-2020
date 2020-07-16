@@ -211,8 +211,8 @@ public class ReachableNodesTest {
   }
 
   /**
-   * This test mirrors the example graph we have, tests that only parents of parents (and not
-   * children of parents) are added.
+   * This test mirrors the example graph we have, tests that only parents of
+   * parents (and not children of parents) are added.
    */
   @Test
   public void linearNodesOnly() {
@@ -253,6 +253,48 @@ public class ReachableNodesTest {
 
     // Test encapsulation, original graph isn't modified
     Assert.assertEquals(7, graph.nodes().size());
+    Assert.assertEquals(6, graph.edges().size());
+  }
+
+  /** Test that with two ways to find a node, will find the shortest */
+  @Test
+  public void findsShorterPath() {
+    // A -> B -> D -> E -> F
+    // \> C ------------/> (C points to F)
+    nodeA.addChildren("B");
+    nodeA.addChildren("C");
+    nodeB.addChildren("D");
+    nodeD.addChildren("E");
+    nodeE.addChildren("F");
+    nodeC.addChildren("F");
+
+    HashMap<String, Node> protoNodesMap = new HashMap<>();
+    protoNodesMap.put("A", nodeA.build());
+    protoNodesMap.put("B", nodeB.build());
+    protoNodesMap.put("C", nodeC.build());
+    protoNodesMap.put("D", nodeD.build());
+    protoNodesMap.put("E", nodeE.build());
+    protoNodesMap.put("F", nodeF.build());
+
+    DataGraph dataGraph = DataGraph.create();
+    dataGraph.graphFromProtoNodes(protoNodesMap);
+    MutableGraph<GraphNode> graph = dataGraph.graph();
+
+    MutableGraph<GraphNode> truncatedGraph = dataGraph.getReachableNodes("F", 2);
+    Set<GraphNode> graphNodes = truncatedGraph.nodes();
+    Set<EndpointPair<GraphNode>> graphEdges = truncatedGraph.edges();
+
+    Assert.assertEquals(5, graphNodes.size());
+    Assert.assertTrue(graphNodes.contains(gNodeA)); // Found through C because it's the shorter path
+    Assert.assertFalse(graphNodes.contains(gNodeB));
+    Assert.assertTrue(graphNodes.contains(gNodeC)); 
+    Assert.assertTrue(graphNodes.contains(gNodeD));
+    Assert.assertTrue(graphNodes.contains(gNodeE));
+    Assert.assertTrue(graphNodes.contains(gNodeF));
+
+    Assert.assertEquals(4, graphEdges.size());
+
+    // Encapsulation
     Assert.assertEquals(6, graph.edges().size());
   }
 }
