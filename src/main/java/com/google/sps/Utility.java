@@ -119,31 +119,6 @@ public final class Utility {
   }
 
   /**
-   * Returns a new mutation list with only the mutations relevant to a specified node
-   *
-   * @param nodeName the name of the node to filter
-   * @param origList the original list of mutations
-   * @return a list of mutations that affect a given node
-   */
-  public static List<Mutation> getMutationsOfNode(String nodeName, List<Mutation> origList) {
-
-    // Shouldn't happen, but in case the nodeName is null the original list is
-    // returned
-    if (nodeName == null) {
-      return origList;
-    }
-    List<Mutation> lst = new ArrayList<>();
-    for (Mutation mut : origList) {
-      String startName = mut.getStartNode();
-      String endName = mut.getEndNode();
-      if (nodeName.equals(startName) || nodeName.equals(endName)) {
-        lst.add(mut);
-      }
-    }
-    return lst;
-  }
-
-  /**
    * Returns a list of the indices of the relevant
    *
    * @param nodeName the name of the node to filter
@@ -164,22 +139,6 @@ public final class Utility {
       if (nodeName.equals(startName) || nodeName.equals(endName)) {
         lst.add(i);
       }
-    }
-    return lst;
-  }
-
-  /**
-   * Gets the mutations associated with a list of indices
-   *
-   * @param indicies the list of indicies
-   * @param origList the original mutation list (with all the mutations)
-   * @return a list of the Mutations from specified indices
-   */
-  public static List<Mutation> getMutationsFromIndices(
-      List<Integer> indicies, List<Mutation> origList) {
-    List<Mutation> lst = new ArrayList<>();
-    for (Integer i : indicies) {
-      lst.add(origList.get(i));
     }
     return lst;
   }
