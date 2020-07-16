@@ -21,6 +21,7 @@ import java.io.InputStreamReader;
 
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -47,6 +48,7 @@ public class DataServlet extends HttpServlet {
 
   int oldNumMutations = 0;
   String lastNodeName = "";
+  HashMap<String, List<Integer>> mutationIndicesMap = new HashMap<>();
 
   /*
    * Called when a client submits a GET request to the /data URL
@@ -160,7 +162,11 @@ public class DataServlet extends HttpServlet {
       // Could either be the same node or a different node
 
       // Indicies of relevant mutations from the entire mutList
-      relevantMutationIndices = Utility.getMutationIndicesOfNode(nodeNameParam, mutList);
+      // Add to map if doesn't exist yet
+      if (!mutationIndicesMap.containsKey(nodeNameParam)) {
+        mutationIndicesMap.put(nodeNameParam, Utility.getMutationIndicesOfNode(nodeNameParam, mutList)); 
+      }
+      relevantMutationIndices = mutationIndicesMap.get(nodeNameParam);
 
       // case 1: Node is not in the current graph or any graph
       if (!currDataGraph.graphNodesMap().containsKey(nodeNameParam)
@@ -188,7 +194,6 @@ public class DataServlet extends HttpServlet {
         // only get the indices AFTER this one
         relevantMutationIndices =
             relevantMutationIndices.subList(newNumIndex, relevantMutationIndices.size());
-        relevantMutationIndices.add(0, oldNumMutations);
 
         // Update the current graph
         currDataGraph =
