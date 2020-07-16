@@ -169,7 +169,7 @@ public class DataServlet extends HttpServlet {
         response.setHeader("serverError", error);
         return;
       }
-      // case 2: Node is not in the current graph 
+      // case 2: Node is not in the current graph
       if (!currDataGraph.graphNodesMap().containsKey(nodeNameParam)) {
 
         // index of the next element in relevantMutationsIndices that is greater than
