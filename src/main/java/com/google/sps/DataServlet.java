@@ -164,7 +164,8 @@ public class DataServlet extends HttpServlet {
       // Indicies of relevant mutations from the entire mutList
       // Add to map if doesn't exist yet
       if (!mutationIndicesMap.containsKey(nodeNameParam)) {
-        mutationIndicesMap.put(nodeNameParam, Utility.getMutationIndicesOfNode(nodeNameParam, mutList)); 
+        mutationIndicesMap.put(
+            nodeNameParam, Utility.getMutationIndicesOfNode(nodeNameParam, mutList));
       }
       relevantMutationIndices = mutationIndicesMap.get(nodeNameParam);
 
