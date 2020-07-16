@@ -46,7 +46,6 @@ public class DataServlet extends HttpServlet {
   List<Integer> defaultIndices = new ArrayList<>();
 
   int oldNumMutations = 0;
-  String lastNodeName = "";
 
   /*
    * Called when a client submits a GET request to the /data URL
@@ -196,7 +195,6 @@ public class DataServlet extends HttpServlet {
 
         // Add null check?
         oldNumMutations = newNum;
-        lastNodeName = nodeNameParam;
       } else {
         // case 3: node is in the current graph. then relevant mutationIndices is ok
         currDataGraph =
