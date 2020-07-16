@@ -122,7 +122,12 @@ public final class MutationTest {
     graphNodesMap.put("A", gNodeA);
     graphNodesMap.put("B", gNodeB);
 
-    Mutation addAB = Mutation.newBuilder().setType(Mutation.Type.ADD_EDGE).setStartNode("A").setEndNode("B").build();
+    Mutation addAB =
+        Mutation.newBuilder()
+            .setType(Mutation.Type.ADD_EDGE)
+            .setStartNode("A")
+            .setEndNode("B")
+            .build();
 
     HashSet<String> roots = new HashSet<>();
     DataGraph dataGraph = DataGraph.create(graph, graphNodesMap, roots, 0);
@@ -154,7 +159,12 @@ public final class MutationTest {
     graphNodesMap.put("A", gNodeA);
     graphNodesMap.put("B", gNodeB);
 
-    Mutation addAB = Mutation.newBuilder().setType(Mutation.Type.ADD_EDGE).setStartNode("A").setEndNode("C").build();
+    Mutation addAB =
+        Mutation.newBuilder()
+            .setType(Mutation.Type.ADD_EDGE)
+            .setStartNode("A")
+            .setEndNode("C")
+            .build();
 
     HashSet<String> roots = new HashSet<>();
     DataGraph dataGraph = DataGraph.create(graph, graphNodesMap, roots, 0);
@@ -188,7 +198,8 @@ public final class MutationTest {
     graphNodesMap.put("B", gNodeB);
     graphNodesMap.put("C", gNodeC);
 
-    Mutation removeA = Mutation.newBuilder().setType(Mutation.Type.DELETE_NODE).setStartNode("A").build();
+    Mutation removeA =
+        Mutation.newBuilder().setType(Mutation.Type.DELETE_NODE).setStartNode("A").build();
 
     HashSet<String> roots = new HashSet<>();
     DataGraph dataGraph = DataGraph.create(graph, graphNodesMap, roots, 0);
@@ -220,7 +231,8 @@ public final class MutationTest {
     graphNodesMap.put("A", gNodeA);
     graphNodesMap.put("B", gNodeB);
 
-    Mutation removeC = Mutation.newBuilder().setType(Mutation.Type.DELETE_NODE).setStartNode("C").build();
+    Mutation removeC =
+        Mutation.newBuilder().setType(Mutation.Type.DELETE_NODE).setStartNode("C").build();
 
     HashSet<String> roots = new HashSet<>();
     DataGraph dataGraph = DataGraph.create(graph, graphNodesMap, roots, 0);
@@ -254,8 +266,12 @@ public final class MutationTest {
     graphNodesMap.put("B", gNodeB);
     graphNodesMap.put("C", gNodeC);
 
-    Mutation removeAB = Mutation.newBuilder().setType(Mutation.Type.DELETE_EDGE).setStartNode("A").setEndNode("B")
-        .build();
+    Mutation removeAB =
+        Mutation.newBuilder()
+            .setType(Mutation.Type.DELETE_EDGE)
+            .setStartNode("A")
+            .setEndNode("B")
+            .build();
 
     HashSet<String> roots = new HashSet<>();
     DataGraph dataGraph = DataGraph.create(graph, graphNodesMap, roots, 0);
@@ -291,7 +307,8 @@ public final class MutationTest {
     graphNodesMap.put("A", gNodeA);
     graphNodesMap.put("B", gNodeB);
 
-    Mutation removeAX = Mutation.newBuilder().setType(Mutation.Type.DELETE_EDGE).setStartNode("A").build();
+    Mutation removeAX =
+        Mutation.newBuilder().setType(Mutation.Type.DELETE_EDGE).setStartNode("A").build();
 
     HashSet<String> roots = new HashSet<>();
     DataGraph dataGraph = DataGraph.create(graph, graphNodesMap, roots, 0);
@@ -325,8 +342,12 @@ public final class MutationTest {
     graphNodesMap.put("B", gNodeB);
     graphNodesMap.put("C", gNodeC);
 
-    Mutation removeAC = Mutation.newBuilder().setType(Mutation.Type.DELETE_EDGE).setStartNode("A").setEndNode("C")
-        .build();
+    Mutation removeAC =
+        Mutation.newBuilder()
+            .setType(Mutation.Type.DELETE_EDGE)
+            .setStartNode("A")
+            .setEndNode("C")
+            .build();
 
     HashSet<String> roots = new HashSet<>();
     DataGraph dataGraph = DataGraph.create(graph, graphNodesMap, roots, 0);
@@ -367,11 +388,20 @@ public final class MutationTest {
     newTokens.add("2");
     newTokens.add("3");
 
-    TokenMutation tokenMut = TokenMutation.newBuilder().setType(TokenMutation.Type.ADD_TOKEN).addTokenName("1")
-        .addTokenName("2").addTokenName("3").build();
+    TokenMutation tokenMut =
+        TokenMutation.newBuilder()
+            .setType(TokenMutation.Type.ADD_TOKEN)
+            .addTokenName("1")
+            .addTokenName("2")
+            .addTokenName("3")
+            .build();
 
-    Mutation addTokenToA = Mutation.newBuilder().setStartNode("A").setType(Mutation.Type.CHANGE_TOKEN)
-        .setTokenChange(tokenMut).build();
+    Mutation addTokenToA =
+        Mutation.newBuilder()
+            .setStartNode("A")
+            .setType(Mutation.Type.CHANGE_TOKEN)
+            .setTokenChange(tokenMut)
+            .build();
 
     HashSet<String> roots = new HashSet<>();
     DataGraph dataGraph = DataGraph.create(graph, graphNodesMap, roots, 0);
@@ -438,11 +468,20 @@ public final class MutationTest {
     newTokens.add("2");
     newTokens.add("3");
 
-    TokenMutation tokenMut = TokenMutation.newBuilder().setType(TokenMutation.Type.ADD_TOKEN).addTokenName("1")
-        .addTokenName("2").addTokenName("3").build();
+    TokenMutation tokenMut =
+        TokenMutation.newBuilder()
+            .setType(TokenMutation.Type.ADD_TOKEN)
+            .addTokenName("1")
+            .addTokenName("2")
+            .addTokenName("3")
+            .build();
 
-    Mutation addTokenToB = Mutation.newBuilder().setStartNode("B").setType(Mutation.Type.CHANGE_TOKEN)
-        .setTokenChange(tokenMut).build();
+    Mutation addTokenToB =
+        Mutation.newBuilder()
+            .setStartNode("B")
+            .setType(Mutation.Type.CHANGE_TOKEN)
+            .setTokenChange(tokenMut)
+            .build();
 
     String error = dataGraph.mutateGraph(addTokenToB);
     Assert.assertEquals(error.length(), 0);
@@ -495,11 +534,19 @@ public final class MutationTest {
     newTokens.add("1");
     newTokens.add("3");
 
-    TokenMutation tokenMut = TokenMutation.newBuilder().setType(TokenMutation.Type.DELETE_TOKEN).addTokenName("2")
-        .addTokenName("4").build();
+    TokenMutation tokenMut =
+        TokenMutation.newBuilder()
+            .setType(TokenMutation.Type.DELETE_TOKEN)
+            .addTokenName("2")
+            .addTokenName("4")
+            .build();
 
-    Mutation removeTokenFromA = Mutation.newBuilder().setStartNode("A").setType(Mutation.Type.CHANGE_TOKEN)
-        .setTokenChange(tokenMut).build();
+    Mutation removeTokenFromA =
+        Mutation.newBuilder()
+            .setStartNode("A")
+            .setType(Mutation.Type.CHANGE_TOKEN)
+            .setTokenChange(tokenMut)
+            .build();
 
     HashSet<String> roots = new HashSet<>();
     DataGraph dataGraph = DataGraph.create(graph, graphNodesMap, roots, 0);
@@ -545,8 +592,12 @@ public final class MutationTest {
 
     TokenMutation tokenMut = TokenMutation.newBuilder().addTokenName("2").addTokenName("4").build();
 
-    Mutation addToA = Mutation.newBuilder().setStartNode("A").setType(Mutation.Type.CHANGE_TOKEN)
-        .setTokenChange(tokenMut).build();
+    Mutation addToA =
+        Mutation.newBuilder()
+            .setStartNode("A")
+            .setType(Mutation.Type.CHANGE_TOKEN)
+            .setTokenChange(tokenMut)
+            .build();
 
     HashSet<String> roots = new HashSet<>();
     DataGraph dataGraph = DataGraph.create(graph, graphNodesMap, roots, 0);
@@ -583,10 +634,15 @@ public final class MutationTest {
     graphNodesMap.put("B", gNodeB);
     graphNodesMap.put("C", gNodeC);
 
-    TokenMutation tokenMut = TokenMutation.newBuilder().setType(TokenMutation.Type.ADD_TOKEN).addTokenName("2")
-        .addTokenName("4").build();
+    TokenMutation tokenMut =
+        TokenMutation.newBuilder()
+            .setType(TokenMutation.Type.ADD_TOKEN)
+            .addTokenName("2")
+            .addTokenName("4")
+            .build();
 
-    Mutation add = Mutation.newBuilder().setType(Mutation.Type.CHANGE_TOKEN).setTokenChange(tokenMut).build();
+    Mutation add =
+        Mutation.newBuilder().setType(Mutation.Type.CHANGE_TOKEN).setTokenChange(tokenMut).build();
 
     HashSet<String> roots = new HashSet<>();
     DataGraph dataGraph = DataGraph.create(graph, graphNodesMap, roots, 0);
