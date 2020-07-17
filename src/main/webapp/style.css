@@ -5,7 +5,7 @@ body {
 
 #graph {
   width: 90%;
-  height: 90vh;
+  height: 70vh;
   margin-left: auto;
   margin-right: auto;
   margin-top: 40px;
@@ -43,6 +43,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 0;
+  margin: 0;
 }
 
 #show-mutations {
@@ -54,5 +56,11 @@ body {
 }
 
 .nextprev {
-  margin: 20px;
+  margin: 0px 20px;
+  padding: 0;
+}
+
+#search-box {
+  display: flex;
+  flex-direction: column;
 }

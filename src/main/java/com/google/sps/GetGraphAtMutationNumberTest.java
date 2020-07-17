@@ -209,7 +209,10 @@ public class GetGraphAtMutationNumberTest {
     Assert.assertEquals(newNodeA.tokenList(), newTokenList);
   }
 
-  /** Mutation Number requested exceeds the length of the mutation list */
+  /**
+   * Mutation Number requested exceeds the length of the mutation list, should return the last
+   * mutation
+   */
   @Test
   public void numberRequestedTooBig() {
     HashMap<String, Node> protoNodesMap = new HashMap<>();
@@ -225,7 +228,14 @@ public class GetGraphAtMutationNumberTest {
 
     DataGraph mutatedGraph =
         Utility.getGraphAtMutationNumber(dataGraph, dataGraphCopy, 2, multiMutList);
-    Assert.assertNull(mutatedGraph);
+    MutableGraph<GraphNode> newGraph = mutatedGraph.graph();
+    HashSet<String> newRoots = mutatedGraph.roots();
+    Set<GraphNode> newNodes = newGraph.nodes();
+    int newNum = mutatedGraph.numMutations();
+
+    Assert.assertEquals(0, newNum);
+    Assert.assertEquals(3, newNodes.size());
+    Assert.assertEquals(3, newRoots.size());
   }
 
   /** The current graph node is at a mutation AFTER the one requested. */

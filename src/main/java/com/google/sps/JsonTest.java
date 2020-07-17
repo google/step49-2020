@@ -20,6 +20,7 @@ import com.google.gson.Gson;
 import com.proto.GraphProtos.Node;
 import com.proto.GraphProtos.Node.Builder;
 import com.proto.MutationProtos.MultiMutation;
+import java.util.ArrayList;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -91,13 +92,13 @@ public final class JsonTest {
     graph.putEdge(gNodeA, gNodeC);
 
     String result =
-        Utility.graphToJson(graph, 0, MultiMutation.newBuilder().setReason("test").build());
+        Utility.graphToJson(graph, new ArrayList<Integer>(), 0, MultiMutation.newBuilder().setReason("test").build());
     JSONObject jsonObject = new JSONObject(result);
 
-    Assert.assertEquals(jsonObject.length(), 5);
+    Assert.assertEquals(jsonObject.length(), 6);
 
     JSONArray elements = jsonObject.names();
-    Assert.assertEquals(elements.length(), 5);
+    Assert.assertEquals(elements.length(), 6);
 
     Assert.assertTrue(jsonObject.has("nodes"));
     Assert.assertTrue(jsonObject.has("edges"));
@@ -106,5 +107,6 @@ public final class JsonTest {
     Assert.assertTrue(jsonObject.has("mutationDiff"));
     Assert.assertTrue(jsonObject.has("reason"));
     Assert.assertEquals(jsonObject.get("reason"), "test");
+    Assert.assertTrue(jsonObject.has("relevantIndices"));
   }
 }

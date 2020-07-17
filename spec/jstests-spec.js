@@ -1,4 +1,6 @@
-import { searchNode, initializeNumMutations, setCurrGraphNum, initializeTippy, generateGraph, getUrl, navigateGraph, currGraphNum, numMutations, updateButtons, highlightDiff, initializeReasonTooltip, getGraphDisplay } from "../src/main/webapp/script.js";
+
+import { initializeNumMutations, setRelevantIndices, setCurrGraphNum, initializeTippy, generateGraph, getUrl, navigateGraph, currGraphNum, currGraphIndex, numMutations, updateButtons, searchNode, highlightDiff, initializeReasonTooltip, getGraphDisplay } from "../src/main/webapp/script.js";
+
 import cytoscape from "cytoscape";
 
 describe("Checking that depth in fetch url is correct", function () {
@@ -194,9 +196,21 @@ describe("Initializing tooltips", function () {
   });
 });
 
-describe("Pressing next and previous buttons associated with a graph", function () {
-  it("correctly updates mutation tracking variables and buttons on click", function () {
+describe("Pressing next and previous buttons associated with a graph", function() {
+  let numDisplay = {};
+  beforeEach(function() {
+    numDisplay = document.createElement("div");
+    numDisplay.id = "num-mutation-display";
+  });
+
+  afterEach(function() {
+    document.body.innerHTML = ''; 
+  });
+  it("correctly updates mutation tracking variables and buttons on click", function() {
+    document.body.appendChild(numDisplay); 
     initializeNumMutations(3);
+    // Relevant indices are different from actual indices!
+    setRelevantIndices([0, 1, 3]);
     const prevButton = document.createElement("button");
     prevButton.id = "prevbutton";
     prevButton.onclick = () => { navigateGraph(-1); updateButtons(); };
@@ -207,58 +221,63 @@ describe("Pressing next and previous buttons associated with a graph", function 
     document.body.appendChild(nextButton);
 
     expect(currGraphNum).toBe(0);
-    expect(numMutations).toBe(3);
+    expect(currGraphIndex).toBe(0);
+    expect(numMutations).toBe(3); 
 
     nextButton.click();
     expect(currGraphNum).toBe(1);
-    expect(nextButton.disabled).toBe(false);
-    expect(prevButton.disabled).toBe(false);
-
-    nextButton.click();
-    expect(currGraphNum).toBe(2);
+    expect(currGraphIndex).toBe(1);
     expect(nextButton.disabled).toBe(false);
     expect(prevButton.disabled).toBe(false);
 
     nextButton.click();
     expect(currGraphNum).toBe(3);
+    expect(currGraphIndex).toBe(2);
     expect(nextButton.disabled).toBe(true);
     expect(prevButton.disabled).toBe(false);
 
-    prevButton.click();
-    expect(currGraphNum).toBe(2);
-    expect(nextButton.disabled).toBe(false);
-    expect(prevButton.disabled).toBe(false);
-
-    prevButton.click();
-    expect(currGraphNum).toBe(1);
-    expect(nextButton.disabled).toBe(false);
-    expect(prevButton.disabled).toBe(false);
-
     nextButton.click();
-    expect(currGraphNum).toBe(2);
-    expect(nextButton.disabled).toBe(false);
+    expect(currGraphNum).toBe(3);
+    expect(currGraphIndex).toBe(2);
+    expect(nextButton.disabled).toBe(true);
     expect(prevButton.disabled).toBe(false);
-
+ 
     prevButton.click();
     expect(currGraphNum).toBe(1);
+    expect(currGraphIndex).toBe(1);
     expect(nextButton.disabled).toBe(false);
     expect(prevButton.disabled).toBe(false);
 
     prevButton.click();
     expect(currGraphNum).toBe(0);
-    expect(nextButton.disabled).toBe(false);
-    expect(prevButton.disabled).toBe(true);
-
-    prevButton.click();
-    expect(currGraphNum).toBe(0);
+    expect(currGraphIndex).toBe(0);
     expect(nextButton.disabled).toBe(false);
     expect(prevButton.disabled).toBe(true);
 
     nextButton.click();
     expect(currGraphNum).toBe(1);
+    expect(currGraphIndex).toBe(1);
     expect(nextButton.disabled).toBe(false);
     expect(prevButton.disabled).toBe(false);
-  });
+
+    prevButton.click();
+    expect(currGraphNum).toBe(0);
+    expect(currGraphIndex).toBe(0);
+    expect(nextButton.disabled).toBe(false);
+    expect(prevButton.disabled).toBe(true);
+
+    prevButton.click();
+    expect(currGraphNum).toBe(0);
+    expect(currGraphIndex).toBe(0);
+    expect(nextButton.disabled).toBe(false);
+    expect(prevButton.disabled).toBe(true);
+
+    nextButton.click();
+    expect(currGraphNum).toBe(1);
+    expect(currGraphIndex).toBe(1);
+    expect(nextButton.disabled).toBe(false);
+    expect(prevButton.disabled).toBe(false);
+  });  
 });
 
 describe("Node search", function () {
@@ -297,14 +316,17 @@ describe("Node search", function () {
   });
 });
 
-
-describe("Check initializing variables are passed correctly", function () {
-  beforeEach(function () {
+describe("Check correct url params", function() {
+  let nodeName = {};  
+  beforeEach(function() {
     setCurrGraphNum(1);
+    nodeName = document.createElement("input");
+    nodeName.id = "node-name-filter";
   });
 
   afterEach(function () {
     setCurrGraphNum(0);
+     document.body.innerHTML = '';
   });
 
   it("passes correct value of the mutations number in the fetch request", function () {
@@ -316,7 +338,23 @@ describe("Check initializing variables are passed correctly", function () {
     expect(constructedUrl.get("depth")).toBe("3");
     expect(constructedUrl.has("mutationNum")).toBe(true);
     expect(constructedUrl.get("mutationNum")).toBe("1");
+
+    // Not on page here, should be empty
+    expect(constructedUrl.has("nodeName")).toBe(true);
+    expect(constructedUrl.get("nodeName")).toBe("");
   });
+
+  it ("passes correct nodeName when nodeName has a value", function () {
+    nodeName.value = "A";
+    document.body.appendChild(nodeName);
+
+    const requestString = getUrl();
+    const requestParams = requestString.substring(requestString.indexOf("?"));
+
+    const constructedUrl = new URLSearchParams(requestParams);
+    expect(constructedUrl.has("nodeName")).toBe(true);
+    expect(constructedUrl.get("nodeName")).toBe("A"); 
+  })
 });
 
 describe("Ensuring correct nodes are highlighted in mutated graph", function () {
@@ -526,4 +564,4 @@ describe("Showing and hiding tooltips when checkbox is clicked", function () {
     gNodeA.trigger("mouseout");
     expect(gNodeA.reasonTip.state.isVisible).toBe(false);
   });
-})
+});

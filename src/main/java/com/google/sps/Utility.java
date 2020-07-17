@@ -61,16 +61,17 @@ public final class Utility {
    * @return a JSON object containing as entries the nodes and edges of this graph as well as the
    *     length of the list of mutations this graph is an intermediate result of applying
    */
-  public static String graphToJson(
-      MutableGraph<GraphNode> graph, int maxMutations, MultiMutation mutDiff) {
+  public static String graphToJson(MutableGraph<GraphNode> graph, List<Integer> indices, int maxMutations, MultiMutation mutDiff) {
     Type typeOfNode = new TypeToken<Set<GraphNode>>() {}.getType();
     Type typeOfEdge = new TypeToken<Set<EndpointPair<GraphNode>>>() {}.getType();
+    Type typeOfIndices = new TypeToken<List<Integer>>() {}.getType();
     Gson gson = new Gson();
     String nodeJson = gson.toJson(graph.nodes(), typeOfNode);
     String edgeJson = gson.toJson(graph.edges(), typeOfEdge);
     String mutDiffJson =
         (mutDiff == null || !mutDiff.isInitialized()) ? "" : gson.toJson(mutDiff.getMutationList());
     String reason = (mutDiff == null || !mutDiff.isInitialized()) ? "" : mutDiff.getReason();
+    String indicesJson = gson.toJson(indices, typeOfIndices);
     String resultJson =
         new JSONObject()
             .put("nodes", nodeJson)
@@ -78,6 +79,7 @@ public final class Utility {
             .put("numMutations", maxMutations)
             .put("mutationDiff", mutDiffJson)
             .put("reason", reason)
+            .put("relevantIndices", indicesJson)
             .toString();
     return resultJson;
   }
@@ -95,8 +97,10 @@ public final class Utility {
     Preconditions.checkArgument(
         original != curr, "The current graph and the original graph refer to the same object");
 
-    if (mutationNum > multiMutList.size() || mutationNum < 0) {
+    if (mutationNum < 0) {
       return null;
+    } else if (mutationNum > multiMutList.size()) {
+      mutationNum = multiMutList.size();
     }
 
     if (curr.numMutations() <= mutationNum) { // going forward
@@ -141,15 +145,74 @@ public final class Utility {
    *     graph or null if the provided indices are out of bounds or non-consecutive
    */
   public static MultiMutation diffBetween(
-      List<MultiMutation> multiMutList, int currIndex, int nextIndex) {
+      List<MultiMutation> multiMutList, int currIndex, int nextIndex, boolean bypass) {
     if (currIndex < 0 || currIndex >= multiMutList.size()) {
       // Out of bounds indices
       return null;
+    }
+    if(bypass && nextIndex >= 0 && nextIndex <= multiMutList.size()) {
+      return multiMutList.get(nextIndex);
     }
     if (nextIndex - currIndex == 1) {
       // Non-adjacent indices
       return multiMutList.get(currIndex);
     }
     return null;
+  }
+  /**
+   * Returns a list of the indices of the relevant
+   *
+   * @param nodeName the name of the node to filter
+   * @param origList the original list of mutations
+   * @return a list of indices that are relevant to the node
+   */
+  public static ArrayList<Integer> getMutationIndicesOfNode(
+      String nodeName, List<MultiMutation> origList) {
+    ArrayList<Integer> lst = new ArrayList<>();
+    // Shouldn't happen, but in case the nodeName is null an empty list is returned
+    if (nodeName == null) {
+      return lst;
+    }
+    for (int i = 0; i < origList.size(); i++) {
+      MultiMutation multiMut = origList.get(i);
+      List<Mutation> mutList = multiMut.getMutationList();
+      for(Mutation mut : mutList) {
+        String startName = mut.getStartNode();
+        String endName = mut.getEndNode();
+        if (nodeName.equals(startName) || nodeName.equals(endName)) {
+          lst.add(i);
+          break;
+        }
+      }
+    }
+    return lst;
+  }
+
+  /**
+   * Finds the INDEX of the element in searchList that is strictly GREATER than tgt in a SORTED list
+   *
+   * @param searchList a list of integers to search through. Assumes it's sorted
+   * @param tgt the number to find the next biggest number from
+   * @return the INDEX of the next greater number. -1 if none
+   */
+  public static int getNextGreatestNumIndex(List<Integer> searchList, int tgt) {
+    int start = 0;
+    int end = searchList.size() - 1;
+
+    int ans = -1;
+    while (start <= end) {
+      int mid = (start + end) / 2;
+      // tgt is not less, so gotta go to the right
+      if (searchList.get(mid) <= tgt) {
+        start = mid + 1;
+      }
+      // go to the left otherwise
+      else {
+        ans = mid;
+        end = mid - 1;
+      }
+    }
+    if (ans == -1) return -1;
+    return ans;
   }
 }

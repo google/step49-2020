@@ -353,4 +353,91 @@ abstract class DataGraph {
       }
     }
   }
+
+  /**
+   * Returns a MutableGraph with nodes that are at most a certain radius from a given node. If the
+   * radius is less than 0 or the node specified isn't present, return an empty graph. Since
+   * maxDepth was implemented as DFS, we use BFS for *diversity*.
+   *
+   * <p>Here, we only consider children of children and parents of parents.
+   *
+   * @param name the name of the node to search for
+   * @param radius the distance from the node to search for parents and children
+   * @return a graph comprised of only nodes and edges within a certain distance from the specified
+   *     node. Empty if radius is less than 0 or if the node isn't found.
+   */
+  public MutableGraph<GraphNode> getReachableNodes(String name, int radius) {
+    if (radius < 0) {
+      return GraphBuilder.directed().build(); // If max depth below 0, then return an emtpy graph
+    }
+
+    HashMap<String, GraphNode> graphNodesMap = this.graphNodesMap();
+
+    if (!graphNodesMap.containsKey(name)) {
+      return GraphBuilder.directed()
+          .build(); // If the specified node is not found, return an empty graph
+    }
+
+    MutableGraph<GraphNode> graph = this.graph();
+    GraphNode tgtNode = graphNodesMap.get(name);
+
+    // HashSet should have expected O(1) lookup, changed from HashMap for space
+    // Two different sets are needed because of cases where a node is both a parents
+    // and a child
+    HashSet<GraphNode> visitedChildren = new HashSet<>();
+    HashSet<GraphNode> visitedParents = new HashSet<>();
+
+    HashSet<GraphNode> nextLayerChildren = new HashSet<GraphNode>();
+    HashSet<GraphNode> nextLayerParents = new HashSet<GraphNode>();
+
+    nextLayerChildren.add(tgtNode);
+    nextLayerParents.add(tgtNode);
+
+    for (int i = 0; i <= radius; i++) {
+      // Break out early if queue is empty
+      if (nextLayerChildren.isEmpty() && nextLayerParents.isEmpty()) {
+        break;
+      }
+
+      // Helper function used to avoid duplicate code
+      nextLayerChildren = getNextLayer(nextLayerChildren, visitedChildren, true);
+      nextLayerParents = getNextLayer(nextLayerParents, visitedParents, false);
+    }
+
+    HashSet<GraphNode> visited = new HashSet<>();
+    visited.addAll(visitedChildren);
+    visited.addAll(visitedParents);
+    MutableGraph<GraphNode> graphToReturn = Graphs.inducedSubgraph(graph, visited);
+
+    return graphToReturn;
+  }
+
+  /**
+   * Helper function that gets the next layer of nodes based on what's visited, a queue, and whether
+   * we're looking for children
+   *
+   * @param layer the layer of nodes to visit
+   * @param visited A Hashset of visited nodes
+   * @param isChild whether we're looking for children. True means we look for the children, and
+   *     False means we look for parents.
+   * @return the nodes relevant to the next layer
+   */
+  private HashSet<GraphNode> getNextLayer(
+      HashSet<GraphNode> layer, HashSet<GraphNode> visited, boolean isChild) {
+    HashSet<GraphNode> nextLayer = new HashSet<>();
+    for (GraphNode curr : layer) {
+
+      if (!visited.contains(curr)) {
+        visited.add(curr);
+        Set<GraphNode> adjacentNodes =
+            isChild ? this.graph().successors(curr) : this.graph().predecessors(curr);
+        for (GraphNode node : adjacentNodes) {
+          if (!visited.contains(node)) {
+            nextLayer.add(node);
+          }
+        }
+      }
+    }
+    return nextLayer;
+  }
 }

@@ -15,9 +15,13 @@
 package com.google.sps;
 
 import java.io.IOException;
+import java.util.ArrayList;
+
 import java.io.InputStreamReader;
+
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -38,6 +42,14 @@ public class DataServlet extends HttpServlet {
 
   private DataGraph currDataGraph = null;
   private DataGraph originalDataGraph = null;
+
+  List<Integer> relevantMutationIndices = new ArrayList<>(); // should originally be everything
+  List<Integer> defaultIndices = new ArrayList<>();
+
+  int oldNumMutations = 0;
+
+  // TODO: figure out if we should generate this when we read in the mutList
+  HashMap<String, List<Integer>> mutationIndicesMap = new HashMap<>();
 
   /*
    * Called when a client submits a GET request to the /data URL
@@ -69,9 +81,8 @@ public class DataServlet extends HttpServlet {
       /*
        * The below code is used to read a graph specified in textproto form
        */
-      InputStreamReader graphReader =
-          new InputStreamReader(
-              getServletContext().getResourceAsStream("/WEB-INF/graph.textproto"));
+      InputStreamReader graphReader = new InputStreamReader(
+          getServletContext().getResourceAsStream("/WEB-INF/initial_graph.textproto"));
       Graph.Builder graphBuilder = Graph.newBuilder();
       TextFormat.merge(graphReader, graphBuilder);
       Graph protoGraph = graphBuilder.build();
@@ -97,31 +108,123 @@ public class DataServlet extends HttpServlet {
       /*
        * The below code is used to read a mutation list specified in textproto form
        */
-      InputStreamReader mutReader =
-          new InputStreamReader(
-              getServletContext().getResourceAsStream("/WEB-INF/mutation.textproto"));
+      InputStreamReader mutReader = new InputStreamReader(
+          getServletContext().getResourceAsStream("/WEB-INF/mutations.textproto"));
       MutationList.Builder mutBuilder = MutationList.newBuilder();
       TextFormat.merge(mutReader, mutBuilder);
       mutList = mutBuilder.build().getMutationList();
+
+      // initially, all mutation indices are relevant so we put that into the default
+      // and set them equal.
+      relevantMutationIndices = new ArrayList<>();
+      for (int i = 0; i < mutList.size(); i++) {
+        defaultIndices.add(i);
+      }
+      // Relevant mutation indicies start as everything
+      relevantMutationIndices = defaultIndices;
+    }
+    // // Get the multi-mutation difference between the current graph and the
+    // requested
+    // // graph
+    // MultiMutation mutDiff =
+    // Utility.diffBetween(mutList, currDataGraph.numMutations(), mutationNumber);
+
+    // try {
+    // currDataGraph =
+    // Utility.getGraphAtMutationNumber(
+    // originalDataGraph, currDataGraph, mutationNumber, mutList);
+    // } catch (IllegalArgumentException e) {
+    // String error = e.getMessage();
+
+    // Parameter for the nodeName the user searched for in the frontend
+    String nodeNameParam = request.getParameter("nodeName");
+
+    // Truncated version of the graph and mutation list, for returning to the client
+    MutableGraph<GraphNode> truncatedGraph;
+
+    MultiMutation diff = null;
+
+    // No node is searched, so use the whole graph
+    if (nodeNameParam == null || nodeNameParam.length() == 0) {
+      // Just get the specified deptg, the mutation list, and relevant mutations as
+      // they are
+      try {
+        diff = Utility.diffBetween(mutList, currDataGraph.numMutations(), mutationNumber, false);
+        currDataGraph = Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
+      } catch (IllegalArgumentException e) {
+        String error = e.getMessage();
+        response.setHeader("serverError", error);
+        return;
+      }
+      truncatedGraph = currDataGraph.getGraphWithMaxDepth(depthNumber);
+      relevantMutationIndices = defaultIndices;
+    } else { // A node is searched
+
+      // CASES:
+      // 1. Node isn't on the current graph, node isn't in any mutations -> error (not
+      // fatal)
+      // 2. Node is not on the current graph, in a mutation though -> say it's not
+      // here, jump to the mutation with it
+      // this should only apply when a new node is searched
+      // 3. Node is on the current graph -> then display current graph WITH the
+      // relevant indices (no need to change indices)
+      // Could either be the same node or a different node
+
+      // Indicies of relevant mutations from the entire mutList
+      // Add to map if doesn't exist yet
+      if (!mutationIndicesMap.containsKey(nodeNameParam)) {
+        mutationIndicesMap.put(nodeNameParam, Utility.getMutationIndicesOfNode(nodeNameParam, mutList));
+      }
+      relevantMutationIndices = mutationIndicesMap.get(nodeNameParam);
+
+      // case 1: Node is not in the current graph or any graph
+      if (!currDataGraph.graphNodesMap().containsKey(nodeNameParam) && relevantMutationIndices.isEmpty()) {
+        String error = "There are no nodes anywhere on this graph!";
+        response.setHeader("serverError", error);
+        return;
+      }
+      // case 2: Node is not in the current graph
+      if (!currDataGraph.graphNodesMap().containsKey(nodeNameParam)) {
+
+        // index of the next element in relevantMutationsIndices that is greater than
+        // currDataGraph.numMutations()
+        int newNumIndex = Utility.getNextGreatestNumIndex(relevantMutationIndices, currDataGraph.numMutations());
+
+        // shouldn't happen, but we're back to case 1.
+        if (newNumIndex == -1) {
+          String error = "There are no nodes anywhere on this graph!";
+          response.setHeader("serverError", error);
+          return;
+        }
+        // The index of the next mutation to look at in the ORIGINAL mutlist
+        int newNum = relevantMutationIndices.get(newNumIndex);
+
+        // only get the indices AFTER this one
+        relevantMutationIndices = relevantMutationIndices.subList(newNumIndex, relevantMutationIndices.size());
+
+        diff = Utility.diffBetween(mutList, currDataGraph.numMutations(), newNum, false);
+
+        // Update the current graph
+        currDataGraph = Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, newNum, mutList);
+        // This should not happen since
+        if (currDataGraph == null) {
+          String error = "Something went wrong when mutating the graph!";
+          response.setHeader("serverError", error);
+          return;
+        }
+
+      } else {
+
+        diff = Utility.diffBetween(mutList, currDataGraph.numMutations(), mutationNumber, true);
+        // case 3: node is in the current graph. then relevant mutationIndices is ok
+        currDataGraph = Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
+      }
+      // This is the single search
+      truncatedGraph = currDataGraph.getReachableNodes(nodeNameParam, depthNumber);
     }
 
-    // Get the multi-mutation difference between the current graph and the requested
-    // graph
-    MultiMutation mutDiff =
-        Utility.diffBetween(mutList, currDataGraph.numMutations(), mutationNumber);
+    String graphJson = Utility.graphToJson(truncatedGraph, relevantMutationIndices, relevantMutationIndices.size(), diff);
 
-    try {
-      currDataGraph =
-          Utility.getGraphAtMutationNumber(
-              originalDataGraph, currDataGraph, mutationNumber, mutList);
-    } catch (IllegalArgumentException e) {
-      String error = e.getMessage();
-      response.setHeader("serverError", error);
-      return;
-    }
-
-    MutableGraph<GraphNode> truncatedGraph = currDataGraph.getGraphWithMaxDepth(depthNumber);
-    String graphJson = Utility.graphToJson(truncatedGraph, mutList.size(), mutDiff);
     response.getWriter().println(graphJson);
   }
 }

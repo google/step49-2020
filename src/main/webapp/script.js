@@ -26,17 +26,25 @@ import 'tippy.js/dist/tippy.css';
 import 'tippy.js/dist/backdrop.css';
 import 'tippy.js/animations/shift-away.css';
 
-export { searchNode, initializeNumMutations, setCurrGraphNum, initializeTippy, generateGraph, getUrl, navigateGraph, currGraphNum, numMutations, updateButtons, highlightDiff, initializeReasonTooltip, getGraphDisplay };
+export { initializeNumMutations, setRelevantIndices, setCurrGraphNum, initializeTippy, generateGraph, getUrl, navigateGraph, currGraphNum, currGraphIndex, numMutations, updateButtons, searchNode, highlightDiff, initializeReasonTooltip, getGraphDisplay };
 
 cytoscape.use(popper); // register extension
 cytoscape.use(dagre); // register extension
 
-// Stores the index of the graph (in sequence of mutations) currently
+// Stores the index of the graph in relevantIndices (in sequence of mutations) currently
 // displayed on the screen. Must be >= 0.
+// THis is different from the graph number, since the graphNumber is what's located at the index.
+// in other words, currGraphNum = relevantIndices[currGraphIndex]
+let currGraphIndex = 0;
+
+// Stores the actual graph number we're on
 let currGraphNum = 0;
+
 // Stores the number of mutations in the list this graph is applying
 // The user cannot click next to a graph beyond this point
 let numMutations = 0;
+
+let relevantIndices = [];
 
 /**
  * Initializes the number of mutations
@@ -45,11 +53,25 @@ function initializeNumMutations(num) {
   numMutations = num;
 }
 
-/**
+/** 
  * Sets the current graph number
  */
 function setCurrGraphNum(num) {
   currGraphNum = num;
+}
+
+/**
+ * Sets the current graph index
+ */
+function setCurrGraphIndex(num) {
+  currGraphIndex = num;
+}
+
+/**
+ * Sets the relevant indices from the mutation list
+ */
+function setRelevantIndices(lst) {
+  relevantIndices = lst;
 }
 
 /**
@@ -69,9 +91,6 @@ async function generateGraph() {
 
   const url = getUrl();
 
-  prevBtn.disabled = true;
-  nextBtn.disabled = true;
-
   const response = await fetch(url);
 
   const serverErrorStatus = response.headers.get("serverError");
@@ -88,15 +107,26 @@ async function generateGraph() {
   const edges = JSON.parse(jsonResponse.edges);
   initializeNumMutations(JSON.parse(jsonResponse.numMutations));
   const mutList = jsonResponse["mutationDiff"].length === 0 ? null : JSON.parse(jsonResponse["mutationDiff"]);
+  console.log(mutList);
   const reason = jsonResponse["reason"];
+  const indices = JSON.parse(jsonResponse.relevantIndices);
+  setRelevantIndices(indices);
+ 
+  initializeNumMutations(relevantIndices.length);
 
   if (!nodes || !edges || !Array.isArray(nodes) || !Array.isArray(edges)) {
     displayError("Malformed graph received from server - edges or nodes are empty");
     return;
   }
 
-  if (nodes.length === 0) {
-    displayError("Nothing to display!");
+  // There aren't any nodes in this graph, and there aren't any mutations pertaining to the filtered node
+  if (nodes.length === 0 && numMutations === 0) {
+    displayError("Nothing to display from this point forward!");
+    return;
+  } else if (nodes.length === 0) {
+    // The node doesn't appear in this graph, but a mutation with the node exists
+    displayError("Nothing to display for now!");
+    nextBtn.disabled = false;
     return;
   }
 
@@ -130,6 +160,8 @@ async function generateGraph() {
  */
 function getUrl() {
   const depthElem = document.getElementById('num-layers');
+  const nodeName = document.getElementById('node-name-filter') ? document.getElementById('node-name-filter').value || "" : ""; 
+
   let selectedDepth = 0;
   if (depthElem === null) {
     selectedDepth = 3;
@@ -147,7 +179,7 @@ function getUrl() {
       selectedDepth = 20;
     }
   }
-  const url = `/data?depth=${selectedDepth}&mutationNum=${currGraphNum}`;
+  const url = `/data?depth=${selectedDepth}&mutationNum=${currGraphNum}&nodeName=${nodeName}`;
   return url;
 }
 /**
@@ -220,6 +252,15 @@ function getGraphDisplay(graphNodes, graphEdges, mutList, reason) {
     const node = evt.target;
     node.tip.show();
   });
+
+  // If a node is searched, color it (it's fuchsia because I thought it was pretty, but definitely open to change! )
+  const nodeFilter = document.getElementById("node-name-filter");
+  if (nodeFilter && nodeFilter.value) {
+    const target = findNodeInGraph(cy, nodeFilter.value);
+    if (target) {
+      target.style('background-color', '#FF00FF');
+    }
+  }
 
   const searchElement = document.getElementById('search');
   document.getElementById('search-button').onclick = function () {
@@ -311,6 +352,7 @@ function highlightDiff(cy, mutList, reason = "") {
       case 2:
         // add edge
         if (endNode && cy.getElementById(startNode).length !== 0 && cy.getElementById(endNode).length !== 0) {
+          console.log("adding edge");
           modifiedObj = cy.getElementById(`edge${startNode}${endNode}`);
           // color this edge green
           modifiedObj.style('line-color', 'green');
@@ -600,13 +642,18 @@ function getTooltipContent(node) {
  * graph is requested from the server.
  */
 function navigateGraph(amount) {
-  currGraphNum += amount;
-  if (currGraphNum <= 0) {
-    currGraphNum = 0;
+  // this function should not be called if there are no mutations
+  if (numMutations <= 0) {
+    return;
   }
-  if (currGraphNum >= numMutations) {
-    currGraphNum = numMutations;
+  currGraphIndex += amount;
+  if (currGraphIndex <= 0) {
+    currGraphIndex = 0;
+  } 
+  if (currGraphIndex >= numMutations) {
+    currGraphIndex = numMutations - 1; 
   }
+  currGraphNum = relevantIndices[currGraphIndex];
 }
 
 /**
@@ -616,14 +663,20 @@ function navigateGraph(amount) {
  * Assumes currGraphNum is between 0 and numMutations
  */
 function updateButtons() {
-  if (currGraphNum === 0) {
+  // The use of <= and >= as opposed to === is for safety! 
+  // while currGraphIndex should never be < 0 or > numMutations - 1, we just wanted to make sure
+  // nothing bad happened!!
+  if (currGraphIndex <= 0) {
     document.getElementById("prevbutton").disabled = true;
   } else {
     document.getElementById("prevbutton").disabled = false;
   }
-  if (currGraphNum === numMutations) {
+  if (currGraphIndex >= numMutations - 1) { 
+    // removed: || numMutations == 0 since the first check takes care of it
     document.getElementById("nextbutton").disabled = true;
   } else {
     document.getElementById("nextbutton").disabled = false;
   }
+  const numElement = document.getElementById("num-mutation-display");
+  numElement.innerText = `Displaying ${currGraphIndex + 1} out of ${numMutations} (this is ${currGraphNum + 1} on the original)`;
 }

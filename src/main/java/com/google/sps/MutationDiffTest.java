@@ -73,9 +73,9 @@ public class MutationDiffTest {
     multiMutList.add(addABM);
     multiMutList.add(addACM);
 
-    MultiMutation result = Utility.diffBetween(multiMutList, 0, 2);
+    MultiMutation result = Utility.diffBetween(multiMutList, 0, 2, false);
     Assert.assertNull(result);
-    result = Utility.diffBetween(multiMutList, 1, 2);
+    result = Utility.diffBetween(multiMutList, 1, 2, false);
     Assert.assertNotNull(result);
   }
 
@@ -104,11 +104,11 @@ public class MutationDiffTest {
     multiMutList.add(addABM);
     multiMutList.add(addACM);
 
-    MultiMutation result = Utility.diffBetween(multiMutList, 1, 0);
+    MultiMutation result = Utility.diffBetween(multiMutList, 1, 0, false);
     Assert.assertNull(result);
-    result = Utility.diffBetween(multiMutList, 1, 1);
+    result = Utility.diffBetween(multiMutList, 1, 1, false);
     Assert.assertNull(result);
-    result = Utility.diffBetween(multiMutList, 1, 2);
+    result = Utility.diffBetween(multiMutList, 1, 2, false);
     Assert.assertNotNull(result);
   }
 
@@ -127,7 +127,7 @@ public class MutationDiffTest {
     List<MultiMutation> multiMutList = new ArrayList<>();
     multiMutList.add(addABM);
 
-    MultiMutation result = Utility.diffBetween(multiMutList, -1, 0);
+    MultiMutation result = Utility.diffBetween(multiMutList, -1, 0, false);
     Assert.assertNull(result);
   }
 
@@ -146,7 +146,7 @@ public class MutationDiffTest {
     List<MultiMutation> multiMutList = new ArrayList<>();
     multiMutList.add(addABM);
 
-    MultiMutation result = Utility.diffBetween(multiMutList, 1, 2);
+    MultiMutation result = Utility.diffBetween(multiMutList, 1, 2, false);
     Assert.assertNull(result);
   }
 
@@ -171,7 +171,7 @@ public class MutationDiffTest {
     multiMutList.add(addAM);
     multiMutList.add(addABM);
 
-    MultiMutation result = Utility.diffBetween(multiMutList, 0, 1);
+    MultiMutation result = Utility.diffBetween(multiMutList, 0, 1, false);
     Assert.assertEquals(result, addAM);
   }
 
@@ -196,7 +196,7 @@ public class MutationDiffTest {
     multiMutList.add(addAM);
     multiMutList.add(addABM);
 
-    MultiMutation result = Utility.diffBetween(multiMutList, 1, 2);
+    MultiMutation result = Utility.diffBetween(multiMutList, 1, 2, false);
     Assert.assertEquals(result, addABM);
   }
 
@@ -234,7 +234,7 @@ public class MutationDiffTest {
     multiMutList.add(addTokenToAM);
     multiMutList.add(addABM);
 
-    MultiMutation result = Utility.diffBetween(multiMutList, 0, 1);
+    MultiMutation result = Utility.diffBetween(multiMutList, 0, 1, false);
     Assert.assertEquals(result, addTokenToAM);
   }
 
@@ -272,7 +272,7 @@ public class MutationDiffTest {
     multiMutList.add(addTokenToAM);
     multiMutList.add(removeABM);
 
-    MultiMutation result = Utility.diffBetween(multiMutList, 1, 2);
+    MultiMutation result = Utility.diffBetween(multiMutList, 1, 2, false);
     Assert.assertEquals(result, removeABM);
   }
 
@@ -317,7 +317,7 @@ public class MutationDiffTest {
     multiMutList.add(addTokenToAM);
     multiMutList.add(deleteBM);
 
-    MultiMutation result = Utility.diffBetween(multiMutList, 1, 2);
+    MultiMutation result = Utility.diffBetween(multiMutList, 1, 2, false);
     Assert.assertEquals(result, deleteBM);
   }
 }
