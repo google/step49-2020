@@ -106,7 +106,7 @@ public final class Utility {
     if (mutationNum < -1) {
       return null;
     } else if (mutationNum > multiMutList.size()) {
-      mutationNum = multiMutList.size();
+      mutationNum = multiMutList.size() - 1;
     }
 
     if (curr.numMutations() <= mutationNum) { // going forward
