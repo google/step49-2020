@@ -148,8 +148,7 @@ public final class Utility {
    * @return a multimutation with all the changes to apply to the current graph to get the next
    *     graph or null if the provided indices are out of bounds or non-consecutive
    */
-  public static MultiMutation diffBetween(
-      List<MultiMutation> multiMutList, int index) {
+  public static MultiMutation diffBetween(List<MultiMutation> multiMutList, int index) {
     // if (currIndex < 0 || currIndex >= multiMutList.size()) {
     //   // Out of bounds indices
     //   return null;
@@ -162,7 +161,7 @@ public final class Utility {
     //   return multiMutList.get(currIndex);
     // }
     // return null;
-    if(index < 0 || index >= multiMutList.size()) {
+    if (index < 0 || index >= multiMutList.size()) {
       return null;
     }
     return multiMutList.get(index);
