@@ -151,7 +151,9 @@ public class DataServlet extends HttpServlet {
       // Just get the specified deptg, the mutation list, and relevant mutations as
       // they are
       try {
-        diff = Utility.diffBetween(mutList, currDataGraph.numMutations(), mutationNumber, false);
+        if(mutationNumber == currDataGraph.numMutations() + 1) {
+          diff = Utility.diffBetween(mutList, mutationNumber);
+        }
         currDataGraph =
             Utility.getGraphAtMutationNumber(
                 originalDataGraph, currDataGraph, mutationNumber, mutList);
@@ -181,6 +183,7 @@ public class DataServlet extends HttpServlet {
             nodeNameParam, Utility.getMutationIndicesOfNode(nodeNameParam, mutList));
       }
       relevantMutationIndices = mutationIndicesMap.get(nodeNameParam);
+      System.out.println(relevantMutationIndices);
 
       // case 1: Node is not in the current graph or any graph
       if (!currDataGraph.graphNodesMap().containsKey(nodeNameParam)
@@ -203,6 +206,11 @@ public class DataServlet extends HttpServlet {
           response.setHeader("serverError", error);
           return;
         }
+
+        String message = "There are no nodes anywhere on this graph!";
+        response.setHeader("serverMessage", message);
+        
+
         // The index of the next mutation to look at in the ORIGINAL mutlist
         int newNum = relevantMutationIndices.get(newNumIndex);
 
@@ -210,7 +218,7 @@ public class DataServlet extends HttpServlet {
         relevantMutationIndices =
             relevantMutationIndices.subList(newNumIndex, relevantMutationIndices.size());
 
-        diff = Utility.diffBetween(mutList, currDataGraph.numMutations(), newNum, false);
+        diff = Utility.diffBetween(mutList, newNum);
 
         // Update the current graph
         currDataGraph =
@@ -223,8 +231,9 @@ public class DataServlet extends HttpServlet {
         }
 
       } else {
-
-        diff = Utility.diffBetween(mutList, currDataGraph.numMutations(), mutationNumber, true);
+        if(mutationNumber > currDataGraph.numMutations()) {
+          diff = Utility.diffBetween(mutList, mutationNumber);
+        }
         // case 3: node is in the current graph. then relevant mutationIndices is ok
         currDataGraph =
             Utility.getGraphAtMutationNumber(

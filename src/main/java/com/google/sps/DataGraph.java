@@ -41,7 +41,7 @@ abstract class DataGraph {
         /* graph = */ GraphBuilder.directed().build(),
         /* graphNodesMap = */ new HashMap<String, GraphNode>(),
         /* roots = */ new HashSet<String>(),
-        /* numMutations = */ 0);
+        /* numMutations = */ -1);
   }
 
   /**

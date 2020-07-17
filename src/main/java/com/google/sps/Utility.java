@@ -101,14 +101,14 @@ public final class Utility {
     Preconditions.checkArgument(
         original != curr, "The current graph and the original graph refer to the same object");
 
-    if (mutationNum < 0) {
+    if (mutationNum < -1) {
       return null;
     } else if (mutationNum > multiMutList.size()) {
       mutationNum = multiMutList.size();
     }
 
     if (curr.numMutations() <= mutationNum) { // going forward
-      for (int i = curr.numMutations(); i < mutationNum; i++) {
+      for (int i = curr.numMutations() + 1; i <= mutationNum; i++) {
         // Mutate graph operates in place
         MultiMutation multiMut = multiMutList.get(i);
         List<Mutation> mutations = multiMut.getMutationList();
@@ -123,7 +123,7 @@ public final class Utility {
     } else {
       // Create a copy of the original graph and start from the original graph
       DataGraph originalCopy = original.getCopy();
-      for (int i = 0; i < mutationNum; i++) {
+      for (int i = 0; i <= mutationNum; i++) {
         MultiMutation multiMut = multiMutList.get(i);
         List<Mutation> mutations = multiMut.getMutationList();
         for (Mutation mut : mutations) {
@@ -149,19 +149,23 @@ public final class Utility {
    *     graph or null if the provided indices are out of bounds or non-consecutive
    */
   public static MultiMutation diffBetween(
-      List<MultiMutation> multiMutList, int currIndex, int nextIndex, boolean bypass) {
-    if (currIndex < 0 || currIndex >= multiMutList.size()) {
-      // Out of bounds indices
+      List<MultiMutation> multiMutList, int index) {
+    // if (currIndex < 0 || currIndex >= multiMutList.size()) {
+    //   // Out of bounds indices
+    //   return null;
+    // }
+    // if (bypass) {
+    //   return multiMutList.get(currIndex);
+    // }
+    // if (nextIndex - currIndex == 1) {
+    //   // Non-adjacent indices
+    //   return multiMutList.get(currIndex);
+    // }
+    // return null;
+    if(index < 0 || index >= multiMutList.size()) {
       return null;
     }
-    if (bypass && nextIndex >= 0 && nextIndex <= multiMutList.size()) {
-      return multiMutList.get(nextIndex);
-    }
-    if (nextIndex - currIndex == 1) {
-      // Non-adjacent indices
-      return multiMutList.get(currIndex);
-    }
-    return null;
+    return multiMutList.get(index);
   }
   /**
    * Returns a list of the indices of the relevant

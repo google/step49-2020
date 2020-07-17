@@ -35,10 +35,10 @@ cytoscape.use(dagre); // register extension
 // displayed on the screen. Must be >= 0.
 // THis is different from the graph number, since the graphNumber is what's located at the index.
 // in other words, currGraphNum = relevantIndices[currGraphIndex]
-let currGraphIndex = 0;
+let currGraphIndex = -1;
 
 // Stores the actual graph number we're on
-let currGraphNum = 0;
+let currGraphNum = -1;
 
 // Stores the number of mutations in the list this graph is applying
 // The user cannot click next to a graph beyond this point
@@ -105,14 +105,14 @@ async function generateGraph() {
   // Graph nodes and edges received from server
   const nodes = JSON.parse(jsonResponse.nodes);
   const edges = JSON.parse(jsonResponse.edges);
-  initializeNumMutations(JSON.parse(jsonResponse.numMutations));
+  
   const mutList = jsonResponse["mutationDiff"].length === 0 ? null : JSON.parse(jsonResponse["mutationDiff"]);
-  console.log(mutList);
   const reason = jsonResponse["reason"];
   const indices = JSON.parse(jsonResponse.relevantIndices);
   setRelevantIndices(indices);
  
   initializeNumMutations(relevantIndices.length);
+  setCurrGraphNum(currGraphIndex === -1 ? -1 : relevantIndices[currGraphIndex]);
 
   if (!nodes || !edges || !Array.isArray(nodes) || !Array.isArray(edges)) {
     displayError("Malformed graph received from server - edges or nodes are empty");
@@ -123,11 +123,13 @@ async function generateGraph() {
   if (nodes.length === 0 && numMutations === 0) {
     displayError("Nothing to display from this point forward!");
     return;
-  } else if (nodes.length === 0) {
+  } 
+  if (response.headers.get("serverMessage") !== null) {
     // The node doesn't appear in this graph, but a mutation with the node exists
-    displayError("Nothing to display for now!");
+    console.log(response.headers.get("serverMessage"));
     nextBtn.disabled = false;
-    return;
+    currGraphIndex = 0;
+    currGraphNum = relevantIndices[currGraphIndex];
   }
 
   // Add node to array of cytoscape nodes
@@ -347,18 +349,25 @@ function highlightDiff(cy, mutList, reason = "") {
           // color this node green
           modifiedObj.style('background-color', 'green');
           addedNodes = addedNodes.union(modifiedObj);
+        } else {
+          console.log("No node called " + startNode + " in graph");
         }
         break;
       case 2:
         // add edge
         if (endNode && cy.getElementById(startNode).length !== 0 && cy.getElementById(endNode).length !== 0) {
-          console.log("adding edge");
           modifiedObj = cy.getElementById(`edge${startNode}${endNode}`);
           // color this edge green
           modifiedObj.style('line-color', 'green');
           modifiedObj.style('target-arrow-color', 'green');
           addedEdges = addedEdges.union(modifiedObj);
-        }
+        } else if(!endNode) {
+            console.log(endNode + " not specified");
+          } else if(cy.getElementById(startNode).length === 0) {
+            console.log("No node called " + startNode + " in graph");
+          } else {
+            console.log("No node called " + endNode + " in graph");
+          }
         break;
       case 3:
         // delete node
@@ -642,18 +651,20 @@ function getTooltipContent(node) {
  * graph is requested from the server.
  */
 function navigateGraph(amount) {
+  console.log(currGraphIndex);
+  // console.log(currGraphNum);
   // this function should not be called if there are no mutations
   if (numMutations <= 0) {
     return;
   }
   currGraphIndex += amount;
-  if (currGraphIndex <= 0) {
-    currGraphIndex = 0;
+  if (currGraphIndex <= -1) {
+    currGraphIndex = -1;
   } 
   if (currGraphIndex >= numMutations) {
     currGraphIndex = numMutations - 1; 
   }
-  currGraphNum = relevantIndices[currGraphIndex];
+  currGraphNum = (currGraphIndex === -1) ? -1 : relevantIndices[currGraphIndex];
 }
 
 /**
@@ -666,7 +677,7 @@ function updateButtons() {
   // The use of <= and >= as opposed to === is for safety! 
   // while currGraphIndex should never be < 0 or > numMutations - 1, we just wanted to make sure
   // nothing bad happened!!
-  if (currGraphIndex <= 0) {
+  if (currGraphIndex <= -1) {
     document.getElementById("prevbutton").disabled = true;
   } else {
     document.getElementById("prevbutton").disabled = false;
