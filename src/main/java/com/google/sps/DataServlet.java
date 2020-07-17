@@ -211,7 +211,6 @@ public class DataServlet extends HttpServlet {
 
         String message = "There are no nodes anywhere on this graph!";
         response.setHeader("serverMessage", message);
-        
 
         // The index of the next mutation to look at in the ORIGINAL mutlist
         int newNum = relevantMutationIndices.get(newNumIndex);
@@ -233,7 +232,7 @@ public class DataServlet extends HttpServlet {
         }
         currIndex = 0;
       } else {
-        if(mutationNumber > currDataGraph.numMutations()) {
+        if (mutationNumber > currDataGraph.numMutations()) {
           diff = Utility.diffBetween(mutList, mutationNumber);
         }
         // case 3: node is in the current graph. then relevant mutationIndices is ok

@@ -156,7 +156,8 @@
 //    */
 //   @Test
 //   public void forwardMutationAddNode() {
-//     Mutation addA = Mutation.newBuilder().setType(Mutation.Type.ADD_NODE).setStartNode("A").build();
+//     Mutation addA =
+// Mutation.newBuilder().setType(Mutation.Type.ADD_NODE).setStartNode("A").build();
 //     MultiMutation addAM = MultiMutation.newBuilder().addMutation(addA).build();
 
 //     Mutation addAB =
@@ -181,7 +182,8 @@
 //    */
 //   @Test
 //   public void forwardMutationAddEdge() {
-//     Mutation addA = Mutation.newBuilder().setType(Mutation.Type.ADD_NODE).setStartNode("A").build();
+//     Mutation addA =
+// Mutation.newBuilder().setType(Mutation.Type.ADD_NODE).setStartNode("A").build();
 //     MultiMutation addAM = MultiMutation.newBuilder().addMutation(addA).build();
 
 //     Mutation addAB =
