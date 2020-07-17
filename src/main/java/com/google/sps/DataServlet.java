@@ -151,8 +151,8 @@ public class DataServlet extends HttpServlet {
     if (nodeNameParam == null || nodeNameParam.length() == 0) {
       // Just get the specified deptg, the mutation list, and relevant mutations as
       // they are
-      
-      if(mutationNumber == currDataGraph.numMutations() + 1) {
+
+      if (mutationNumber == currDataGraph.numMutations() + 1) {
         diff = Utility.diffBetween(mutList, mutationNumber);
       }
       try {
@@ -247,7 +247,11 @@ public class DataServlet extends HttpServlet {
 
     String graphJson =
         Utility.graphToJson(
-            truncatedGraph, relevantMutationIndices, relevantMutationIndices.size(), diff, currIndex);
+            truncatedGraph,
+            relevantMutationIndices,
+            relevantMutationIndices.size(),
+            diff,
+            currIndex);
 
     response.getWriter().println(graphJson);
   }
