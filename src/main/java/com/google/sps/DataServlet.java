@@ -182,7 +182,8 @@ public class DataServlet extends HttpServlet {
 
         // index of the next element in relevantMutationsIndices that is greater than
         // currDataGraph.numMutations()
-        int newNumIndex = Utility.getNextGreatestNumIndex(relevantMutationIndices, currDataGraph.numMutations());
+        int newNumIndex =
+            Utility.getNextGreatestNumIndex(relevantMutationIndices, currDataGraph.numMutations());
 
         // shouldn't happen, but we're back to case 1.
         if (newNumIndex == -1) {
@@ -200,7 +201,7 @@ public class DataServlet extends HttpServlet {
         // Update the current graph
         currDataGraph =
             Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, newNum, mutList);
-        // This should not happen since 
+        // This should not happen since
         if (currDataGraph == null) {
           String error = "Something went wrong when mutating the graph!";
           response.setHeader("serverError", error);
