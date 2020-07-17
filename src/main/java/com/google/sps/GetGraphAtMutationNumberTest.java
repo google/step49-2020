@@ -233,7 +233,8 @@ public class GetGraphAtMutationNumberTest {
     Set<GraphNode> newNodes = newGraph.nodes();
     int newNum = mutatedGraph.numMutations();
 
-    Assert.assertEquals(-1, newNum); // This would be the original graph since there are no mutations
+    Assert.assertEquals(
+        -1, newNum); // This would be the original graph since there are no mutations
     Assert.assertEquals(3, newNodes.size());
     Assert.assertEquals(3, newRoots.size());
   }
