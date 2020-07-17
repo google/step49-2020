@@ -217,7 +217,6 @@ function getGraphDisplay(graphNodes, graphEdges) {
   // When the user clicks on a node, display the token list tooltip for the node
   cy.on('tap', 'node', function (evt) {
     const node = evt.target;
-    console.log(node);
     node.tip.show();
   });
 
@@ -233,13 +232,16 @@ function getGraphDisplay(graphNodes, graphEdges) {
  */
 function search(cy, type, searchFunction) {
   resetElements(cy);
-  let errorText;
+  let errorText = "";
   let query = document.getElementById(type + '-search').value;
-  let result = searchFunction(cy, query);
-  if (query == "" || result) {
-    errorText = "";
-  } else {
-    errorText = type + " does not exist.";
+  let result;
+  if (query != "") {
+    result = searchFunction(cy, query);
+    if (result) {
+      errorText = "";
+    } else {
+      errorText = type + " does not exist.";
+    }
   }
   document.getElementById(type + '-error').innerText = errorText;
   return result;
@@ -257,7 +259,6 @@ function searchNode(cy, query) {
       return target;
     }
   }
-  //return false;
 }
 /**
  * Constructs list of nodes that contain specified token
@@ -267,7 +268,7 @@ function searchToken(cy, query) {
   let target = cy.collection();
   cy.nodes().forEach(node => {
     if (node.data().tokens.includes(query)) {
-      target = target.add(cy.$id(node.data().id));
+      target = target.add(node);
     }
   });
   if (target.length > 0) {
@@ -276,7 +277,6 @@ function searchToken(cy, query) {
     highlightElements(cy, target);
     return target;
   }
-  //return false;
 }
 
 /**
@@ -284,7 +284,9 @@ function searchToken(cy, query) {
  */
 function highlightElements(cy, target) {
   // set all nodes to background state
-  cy.nodes().forEach(node => node.style('opacity', '0.25'));
+  // set to 0.24 to distinguish between being blurred
+  // for highlighting or because of a mutation
+  cy.nodes().forEach(node => node.style('opacity', '0.24'));
 
   // highlight desired nodes
   target.forEach(node => {
@@ -298,24 +300,37 @@ function highlightElements(cy, target) {
   target.connectedEdges().forEach(edge => {
     edge.style('line-color', 'black');
     edge.style('target-arrow-color', 'black');
+    edge.style('z-index', '2');
   });
 }
 
 /**
- * Resets elements to default state
+ * Resets highlighted elements to default state
  */
 function resetElements(cy) {
+  // reset node borders and opacity
   cy.nodes().forEach(node => {
     node.style('border-width', '0px');
-    node.style('opacity', '1')
+    // only change opacity of nodes that were changed
+    // because of highlighting
+    if (node.style('opacity') == "0.24") {
+      node.style('opacity', '1');
+    }
   });
-  cy.fit(cy.nodes(), 50);
-  document.getElementById('num-selected').innerText = "Number of nodes selected: 0";
+
   // reset edge color
   cy.edges().forEach(edge => {
-    edge.style('line-color', '#ccc');
-    edge.style('target-arrow-color', '#ccc');
+    // only change color of edges that were changed
+    // because of highlighting
+    if (edge.style('line-color') == 'rgb(0,0,0)') {
+      edge.style('line-color', '#ccc');
+      edge.style('target-arrow-color', '#ccc');
+      edge.style('z-index', '1');
+    }
   });
+
+  //cy.fit(cy.nodes(), 50);
+  document.getElementById('num-selected').innerText = "Number of nodes selected: 0";
 }
 
 /**

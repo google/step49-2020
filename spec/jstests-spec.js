@@ -311,7 +311,7 @@ describe("Node search", function() {
       { data: { id: "B" } },
       {
         data: {
-          id: "AB",
+          id: "edgeAB",
           source: "A",
           target: "B"
         }
@@ -337,13 +337,13 @@ describe("Node search", function() {
     document.body.appendChild(query);
   });
 
-
   it("should be a successful node search", function() {
     query.value = "A";
     const result = search(cy, "node", searchNode);
 
     // should not display error message
     expect(nodeError.innerText).toBe("");
+    expect(result.id()).toBe("A");
   });
 
   it("should be an unsuccessful node search", function() {
@@ -377,12 +377,20 @@ describe("Token search", function() {
       ],
       container: document.getElementById("cy"),
     });
-    const nodeWithToken = {};
-    nodeWithToken["data"] = {};
-    nodeWithToken["data"]["id"] = "A";
-    nodeWithToken["data"]["tokens"] = ["a.js", "b.js", "c.js"];
-    cy.add(nodeWithToken);
-    const myNode = cy.nodes()[0];
+    const nodeWithToken1 = {};
+    nodeWithToken1["data"] = {};
+    nodeWithToken1["data"]["id"] = "A";
+    nodeWithToken1["data"]["tokens"] = ["a.js", "b.js", "c.js"];
+    cy.add(nodeWithToken1);
+    let myNode = cy.nodes()[0];
+    initializeTippy(myNode);
+
+    const nodeWithToken2 = {};
+    nodeWithToken2["data"] = {};
+    nodeWithToken2["data"]["id"] = "B";
+    nodeWithToken2["data"]["tokens"] = ["b.js"];
+    cy.add(nodeWithToken2);
+    myNode = cy.nodes()[1];
     initializeTippy(myNode);
 
     numSelected = document.createElement("label");
@@ -398,7 +406,6 @@ describe("Token search", function() {
     document.body.appendChild(query);
   });
 
-
   it("should be a successful token search", function() {
     query.value = "a.js";
     const result = search(cy, "token", searchToken);
@@ -406,6 +413,18 @@ describe("Token search", function() {
     // error message should not be displayed
     expect(tokenError.innerText).toBe("");
     expect(result.length).toBe(1);
+    expect(result[0].id()).toBe("A");
+  });
+
+  it("should be a successful token search with multiple nodes", function() {
+    query.value = "b.js";
+    const result = search(cy, "token", searchToken);
+
+    // error message should not be displayed
+    expect(tokenError.innerText).toBe("");
+    expect(result.length).toBe(2);
+    expect(result[0].id()).toBe("A");
+    expect(result[1].id()).toBe("B");
   });
 
   it("should be an unsuccessful token search", function() {
