@@ -92,7 +92,11 @@ public final class JsonTest {
     graph.putEdge(gNodeA, gNodeC);
 
     String result =
-        Utility.graphToJson(graph, new ArrayList<Integer>(), 0, MultiMutation.newBuilder().setReason("test").build());
+        Utility.graphToJson(
+            graph,
+            new ArrayList<Integer>(),
+            0,
+            MultiMutation.newBuilder().setReason("test").build());
     JSONObject jsonObject = new JSONObject(result);
 
     Assert.assertEquals(jsonObject.length(), 6);

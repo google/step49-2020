@@ -61,7 +61,11 @@ public final class Utility {
    * @return a JSON object containing as entries the nodes and edges of this graph as well as the
    *     length of the list of mutations this graph is an intermediate result of applying
    */
-  public static String graphToJson(MutableGraph<GraphNode> graph, List<Integer> indices, int maxMutations, MultiMutation mutDiff) {
+  public static String graphToJson(
+      MutableGraph<GraphNode> graph,
+      List<Integer> indices,
+      int maxMutations,
+      MultiMutation mutDiff) {
     Type typeOfNode = new TypeToken<Set<GraphNode>>() {}.getType();
     Type typeOfEdge = new TypeToken<Set<EndpointPair<GraphNode>>>() {}.getType();
     Type typeOfIndices = new TypeToken<List<Integer>>() {}.getType();
@@ -150,7 +154,7 @@ public final class Utility {
       // Out of bounds indices
       return null;
     }
-    if(bypass && nextIndex >= 0 && nextIndex <= multiMutList.size()) {
+    if (bypass && nextIndex >= 0 && nextIndex <= multiMutList.size()) {
       return multiMutList.get(nextIndex);
     }
     if (nextIndex - currIndex == 1) {
@@ -176,7 +180,7 @@ public final class Utility {
     for (int i = 0; i < origList.size(); i++) {
       MultiMutation multiMut = origList.get(i);
       List<Mutation> mutList = multiMut.getMutationList();
-      for(Mutation mut : mutList) {
+      for (Mutation mut : mutList) {
         String startName = mut.getStartNode();
         String endName = mut.getEndNode();
         if (nodeName.equals(startName) || nodeName.equals(endName)) {
