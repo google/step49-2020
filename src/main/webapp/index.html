@@ -17,7 +17,7 @@
     <label for="layers">Number of layers (0-20, default is 3):</label>
     <input type="number" id="num-layers" name="layers" min="0" max="20" value="3">
     <label for="search-name">Name of node to search for</label>
-    <input type="text" id="node-name" name="search-name" placeholder="Name"></input>
+    <input type="text" id="node-name-filter" name="search-name" placeholder="Name"></input>
   </div>
   <button onclick="graph.generateGraph()">Get Graph</button>
   <br />
@@ -33,7 +33,6 @@
     </div>
   </div>
 
-  <div id="graph"></div>
   <label>Search by Node: </label>
   <input type="text" id="search" name="search"></input>
   <button id="search-button">Search</button>
