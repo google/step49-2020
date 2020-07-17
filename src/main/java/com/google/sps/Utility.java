@@ -65,7 +65,8 @@ public final class Utility {
       MutableGraph<GraphNode> graph,
       List<Integer> indices,
       int maxMutations,
-      MultiMutation mutDiff) {
+      MultiMutation mutDiff,
+      int currIndex) {
     Type typeOfNode = new TypeToken<Set<GraphNode>>() {}.getType();
     Type typeOfEdge = new TypeToken<Set<EndpointPair<GraphNode>>>() {}.getType();
     Type typeOfIndices = new TypeToken<List<Integer>>() {}.getType();
@@ -84,6 +85,7 @@ public final class Utility {
             .put("mutationDiff", mutDiffJson)
             .put("reason", reason)
             .put("relevantIndices", indicesJson)
+            .put("currIndex", currIndex)
             .toString();
     return resultJson;
   }

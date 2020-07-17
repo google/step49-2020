@@ -96,13 +96,13 @@ public final class JsonTest {
             graph,
             new ArrayList<Integer>(),
             0,
-            MultiMutation.newBuilder().setReason("test").build());
+            MultiMutation.newBuilder().setReason("test").build(), 0);
     JSONObject jsonObject = new JSONObject(result);
 
-    Assert.assertEquals(jsonObject.length(), 6);
+    Assert.assertEquals(jsonObject.length(), 7);
 
     JSONArray elements = jsonObject.names();
-    Assert.assertEquals(elements.length(), 6);
+    Assert.assertEquals(elements.length(), 7);
 
     Assert.assertTrue(jsonObject.has("nodes"));
     Assert.assertTrue(jsonObject.has("edges"));
@@ -112,5 +112,6 @@ public final class JsonTest {
     Assert.assertTrue(jsonObject.has("reason"));
     Assert.assertEquals(jsonObject.get("reason"), "test");
     Assert.assertTrue(jsonObject.has("relevantIndices"));
+    Assert.assertTrue(jsonObject.has("currIndex"));
   }
 }

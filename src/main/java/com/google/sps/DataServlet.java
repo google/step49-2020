@@ -146,14 +146,16 @@ public class DataServlet extends HttpServlet {
 
     MultiMutation diff = null;
 
+    int currIndex = 0;
     // No node is searched, so use the whole graph
     if (nodeNameParam == null || nodeNameParam.length() == 0) {
       // Just get the specified deptg, the mutation list, and relevant mutations as
       // they are
+      
+      if(mutationNumber == currDataGraph.numMutations() + 1) {
+        diff = Utility.diffBetween(mutList, mutationNumber);
+      }
       try {
-        if(mutationNumber == currDataGraph.numMutations() + 1) {
-          diff = Utility.diffBetween(mutList, mutationNumber);
-        }
         currDataGraph =
             Utility.getGraphAtMutationNumber(
                 originalDataGraph, currDataGraph, mutationNumber, mutList);
@@ -164,6 +166,7 @@ public class DataServlet extends HttpServlet {
       }
       truncatedGraph = currDataGraph.getGraphWithMaxDepth(depthNumber);
       relevantMutationIndices = defaultIndices;
+      currIndex = mutationNumber;
     } else { // A node is searched
 
       // CASES:
@@ -183,7 +186,6 @@ public class DataServlet extends HttpServlet {
             nodeNameParam, Utility.getMutationIndicesOfNode(nodeNameParam, mutList));
       }
       relevantMutationIndices = mutationIndicesMap.get(nodeNameParam);
-      System.out.println(relevantMutationIndices);
 
       // case 1: Node is not in the current graph or any graph
       if (!currDataGraph.graphNodesMap().containsKey(nodeNameParam)
@@ -229,7 +231,7 @@ public class DataServlet extends HttpServlet {
           response.setHeader("serverError", error);
           return;
         }
-
+        currIndex = 0;
       } else {
         if(mutationNumber > currDataGraph.numMutations()) {
           diff = Utility.diffBetween(mutList, mutationNumber);
@@ -238,6 +240,7 @@ public class DataServlet extends HttpServlet {
         currDataGraph =
             Utility.getGraphAtMutationNumber(
                 originalDataGraph, currDataGraph, mutationNumber, mutList);
+        currIndex = relevantMutationIndices.indexOf(mutationNumber);
       }
       // This is the single search
       truncatedGraph = currDataGraph.getReachableNodes(nodeNameParam, depthNumber);
@@ -245,7 +248,7 @@ public class DataServlet extends HttpServlet {
 
     String graphJson =
         Utility.graphToJson(
-            truncatedGraph, relevantMutationIndices, relevantMutationIndices.size(), diff);
+            truncatedGraph, relevantMutationIndices, relevantMutationIndices.size(), diff, currIndex);
 
     response.getWriter().println(graphJson);
   }

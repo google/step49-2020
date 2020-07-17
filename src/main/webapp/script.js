@@ -90,7 +90,6 @@ async function generateGraph() {
   nextBtn.disabled = true;
 
   const url = getUrl();
-
   const response = await fetch(url);
 
   const serverErrorStatus = response.headers.get("serverError");
@@ -105,13 +104,15 @@ async function generateGraph() {
   // Graph nodes and edges received from server
   const nodes = JSON.parse(jsonResponse.nodes);
   const edges = JSON.parse(jsonResponse.edges);
-  
+
   const mutList = jsonResponse["mutationDiff"].length === 0 ? null : JSON.parse(jsonResponse["mutationDiff"]);
   const reason = jsonResponse["reason"];
   const indices = JSON.parse(jsonResponse.relevantIndices);
   setRelevantIndices(indices);
- 
+
   initializeNumMutations(relevantIndices.length);
+
+  currGraphIndex = jsonResponse.currIndex;
   setCurrGraphNum(currGraphIndex === -1 ? -1 : relevantIndices[currGraphIndex]);
 
   if (!nodes || !edges || !Array.isArray(nodes) || !Array.isArray(edges)) {
@@ -123,7 +124,7 @@ async function generateGraph() {
   if (nodes.length === 0 && numMutations === 0) {
     displayError("Nothing to display from this point forward!");
     return;
-  } 
+  }
   if (response.headers.get("serverMessage") !== null) {
     // The node doesn't appear in this graph, but a mutation with the node exists
     console.log(response.headers.get("serverMessage"));
@@ -150,7 +151,7 @@ async function generateGraph() {
         source: start
       }
     });
-  })
+  });
   getGraphDisplay(graphNodes, graphEdges, mutList, reason);
   updateButtons();
   return;
@@ -162,7 +163,7 @@ async function generateGraph() {
  */
 function getUrl() {
   const depthElem = document.getElementById('num-layers');
-  const nodeName = document.getElementById('node-name-filter') ? document.getElementById('node-name-filter').value || "" : ""; 
+  const nodeName = document.getElementById('node-name-filter') ? document.getElementById('node-name-filter').value || "" : "";
 
   let selectedDepth = 0;
   if (depthElem === null) {
@@ -243,7 +244,8 @@ function getGraphDisplay(graphNodes, graphEdges, mutList, reason) {
     zoom: 0.75,
     pan: { x: 0, y: 0 },
     minZoom: .25,
-    maxZoom: 2.5
+    maxZoom: 2.5,
+    textureOnViewport: true
   });
 
   // Initialize content of node's token list popup
@@ -330,6 +332,8 @@ function highlightDiff(cy, mutList, reason = "") {
   if (!mutList) {
     return [deletedNodes, deletedEdges, addedNodes, addedEdges, modifiedNodes];
   }
+
+  cy.startBatch();
   // Apply each mutation
   mutList.forEach(mutation => {
     const type = mutation["type_"] || -1;
@@ -361,13 +365,13 @@ function highlightDiff(cy, mutList, reason = "") {
           modifiedObj.style('line-color', 'green');
           modifiedObj.style('target-arrow-color', 'green');
           addedEdges = addedEdges.union(modifiedObj);
-        } else if(!endNode) {
-            console.log(endNode + " not specified");
-          } else if(cy.getElementById(startNode).length === 0) {
-            console.log("No node called " + startNode + " in graph");
-          } else {
-            console.log("No node called " + endNode + " in graph");
-          }
+        } else if (!endNode) {
+          console.log(endNode + " not specified");
+        } else if (cy.getElementById(startNode).length === 0) {
+          console.log("No node called " + startNode + " in graph");
+        } else {
+          console.log("No node called " + endNode + " in graph");
+        }
         break;
       case 3:
         // delete node
@@ -431,6 +435,7 @@ function highlightDiff(cy, mutList, reason = "") {
       initializeReasonTooltip(modifiedObj, reason)
     }
   });
+  cy.endBatch();
   return [deletedNodes, deletedEdges, addedNodes, addedEdges, modifiedNodes];
 }
 
@@ -651,8 +656,6 @@ function getTooltipContent(node) {
  * graph is requested from the server.
  */
 function navigateGraph(amount) {
-  console.log(currGraphIndex);
-  // console.log(currGraphNum);
   // this function should not be called if there are no mutations
   if (numMutations <= 0) {
     return;
@@ -660,9 +663,9 @@ function navigateGraph(amount) {
   currGraphIndex += amount;
   if (currGraphIndex <= -1) {
     currGraphIndex = -1;
-  } 
+  }
   if (currGraphIndex >= numMutations) {
-    currGraphIndex = numMutations - 1; 
+    currGraphIndex = numMutations - 1;
   }
   currGraphNum = (currGraphIndex === -1) ? -1 : relevantIndices[currGraphIndex];
 }
@@ -682,7 +685,7 @@ function updateButtons() {
   } else {
     document.getElementById("prevbutton").disabled = false;
   }
-  if (currGraphIndex >= numMutations - 1) { 
+  if (currGraphIndex >= numMutations - 1) {
     // removed: || numMutations == 0 since the first check takes care of it
     document.getElementById("nextbutton").disabled = true;
   } else {
