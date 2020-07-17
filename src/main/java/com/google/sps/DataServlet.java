@@ -48,6 +48,7 @@ public class DataServlet extends HttpServlet {
 
   int oldNumMutations = 0;
 
+  // TODO: figure out if we should generate this when we read in the mutList
   HashMap<String, List<Integer>> mutationIndicesMap = new HashMap<>();
 
   /*
@@ -129,7 +130,7 @@ public class DataServlet extends HttpServlet {
     String nodeNameParam = request.getParameter("nodeName");
 
     // At this point, currDataGraph is basically Utility.getGraphAtMutationNumber(originalDataGraph,
-    // currDataGraph, oldNumMutations, mutList);
+    // currDataGraph, old number of mutations, mutList);
 
     // returns null if either mutation isn't able to be applied or if num < 0
     if (currDataGraph == null) {
@@ -180,8 +181,8 @@ public class DataServlet extends HttpServlet {
       if (!currDataGraph.graphNodesMap().containsKey(nodeNameParam)) {
 
         // index of the next element in relevantMutationsIndices that is greater than
-        // oldNumMutations
-        int newNumIndex = Utility.getNextGreatestNumIndex(relevantMutationIndices, oldNumMutations);
+        // currDataGraph.numMutations()
+        int newNumIndex = Utility.getNextGreatestNumIndex(relevantMutationIndices, currDataGraph.numMutations());
 
         // shouldn't happen, but we're back to case 1.
         if (newNumIndex == -1) {
@@ -199,15 +200,18 @@ public class DataServlet extends HttpServlet {
         // Update the current graph
         currDataGraph =
             Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, newNum, mutList);
+        // This should not happen since 
+        if (currDataGraph == null) {
+          String error = "Something went wrong when mutating the graph!";
+          response.setHeader("serverError", error);
+          return;
+        }
 
-        // Add null check?
-        oldNumMutations = newNum;
       } else {
         // case 3: node is in the current graph. then relevant mutationIndices is ok
         currDataGraph =
             Utility.getGraphAtMutationNumber(
                 originalDataGraph, currDataGraph, mutationNumber, mutList);
-        oldNumMutations = mutationNumber;
       }
       // This is the single search
       truncatedGraph = currDataGraph.getReachableNodes(nodeNameParam, depthNumber);

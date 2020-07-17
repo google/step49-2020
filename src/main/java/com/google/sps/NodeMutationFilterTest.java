@@ -96,7 +96,7 @@ public class NodeMutationFilterTest {
 
   @Test
   public void testNextGreatestNumNoneExistOdd() {
-    int ans = Utility.getNextGreatestNumIndex(lst1, 20);
+    int ans = Utility.getNextGreatestNumIndex(lst2, 20);
     Assert.assertEquals(-1, ans);
   }
 
@@ -135,7 +135,7 @@ public class NodeMutationFilterTest {
    */
   @Test
   public void testInnerDNEEven() {
-    int ans = Utility.getNextGreatestNumIndex(lst1, 1);
+    int ans = Utility.getNextGreatestNumIndex(lst1, 2);
     Assert.assertEquals(1, ans);
   }
 
