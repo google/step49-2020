@@ -447,14 +447,13 @@ function highlightDiff(cy, mutList, reason = "") {
       initializeReasonTooltip(modifiedObj, reason)
     }
   });
-  const returnObject = {
-    "deletedNodes": deletedNodes,
-    "deletedEdges": deletedEdges,
-    "addedNodes": addedNodes,
-    "addedEdges": addedEdges,
-    "modifiedNodes": modifiedNodes
-  }
-  return returnObject;
+  return {
+    deletedNodes,
+    deletedEdges,
+    addedNodes,
+    addedEdges,
+    modifiedNodes
+  };
 }
 
 
