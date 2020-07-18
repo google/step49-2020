@@ -44,7 +44,7 @@ public class DataServlet extends HttpServlet {
   private DataGraph originalDataGraph = null;
 
   // Starts out as all indices since we are not filtering by anything
-  List<Integer> filteredMutationIndices = new ArrayList<>(); 
+  List<Integer> filteredMutationIndices = new ArrayList<>();
   List<Integer> defaultIndices = new ArrayList<>();
 
   // TODO: figure out if we should generate this when we read in the mutList
@@ -212,7 +212,7 @@ public class DataServlet extends HttpServlet {
         // Update the current graph
         currDataGraph =
             Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, newNum, mutList);
-            
+
         // This should not happen since
         if (currDataGraph == null) {
           String error = "Something went wrong when mutating the graph!";
