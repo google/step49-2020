@@ -1,4 +1,8 @@
-import { searchNode, initializeNumMutations, setCurrGraphNum, initializeTippy, generateGraph, getUrl, navigateGraph, currGraphNum, numMutations, updateButtons, highlightDiff, initializeReasonTooltip, getGraphDisplay } from "../src/main/webapp/script.js";
+import {
+  searchNode, initializeNumMutations, setCurrGraphNum, initializeTippy, generateGraph,
+  getUrl, navigateGraph, currGraphNum, numMutations, updateButtons, highlightDiff,
+  initializeReasonTooltip, getGraphDisplay
+} from "../src/main/webapp/script.js";
 import cytoscape from "cytoscape";
 
 describe("Checking that depth in fetch url is correct", function () {

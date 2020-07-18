@@ -186,7 +186,7 @@ abstract class DataGraph {
             graph.addNode(newGraphNode);
             graphNodesMap.put(startName, newGraphNode);
           } else {
-            error = "Add node: Adding a duplicate node " + startName;
+            error = "Add node: Adding a duplicate node " + startName + "\n";
           }
           break;
         }
@@ -201,7 +201,7 @@ abstract class DataGraph {
               error = "Add edge: Start node " + startName + " doesn't exist\n";
             }
             if (endNode == null) {
-              error += "Add edge: End node " + endName + " doesn't exist";
+              error += "Add edge: End node " + endName + " doesn't exist\n";
             }
           }
           break;
@@ -209,17 +209,17 @@ abstract class DataGraph {
       case DELETE_EDGE:
         {
           if (startNode != null && endNode != null) { // Check nodes exist before removing edge
+            graph.removeEdge(startNode, endNode);
             // If the target now has no in-edges, it becomes a root
-            if (graph.inDegree(endNode) == 1) {
+            if (graph.inDegree(endNode) == 0) {
               roots.add(endName);
             }
-            graph.removeEdge(startNode, endNode);
           } else {
             if (startNode == null) {
               error = "Delete edge: Start node " + startName + " doesn't exist\n";
             }
             if (endNode == null) {
-              error += "Delete edge: End node " + endName + " doesn't exist";
+              error += "Delete edge: End node " + endName + " doesn't exist\n";
             }
           }
           break;
@@ -227,33 +227,34 @@ abstract class DataGraph {
       case DELETE_NODE:
         {
           if (startNode != null) { // Check node exists before removing
-            // Check whether any successor will have no in-edges after this node is removed
-            // If so, make them roots
-
             Set<GraphNode> successors = graph.successors(startNode);
-            for (GraphNode succ : successors) {
-              if (graph.inDegree(succ) == 1) {
-                roots.add(succ.name());
-              }
-            }
+
             roots.remove(startName);
             graph.removeNode(startNode); // This will remove all edges associated with startNode
             graphNodesMap.remove(startName);
+
+            // Check whether any successor will have no in-edges after this node is removed
+            // If so, make them roots
+            for (GraphNode succ : successors) {
+              if (graph.inDegree(succ) == 0) {
+                roots.add(succ.name());
+              }
+            }
           } else {
-            error = "Delete node: Deleting a non-existent node " + startName;
+            error = "Delete node: Deleting a non-existent node " + startName + "\n";
           }
           break;
         }
       case CHANGE_TOKEN:
         {
           if (startNode == null) {
-            error = "Change node: Changing a non-existent node " + startName;
+            error = "Change node: Changing a non-existent node " + startName + "\n";
             break;
           }
           GraphNode newNode = changeNodeToken(startNode, mut.getTokenChange());
 
           if (newNode == null) {
-            error = "Change node: Unrecognized token mutation " + mut.getTokenChange().getType();
+            error = "Change node: Unrecognized token mutation " + mut.getTokenChange().getType() + "\n";
             break;
           }
 
@@ -274,7 +275,7 @@ abstract class DataGraph {
         }
       default:
         // unrecognized mutation type
-        error = "Unrecognized mutation  " + mut.getType();
+        error = "Unrecognized mutation  " + mut.getType() + "\n";
         break;
     }
     return error;

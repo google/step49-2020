@@ -108,7 +108,7 @@ public class DataServlet extends HttpServlet {
     // Get the multi-mutation difference between the current graph and the requested
     // graph
     MultiMutation mutDiff =
-        Utility.diffBetween(mutList, currDataGraph.numMutations(), mutationNumber);
+        Utility.getDiffBetween(mutList, currDataGraph.numMutations(), mutationNumber);
 
     try {
       currDataGraph =
