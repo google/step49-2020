@@ -4,7 +4,8 @@ const colorScheme = {
   "deletedObjectColor": "red",
   "modifiedNodeColor": "yellow",
   "unmodifiedEdgeColor": "grey",
-  "labelColor": "white"
+  "labelColor": "white", 
+  "filteredNodeColor": "#FF00FF"
 };
 // Sets the opacity constants for different types of objects in the graph
 const opacityScheme = {

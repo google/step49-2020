@@ -266,7 +266,7 @@ function getGraphDisplay(graphNodes, graphEdges, mutList, reason) {
   if (nodeFilter && nodeFilter.value) {
     const target = findNodeInGraph(cy, nodeFilter.value);
     if (target) {
-      target.style('background-color', '#FF00FF');
+      target.style('background-color', colorScheme["filteredNodeColor"]);
     }
   }
 
