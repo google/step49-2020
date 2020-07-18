@@ -235,11 +235,7 @@ public class DataServlet extends HttpServlet {
     }
 
     String graphJson =
-        Utility.graphToJson(
-            truncatedGraph,
-            filteredMutationIndices,
-            diff,
-            currIndex);
+        Utility.graphToJson(truncatedGraph, filteredMutationIndices, diff, currIndex);
 
     response.getWriter().println(graphJson);
   }
