@@ -25,6 +25,7 @@ import tippy, { sticky } from 'tippy.js';
 import 'tippy.js/dist/tippy.css';
 import 'tippy.js/dist/backdrop.css';
 import 'tippy.js/animations/shift-away.css';
+import {colorScheme, opacityScheme} from './constants.js';
 
 export {
   initializeNumMutations, setMutationIndexList, setCurrMutationNum, initializeTippy,
@@ -46,21 +47,6 @@ let currMutationNum = -1;
 // Stores the number of mutations in mutationIndexList. The user cannot click next
 // to a graph beyond this point
 let numMutations = 0;
-
-// An object containing key-value pairs of various types of graph
-// objects and their custom colors
-const colorScheme = {
-  "unmodifiedNodeColor": "blue",
-  "addedObjectColor": "green",
-  "deletedObjectColor": "red",
-  "modifiedNodeColor": "yellow",
-  "unmodifiedEdgeColor": "grey",
-  "labelColor": "white"
-};
-// Sets the opacity constants for different types of objects in the graph
-const opacityScheme = {
-  "deletedObjectOpacity": 0.25
-};
 
 let mutationIndexList = [];
 
