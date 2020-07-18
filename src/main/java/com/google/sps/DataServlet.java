@@ -238,7 +238,6 @@ public class DataServlet extends HttpServlet {
         Utility.graphToJson(
             truncatedGraph,
             filteredMutationIndices,
-            filteredMutationIndices.size(),
             diff,
             currIndex);
 

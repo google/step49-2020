@@ -64,7 +64,6 @@ public final class Utility {
   public static String graphToJson(
       MutableGraph<GraphNode> graph,
       List<Integer> mutationIndices,
-      int maxMutations,
       MultiMutation mutDiff,
       int currIndex) {
     Type typeOfNode = new TypeToken<Set<GraphNode>>() {}.getType();
@@ -81,7 +80,6 @@ public final class Utility {
         new JSONObject()
             .put("nodes", nodeJson)
             .put("edges", edgeJson)
-            .put("numMutations", maxMutations)
             .put("mutationDiff", mutDiffJson)
             .put("reason", reason)
             .put("mutationIndices", mutationIndicesJson)
