@@ -431,7 +431,7 @@ abstract class DataGraph {
    *         node isn't found.
    */
   public MutableGraph<GraphNode> getReachableNodes(Collection<String> names, int radius) {
-    if (radius < 0) {
+    if (radius < 0 || names == null) {
       return GraphBuilder.directed().build(); // If max depth below 0, then return an emtpy graph
     }
 
