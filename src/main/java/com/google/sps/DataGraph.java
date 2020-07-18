@@ -415,14 +415,16 @@ abstract class DataGraph {
 
   /**
    * Returns a MutableGraph with nodes that are at most a certain radius from a
-   * given node. If the radius is less than 0 or the node specified isn't present,
-   * return an empty graph. Since maxDepth was implemented as DFS, we use BFS for
-   * *diversity*.
+   * given nodes. If the radius is less than 0 or the node specified isn't
+   * present, return an empty graph. Since maxDepth was implemented as DFS, we use
+   * BFS for *diversity*.
    *
    * <p>
-   * Here, we only consider children of children and parents of parents.
+   * Here, we only consider children of children and parents of parents. If a node
+   * doesn't exist in the graph, we skip it. If all the nodes in the collection
+   * don't exist in the graph, we return an empty graph.
    *
-   * @param name   the name of the node to search for
+   * @param names  the names of the nodes to search for & include in the graph. using a collection for flexibility.
    * @param radius the distance from the node to search for parents and children
    * @return a graph comprised of only nodes and edges within a certain distance
    *         from the specified node. Empty if radius is less than 0 or if the
@@ -438,6 +440,7 @@ abstract class DataGraph {
     HashSet<GraphNode> nextLayerParents = new HashSet<GraphNode>();
 
     for (String name : names) {
+      // add the nodes that exist, ignore the ones that don'e
       if (graphNodesMap.containsKey(name)) {
         GraphNode tgtNode = graphNodesMap.get(name);
         nextLayerChildren.add(tgtNode);
@@ -445,7 +448,7 @@ abstract class DataGraph {
 
       }
     }
-    // None of the nodes are found, return empty
+    // None of the nodes are found, return empty graph
     if (nextLayerChildren.isEmpty()) {
       return GraphBuilder.directed().build(); // If the specified node is not found, return an empty graph
     }
