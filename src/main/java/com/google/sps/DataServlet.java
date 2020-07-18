@@ -16,7 +16,7 @@ package com.google.sps;
 
 import java.io.IOException;
 import java.util.ArrayList;
-
+import java.util.Arrays;
 import java.io.InputStreamReader;
 
 import java.util.List;
@@ -230,8 +230,9 @@ public class DataServlet extends HttpServlet {
                 originalDataGraph, currDataGraph, mutationNumber, mutList);
         currIndex = filteredMutationIndices.indexOf(mutationNumber);
       }
+      List<String> queried = new ArrayList<>(Arrays.asList(nodeNameParam));
       // This is the single search
-      truncatedGraph = currDataGraph.getReachableNodes(nodeNameParam, depthNumber);
+      truncatedGraph = currDataGraph.getReachableNodes(queried, depthNumber);
     }
 
     String graphJson =

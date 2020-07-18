@@ -1,6 +1,9 @@
 package com.google.sps;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 import com.google.common.graph.EndpointPair;
@@ -60,8 +63,9 @@ public class ReachableNodesTest {
 
     DataGraph dataGraph = DataGraph.create();
     dataGraph.graphFromProtoNodes(protoNodesMap);
+    List<String> lst = new ArrayList<>(Arrays.asList("A"));
 
-    MutableGraph<GraphNode> truncatedGraph = dataGraph.getReachableNodes("A", 0);
+    MutableGraph<GraphNode> truncatedGraph = dataGraph.getReachableNodes(lst, 0);
     Set<GraphNode> graphNodes = truncatedGraph.nodes();
     Set<EndpointPair<GraphNode>> graphEdges = truncatedGraph.edges();
 
@@ -86,8 +90,9 @@ public class ReachableNodesTest {
 
     DataGraph dataGraph = DataGraph.create();
     dataGraph.graphFromProtoNodes(protoNodesMap);
+    List<String> lst = new ArrayList<>(Arrays.asList("A"));
 
-    MutableGraph<GraphNode> truncatedGraph = dataGraph.getReachableNodes("A", 1);
+    MutableGraph<GraphNode> truncatedGraph = dataGraph.getReachableNodes(lst, 1);
     Set<GraphNode> graphNodes = truncatedGraph.nodes();
     Set<EndpointPair<GraphNode>> graphEdges = truncatedGraph.edges();
 
@@ -112,8 +117,9 @@ public class ReachableNodesTest {
 
     DataGraph dataGraph = DataGraph.create();
     dataGraph.graphFromProtoNodes(protoNodesMap);
+    List<String> lst = new ArrayList<>(Arrays.asList("C"));
 
-    MutableGraph<GraphNode> truncatedGraph = dataGraph.getReachableNodes("C", 2);
+    MutableGraph<GraphNode> truncatedGraph = dataGraph.getReachableNodes(lst, 2);
 
     Set<GraphNode> graphNodes = truncatedGraph.nodes();
     Set<EndpointPair<GraphNode>> graphEdges = truncatedGraph.edges();
@@ -143,8 +149,9 @@ public class ReachableNodesTest {
 
     DataGraph dataGraph = DataGraph.create();
     dataGraph.graphFromProtoNodes(protoNodesMap);
+    List<String> lst = new ArrayList<>(Arrays.asList("C"));
 
-    MutableGraph<GraphNode> truncatedGraph = dataGraph.getReachableNodes("C", 1);
+    MutableGraph<GraphNode> truncatedGraph = dataGraph.getReachableNodes(lst, 1);
 
     Set<GraphNode> graphNodes = truncatedGraph.nodes();
     Set<EndpointPair<GraphNode>> graphEdges = truncatedGraph.edges();
@@ -172,8 +179,9 @@ public class ReachableNodesTest {
 
     DataGraph dataGraph = DataGraph.create();
     dataGraph.graphFromProtoNodes(protoNodesMap);
+    List<String> lst = new ArrayList<>(Arrays.asList("A"));
 
-    MutableGraph<GraphNode> truncatedGraph = dataGraph.getReachableNodes("A", 5);
+    MutableGraph<GraphNode> truncatedGraph = dataGraph.getReachableNodes(lst, 5);
     Set<GraphNode> graphNodes = truncatedGraph.nodes();
     Set<EndpointPair<GraphNode>> graphEdges = truncatedGraph.edges();
 
@@ -197,8 +205,9 @@ public class ReachableNodesTest {
 
     DataGraph dataGraph = DataGraph.create();
     dataGraph.graphFromProtoNodes(protoNodesMap);
+    List<String> lst = new ArrayList<>(Arrays.asList("B"));
 
-    MutableGraph<GraphNode> truncatedGraph = dataGraph.getReachableNodes("B", 5);
+    MutableGraph<GraphNode> truncatedGraph = dataGraph.getReachableNodes(lst, 5);
     Set<GraphNode> graphNodes = truncatedGraph.nodes();
     Set<EndpointPair<GraphNode>> graphEdges = truncatedGraph.edges();
 
@@ -235,8 +244,9 @@ public class ReachableNodesTest {
     DataGraph dataGraph = DataGraph.create();
     dataGraph.graphFromProtoNodes(protoNodesMap);
     MutableGraph<GraphNode> graph = dataGraph.graph();
+    List<String> lst = new ArrayList<>(Arrays.asList("B"));
 
-    MutableGraph<GraphNode> truncatedGraph = dataGraph.getReachableNodes("B", 2);
+    MutableGraph<GraphNode> truncatedGraph = dataGraph.getReachableNodes(lst, 2);
     Set<GraphNode> graphNodes = truncatedGraph.nodes();
     Set<EndpointPair<GraphNode>> graphEdges = truncatedGraph.edges();
 
@@ -279,8 +289,9 @@ public class ReachableNodesTest {
     DataGraph dataGraph = DataGraph.create();
     dataGraph.graphFromProtoNodes(protoNodesMap);
     MutableGraph<GraphNode> graph = dataGraph.graph();
+    List<String> lst = new ArrayList<>(Arrays.asList("F"));
 
-    MutableGraph<GraphNode> truncatedGraph = dataGraph.getReachableNodes("F", 2);
+    MutableGraph<GraphNode> truncatedGraph = dataGraph.getReachableNodes(lst, 2);
     Set<GraphNode> graphNodes = truncatedGraph.nodes();
     Set<EndpointPair<GraphNode>> graphEdges = truncatedGraph.edges();
 
