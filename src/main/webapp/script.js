@@ -26,25 +26,43 @@ import 'tippy.js/dist/tippy.css';
 import 'tippy.js/dist/backdrop.css';
 import 'tippy.js/animations/shift-away.css';
 
-export { initializeNumMutations, setRelevantIndices, setCurrGraphNum, initializeTippy, generateGraph, getUrl, navigateGraph, currGraphNum, currGraphIndex, numMutations, updateButtons, searchNode, highlightDiff, initializeReasonTooltip, getGraphDisplay };
+export {
+  initializeNumMutations, setMutationIndexList, setCurrMutationNum, initializeTippy,
+  generateGraph, getUrl, navigateGraph, currMutationNum, currMutationIndex, numMutations,
+  updateButtons, searchNode, highlightDiff, initializeReasonTooltip, getGraphDisplay
+};
 
 cytoscape.use(popper); // register extension
 cytoscape.use(dagre); // register extension
 
-// Stores the index of the graph in relevantIndices (in sequence of mutations) currently
-// displayed on the screen. Must be >= 0.
-// THis is different from the graph number, since the graphNumber is what's located at the index.
-// in other words, currGraphNum = relevantIndices[currGraphIndex]
-let currGraphIndex = -1;
+// Stores the index of the most recently-applied mutation in mutationIndexList
+// or -1 if no mutations have been applied
+let currMutationIndex = -1;
 
-// Stores the actual graph number we're on
-let currGraphNum = -1;
+// Stores the actual number of the most recently-applied mutation
+// in the global list of mutations or -1 if no mutations have been applied
+let currMutationNum = -1;
 
-// Stores the number of mutations in the list this graph is applying
-// The user cannot click next to a graph beyond this point
+// Stores the number of mutations in mutationIndexList. The user cannot click next
+// to a graph beyond this point
 let numMutations = 0;
 
-let relevantIndices = [];
+// An object containing key-value pairs of various types of graph
+// objects and their custom colors
+const colorScheme = {
+  "unmodifiedNodeColor": "blue",
+  "addedObjectColor": "green",
+  "deletedObjectColor": "red",
+  "modifiedNodeColor": "yellow",
+  "unmodifiedEdgeColor": "grey",
+  "labelColor": "white"
+};
+// Sets the opacity constants for different types of objects in the graph
+const opacityScheme = {
+  "deletedObjectOpacity": 0.25
+};
+
+let mutationIndexList = [];
 
 /**
  * Initializes the number of mutations
@@ -54,24 +72,24 @@ function initializeNumMutations(num) {
 }
 
 /** 
- * Sets the current graph number
+ * Sets the current mutation number
  */
-function setCurrGraphNum(num) {
-  currGraphNum = num;
+function setCurrMutationNum(num) {
+  currMutationNum = num;
 }
 
 /**
  * Sets the current graph index
  */
-function setCurrGraphIndex(num) {
-  currGraphIndex = num;
+function setCurrMutationIndex(num) {
+  currMutationIndex = num;
 }
 
 /**
  * Sets the relevant indices from the mutation list
  */
-function setRelevantIndices(lst) {
-  relevantIndices = lst;
+function setMutationIndexList(lst) {
+  mutationIndexList = lst;
 }
 
 /**
@@ -107,13 +125,11 @@ async function generateGraph() {
 
   const mutList = jsonResponse["mutationDiff"].length === 0 ? null : JSON.parse(jsonResponse["mutationDiff"]);
   const reason = jsonResponse["reason"];
-  const indices = JSON.parse(jsonResponse.relevantIndices);
-  setRelevantIndices(indices);
 
-  initializeNumMutations(relevantIndices.length);
-
-  currGraphIndex = jsonResponse.currIndex;
-  setCurrGraphNum(currGraphIndex === -1 ? -1 : relevantIndices[currGraphIndex]);
+  mutationIndexList = JSON.parse(jsonResponse.mutationIndices);
+  numMutations = mutationIndexList.length;
+  currMutationIndex = jsonResponse.currIndex;
+  currMutationNum = currMutationIndex === -1 ? -1 : mutationIndexList[currMutationIndex];
 
   if (!nodes || !edges || !Array.isArray(nodes) || !Array.isArray(edges)) {
     displayError("Malformed graph received from server - edges or nodes are empty");
@@ -122,15 +138,17 @@ async function generateGraph() {
 
   // There aren't any nodes in this graph, and there aren't any mutations pertaining to the filtered node
   if (nodes.length === 0 && numMutations === 0) {
-    displayError("Nothing to display from this point forward!");
+    displayError("Nothing to display from this point forward");
     return;
   }
+  // There aren't any nodes corresponding to the filtered node in this graph but there is a 
+  // list of higher indices at which the given node is mutated so we receive a warning
+  // to this effect
   if (response.headers.get("serverMessage") !== null) {
-    // The node doesn't appear in this graph, but a mutation with the node exists
     console.log(response.headers.get("serverMessage"));
     nextBtn.disabled = false;
-    currGraphIndex = 0;
-    currGraphNum = relevantIndices[currGraphIndex];
+    currMutationIndex = 0;
+    currMutationNum = mutationIndexList[currMutationIndex];
   }
 
   // Add node to array of cytoscape nodes
@@ -182,7 +200,7 @@ function getUrl() {
       selectedDepth = 20;
     }
   }
-  const url = `/data?depth=${selectedDepth}&mutationNum=${currGraphNum}&nodeName=${nodeName}`;
+  const url = `/data?depth=${selectedDepth}&mutationNum=${currMutationNum}&nodeName=${nodeName}`;
   return url;
 }
 /**
@@ -220,9 +238,9 @@ function getGraphDisplay(graphNodes, graphEdges, mutList, reason) {
         style: {
           width: '50px',
           height: '50px',
-          'background-color': 'blue',
+          'background-color': colorScheme["unmodifiedNodeColor"],
           'label': 'data(id)',
-          'color': 'white',
+          'color': colorScheme["labelColor"],
           'font-size': '20px',
           'text-halign': 'center',
           'text-valign': 'center',
@@ -232,8 +250,8 @@ function getGraphDisplay(graphNodes, graphEdges, mutList, reason) {
         selector: 'edge',
         style: {
           'width': 3,
-          'line-color': '#ccc',
-          'target-arrow-color': '#ccc',
+          'line-color': colorScheme["unmodifiedEdgeColor"],
+          'target-arrow-color': colorScheme["unmodifiedEdgeColor"],
           'target-arrow-shape': 'triangle',
           'curve-style': 'bezier'
         }
@@ -281,10 +299,18 @@ function getGraphDisplay(graphNodes, graphEdges, mutList, reason) {
 
   // Highlight and retrieve the objects that will be modified by this mutation
   const result = highlightDiff(cy, mutList, reason);
+  if (Object.keys(result).length === 0) {
+    return;
+  }
   // Break the list down into individual constituents
-  const [deletedNodes, deletedEdges, addedNodes, addedEdges, modifiedNodes] = result;
+  const deletedNodes = result["deletedNodes"] || cy.collection();
+  const deletedEdges = result["deletedEdges"] || cy.collection();
+  const addedNodes = result["addedNodes"] || cy.collection();
+  const addedEdges = result["addedEdges"] || cy.collection();
+  const modifiedNodes = result["modifiedNodes"] || cy.collection();
+
   let elems = cy.collection();
-  result.forEach(item => { elems = elems.union(item); })
+  Object.entries(result).forEach(([, value]) => { elems = elems.union(value); })
 
   // Reposition added elements
   cy.layout({
@@ -317,8 +343,9 @@ function getGraphDisplay(graphNodes, graphEdges, mutList, reason) {
  * @param {*} cy the graph 
  * @param {*} mutList the list of mutations to highlight
  * @param {*} reason the reason for the mutations
- * @returns {*} an array containing in order the deleted nodes, deleted edges, added
- * nodes, added edges and modified nodes as per the mutationList
+ * @returns {*} an object containing the deleted nodes, deleted edges, added
+ * nodes, added edges and modified nodes as per the mutationList or an empty
+ * object if there are no mutations
  */
 function highlightDiff(cy, mutList, reason = "") {
   // Initialize empty collections
@@ -330,10 +357,9 @@ function highlightDiff(cy, mutList, reason = "") {
 
   // If the mutation list is null/undefined
   if (!mutList) {
-    return [deletedNodes, deletedEdges, addedNodes, addedEdges, modifiedNodes];
+    return {};
   }
 
-  cy.startBatch();
   // Apply each mutation
   mutList.forEach(mutation => {
     const type = mutation["type_"] || -1;
@@ -351,7 +377,7 @@ function highlightDiff(cy, mutList, reason = "") {
         if (cy.getElementById(startNode).length !== 0) {
           modifiedObj = cy.getElementById(startNode);
           // color this node green
-          modifiedObj.style('background-color', 'green');
+          modifiedObj.style('background-color', colorScheme["addedObjectColor"]);
           addedNodes = addedNodes.union(modifiedObj);
         } else {
           console.log("No node called " + startNode + " in graph");
@@ -362,8 +388,8 @@ function highlightDiff(cy, mutList, reason = "") {
         if (endNode && cy.getElementById(startNode).length !== 0 && cy.getElementById(endNode).length !== 0) {
           modifiedObj = cy.getElementById(`edge${startNode}${endNode}`);
           // color this edge green
-          modifiedObj.style('line-color', 'green');
-          modifiedObj.style('target-arrow-color', 'green');
+          modifiedObj.style('line-color', colorScheme["addedObjectColor"]);
+          modifiedObj.style('target-arrow-color', colorScheme["addedObjectColor"]);
           addedEdges = addedEdges.union(modifiedObj);
         } else if (!endNode) {
           console.log(endNode + " not specified");
@@ -383,8 +409,8 @@ function highlightDiff(cy, mutList, reason = "") {
           });
         }
         modifiedObj = cy.getElementById(startNode);
-        modifiedObj.style('background-color', 'red');
-        modifiedObj.style('opacity', 0.25);
+        modifiedObj.style('background-color', colorScheme["deletedObjectColor"]);
+        modifiedObj.style('opacity', opacityScheme["deletedObjectOpacity"]);
         deletedNodes = deletedNodes.union(modifiedObj);
         break;
       case 4:
@@ -415,16 +441,16 @@ function highlightDiff(cy, mutList, reason = "") {
           }
         });
         modifiedObj = cy.getElementById(`edge${startNode}${endNode}`);
-        modifiedObj.style('line-color', 'red');
-        modifiedObj.style('target-arrow-color', 'red');
-        modifiedObj.style('opacity', 0.25);
+        modifiedObj.style('line-color', colorScheme["deletedObjectColor"]);
+        modifiedObj.style('target-arrow-color', colorScheme["deletedObjectColor"]);
+        modifiedObj.style('opacity', opacityScheme["deletedObjectOpacity"]);
         deletedEdges = deletedEdges.union(modifiedObj);
         break;
       case 5:
         // change node
         if (cy.getElementById(startNode).length !== 0) {
           modifiedObj = cy.getElementById(startNode);
-          modifiedObj.style('background-color', 'yellow');
+          modifiedObj.style('background-color', colorScheme["modifiedNodeColor"]);
           modifiedNodes = modifiedNodes.union(modifiedObj);
         }
         break;
@@ -435,8 +461,14 @@ function highlightDiff(cy, mutList, reason = "") {
       initializeReasonTooltip(modifiedObj, reason)
     }
   });
-  cy.endBatch();
-  return [deletedNodes, deletedEdges, addedNodes, addedEdges, modifiedNodes];
+  const returnObject = {
+    "deletedNodes": deletedNodes,
+    "deletedEdges": deletedEdges,
+    "addedNodes": addedNodes,
+    "addedEdges": addedEdges,
+    "modifiedNodes": modifiedNodes
+  }
+  return returnObject;
 }
 
 
@@ -485,17 +517,17 @@ function showDiffs(cy, elems, deletedNodes, deletedEdges, addedNodes, addedEdges
   cy.add(deletedEdges);
 
   // Color "deleted" nodes and edges in red 
-  deletedNodes.style("background-color", "red");
-  deletedEdges.style("line-color", "red");
-  deletedEdges.style("target-arrow-color", "red");
+  deletedNodes.style("background-color", colorScheme["deletedObjectColor"]);
+  deletedEdges.style("line-color", colorScheme["deletedObjectColor"]);
+  deletedEdges.style("target-arrow-color", colorScheme["deletedObjectColor"]);
 
   // Color "added" nodes and edges in green
-  addedNodes.style("background-color", "green");
-  addedEdges.style("line-color", "green");
-  addedEdges.style("target-arrow-color", "green");
+  addedNodes.style("background-color", colorScheme["addedObjectColor"]);
+  addedEdges.style("line-color", colorScheme["addedObjectColor"]);
+  addedEdges.style("target-arrow-color", colorScheme["addedObjectColor"]);
 
   // Color nodes whose metadata changed in yellow
-  modifiedNodes.style("background-color", "yellow");
+  modifiedNodes.style("background-color", colorScheme["modifiedNodeColor"]);
 
   // Activate tooltips and zoom in on mutated objects
   makeInteractiveAndFocus(cy, elems);
@@ -539,10 +571,10 @@ function hideDiffs(cy, elems, deletedNodes, deletedEdges, addedNodes, addedEdges
   cy.remove(deletedNodes);
 
   // Reset the color of "added" and modified" nodes and edges 
-  addedNodes.style("background-color", "blue");
-  modifiedNodes.style("background-color", "blue");
-  addedEdges.style("line-color", "#ccc");
-  addedEdges.style("target-arrow-color", "#ccc");
+  addedNodes.style("background-color", colorScheme["unmodifiedNodeColor"]);
+  modifiedNodes.style("background-color", colorScheme["unmodifiedNodeColor"]);
+  addedEdges.style("line-color", colorScheme["unmodifiedEdgeColor"]);
+  addedEdges.style("target-arrow-color", colorScheme["unmodifiedEdgeColor"]);
 
   // Remove event listeners for tooltip manipulation
   elems.removeListener('mouseover');
@@ -629,7 +661,7 @@ function getTooltipContent(node) {
   content.appendChild(closeButton);
 
   const nodeTokens = node.data("tokens");
-  if (nodeTokens === undefined || nodeTokens.length === 0) {
+  if (!nodeTokens || nodeTokens.length === 0) {
     // The node has an empty token list
     const noTokenMsg = document.createElement("p");
     noTokenMsg.innerText = "No tokens";
@@ -660,14 +692,14 @@ function navigateGraph(amount) {
   if (numMutations <= 0) {
     return;
   }
-  currGraphIndex += amount;
-  if (currGraphIndex <= -1) {
-    currGraphIndex = -1;
+  currMutationIndex += amount;
+  if (currMutationIndex <= -1) {
+    currMutationIndex = -1;
   }
-  if (currGraphIndex >= numMutations) {
-    currGraphIndex = numMutations - 1;
+  if (currMutationIndex >= numMutations) {
+    currMutationIndex = numMutations - 1;
   }
-  currGraphNum = (currGraphIndex === -1) ? -1 : relevantIndices[currGraphIndex];
+  currMutationNum = (currMutationIndex === -1) ? -1 : mutationIndexList[currMutationIndex];
 }
 
 /**
@@ -680,17 +712,17 @@ function updateButtons() {
   // The use of <= and >= as opposed to === is for safety! 
   // while currGraphIndex should never be < 0 or > numMutations - 1, we just wanted to make sure
   // nothing bad happened!!
-  if (currGraphIndex <= -1) {
+  if (currMutationIndex <= -1) {
     document.getElementById("prevbutton").disabled = true;
   } else {
     document.getElementById("prevbutton").disabled = false;
   }
-  if (currGraphIndex >= numMutations - 1) {
+  if (currMutationIndex >= numMutations - 1) {
     // removed: || numMutations == 0 since the first check takes care of it
     document.getElementById("nextbutton").disabled = true;
   } else {
     document.getElementById("nextbutton").disabled = false;
   }
   const numElement = document.getElementById("num-mutation-display");
-  numElement.innerText = `Displaying ${currGraphIndex + 1} out of ${numMutations} (this is ${currGraphNum + 1} on the original)`;
+  numElement.innerText = `Displaying ${currMutationIndex + 1} out of ${numMutations} (this is ${currMutationNum + 1} on the original)`;
 }

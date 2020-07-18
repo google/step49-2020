@@ -102,7 +102,7 @@ public final class MutationTest {
     DataGraph dataGraph = DataGraph.create(graph, graphNodesMap, roots, 0);
 
     String error = dataGraph.mutateGraph(addA);
-    Assert.assertEquals(error, "Add node: Adding a duplicate node A");
+    Assert.assertEquals(error, "Add node: Adding a duplicate node A\n");
 
     Set<GraphNode> graphNodes = graph.nodes();
     Assert.assertEquals(graphNodes.size(), 1);
@@ -170,7 +170,7 @@ public final class MutationTest {
     DataGraph dataGraph = DataGraph.create(graph, graphNodesMap, roots, 0);
 
     String error = dataGraph.mutateGraph(addAB);
-    Assert.assertEquals(error, "Add edge: End node C doesn't exist");
+    Assert.assertEquals(error, "Add edge: End node C doesn't exist\n");
 
     Set<GraphNode> graphNodes = graph.nodes();
     Assert.assertEquals(graphNodes.size(), 2);
@@ -238,7 +238,7 @@ public final class MutationTest {
     DataGraph dataGraph = DataGraph.create(graph, graphNodesMap, roots, 0);
 
     String error = dataGraph.mutateGraph(removeC);
-    Assert.assertEquals(error, "Delete node: Deleting a non-existent node C");
+    Assert.assertEquals(error, "Delete node: Deleting a non-existent node C\n");
 
     Set<GraphNode> graphNodes = graph.nodes();
     Assert.assertEquals(graphNodes.size(), 2);
@@ -314,7 +314,7 @@ public final class MutationTest {
     DataGraph dataGraph = DataGraph.create(graph, graphNodesMap, roots, 0);
 
     String error = dataGraph.mutateGraph(removeAX);
-    Assert.assertEquals(error, "Delete edge: End node  doesn't exist");
+    Assert.assertEquals(error, "Delete edge: End node  doesn't exist\n");
 
     Set<GraphNode> graphNodes = graph.nodes();
     Assert.assertEquals(graphNodes.size(), 2);
@@ -603,7 +603,7 @@ public final class MutationTest {
     DataGraph dataGraph = DataGraph.create(graph, graphNodesMap, roots, 0);
 
     String error = dataGraph.mutateGraph(addToA);
-    Assert.assertEquals(error, "Change node: Unrecognized token mutation UNKNOWN");
+    Assert.assertEquals(error, "Change node: Unrecognized token mutation UNKNOWN\n");
 
     Set<GraphNode> graphNodes = graph.nodes();
     Assert.assertEquals(graphNodes.size(), 3);
@@ -648,7 +648,7 @@ public final class MutationTest {
     DataGraph dataGraph = DataGraph.create(graph, graphNodesMap, roots, 0);
 
     String error = dataGraph.mutateGraph(add);
-    Assert.assertEquals(error, "Change node: Changing a non-existent node ");
+    Assert.assertEquals(error, "Change node: Changing a non-existent node \n");
 
     Set<GraphNode> graphNodes = graph.nodes();
     Assert.assertEquals(graphNodes.size(), 3);

@@ -43,10 +43,9 @@ public class DataServlet extends HttpServlet {
   private DataGraph currDataGraph = null;
   private DataGraph originalDataGraph = null;
 
-  List<Integer> relevantMutationIndices = new ArrayList<>(); // should originally be everything
+  // Starts out as all indices since we are not filtering by anything
+  List<Integer> filteredMutationIndices = new ArrayList<>(); 
   List<Integer> defaultIndices = new ArrayList<>();
-
-  int oldNumMutations = 0;
 
   // TODO: figure out if we should generate this when we read in the mutList
   HashMap<String, List<Integer>> mutationIndicesMap = new HashMap<>();
@@ -118,25 +117,12 @@ public class DataServlet extends HttpServlet {
 
       // initially, all mutation indices are relevant so we put that into the default
       // and set them equal.
-      relevantMutationIndices = new ArrayList<>();
       for (int i = 0; i < mutList.size(); i++) {
         defaultIndices.add(i);
       }
       // Relevant mutation indicies start as everything
-      relevantMutationIndices = defaultIndices;
+      filteredMutationIndices = defaultIndices;
     }
-    // // Get the multi-mutation difference between the current graph and the
-    // requested
-    // // graph
-    // MultiMutation mutDiff =
-    // Utility.diffBetween(mutList, currDataGraph.numMutations(), mutationNumber);
-
-    // try {
-    // currDataGraph =
-    // Utility.getGraphAtMutationNumber(
-    // originalDataGraph, currDataGraph, mutationNumber, mutList);
-    // } catch (IllegalArgumentException e) {
-    // String error = e.getMessage();
 
     // Parameter for the nodeName the user searched for in the frontend
     String nodeNameParam = request.getParameter("nodeName");
@@ -147,13 +133,14 @@ public class DataServlet extends HttpServlet {
     MultiMutation diff = null;
 
     int currIndex = 0;
+
     // No node is searched, so use the whole graph
     if (nodeNameParam == null || nodeNameParam.length() == 0) {
       // Just get the specified deptg, the mutation list, and relevant mutations as
       // they are
 
       if (mutationNumber == currDataGraph.numMutations() + 1) {
-        diff = Utility.diffBetween(mutList, mutationNumber);
+        diff = Utility.getDiffBetween(mutList, mutationNumber);
       }
       try {
         currDataGraph =
@@ -165,7 +152,7 @@ public class DataServlet extends HttpServlet {
         return;
       }
       truncatedGraph = currDataGraph.getGraphWithMaxDepth(depthNumber);
-      relevantMutationIndices = defaultIndices;
+      filteredMutationIndices = defaultIndices;
       currIndex = mutationNumber;
     } else { // A node is searched
 
@@ -185,11 +172,11 @@ public class DataServlet extends HttpServlet {
         mutationIndicesMap.put(
             nodeNameParam, Utility.getMutationIndicesOfNode(nodeNameParam, mutList));
       }
-      relevantMutationIndices = mutationIndicesMap.get(nodeNameParam);
+      filteredMutationIndices = mutationIndicesMap.get(nodeNameParam);
 
       // case 1: Node is not in the current graph or any graph
       if (!currDataGraph.graphNodesMap().containsKey(nodeNameParam)
-          && relevantMutationIndices.isEmpty()) {
+          && filteredMutationIndices.isEmpty()) {
         String error = "There are no nodes anywhere on this graph!";
         response.setHeader("serverError", error);
         return;
@@ -200,7 +187,7 @@ public class DataServlet extends HttpServlet {
         // index of the next element in relevantMutationsIndices that is greater than
         // currDataGraph.numMutations()
         int newNumIndex =
-            Utility.getNextGreatestNumIndex(relevantMutationIndices, currDataGraph.numMutations());
+            Utility.getNextGreatestNumIndex(filteredMutationIndices, currDataGraph.numMutations());
 
         // shouldn't happen, but we're back to case 1.
         if (newNumIndex == -1) {
@@ -209,21 +196,23 @@ public class DataServlet extends HttpServlet {
           return;
         }
 
+        // Give a warning but also move ahead to the next valid graph
         String message = "There are no nodes anywhere on this graph!";
         response.setHeader("serverMessage", message);
 
         // The index of the next mutation to look at in the ORIGINAL mutlist
-        int newNum = relevantMutationIndices.get(newNumIndex);
+        int newNum = filteredMutationIndices.get(newNumIndex);
 
         // only get the indices AFTER this one
-        relevantMutationIndices =
-            relevantMutationIndices.subList(newNumIndex, relevantMutationIndices.size());
+        filteredMutationIndices =
+            filteredMutationIndices.subList(newNumIndex, filteredMutationIndices.size());
 
-        diff = Utility.diffBetween(mutList, newNum);
+        diff = Utility.getDiffBetween(mutList, newNum);
 
         // Update the current graph
         currDataGraph =
             Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, newNum, mutList);
+            
         // This should not happen since
         if (currDataGraph == null) {
           String error = "Something went wrong when mutating the graph!";
@@ -233,13 +222,13 @@ public class DataServlet extends HttpServlet {
         currIndex = 0;
       } else {
         if (mutationNumber > currDataGraph.numMutations()) {
-          diff = Utility.diffBetween(mutList, mutationNumber);
+          diff = Utility.getDiffBetween(mutList, mutationNumber);
         }
         // case 3: node is in the current graph. then relevant mutationIndices is ok
         currDataGraph =
             Utility.getGraphAtMutationNumber(
                 originalDataGraph, currDataGraph, mutationNumber, mutList);
-        currIndex = relevantMutationIndices.indexOf(mutationNumber);
+        currIndex = filteredMutationIndices.indexOf(mutationNumber);
       }
       // This is the single search
       truncatedGraph = currDataGraph.getReachableNodes(nodeNameParam, depthNumber);
@@ -248,8 +237,8 @@ public class DataServlet extends HttpServlet {
     String graphJson =
         Utility.graphToJson(
             truncatedGraph,
-            relevantMutationIndices,
-            relevantMutationIndices.size(),
+            filteredMutationIndices,
+            filteredMutationIndices.size(),
             diff,
             currIndex);
 

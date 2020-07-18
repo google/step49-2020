@@ -112,7 +112,7 @@ public final class JsonTest {
     Assert.assertTrue(jsonObject.has("mutationDiff"));
     Assert.assertTrue(jsonObject.has("reason"));
     Assert.assertEquals(jsonObject.get("reason"), "test");
-    Assert.assertTrue(jsonObject.has("relevantIndices"));
+    Assert.assertTrue(jsonObject.has("mutationIndices"));
     Assert.assertTrue(jsonObject.has("currIndex"));
   }
 }

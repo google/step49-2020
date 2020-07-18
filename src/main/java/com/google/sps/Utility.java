@@ -63,7 +63,7 @@ public final class Utility {
    */
   public static String graphToJson(
       MutableGraph<GraphNode> graph,
-      List<Integer> indices,
+      List<Integer> mutationIndices,
       int maxMutations,
       MultiMutation mutDiff,
       int currIndex) {
@@ -76,7 +76,7 @@ public final class Utility {
     String mutDiffJson =
         (mutDiff == null || !mutDiff.isInitialized()) ? "" : gson.toJson(mutDiff.getMutationList());
     String reason = (mutDiff == null || !mutDiff.isInitialized()) ? "" : mutDiff.getReason();
-    String indicesJson = gson.toJson(indices, typeOfIndices);
+    String mutationIndicesJson = gson.toJson(mutationIndices, typeOfIndices);
     String resultJson =
         new JSONObject()
             .put("nodes", nodeJson)
@@ -84,7 +84,7 @@ public final class Utility {
             .put("numMutations", maxMutations)
             .put("mutationDiff", mutDiffJson)
             .put("reason", reason)
-            .put("relevantIndices", indicesJson)
+            .put("mutationIndices", mutationIndicesJson)
             .put("currIndex", currIndex)
             .toString();
     return resultJson;
@@ -145,24 +145,11 @@ public final class Utility {
    * currIndex to the graph at nextIndex as long as nextIndex = currIndex + 1
    *
    * @param multiMutList the list of multi-mutations that are to be applied to the initial graph
-   * @param currIndex the index in the above list the current graph is at
-   * @param nextIndex the next index to generate a graph for
+   * @param index the index in the above list at which the multimutation to apply is
    * @return a multimutation with all the changes to apply to the current graph to get the next
    *     graph or null if the provided indices are out of bounds or non-consecutive
    */
-  public static MultiMutation diffBetween(List<MultiMutation> multiMutList, int index) {
-    // if (currIndex < 0 || currIndex >= multiMutList.size()) {
-    //   // Out of bounds indices
-    //   return null;
-    // }
-    // if (bypass) {
-    //   return multiMutList.get(currIndex);
-    // }
-    // if (nextIndex - currIndex == 1) {
-    //   // Non-adjacent indices
-    //   return multiMutList.get(currIndex);
-    // }
-    // return null;
+  public static MultiMutation getDiffBetween(List<MultiMutation> multiMutList, int index) {
     if (index < 0 || index >= multiMutList.size()) {
       return null;
     }

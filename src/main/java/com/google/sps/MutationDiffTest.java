@@ -49,10 +49,10 @@ public class MutationDiffTest {
   }
 
   /*
-   * Test that nextIndex > currIndex + 1 is rejected
+   * Test that index > multiMutList.size() - 1 is rejected
    */
   @Test
-  public void nonConsecutiveIndicesPos() {
+  public void outOfBoundsLarge() {
     Mutation addAB =
         Mutation.newBuilder()
             .setType(Mutation.Type.ADD_EDGE)
@@ -73,17 +73,17 @@ public class MutationDiffTest {
     multiMutList.add(addABM);
     multiMutList.add(addACM);
 
-    MultiMutation result = Utility.diffBetween(multiMutList, 0);
-    Assert.assertEquals(addABM, result);
-    result = Utility.diffBetween(multiMutList, 1);
+    MultiMutation result = Utility.getDiffBetween(multiMutList, 2);
+    Assert.assertNull(result);
+    result = Utility.getDiffBetween(multiMutList, 1);
     Assert.assertNotNull(result);
   }
 
   /*
-   * Test that nextIndex < currIndex + 1 is rejected
+   * Test that index < 0 is rejected
    */
   @Test
-  public void nonConsecutiveIndicesNeg() {
+  public void outOfBoundsSmall() {
     Mutation addAB =
         Mutation.newBuilder()
             .setType(Mutation.Type.ADD_EDGE)
@@ -104,54 +104,18 @@ public class MutationDiffTest {
     multiMutList.add(addABM);
     multiMutList.add(addACM);
 
-    MultiMutation result = Utility.diffBetween(multiMutList, 1);
-    Assert.assertEquals(addACM, result);
-  }
-
-  /*
-   * Test that a negative current index is rejected
-   */
-  @Test
-  public void invalidCurrIndex() {
-    Mutation addAB =
-        Mutation.newBuilder()
-            .setType(Mutation.Type.ADD_EDGE)
-            .setStartNode("A")
-            .setEndNode("B")
-            .build();
-    MultiMutation addABM = MultiMutation.newBuilder().addMutation(addAB).build();
-    List<MultiMutation> multiMutList = new ArrayList<>();
-    multiMutList.add(addABM);
-
-    MultiMutation result = Utility.diffBetween(multiMutList, -1);
+    MultiMutation result = Utility.getDiffBetween(multiMutList, -1);
     Assert.assertNull(result);
+    result = Utility.getDiffBetween(multiMutList, 0);
+    Assert.assertNotNull(result);
   }
 
   /*
-   * Test that a next index larger than the number of mutations is rejected
+   * Tests that a diff the function on a valid index just returns the
+   * multi-mutation entry at index - add node
    */
   @Test
-  public void tooLargeNextIndex() {
-    Mutation addAB =
-        Mutation.newBuilder()
-            .setType(Mutation.Type.ADD_EDGE)
-            .setStartNode("A")
-            .setEndNode("B")
-            .build();
-    MultiMutation addABM = MultiMutation.newBuilder().addMutation(addAB).build();
-    List<MultiMutation> multiMutList = new ArrayList<>();
-    multiMutList.add(addABM);
-
-    MultiMutation result = Utility.diffBetween(multiMutList, 1);
-    Assert.assertNull(result);
-  }
-
-  /*
-   * Tests that a diff between currIndex and currIndex + 1 just returns the
-   * multi-mutation entry at currIndex - add node
-   */
-  @Test
-  public void forwardMutationAddNode() {
+  public void addNode() {
     Mutation addA = Mutation.newBuilder().setType(Mutation.Type.ADD_NODE).setStartNode("A").build();
     MultiMutation addAM = MultiMutation.newBuilder().addMutation(addA).build();
 
@@ -167,16 +131,16 @@ public class MutationDiffTest {
     multiMutList.add(addAM);
     multiMutList.add(addABM);
 
-    MultiMutation result = Utility.diffBetween(multiMutList, 0);
+    MultiMutation result = Utility.getDiffBetween(multiMutList, 0);
     Assert.assertEquals(result, addAM);
   }
 
   /*
-   * Tests that a diff between currIndex and currIndex + 1 just returns the
-   * multi-mutation entry at currIndex - add edge
+   * Tests that a diff the function on a valid index just returns the
+   * multi-mutation entry at index - add edge
    */
   @Test
-  public void forwardMutationAddEdge() {
+  public void addEdge() {
     Mutation addA = Mutation.newBuilder().setType(Mutation.Type.ADD_NODE).setStartNode("A").build();
     MultiMutation addAM = MultiMutation.newBuilder().addMutation(addA).build();
 
@@ -192,16 +156,16 @@ public class MutationDiffTest {
     multiMutList.add(addAM);
     multiMutList.add(addABM);
 
-    MultiMutation result = Utility.diffBetween(multiMutList, 1);
+    MultiMutation result = Utility.getDiffBetween(multiMutList, 1);
     Assert.assertEquals(result, addABM);
   }
 
   /*
-   * Tests that a diff between currIndex and currIndex + 1 just returns the
-   * multi-mutation entry at currIndex - change token
+   * Tests that a diff the function on a valid index just returns the
+   * multi-mutation entry at index - change token
    */
   @Test
-  public void forwardMutationChangeToken() {
+  public void changeToken() {
     TokenMutation tokenMut =
         TokenMutation.newBuilder()
             .setType(TokenMutation.Type.ADD_TOKEN)
@@ -230,16 +194,16 @@ public class MutationDiffTest {
     multiMutList.add(addTokenToAM);
     multiMutList.add(addABM);
 
-    MultiMutation result = Utility.diffBetween(multiMutList, 0);
+    MultiMutation result = Utility.getDiffBetween(multiMutList, 0);
     Assert.assertEquals(result, addTokenToAM);
   }
 
   /*
-   * Tests that a diff between currIndex and currIndex + 1 just returns the
-   * multi-mutation entry at currIndex - delete edge
+   * Tests that a diff the function on a valid index just returns the
+   * multi-mutation entry at index - delete edge
    */
   @Test
-  public void forwardMutationDeleteEdge() {
+  public void DeleteEdge() {
     TokenMutation tokenMut =
         TokenMutation.newBuilder()
             .setType(TokenMutation.Type.ADD_TOKEN)
@@ -268,16 +232,16 @@ public class MutationDiffTest {
     multiMutList.add(addTokenToAM);
     multiMutList.add(removeABM);
 
-    MultiMutation result = Utility.diffBetween(multiMutList, 1);
+    MultiMutation result = Utility.getDiffBetween(multiMutList, 1);
     Assert.assertEquals(result, removeABM);
   }
 
   /*
-   * Tests that a diff between currIndex and currIndex + 1 just returns the
-   * multi-mutation entry at currIndex - delete node
+   * Tests that a diff the function on a valid index just returns the
+   * multi-mutation entry at index - delete node
    */
   @Test
-  public void forwardMutationDeleteNode() {
+  public void DeleteNode() {
     TokenMutation tokenMut =
         TokenMutation.newBuilder()
             .setType(TokenMutation.Type.ADD_TOKEN)
@@ -313,7 +277,7 @@ public class MutationDiffTest {
     multiMutList.add(addTokenToAM);
     multiMutList.add(deleteBM);
 
-    MultiMutation result = Utility.diffBetween(multiMutList, 1);
+    MultiMutation result = Utility.getDiffBetween(multiMutList, 1);
     Assert.assertEquals(result, deleteBM);
   }
 }
