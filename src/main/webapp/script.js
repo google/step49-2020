@@ -26,7 +26,7 @@ import 'tippy.js/dist/tippy.css';
 import 'tippy.js/dist/backdrop.css';
 import 'tippy.js/animations/shift-away.css';
 
-export { initializeNumMutations, setCurrGraphNum, initializeTippy, generateGraph, getUrl, navigateGraph, currGraphNum, numMutations, updateButtons, search, searchNode, searchToken };
+export { initializeNumMutations, setCurrGraphNum, initializeTippy, generateGraph, getUrl, navigateGraph, currGraphNum, numMutations, updateButtons, searchAndHighlight, searchNode, searchToken };
 
 cytoscape.use(popper); // register extension
 cytoscape.use(dagre); // register extension
@@ -222,23 +222,25 @@ function getGraphDisplay(graphNodes, graphEdges) {
 
   document.getElementById('reset').onclick = function(){ resetElements(cy) };
 
-  document.getElementById('search-button').onclick = function() { search(cy, "node", searchNode) };
+  document.getElementById('search-button').onclick = function() { searchAndHighlight(cy, "node", searchNode) };
 
-  document.getElementById('search-token-button').onclick = function() { search(cy, "token", searchToken) };
+  document.getElementById('search-token-button').onclick = function() { searchAndHighlight(cy, "token", searchToken) };
 }
 
 /**
- * Searches based on type (node or token)
+ * Searches a cytoscape graph (cy) based on type (node or token)
+ * using a specified search function.
+ * Returns the result of the search.
  */
-function search(cy, type, searchFunction) {
+function searchAndHighlight(cy, type, searchFunction) {
   resetElements(cy);
   let errorText = "";
-  let query = document.getElementById(type + '-search').value;
+  const query = document.getElementById(type + '-search').value;
   let result;
-  if (query != "") {
+  if (query !== "") {
     result = searchFunction(cy, query);
     if (result) {
-      errorText = "";
+      highlightElements(cy, result);
     } else {
       errorText = type + " does not exist.";
     }
@@ -248,21 +250,20 @@ function search(cy, type, searchFunction) {
 }
 
 /**
- * Finds specific node and zooms in
+ * Finds specific node from query and zooms in on it.
+ * Returns node if it exists
  */
 function searchNode(cy, query) {
-  if (query) {
-    const target = cy.$id(query);
-    if (target.length != 0) {
-      highlightElements(cy, target);
-      cy.fit(target, 50);
-      return target;
-    }
+  let target = cy.$id(query);
+  if (target.length != 0) {
+    cy.fit(target, 50);
+    return target;
   }
 }
 /**
  * Constructs list of nodes that contain specified token
- * and zooms in
+ * and zooms in.
+ * Returns list of nodes that contain token
  */
 function searchToken(cy, query) {
   let target = cy.collection();
@@ -272,9 +273,8 @@ function searchToken(cy, query) {
     }
   });
   if (target.length > 0) {
-    let showNode = target[0][0];
+    const showNode = target[0][0];
     showNode.tip.show();
-    highlightElements(cy, target);
     return target;
   }
 }
@@ -313,7 +313,7 @@ function resetElements(cy) {
     node.style('border-width', '0px');
     // only change opacity of nodes that were changed
     // because of highlighting
-    if (node.style('opacity') == "0.24") {
+    if (node.style('opacity') === "0.24") {
       node.style('opacity', '1');
     }
   });
@@ -322,14 +322,12 @@ function resetElements(cy) {
   cy.edges().forEach(edge => {
     // only change color of edges that were changed
     // because of highlighting
-    if (edge.style('line-color') == 'rgb(0,0,0)') {
-      edge.style('line-color', '#ccc');
-      edge.style('target-arrow-color', '#ccc');
+    if (edge.style('line-color') === 'rgb(0,0,0)') {
+      edge.style('line-color', 'rgb(204, 204, 204)');
+      edge.style('target-arrow-color', 'rgb(204, 204, 204)');
       edge.style('z-index', '1');
     }
   });
-
-  //cy.fit(cy.nodes(), 50);
   document.getElementById('num-selected').innerText = "Number of nodes selected: 0";
 }
 
