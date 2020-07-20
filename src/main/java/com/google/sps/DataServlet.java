@@ -39,16 +39,19 @@ import com.proto.MutationProtos.MutationList;
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
 
-  private List<MultiMutation> mutList = null;
-
   private DataGraph currDataGraph = null;
   private DataGraph originalDataGraph = null;
+  private List<MultiMutation> mutList = null;
 
-  // Starts out as all indices since we are not filtering by anything
+  // A list containing the indices of mutations that mutate the node we are currently
+  // filtering by. Is initialized to all indices since we start out not filtering by anything.
   List<Integer> filteredMutationIndices = new ArrayList<>();
+
+  // A list containing all integers from 0 to mutList.size() - 1
   List<Integer> defaultIndices = new ArrayList<>();
 
-  // TODO: figure out if we should generate this when we read in the mutList
+  // A map from each node name to a list of indices in mutList where
+  // that node is mutated
   HashMap<String, List<Integer>> mutationIndicesMap = new HashMap<>();
 
   /*
@@ -59,6 +62,8 @@ public class DataServlet extends HttpServlet {
     response.setContentType("application/json");
     String depthParam = request.getParameter("depth");
     String mutationParam = request.getParameter("mutationNum");
+    String nodeNameParam = request.getParameter("nodeName");
+
     if (depthParam == null) {
       String error = "Improper depth parameter, cannot generate graph";
       response.setHeader("serverError", error);
@@ -67,6 +72,10 @@ public class DataServlet extends HttpServlet {
       String error = "Improper mutation number parameter, cannot generate graph";
       response.setHeader("serverError", error);
       return;
+    } else if (nodeNameParam == null) {
+      // We should not error out and should proceed as if not filtering in this
+      // case
+      nodeNameParam = "";
     }
 
     int depthNumber = Integer.parseInt(depthParam);
@@ -116,21 +125,21 @@ public class DataServlet extends HttpServlet {
       TextFormat.merge(mutReader, mutBuilder);
       mutList = mutBuilder.build().getMutationList();
 
-      // initially, all mutation indices are relevant so we put that into the default
-      // and set them equal.
+      // Populate the list of all possible mutation indices
       for (int i = 0; i < mutList.size(); i++) {
         defaultIndices.add(i);
       }
-      // Relevant mutation indicies start as everything
+      // and initialize the current list of relevant indices to this because
+      // we start out not filtering by anything
       filteredMutationIndices = defaultIndices;
     }
 
-    // Parameter for the nodeName the user searched for in the frontend
-    String nodeNameParam = request.getParameter("nodeName");
-
     // Truncated version of the graph and mutation list, for returning to the client
     MutableGraph<GraphNode> truncatedGraph;
-
+    // The list of mutations that need to be applied to the nodes in currDataGraph
+    // to get the requested graph, filtered to only contain changes pertaining
+    // to nodes in the truncated graph or the filtered node (null if the graph
+    // requested is before this graph in the sequence of mutations)
     MultiMutation diff = null;
 
     int currIndex = 0;

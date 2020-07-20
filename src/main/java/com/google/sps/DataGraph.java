@@ -51,6 +51,7 @@ abstract class DataGraph {
    * @param graphNodesMap the map from node name to node
    * @param roots a set of roots (nodes with no in-edges) of the graph
    * @param numMutations the number of mutations applied to the initial graph to get this graph
+   * or -1 if no mutations have been applied
    * @return the data graph with these attributes
    */
   static DataGraph create(
@@ -86,6 +87,7 @@ abstract class DataGraph {
    * Getter for the number of mutations
    *
    * @return the the number of mutations applied to the initial graph to get this graph
+   * or -1 if no mutations have been applied
    */
   abstract int numMutations();
 
