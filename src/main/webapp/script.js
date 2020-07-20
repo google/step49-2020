@@ -36,7 +36,6 @@ cytoscape.use(dagre); // register extension
 let currGraphNum = 0;
 // Stores the number of mutations in the list this graph is applying
 // The user cannot click next to a graph beyond this point
-// currently setting to an arbitrary value for testing
 let numMutations = 0;
 
 /**
@@ -87,6 +86,7 @@ async function generateGraph() {
   // Graph nodes and edges received from server
   const nodes = JSON.parse(jsonResponse.nodes);
   const edges = JSON.parse(jsonResponse.edges);
+  initializeNumMutations(JSON.parse(jsonResponse.numMutations));
 
   if (!nodes || !edges || !Array.isArray(nodes) || !Array.isArray(edges)) {
     displayError("Malformed graph received from server - edges or nodes are empty");

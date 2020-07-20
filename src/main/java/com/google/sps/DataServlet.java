@@ -46,13 +46,20 @@ public class DataServlet extends HttpServlet {
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     response.setContentType("application/json");
     String depthParam = request.getParameter("depth");
+    String mutationParam = request.getParameter("mutationNum");
     if (depthParam == null) {
       String error = "Improper depth parameter, cannot generate graph";
+      response.setHeader("serverError", error);
+      return;
+    } else if (mutationParam == null) {
+      String error = "Improper mutation number parameter, cannot generate graph";
       response.setHeader("serverError", error);
       return;
     }
 
     int depthNumber = Integer.parseInt(depthParam);
+    int mutationNumber = Integer.parseInt(mutationParam);
+
     boolean success = true; // Innocent until proven guilty; successful until proven a failure
 
     // Initialize variables if any are null. Ideally should all be null or none
@@ -78,13 +85,7 @@ public class DataServlet extends HttpServlet {
         response.setHeader("serverError", error);
         return;
       }
-
-      currDataGraph = DataGraph.create();
-      success = currDataGraph.graphFromProtoNodes(protoNodesMap);
-      if (!success) {
-        response.setHeader("serverError", error);
-        return;
-      }
+      currDataGraph = originalDataGraph.getCopy();
     } else if (currDataGraph == null || originalDataGraph == null) {
       String error = "Invalid input";
       response.setHeader("serverError", error);
@@ -102,20 +103,18 @@ public class DataServlet extends HttpServlet {
       MutationList.Builder mutBuilder = MutationList.newBuilder();
       TextFormat.merge(mutReader, mutBuilder);
       mutList = mutBuilder.build().getMutationList();
+    }
 
-      // Only apply mutations once
-      for (Mutation mut : mutList) {
-        success = currDataGraph.mutateGraph(mut);
-        if (!success) {
-          String error = "Failed to apply mutation " + mut.toString() + " to graph";
-          response.setHeader("serverError", error);
-          return;
-        }
-      }
+    currDataGraph =
+        Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
+    if (currDataGraph == null) {
+      String error = "Failed to apply mutations!";
+      response.setHeader("serverError", error);
+      return;
     }
 
     MutableGraph<GraphNode> truncatedGraph = currDataGraph.getGraphWithMaxDepth(depthNumber);
-    String graphJson = Utility.graphToJson(truncatedGraph);
+    String graphJson = Utility.graphToJson(truncatedGraph, mutList.size());
     response.getWriter().println(graphJson);
   }
 }
