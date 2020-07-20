@@ -1,4 +1,4 @@
-import { initializeNumMutations, setCurrGraphNum, initializeTippy, generateGraph, getUrl, navigateGraph, currGraphNum, numMutations, updateButtons, search, searchNode, searchToken } from "../src/main/webapp/script.js";
+import { initializeNumMutations, setCurrGraphNum, initializeTippy, generateGraph, getUrl, navigateGraph, currGraphNum, numMutations, updateButtons, searchAndHighlight, searchNode, searchToken } from "../src/main/webapp/script.js";
 
 import cytoscape from "cytoscape";
 
@@ -341,7 +341,7 @@ describe("Node search", function() {
 
   it("should be successful", function() {
     query.value = "A";
-    const result = search(cy, "node", searchNode);
+    const result = searchAndHighlight(cy, "node", searchNode);
 
     // should not display error message
     expect(nodeError.innerText).toBe("");
@@ -351,7 +351,7 @@ describe("Node search", function() {
 
   it("should be unsuccessful", function() {
     query.value = "C";
-    const result = search(cy, "node", searchNode);
+    const result = searchAndHighlight(cy, "node", searchNode);
 
     // should display error message
     expect(nodeError.innerText).toBe("node does not exist.");
@@ -360,7 +360,7 @@ describe("Node search", function() {
 
   it("should not execute at all", function() {
     query.value = "";
-    const result = search(cy, "node", searchNode);
+    const result = searchAndHighlight(cy, "node", searchNode);
 
     // should not display error message
     expect(nodeError.innerText).toBe("");
@@ -412,7 +412,7 @@ describe("Token search", function() {
 
   it("should be successful", function() {
     query.value = "a.js";
-    const result = search(cy, "token", searchToken);
+    const result = searchAndHighlight(cy, "token", searchToken);
 
     // error message should not be displayed
     expect(tokenError.innerText).toBe("");
@@ -423,7 +423,7 @@ describe("Token search", function() {
 
   it("should be successful with multiple tokens", function() {
     query.value = "b.js";
-    const result = search(cy, "token", searchToken);
+    const result = searchAndHighlight(cy, "token", searchToken);
 
     // error message should not be displayed
     expect(tokenError.innerText).toBe("");
@@ -436,7 +436,7 @@ describe("Token search", function() {
 
   it("should be unsuccessful", function() {
     query.value = "fake_file.js";
-    const result = search(cy, "token", searchToken);
+    const result = searchAndHighlight(cy, "token", searchToken);
 
     // error message should be displayed
     expect(tokenError.innerText).toBe("token does not exist.");
@@ -445,7 +445,7 @@ describe("Token search", function() {
 
   it("should not be executed at all", function() {
     query.value = "";
-    const result = search(cy, "token", searchToken);
+    const result = searchAndHighlight(cy, "token", searchToken);
 
     // error message should not be displayed
     expect(tokenError.innerText).toBe("");
