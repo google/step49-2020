@@ -54,10 +54,20 @@ public class MutationDiffTest {
    */
   @Test
   public void outOfBoundsLarge() {
-    Mutation addAB = Mutation.newBuilder().setType(Mutation.Type.ADD_EDGE).setStartNode("A").setEndNode("B").build();
+    Mutation addAB =
+        Mutation.newBuilder()
+            .setType(Mutation.Type.ADD_EDGE)
+            .setStartNode("A")
+            .setEndNode("B")
+            .build();
     MultiMutation addABM = MultiMutation.newBuilder().addMutation(addAB).build();
 
-    Mutation addAC = Mutation.newBuilder().setType(Mutation.Type.ADD_EDGE).setStartNode("A").setEndNode("C").build();
+    Mutation addAC =
+        Mutation.newBuilder()
+            .setType(Mutation.Type.ADD_EDGE)
+            .setStartNode("A")
+            .setEndNode("C")
+            .build();
     MultiMutation addACM = MultiMutation.newBuilder().addMutation(addAC).build();
 
     List<MultiMutation> multiMutList = new ArrayList<>();
@@ -75,10 +85,20 @@ public class MutationDiffTest {
    */
   @Test
   public void outOfBoundsSmall() {
-    Mutation addAB = Mutation.newBuilder().setType(Mutation.Type.ADD_EDGE).setStartNode("A").setEndNode("B").build();
+    Mutation addAB =
+        Mutation.newBuilder()
+            .setType(Mutation.Type.ADD_EDGE)
+            .setStartNode("A")
+            .setEndNode("B")
+            .build();
     MultiMutation addABM = MultiMutation.newBuilder().addMutation(addAB).build();
 
-    Mutation addAC = Mutation.newBuilder().setType(Mutation.Type.ADD_EDGE).setStartNode("A").setEndNode("C").build();
+    Mutation addAC =
+        Mutation.newBuilder()
+            .setType(Mutation.Type.ADD_EDGE)
+            .setStartNode("A")
+            .setEndNode("C")
+            .build();
     MultiMutation addACM = MultiMutation.newBuilder().addMutation(addAC).build();
 
     List<MultiMutation> multiMutList = new ArrayList<>();
@@ -100,7 +120,12 @@ public class MutationDiffTest {
     Mutation addA = Mutation.newBuilder().setType(Mutation.Type.ADD_NODE).setStartNode("A").build();
     MultiMutation addAM = MultiMutation.newBuilder().addMutation(addA).build();
 
-    Mutation addAB = Mutation.newBuilder().setType(Mutation.Type.ADD_EDGE).setStartNode("A").setEndNode("B").build();
+    Mutation addAB =
+        Mutation.newBuilder()
+            .setType(Mutation.Type.ADD_EDGE)
+            .setStartNode("A")
+            .setEndNode("B")
+            .build();
     MultiMutation addABM = MultiMutation.newBuilder().addMutation(addAB).build();
 
     List<MultiMutation> multiMutList = new ArrayList<>();
@@ -120,7 +145,12 @@ public class MutationDiffTest {
     Mutation addA = Mutation.newBuilder().setType(Mutation.Type.ADD_NODE).setStartNode("A").build();
     MultiMutation addAM = MultiMutation.newBuilder().addMutation(addA).build();
 
-    Mutation addAB = Mutation.newBuilder().setType(Mutation.Type.ADD_EDGE).setStartNode("A").setEndNode("B").build();
+    Mutation addAB =
+        Mutation.newBuilder()
+            .setType(Mutation.Type.ADD_EDGE)
+            .setStartNode("A")
+            .setEndNode("B")
+            .build();
     MultiMutation addABM = MultiMutation.newBuilder().addMutation(addAB).build();
 
     List<MultiMutation> multiMutList = new ArrayList<>();
@@ -137,14 +167,28 @@ public class MutationDiffTest {
    */
   @Test
   public void changeToken() {
-    TokenMutation tokenMut = TokenMutation.newBuilder().setType(TokenMutation.Type.ADD_TOKEN).addTokenName("1")
-        .addTokenName("2").addTokenName("3").build();
+    TokenMutation tokenMut =
+        TokenMutation.newBuilder()
+            .setType(TokenMutation.Type.ADD_TOKEN)
+            .addTokenName("1")
+            .addTokenName("2")
+            .addTokenName("3")
+            .build();
 
-    Mutation addTokenToA = Mutation.newBuilder().setStartNode("A").setType(Mutation.Type.CHANGE_TOKEN)
-        .setTokenChange(tokenMut).build();
+    Mutation addTokenToA =
+        Mutation.newBuilder()
+            .setStartNode("A")
+            .setType(Mutation.Type.CHANGE_TOKEN)
+            .setTokenChange(tokenMut)
+            .build();
     MultiMutation addTokenToAM = MultiMutation.newBuilder().addMutation(addTokenToA).build();
 
-    Mutation addAB = Mutation.newBuilder().setType(Mutation.Type.ADD_EDGE).setStartNode("A").setEndNode("B").build();
+    Mutation addAB =
+        Mutation.newBuilder()
+            .setType(Mutation.Type.ADD_EDGE)
+            .setStartNode("A")
+            .setEndNode("B")
+            .build();
     MultiMutation addABM = MultiMutation.newBuilder().addMutation(addAB).build();
 
     List<MultiMutation> multiMutList = new ArrayList<>();
@@ -161,15 +205,28 @@ public class MutationDiffTest {
    */
   @Test
   public void deleteEdge() {
-    TokenMutation tokenMut = TokenMutation.newBuilder().setType(TokenMutation.Type.ADD_TOKEN).addTokenName("1")
-        .addTokenName("2").addTokenName("3").build();
+    TokenMutation tokenMut =
+        TokenMutation.newBuilder()
+            .setType(TokenMutation.Type.ADD_TOKEN)
+            .addTokenName("1")
+            .addTokenName("2")
+            .addTokenName("3")
+            .build();
 
-    Mutation addTokenToA = Mutation.newBuilder().setStartNode("A").setType(Mutation.Type.CHANGE_TOKEN)
-        .setTokenChange(tokenMut).build();
+    Mutation addTokenToA =
+        Mutation.newBuilder()
+            .setStartNode("A")
+            .setType(Mutation.Type.CHANGE_TOKEN)
+            .setTokenChange(tokenMut)
+            .build();
     MultiMutation addTokenToAM = MultiMutation.newBuilder().addMutation(addTokenToA).build();
 
-    Mutation removeAB = Mutation.newBuilder().setType(Mutation.Type.DELETE_EDGE).setStartNode("A").setEndNode("B")
-        .build();
+    Mutation removeAB =
+        Mutation.newBuilder()
+            .setType(Mutation.Type.DELETE_EDGE)
+            .setStartNode("A")
+            .setEndNode("B")
+            .build();
     MultiMutation removeABM = MultiMutation.newBuilder().addMutation(removeAB).build();
 
     List<MultiMutation> multiMutList = new ArrayList<>();
@@ -186,18 +243,36 @@ public class MutationDiffTest {
    */
   @Test
   public void deleteNode() {
-    TokenMutation tokenMut = TokenMutation.newBuilder().setType(TokenMutation.Type.ADD_TOKEN).addTokenName("1")
-        .addTokenName("2").addTokenName("3").build();
+    TokenMutation tokenMut =
+        TokenMutation.newBuilder()
+            .setType(TokenMutation.Type.ADD_TOKEN)
+            .addTokenName("1")
+            .addTokenName("2")
+            .addTokenName("3")
+            .build();
 
-    Mutation addTokenToA = Mutation.newBuilder().setStartNode("A").setType(Mutation.Type.CHANGE_TOKEN)
-        .setTokenChange(tokenMut).build();
+    Mutation addTokenToA =
+        Mutation.newBuilder()
+            .setStartNode("A")
+            .setType(Mutation.Type.CHANGE_TOKEN)
+            .setTokenChange(tokenMut)
+            .build();
     MultiMutation addTokenToAM = MultiMutation.newBuilder().addMutation(addTokenToA).build();
 
-    Mutation removeAB = Mutation.newBuilder().setType(Mutation.Type.DELETE_EDGE).setStartNode("A").setEndNode("B")
-        .build();
-    Mutation removeB = Mutation.newBuilder().setType(Mutation.Type.DELETE_NODE).setStartNode("B").build();
-    MultiMutation deleteBM = MultiMutation.newBuilder().addMutation(removeAB).addMutation(removeB)
-        .setReason("deleting node B").build();
+    Mutation removeAB =
+        Mutation.newBuilder()
+            .setType(Mutation.Type.DELETE_EDGE)
+            .setStartNode("A")
+            .setEndNode("B")
+            .build();
+    Mutation removeB =
+        Mutation.newBuilder().setType(Mutation.Type.DELETE_NODE).setStartNode("B").build();
+    MultiMutation deleteBM =
+        MultiMutation.newBuilder()
+            .addMutation(removeAB)
+            .addMutation(removeB)
+            .setReason("deleting node B")
+            .build();
 
     List<MultiMutation> multiMutList = new ArrayList<>();
     multiMutList.add(addTokenToAM);
@@ -207,17 +282,23 @@ public class MutationDiffTest {
     Assert.assertEquals(result, deleteBM);
   }
 
-  /**
-   * Tests that an empty filter on a multimutation returns the whole multimutation
-   * back
-   */
+  /** Tests that an empty filter on a multimutation returns the whole multimutation back */
   @Test
   public void noFilter() {
-    Mutation removeAB = Mutation.newBuilder().setType(Mutation.Type.DELETE_EDGE).setStartNode("A").setEndNode("B")
-        .build();
-    Mutation removeB = Mutation.newBuilder().setType(Mutation.Type.DELETE_NODE).setStartNode("B").build();
-    MultiMutation deleteBM = MultiMutation.newBuilder().addMutation(removeAB).addMutation(removeB)
-        .setReason("deleting node B").build();
+    Mutation removeAB =
+        Mutation.newBuilder()
+            .setType(Mutation.Type.DELETE_EDGE)
+            .setStartNode("A")
+            .setEndNode("B")
+            .build();
+    Mutation removeB =
+        Mutation.newBuilder().setType(Mutation.Type.DELETE_NODE).setStartNode("B").build();
+    MultiMutation deleteBM =
+        MultiMutation.newBuilder()
+            .addMutation(removeAB)
+            .addMutation(removeB)
+            .setReason("deleting node B")
+            .build();
 
     MultiMutation filteredMultiMut = Utility.filterMultiMutationByNodes(deleteBM, new HashSet<>());
     Assert.assertEquals(filteredMultiMut, deleteBM);
@@ -241,22 +322,42 @@ public class MutationDiffTest {
    */
   @Test
   public void filterMultiMut() {
-    TokenMutation tokenMut = TokenMutation.newBuilder().setType(TokenMutation.Type.ADD_TOKEN).addTokenName("1")
-        .addTokenName("2").addTokenName("3").build();
+    TokenMutation tokenMut =
+        TokenMutation.newBuilder()
+            .setType(TokenMutation.Type.ADD_TOKEN)
+            .addTokenName("1")
+            .addTokenName("2")
+            .addTokenName("3")
+            .build();
 
-    Mutation addTokenToA = Mutation.newBuilder().setStartNode("A").setType(Mutation.Type.CHANGE_TOKEN)
-        .setTokenChange(tokenMut).build();
+    Mutation addTokenToA =
+        Mutation.newBuilder()
+            .setStartNode("A")
+            .setType(Mutation.Type.CHANGE_TOKEN)
+            .setTokenChange(tokenMut)
+            .build();
 
-    Mutation removeAB = Mutation.newBuilder().setType(Mutation.Type.DELETE_EDGE).setStartNode("A").setEndNode("B")
-        .build();
-    Mutation removeB = Mutation.newBuilder().setType(Mutation.Type.DELETE_NODE).setStartNode("B").build();
-    MultiMutation originalMultiMut = MultiMutation.newBuilder().addMutation(addTokenToA).addMutation(removeAB).addMutation(removeB)
-        .setReason("adding token to A and deleting node B").build();
+    Mutation removeAB =
+        Mutation.newBuilder()
+            .setType(Mutation.Type.DELETE_EDGE)
+            .setStartNode("A")
+            .setEndNode("B")
+            .build();
+    Mutation removeB =
+        Mutation.newBuilder().setType(Mutation.Type.DELETE_NODE).setStartNode("B").build();
+    MultiMutation originalMultiMut =
+        MultiMutation.newBuilder()
+            .addMutation(addTokenToA)
+            .addMutation(removeAB)
+            .addMutation(removeB)
+            .setReason("adding token to A and deleting node B")
+            .build();
 
     HashSet<String> nodeNames = new HashSet<>();
     nodeNames.add("A");
 
-    MultiMutation filteredMultiMut = Utility.filterMultiMutationByNodes(originalMultiMut, nodeNames);
+    MultiMutation filteredMultiMut =
+        Utility.filterMultiMutationByNodes(originalMultiMut, nodeNames);
     Assert.assertNotNull(filteredMultiMut);
 
     List<Mutation> filteredMutList = filteredMultiMut.getMutationList();
@@ -267,27 +368,47 @@ public class MutationDiffTest {
 
   /*
    * Tests that a filter correctly removes irrelevant mutations from a
-   * multimutation when the filtered node has been deleted as one of the 
+   * multimutation when the filtered node has been deleted as one of the
    * mutations
    */
   @Test
   public void filterMultiMutDeletedNode() {
-    TokenMutation tokenMut = TokenMutation.newBuilder().setType(TokenMutation.Type.ADD_TOKEN).addTokenName("1")
-        .addTokenName("2").addTokenName("3").build();
+    TokenMutation tokenMut =
+        TokenMutation.newBuilder()
+            .setType(TokenMutation.Type.ADD_TOKEN)
+            .addTokenName("1")
+            .addTokenName("2")
+            .addTokenName("3")
+            .build();
 
-    Mutation addTokenToA = Mutation.newBuilder().setStartNode("A").setType(Mutation.Type.CHANGE_TOKEN)
-        .setTokenChange(tokenMut).build();
+    Mutation addTokenToA =
+        Mutation.newBuilder()
+            .setStartNode("A")
+            .setType(Mutation.Type.CHANGE_TOKEN)
+            .setTokenChange(tokenMut)
+            .build();
 
-    Mutation removeAB = Mutation.newBuilder().setType(Mutation.Type.DELETE_EDGE).setStartNode("A").setEndNode("B")
-        .build();
-    Mutation removeB = Mutation.newBuilder().setType(Mutation.Type.DELETE_NODE).setStartNode("B").build();
-    MultiMutation originalMultiMut = MultiMutation.newBuilder().addMutation(addTokenToA).addMutation(removeAB).addMutation(removeB)
-        .setReason("adding token to A and deleting node B").build();
+    Mutation removeAB =
+        Mutation.newBuilder()
+            .setType(Mutation.Type.DELETE_EDGE)
+            .setStartNode("A")
+            .setEndNode("B")
+            .build();
+    Mutation removeB =
+        Mutation.newBuilder().setType(Mutation.Type.DELETE_NODE).setStartNode("B").build();
+    MultiMutation originalMultiMut =
+        MultiMutation.newBuilder()
+            .addMutation(addTokenToA)
+            .addMutation(removeAB)
+            .addMutation(removeB)
+            .setReason("adding token to A and deleting node B")
+            .build();
 
     HashSet<String> nodeNames = new HashSet<>();
     nodeNames.add("B");
 
-    MultiMutation filteredMultiMut = Utility.filterMultiMutationByNodes(originalMultiMut, nodeNames);
+    MultiMutation filteredMultiMut =
+        Utility.filterMultiMutationByNodes(originalMultiMut, nodeNames);
     Assert.assertNotNull(filteredMultiMut);
 
     List<Mutation> filteredMutList = filteredMultiMut.getMutationList();
@@ -302,24 +423,46 @@ public class MutationDiffTest {
    */
   @Test
   public void filterByMultipleNodes() {
-    TokenMutation tokenMut = TokenMutation.newBuilder().setType(TokenMutation.Type.ADD_TOKEN).addTokenName("1")
-        .addTokenName("2").addTokenName("3").build();
+    TokenMutation tokenMut =
+        TokenMutation.newBuilder()
+            .setType(TokenMutation.Type.ADD_TOKEN)
+            .addTokenName("1")
+            .addTokenName("2")
+            .addTokenName("3")
+            .build();
 
-    Mutation addTokenToA = Mutation.newBuilder().setStartNode("A").setType(Mutation.Type.CHANGE_TOKEN)
-        .setTokenChange(tokenMut).build();
+    Mutation addTokenToA =
+        Mutation.newBuilder()
+            .setStartNode("A")
+            .setType(Mutation.Type.CHANGE_TOKEN)
+            .setTokenChange(tokenMut)
+            .build();
 
-    Mutation removeAB = Mutation.newBuilder().setType(Mutation.Type.DELETE_EDGE).setStartNode("A").setEndNode("B")
-        .build();
-    Mutation removeB = Mutation.newBuilder().setType(Mutation.Type.DELETE_NODE).setStartNode("B").build();
-    Mutation removeC = Mutation.newBuilder().setType(Mutation.Type.DELETE_NODE).setStartNode("C").build();
-    MultiMutation originalMultiMut = MultiMutation.newBuilder().addMutation(addTokenToA).addMutation(removeAB).addMutation(removeB).addMutation(removeC)
-        .setReason("adding token to A and deleting node B").build();
+    Mutation removeAB =
+        Mutation.newBuilder()
+            .setType(Mutation.Type.DELETE_EDGE)
+            .setStartNode("A")
+            .setEndNode("B")
+            .build();
+    Mutation removeB =
+        Mutation.newBuilder().setType(Mutation.Type.DELETE_NODE).setStartNode("B").build();
+    Mutation removeC =
+        Mutation.newBuilder().setType(Mutation.Type.DELETE_NODE).setStartNode("C").build();
+    MultiMutation originalMultiMut =
+        MultiMutation.newBuilder()
+            .addMutation(addTokenToA)
+            .addMutation(removeAB)
+            .addMutation(removeB)
+            .addMutation(removeC)
+            .setReason("adding token to A and deleting node B")
+            .build();
 
     HashSet<String> nodeNames = new HashSet<>();
     nodeNames.add("A");
     nodeNames.add("C");
 
-    MultiMutation filteredMultiMut = Utility.filterMultiMutationByNodes(originalMultiMut, nodeNames);
+    MultiMutation filteredMultiMut =
+        Utility.filterMultiMutationByNodes(originalMultiMut, nodeNames);
     Assert.assertNotNull(filteredMultiMut);
 
     List<Mutation> filteredMutList = filteredMultiMut.getMutationList();

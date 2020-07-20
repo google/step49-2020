@@ -243,7 +243,7 @@ public final class GraphGenerationTest {
   /*
    * Ensure that the list of node names in a graph is correctly returned
    */
-  @Test 
+  @Test
   public void getDataGraphNodes() {
     nodeA.addChildren("B");
     nodeB.addChildren("C");

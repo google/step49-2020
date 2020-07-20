@@ -18,7 +18,6 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.HashSet;
 import java.util.stream.Collectors;
 
 import com.google.common.base.Preconditions;
@@ -213,8 +212,9 @@ public final class Utility {
   }
 
   /**
-   * Converts a Guava graph containing nodes of type GraphNode into a set
-   * of names of nodes contained in the graph
+   * Converts a Guava graph containing nodes of type GraphNode into a set of names of nodes
+   * contained in the graph
+   *
    * @param graph the graph to return node names for
    * @return a set of names of nodes in the graph
    */
@@ -223,13 +223,14 @@ public final class Utility {
   }
 
   /**
-   * Filters the mutations contained in this multimutation to be only the ones that affect the nodes in 
-   * the provided set
+   * Filters the mutations contained in this multimutation to be only the ones that affect the nodes
+   * in the provided set
+   *
    * @param mm the multimutation to filter
    * @param nodeNames the list of node names to return perninent mutations for
    * @return a multimutation containing only those mutations in mm affecting nodes in nodeNames,
-   * null if the multimutation is null and the multimutation itself if there is no name to filter
-   * by
+   *     null if the multimutation is null and the multimutation itself if there is no name to
+   *     filter by
    */
   public static MultiMutation filterMultiMutationByNodes(MultiMutation mm, Set<String> nodeNames) {
     if (mm == null || nodeNames.size() == 0) {
@@ -244,6 +245,9 @@ public final class Utility {
         filteredMutationList.add(mut);
       }
     }
-    return MultiMutation.newBuilder().addAllMutation(filteredMutationList).setReason(mm.getReason()).build();
+    return MultiMutation.newBuilder()
+        .addAllMutation(filteredMutationList)
+        .setReason(mm.getReason())
+        .build();
   }
 }
