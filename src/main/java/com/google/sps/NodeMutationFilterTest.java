@@ -79,7 +79,6 @@ public class NodeMutationFilterTest {
 
     Assert.assertNotNull(truncatedList); // Should not be null
     Assert.assertEquals(0, truncatedList.size());
-    Assert.assertFalse(truncatedList.contains(0));
   }
 
   // The following test cases are for the getNextGreatestNumIndex function in
@@ -125,8 +124,8 @@ public class NodeMutationFilterTest {
 
   @Test
   public void testInnerExistsOdd() {
-    int ans = Utility.getNextGreatestNumIndex(lst2, 12);
-    Assert.assertEquals(3, ans);
+    int ans = Utility.getNextGreatestNumIndex(lst2, 4);
+    Assert.assertEquals(1, ans);
   }
 
   /**
