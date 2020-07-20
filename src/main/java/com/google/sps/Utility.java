@@ -65,8 +65,7 @@ public final class Utility {
   public static String graphToJson(
       MutableGraph<GraphNode> graph,
       List<Integer> mutationIndices,
-      MultiMutation mutDiff,
-      int currIndex) {
+      MultiMutation mutDiff) {
     Type typeOfNode = new TypeToken<Set<GraphNode>>() {}.getType();
     Type typeOfEdge = new TypeToken<Set<EndpointPair<GraphNode>>>() {}.getType();
     Type typeOfIndices = new TypeToken<List<Integer>>() {}.getType();
@@ -84,7 +83,6 @@ public final class Utility {
             .put("mutationDiff", mutDiffJson)
             .put("reason", reason)
             .put("mutationIndices", mutationIndicesJson)
-            .put("currIndex", currIndex)
             .toString();
     return resultJson;
   }

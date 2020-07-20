@@ -114,8 +114,9 @@ async function generateGraph() {
 
   mutationIndexList = JSON.parse(jsonResponse.mutationIndices);
   numMutations = mutationIndexList.length;
-  currMutationIndex = jsonResponse.currIndex;
-  currMutationNum = currMutationIndex === -1 ? -1 : mutationIndexList[currMutationIndex];
+  
+  // currMutationIndex = jsonResponse.currIndex;
+  // currMutationNum = currMutationIndex === -1 ? -1 : mutationIndexList[currMutationIndex];
 
   if (!nodes || !edges || !Array.isArray(nodes) || !Array.isArray(edges)) {
     displayError("Malformed graph received from server - edges or nodes are empty");
@@ -126,15 +127,8 @@ async function generateGraph() {
   if (nodes.length === 0 && numMutations === 0) {
     displayError("Nothing to display from this point forward");
     return;
-  }
-  // There aren't any nodes corresponding to the filtered node in this graph but there is a 
-  // list of higher indices at which the given node is mutated so we receive a warning
-  // to this effect
-  if (response.headers.get("serverMessage") !== null) {
+  } else if(nodes.length === 0) {
     console.log(response.headers.get("serverMessage"));
-    nextBtn.disabled = false;
-    currMutationIndex = 0;
-    currMutationNum = mutationIndexList[currMutationIndex];
   }
 
   // Add node to array of cytoscape nodes
@@ -694,20 +688,64 @@ function navigateGraph(amount) {
  * Assumes currGraphNum is between 0 and numMutations
  */
 function updateButtons() {
+  const indexOfNextLargerNumber = getIndexOfNextLargerNumber(mutationIndexList, currMutationNum);
+  const indexOfClosestSmallerNumber = getIndexOfClosestSmallerNumber(mutationIndexList, currMutationNum);
   // The use of <= and >= as opposed to === is for safety! 
   // while currGraphIndex should never be < 0 or > numMutations - 1, we just wanted to make sure
   // nothing bad happened!!
-  if (currMutationIndex <= -1) {
+  if (indexOfClosestSmallerNumber <= 0) {
     document.getElementById("prevbutton").disabled = true;
   } else {
     document.getElementById("prevbutton").disabled = false;
   }
-  if (currMutationIndex >= numMutations - 1) {
+  if (indexOfNextLargerNumber >= mutationIndexList.length) {
     // removed: || numMutations == 0 since the first check takes care of it
     document.getElementById("nextbutton").disabled = true;
   } else {
     document.getElementById("nextbutton").disabled = false;
   }
   const numElement = document.getElementById("num-mutation-display");
-  numElement.innerText = `Displaying ${currMutationIndex + 1} out of ${numMutations} (this is ${currMutationNum + 1} on the original)`;
+  numElement.innerText = `Graph ${currMutationNum + 1}`;
+}
+
+function getIndexOfNextLargerNumber(indicesList, element) {
+  let start = 0;
+  let end = indices.length - 1;
+
+  let index = -1;
+  while (start <= end) {
+    let mid = Math.floor((start + end) / 2);
+    // tgt is not less, so gotta go to the right
+    if (searchList[mid] <= tgt) {
+      index = mid + 1;
+      start = mid + 1;
+    }
+    // go to the left otherwise
+    else {
+      index = mid;
+      end = mid - 1;
+    }
+  }
+  return index;
+}
+
+function getIndexOfClosestSmallerNumber(indicesList, element) {
+  let start = 0;
+  let end = indices.length - 1;
+
+  let index = -1;
+  while (start <= end) {
+    let mid = Math.floor((start + end) / 2);
+    // tgt is not less, so gotta go to the right
+    if (searchList[mid] < tgt) {
+      index = mid + 1;
+      start = mid + 1;
+    }
+    // go to the left otherwise
+    else {
+      index = mid;
+      end = mid - 1;
+    }
+  }
+  return index;
 }
