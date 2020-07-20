@@ -18,6 +18,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.HashSet;
 
 import com.google.common.base.Preconditions;
 import com.google.common.graph.EndpointPair;
@@ -208,5 +209,28 @@ public final class Utility {
     }
     if (ans == -1) return -1;
     return ans;
+  }
+
+  /**
+   * 
+   */
+  public static MultiMutation filterMultiMutationByNodes(MultiMutation mm, Set<GraphNode> nodes, String filteredNodeName) {
+    if (mm == null ) {
+      return mm;
+    }
+    HashSet<String> nodeNames = new HashSet<>();
+    for (GraphNode node : nodes) {
+      nodeNames.add(node.name());
+    }
+    List<Mutation> mutList = mm.getMutationList();
+    ArrayList<Mutation> lst = new ArrayList<>();
+    for (Mutation mut : mutList) {
+      String startName = mut.getStartNode();
+      String endName = mut.getEndNode();
+      if (nodeNames.contains(startName) || nodeNames.contains(endName) || filteredNodeName.equals(startName) || filteredNodeName.equals(endName)) {
+        lst.add(mut);
+      }
+    }
+    return MultiMutation.newBuilder().addAllMutation(lst).setReason(mm.getReason()).build();
   }
 }
