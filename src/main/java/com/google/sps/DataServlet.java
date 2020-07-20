@@ -17,7 +17,6 @@ package com.google.sps;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.io.InputStreamReader;
 
 import java.util.List;
@@ -72,8 +71,9 @@ public class DataServlet extends HttpServlet {
      *********************************
      */
     if (currDataGraph == null && originalDataGraph == null) {
-      success = initializeGraphVariables(
-        getServletContext().getResourceAsStream("/WEB-INF/initial_graph.textproto"));
+      success =
+          initializeGraphVariables(
+              getServletContext().getResourceAsStream("/WEB-INF/initial_graph.textproto"));
       String error = "Failed to parse input graph into Guava graph - not a DAG!";
       if (!success) {
         response.setHeader("serverError", error);
@@ -92,7 +92,8 @@ public class DataServlet extends HttpServlet {
      *************************************
      */
     if (mutList == null) {
-      initializeMutationVariables(getServletContext().getResourceAsStream("/WEB-INF/mutations.textproto"));
+      initializeMutationVariables(
+          getServletContext().getResourceAsStream("/WEB-INF/mutations.textproto"));
       // Populate the list of all possible mutation indices
       defaultIndices = IntStream.range(0, mutList.size() - 1).boxed().collect(Collectors.toList());
       // and initialize the current list of relevant indices to this because
@@ -146,7 +147,7 @@ public class DataServlet extends HttpServlet {
      */
 
     if (nodeNameParam.length() == 0) {
-      // No node has been searched for, so just return the requested graph 
+      // No node has been searched for, so just return the requested graph
       // upto the specified depth and reset any filtering of relevant indices
 
       // Compute the diff of changes to highlight if we're moving forward
@@ -156,7 +157,9 @@ public class DataServlet extends HttpServlet {
 
       // Try to generate the requested graph, catching and returning any error
       try {
-        currDataGraph = Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
+        currDataGraph =
+            Utility.getGraphAtMutationNumber(
+                originalDataGraph, currDataGraph, mutationNumber, mutList);
       } catch (IllegalArgumentException e) {
         String error = e.getMessage();
         response.setHeader("serverError", error);
@@ -176,17 +179,17 @@ public class DataServlet extends HttpServlet {
     // First, get the indices at which this node is mutated, either by looking it
     // up in the cache or generating and caching them.
     if (!mutationIndicesMap.containsKey(nodeNameParam)) {
-      mutationIndicesMap.put(nodeNameParam, Utility.getMutationIndicesOfNode(nodeNameParam, mutList));
+      mutationIndicesMap.put(
+          nodeNameParam, Utility.getMutationIndicesOfNode(nodeNameParam, mutList));
     }
     filteredMutationIndices = mutationIndicesMap.get(nodeNameParam);
 
-
     // We case on whether the current graph contains the node or not
-    if(currDataGraph.graphNodesMap().containsKey(nodeNameParam)) {
+    if (currDataGraph.graphNodesMap().containsKey(nodeNameParam)) {
       // The graph displayed on screen does contain the given node
 
       // The new graph does not mutate the given node
-      if(filteredMutationIndices.indexOf(mutationNumber) == -1) {
+      if (filteredMutationIndices.indexOf(mutationNumber) == -1) {
         String message = "The searched node exists, but is not mutated in this graph";
         response.setHeader("serverMessage", message);
       }
@@ -194,11 +197,13 @@ public class DataServlet extends HttpServlet {
         diff = Utility.getDiffBetween(mutList, mutationNumber);
       }
       // case 3: node is in the current graph. then relevant mutationIndices is ok
-      currDataGraph = Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
+      currDataGraph =
+          Utility.getGraphAtMutationNumber(
+              originalDataGraph, currDataGraph, mutationNumber, mutList);
       truncatedGraph = currDataGraph.getReachableNodes(nodeNameParam, depthNumber);
     } else {
       // The searched node is not in the graph
-      if(filteredMutationIndices.size() == 0) {
+      if (filteredMutationIndices.size() == 0) {
         // and the searched node is never mutated
         String error = "The searched node does not exist";
         response.setHeader("serverError", error);
@@ -208,7 +213,9 @@ public class DataServlet extends HttpServlet {
         // the searched node is mutated at some future/previous point
         String message = "The searched node does not exist in this graph";
         response.setHeader("serverMessage", message);
-        currDataGraph = Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
+        currDataGraph =
+            Utility.getGraphAtMutationNumber(
+                originalDataGraph, currDataGraph, mutationNumber, mutList);
         truncatedGraph = GraphBuilder.directed().build();
       }
     }
@@ -217,7 +224,6 @@ public class DataServlet extends HttpServlet {
     diff = Utility.filterMultiMutationByNodes(diff, truncatedGraphNodeNames);
     graphJson = Utility.graphToJson(truncatedGraph, filteredMutationIndices, diff);
     response.getWriter().println(graphJson);
-
 
     //   // CASES:
     //   // 1. Node isn't on the current graph, node isn't in any mutations -> error (not
@@ -231,10 +237,10 @@ public class DataServlet extends HttpServlet {
 
     //   // Indicies of relevant mutations from the entire mutList
     //   // Add to map if doesn't exist yet
-      
 
     //   // case 1: Node is not in the current graph or any graph
-    //   if (!currDataGraph.graphNodesMap().containsKey(nodeNameParam) && filteredMutationIndices.isEmpty()) {
+    //   if (!currDataGraph.graphNodesMap().containsKey(nodeNameParam) &&
+    // filteredMutationIndices.isEmpty()) {
     //     String error = "There are no nodes anywhere on this graph!";
     //     response.setHeader("serverError", error);
     //     return;
@@ -244,7 +250,8 @@ public class DataServlet extends HttpServlet {
 
     //     // index of the next element in relevantMutationsIndices that is greater than
     //     // currDataGraph.numMutations()
-    //     int newNumIndex = Utility.getNextGreatestNumIndex(filteredMutationIndices, currDataGraph.numMutations());
+    //     int newNumIndex = Utility.getNextGreatestNumIndex(filteredMutationIndices,
+    // currDataGraph.numMutations());
 
     //     // shouldn't happen, but we're back to case 1.
     //     if (newNumIndex == -1) {
@@ -261,12 +268,14 @@ public class DataServlet extends HttpServlet {
     //     int newNum = filteredMutationIndices.get(newNumIndex);
 
     //     // only get the indices AFTER this one
-    //     filteredMutationIndices = filteredMutationIndices.subList(newNumIndex, filteredMutationIndices.size());
+    //     filteredMutationIndices = filteredMutationIndices.subList(newNumIndex,
+    // filteredMutationIndices.size());
 
     //     diff = Utility.getDiffBetween(mutList, newNum);
 
     //     // Update the current graph
-    //     currDataGraph = Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, newNum, mutList);
+    //     currDataGraph = Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph,
+    // newNum, mutList);
 
     //     // This should not happen since
     //     if (currDataGraph == null) {
@@ -280,7 +289,8 @@ public class DataServlet extends HttpServlet {
     //       diff = Utility.getDiffBetween(mutList, mutationNumber);
     //     }
     //     // case 3: node is in the current graph. then relevant mutationIndices is ok
-    //     currDataGraph = Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
+    //     currDataGraph = Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph,
+    // mutationNumber, mutList);
     //     currIndex = filteredMutationIndices.indexOf(mutationNumber);
     //   }
     //   // This is the single search
