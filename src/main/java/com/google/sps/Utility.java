@@ -211,11 +211,10 @@ public final class Utility {
     return ans;
   }
 
-  /**
-   * 
-   */
-  public static MultiMutation filterMultiMutationByNodes(MultiMutation mm, Set<GraphNode> nodes, String filteredNodeName) {
-    if (mm == null ) {
+  /** */
+  public static MultiMutation filterMultiMutationByNodes(
+      MultiMutation mm, Set<GraphNode> nodes, String filteredNodeName) {
+    if (mm == null) {
       return mm;
     }
     HashSet<String> nodeNames = new HashSet<>();
@@ -227,7 +226,10 @@ public final class Utility {
     for (Mutation mut : mutList) {
       String startName = mut.getStartNode();
       String endName = mut.getEndNode();
-      if (nodeNames.contains(startName) || nodeNames.contains(endName) || filteredNodeName.equals(startName) || filteredNodeName.equals(endName)) {
+      if (nodeNames.contains(startName)
+          || nodeNames.contains(endName)
+          || filteredNodeName.equals(startName)
+          || filteredNodeName.equals(endName)) {
         lst.add(mut);
       }
     }

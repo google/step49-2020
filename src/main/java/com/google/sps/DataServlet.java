@@ -234,7 +234,7 @@ public class DataServlet extends HttpServlet {
       truncatedGraph = currDataGraph.getReachableNodes(nodeNameParam, depthNumber);
       diff = Utility.filterMultiMutationByNodes(diff, truncatedGraph.nodes(), nodeNameParam);
     }
-    
+
     String graphJson =
         Utility.graphToJson(truncatedGraph, filteredMutationIndices, diff, currIndex);
 
