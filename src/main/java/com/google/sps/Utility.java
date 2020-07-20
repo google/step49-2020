@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.stream.Collectors;
 
 import com.google.common.base.Preconditions;
 import com.google.common.graph.EndpointPair;
@@ -212,25 +213,37 @@ public final class Utility {
   }
 
   /**
-   * 
+   * Converts a Guava graph containing nodes of type GraphNode into a set
+   * of names of nodes contained in the graph
+   * @param graph the graph to return node names for
+   * @return a set of names of nodes in the graph
    */
-  public static MultiMutation filterMultiMutationByNodes(MultiMutation mm, Set<GraphNode> nodes, String filteredNodeName) {
-    if (mm == null ) {
+  public static Set<String> getNodeNamesInGraph(MutableGraph<GraphNode> graph) {
+    return graph.nodes().stream().map(node -> node.name()).collect(Collectors.toSet());
+  }
+
+  /**
+   * Filters the mutations contained in this multimutation to be only the ones that affect the nodes in 
+   * the provided set
+   * @param mm the multimutation to filter
+   * @param nodeNames the list of node names to return perninent mutations for
+   * @return a multimutation containing only those mutations in mm affecting nodes in nodeNames,
+   * null if the multimutation is null and the multimutation itself if there is no name to filter
+   * by
+   */
+  public static MultiMutation filterMultiMutationByNodes(MultiMutation mm, Set<String> nodeNames) {
+    if (mm == null || nodeNames.size() == 0) {
       return mm;
     }
-    HashSet<String> nodeNames = new HashSet<>();
-    for (GraphNode node : nodes) {
-      nodeNames.add(node.name());
-    }
-    List<Mutation> mutList = mm.getMutationList();
-    ArrayList<Mutation> lst = new ArrayList<>();
-    for (Mutation mut : mutList) {
+    List<Mutation> originalMutationList = mm.getMutationList();
+    ArrayList<Mutation> filteredMutationList = new ArrayList<>();
+    for (Mutation mut : originalMutationList) {
       String startName = mut.getStartNode();
       String endName = mut.getEndNode();
-      if (nodeNames.contains(startName) || nodeNames.contains(endName) || filteredNodeName.equals(startName) || filteredNodeName.equals(endName)) {
-        lst.add(mut);
+      if (nodeNames.contains(startName) || nodeNames.contains(endName)) {
+        filteredMutationList.add(mut);
       }
     }
-    return MultiMutation.newBuilder().addAllMutation(lst).setReason(mm.getReason()).build();
+    return MultiMutation.newBuilder().addAllMutation(filteredMutationList).setReason(mm.getReason()).build();
   }
 }

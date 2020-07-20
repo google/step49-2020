@@ -21,6 +21,7 @@ import java.io.InputStreamReader;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.HashMap;
 
 import javax.servlet.annotation.WebServlet;
@@ -232,7 +233,9 @@ public class DataServlet extends HttpServlet {
       }
       // This is the single search
       truncatedGraph = currDataGraph.getReachableNodes(nodeNameParam, depthNumber);
-      diff = Utility.filterMultiMutationByNodes(diff, truncatedGraph.nodes(), nodeNameParam);
+      Set<String> truncatedGraphNodeNames = Utility.getNodeNamesInGraph(truncatedGraph);
+      truncatedGraphNodeNames.add(nodeNameParam);
+      diff = Utility.filterMultiMutationByNodes(diff, truncatedGraphNodeNames);
     }
     
     String graphJson =
