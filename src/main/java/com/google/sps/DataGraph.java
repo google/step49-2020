@@ -186,33 +186,28 @@ abstract class DataGraph {
         break;
       }
       case ADD_EDGE: {
-        String error = "";
         // Check nodes exist before adding an edge
-        if (startNode == null || endNode == null) {
-          if (startNode == null) {
-            error = "Add edge: Start node " + startName + " doesn't exist\n";
-          }
-          if (endNode == null) {
-            error += "Add edge: End node " + endName + " doesn't exist\n";
-          }
-          return error;
+
+        if (startNode == null) {
+          return "Add edge: Start node " + startName + " doesn't exist\n";
         }
+        if (endNode == null) {
+          return "Add edge: End node " + endName + " doesn't exist\n";
+        }
+
         // The target cannot be a root since it has an in-edge
         roots.remove(endName);
         graph.putEdge(startNode, endNode);
         break;
       }
       case DELETE_EDGE: {
-        String error = "";
-        if (startNode == null || endNode == null) {
-          if (startNode == null) {
-            error = "Delete edge: Start node " + startName + " doesn't exist\n";
-          }
-          if (endNode == null) {
-            error += "Delete edge: End node " + endName + " doesn't exist\n";
-          }
-          return error;
+        if (startNode == null) {
+          return "Delete edge: Start node " + startName + " doesn't exist\n";
         }
+        if (endNode == null) {
+          return "Delete edge: End node " + endName + " doesn't exist\n";
+        }
+
         graph.removeEdge(startNode, endNode);
         // If the target now has no in-edges, it becomes a root
         if (graph.inDegree(endNode) == 0) {
