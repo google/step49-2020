@@ -1,11 +1,23 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,700;1,400&display=swap');
+
+/* Define color scheme of page */
+:root {
+  --error: red;  
+}
+
+h1 {
+  margin: 0 auto;
+}
+
 body {
   margin: 50px;
   font-size: 25px;
+  font-family: 'Roboto', sans-serif;
 }
 
 #graph {
   width: 90%;
-  height: 70vh;
+  height: 65vh;
   margin-left: auto;
   margin-right: auto;
   margin-top: 0;
@@ -17,7 +29,7 @@ body {
 }
 
 #errortext {
-  color: red;
+  color: var(--error);
   font-size: 25px;
 }
 
@@ -63,7 +75,7 @@ body {
 #search-box {
   display: flex;
   flex-direction: column;
-  padding: 50px;
+  padding: 20px;
 }
 
 #graph-content {
@@ -91,7 +103,7 @@ body {
 }
 
 #log-list > li {
-  color: red;
+  color: var(--error);
   margin: 10px;
   padding: 10px;
   background-color: white;
