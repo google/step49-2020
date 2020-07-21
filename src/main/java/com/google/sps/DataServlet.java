@@ -163,27 +163,28 @@ public class DataServlet extends HttpServlet {
         Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
     truncatedGraph = currDataGraph.getReachableNodes(nodeNameParam, depthNumber);
 
-    // Handle errors
+    // We set the headers in the following 3 scenarios:
+    // The searched node is not in the graph and is never mutated
     if (truncatedGraph.nodes().size() == 0 && filteredMutationIndices.size() == 0) {
-      // The searched node is not in the graph and is never mutated
       String error = "The searched node does not exist anywhere in this graph or in mutations";
       response.setHeader("serverError", error);
       return;
     }
+    // The searched node is not in the graph but is mutated at some future point
     if (truncatedGraph.nodes().size() == 0 && filteredMutationIndices.size() != 0) {
-      // The searched node is not in the graph but is mutated at some future point
       String message =
           "The searched node does not exist in this graph, but it does exist in a later graph!";
       response.setHeader("serverMessage", message);
     }
+    // The searched node exists but is not mutated in the current graph
     if (truncatedGraph.nodes().size() != 0
         && mutationNumber != -1
         && filteredMutationIndices.indexOf(mutationNumber) == -1) {
-      // The searched node exists but is not mutated in the current graph
       String message = "The searched node exists, but is not mutated in this graph";
       response.setHeader("serverMessage", message);
     }
 
+    // We filter the multimutation if there was a node searched
     if (nodeNameParam.length() != 0) {
       Set<String> truncatedGraphNodeNames = Utility.getNodeNamesInGraph(truncatedGraph);
       truncatedGraphNodeNames.add(nodeNameParam);
