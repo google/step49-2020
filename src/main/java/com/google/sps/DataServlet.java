@@ -110,6 +110,9 @@ public class DataServlet extends HttpServlet {
     String depthParam = request.getParameter("depth");
     String mutationParam = request.getParameter("mutationNum");
     String nodeNameParam = request.getParameter("nodeName");
+    String tokeParam = request.getParameter("tokenName");
+
+    System.out.println(tokenParam);
 
     if (depthParam == null) {
       String error = "Improper depth parameter, cannot generate graph";
@@ -119,12 +122,14 @@ public class DataServlet extends HttpServlet {
       String error = "Improper mutation number parameter, cannot generate graph";
       response.setHeader("serverError", error);
       return;
-    } else if (nodeNameParam == null) {
-      // We should not error out and should proceed as if not filtering in this
-      // case
+    } 
+    // If nodeNameParam or tokenParam are null, we should just set them to empty and not error out
+    if (nodeNameParam == null) {
       nodeNameParam = "";
+    } 
+    if (tokeParam == null) {
+      tokenParam = "";
     }
-
     int depthNumber = Integer.parseInt(depthParam);
     int mutationNumber = Integer.parseInt(mutationParam);
 
