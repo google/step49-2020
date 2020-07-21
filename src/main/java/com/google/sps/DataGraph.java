@@ -237,14 +237,11 @@ abstract class DataGraph {
       case CHANGE_TOKEN: {
         if (startNode == null) {
           return "Change node: Changing a non-existent node " + startName + "\n";
-
         }
         GraphNode newNode = changeNodeToken(startNode, mut.getTokenChange());
 
         if (newNode == null) {
-
           return "Change node: Unrecognized token mutation " + mut.getTokenChange().getType() + "\n";
-
         }
 
         graphNodesMap.put(startName, newNode);
