@@ -15,7 +15,9 @@
 package com.google.sps;
 
 import java.io.IOException;
+
 import java.io.InputStreamReader;
+
 import java.util.List;
 import java.util.Map;
 
@@ -97,6 +99,7 @@ public class DataServlet extends HttpServlet {
       /*
        * The below code is used to read a mutation list specified in textproto form
        */
+
       InputStreamReader mutReader =
           new InputStreamReader(
               getServletContext().getResourceAsStream("/WEB-INF/mutation.textproto"));
@@ -104,6 +107,9 @@ public class DataServlet extends HttpServlet {
       TextFormat.merge(mutReader, mutBuilder);
       mutList = mutBuilder.build().getMutationList();
     }
+
+    // Parameter for the nodeName the user searched for in the frontend
+    String nodeNameParam = request.getParameter("nodeName");
 
     // Get the multi-mutation difference between the current graph and the requested
     // graph
@@ -120,7 +126,16 @@ public class DataServlet extends HttpServlet {
       return;
     }
 
-    MutableGraph<GraphNode> truncatedGraph = currDataGraph.getGraphWithMaxDepth(depthNumber);
+    MutableGraph<GraphNode> truncatedGraph;
+
+    // If a node is searched, get the graph with just the node. Otherwise, use the
+    // whole graph
+    if (nodeNameParam == null || nodeNameParam.length() == 0) {
+      truncatedGraph = currDataGraph.getGraphWithMaxDepth(depthNumber);
+    } else {
+      truncatedGraph = currDataGraph.getReachableNodes(nodeNameParam, depthNumber);
+    }
+
     String graphJson = Utility.graphToJson(truncatedGraph, mutList.size(), mutDiff);
     response.getWriter().println(graphJson);
   }

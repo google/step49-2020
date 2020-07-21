@@ -56,3 +56,8 @@ body {
 .nextprev {
   margin: 20px;
 }
+
+#search-box {
+  display: flex;
+  flex-direction: column;
+}

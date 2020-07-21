@@ -63,7 +63,7 @@ function initializeNumMutations(num) {
   numMutations = num;
 }
 
-/**
+/** 
  * Sets the current graph number
  */
 function setCurrGraphNum(num) {
@@ -148,6 +148,8 @@ async function generateGraph() {
  */
 function getUrl() {
   const depthElem = document.getElementById('num-layers');
+  const nodeName = document.getElementById('node-name') ? document.getElementById('node-name').value || "" : ""; 
+
   let selectedDepth = 0;
   if (depthElem === null) {
     selectedDepth = 3;
@@ -165,7 +167,7 @@ function getUrl() {
       selectedDepth = 20;
     }
   }
-  const url = `/data?depth=${selectedDepth}&mutationNum=${currGraphNum}`;
+  const url = `/data?depth=${selectedDepth}&mutationNum=${currGraphNum}&nodeName=${nodeName}`;
   return url;
 }
 /**
