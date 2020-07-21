@@ -306,12 +306,6 @@ function getGraphDisplay(graphNodes, graphEdges, mutList, reason) {
   if (Object.keys(result).length === 0) {
     return;
   }
-  // Break the list down into individual constituents
-  const deletedNodes = result["deletedNodes"] || cy.collection();
-  const deletedEdges = result["deletedEdges"] || cy.collection();
-  const addedNodes = result["addedNodes"] || cy.collection();
-  const addedEdges = result["addedEdges"] || cy.collection();
-  const modifiedNodes = result["modifiedNodes"] || cy.collection();
 
   let elems = cy.collection();
   Object.entries(result).forEach(([, value]) => { elems = elems.union(value); })
@@ -324,6 +318,13 @@ function getGraphDisplay(graphNodes, graphEdges, mutList, reason) {
   // Zoom in on them and activate their reason tooltips
   makeInteractiveAndFocus(cy, elems);
 
+  
+  // Break the list down into individual constituents
+  const deletedNodes = result["deletedNodes"] || cy.collection();
+  const deletedEdges = result["deletedEdges"] || cy.collection();
+  const addedNodes = result["addedNodes"] || cy.collection();
+  const addedEdges = result["addedEdges"] || cy.collection();
+  const modifiedNodes = result["modifiedNodes"] || cy.collection();
 
   showMutButton.addEventListener("change", () => {
     if (showMutButton.checked) {
@@ -344,25 +345,25 @@ function getGraphDisplay(graphNodes, graphEdges, mutList, reason) {
  * Highlights modified nodes and edges in the graph according to the list
  * of mutations
  * 
- * @param {*} cy the graph 
- * @param {*} mutList the list of mutations to highlight
- * @param {*} reason the reason for the mutations
- * @returns {*} an object containing the deleted nodes, deleted edges, added
+ * @param cy the graph 
+ * @param mutList the list of mutations to highlight
+ * @param reason the reason for the mutations
+ * @returns an object containing the deleted nodes, deleted edges, added
  * nodes, added edges and modified nodes as per the mutationList or an empty
  * object if there are no mutations
  */
 function highlightDiff(cy, mutList, reason = "") {
+  // If the mutation list is null/undefined
+  if (!mutList) {
+    return {};
+  }
+
   // Initialize empty collections
   let deletedNodes = cy.collection();
   let deletedEdges = cy.collection();
   let addedNodes = cy.collection();
   let addedEdges = cy.collection();
   let modifiedNodes = cy.collection();
-
-  // If the mutation list is null/undefined
-  if (!mutList) {
-    return {};
-  }
 
   // Apply each mutation
   mutList.forEach(mutation => {
@@ -372,14 +373,14 @@ function highlightDiff(cy, mutList, reason = "") {
     let modifiedObj = cy.collection();
 
     if (!type || !startNode) {
-      return modifiedObj;
+      return;
     }
 
     switch (type) {
       case 1:
         // add node
-        if (cy.getElementById(startNode).length !== 0) {
-          modifiedObj = cy.getElementById(startNode);
+        if (cy.$id(startNode).length !== 0) {
+          modifiedObj = cy.$id(startNode);
           // color this node green
           modifiedObj.style('background-color', colorScheme["addedObjectColor"]);
           addedNodes = addedNodes.union(modifiedObj);
@@ -389,8 +390,8 @@ function highlightDiff(cy, mutList, reason = "") {
         break;
       case 2:
         // add edge
-        if (endNode && cy.getElementById(startNode).length !== 0 && cy.getElementById(endNode).length !== 0) {
-          modifiedObj = cy.getElementById(`edge${startNode}${endNode}`);
+        if (endNode && cy.$id(startNode).length !== 0 && cy.$id(endNode).length !== 0) {
+          modifiedObj = cy.$id(`edge${startNode}${endNode}`);
           // color this edge green
           modifiedObj.style('line-color', colorScheme["addedObjectColor"]);
           modifiedObj.style('target-arrow-color', colorScheme["addedObjectColor"]);
@@ -406,13 +407,13 @@ function highlightDiff(cy, mutList, reason = "") {
       case 3:
         // delete node
         // add a phantom node (if it doesn't already exist) and color it red
-        if (cy.getElementById(startNode).length === 0) {
+        if (cy.$id(startNode).length === 0) {
           cy.add({
             group: "nodes",
             data: { id: startNode }
           });
         }
-        modifiedObj = cy.getElementById(startNode);
+        modifiedObj = cy.$id(startNode);
         modifiedObj.style('background-color', colorScheme["deletedObjectColor"]);
         modifiedObj.style('opacity', opacityScheme["deletedObjectOpacity"]);
         deletedNodes = deletedNodes.union(modifiedObj);
@@ -423,13 +424,13 @@ function highlightDiff(cy, mutList, reason = "") {
           break;
         }
         // if corresponding nodes don't exist, add them
-        if (cy.getElementById(startNode).length === 0) {
+        if (cy.$id(startNode).length === 0) {
           cy.add({
             group: "nodes",
             data: { id: startNode }
           });
         }
-        if (cy.getElementById(endNode).length === 0) {
+        if (cy.$id(endNode).length === 0) {
           cy.add({
             group: "nodes",
             data: { id: endNode }
@@ -444,7 +445,7 @@ function highlightDiff(cy, mutList, reason = "") {
             source: startNode
           }
         });
-        modifiedObj = cy.getElementById(`edge${startNode}${endNode}`);
+        modifiedObj = cy.$id(`edge${startNode}${endNode}`);
         modifiedObj.style('line-color', colorScheme["deletedObjectColor"]);
         modifiedObj.style('target-arrow-color', colorScheme["deletedObjectColor"]);
         modifiedObj.style('opacity', opacityScheme["deletedObjectOpacity"]);
@@ -452,8 +453,8 @@ function highlightDiff(cy, mutList, reason = "") {
         break;
       case 5:
         // change node
-        if (cy.getElementById(startNode).length !== 0) {
-          modifiedObj = cy.getElementById(startNode);
+        if (cy.$id(startNode).length !== 0) {
+          modifiedObj = cy.$id(startNode);
           modifiedObj.style('background-color', colorScheme["modifiedNodeColor"]);
           modifiedNodes = modifiedNodes.union(modifiedObj);
         }
@@ -462,7 +463,7 @@ function highlightDiff(cy, mutList, reason = "") {
         break;
     }
     if (modifiedObj.length !== 0) {
-      initializeReasonTooltip(modifiedObj, reason)
+      initializeReasonTooltip(modifiedObj, reason);
     }
   });
   return {
@@ -478,8 +479,8 @@ function highlightDiff(cy, mutList, reason = "") {
 /**
  * Initializes a tooltip with reason as its contents that displays when the object
  * is hovered over
- * @param {*} obj the cytoscape object to display the tooltip over when hovered
- * @param {*} reason the reason for the mutation
+ * @param obj the cytoscape object to display the tooltip over when hovered
+ * @param reason the reason for the mutation
  */
 function initializeReasonTooltip(obj, reason) {
   const tipPosition = obj.popperRef(); // used only for positioning
@@ -506,13 +507,13 @@ function initializeReasonTooltip(obj, reason) {
  * Shows the mutations made to this graph by highlighting them and enabling their
  * tooltips 
  * 
- * @param {*} cy the graph to modify
- * @param {*} elems all the elements to mutate
- * @param {*} deletedNodes the nodes which were deleted to get this graph (red)
- * @param {*} deletedEdges the edges which were deleted to get this graph (red)
- * @param {*} addedNodes the nodes which were added to get this graph (green)
- * @param {*} addedEdges the edges which were added to get this graph (green)
- * @param {*} modifiedNodes the nodes which were modified to get this graph (yellow)
+ * @param cy the graph to modify
+ * @param elems all the elements to mutate
+ * @param deletedNodes the nodes which were deleted to get this graph (red)
+ * @param deletedEdges the edges which were deleted to get this graph (red)
+ * @param addedNodes the nodes which were added to get this graph (green)
+ * @param addedEdges the edges which were added to get this graph (green)
+ * @param modifiedNodes the nodes which were modified to get this graph (yellow)
  */
 function showDiffs(cy, elems, deletedNodes, deletedEdges, addedNodes, addedEdges, modifiedNodes) {
   // Add phantom nodes and edges to represent deleted objects
@@ -539,8 +540,8 @@ function showDiffs(cy, elems, deletedNodes, deletedEdges, addedNodes, addedEdges
 /**
  * Activates tooltips that open on hovering over objects in elems and then zooms 
  * in on these elements if possible
- * @param {*} cy the graph to modify
- * @param {*} elems the elements for which tooltips should be shown on mouseover
+ * @param cy the graph to modify
+ * @param elems the elements for which tooltips should be shown on mouseover
  */
 function makeInteractiveAndFocus(cy, elems) {
   // Add listeners to show and hide tooltips
@@ -560,13 +561,13 @@ function makeInteractiveAndFocus(cy, elems) {
 /**
  * Reverts the highlighted mutations on the graph, displaying only the base graph
  * 
- * @param {*} cy the graph to modify
- * @param {*} elems all the elements that were mutated
- * @param {*} deletedNodes the nodes which were deleted to get this graph 
- * @param {*} deletedEdges the edges which were deleted to get this graph 
- * @param {*} addedNodes the nodes which were added to get this graph 
- * @param {*} addedEdges the edges which were added to get this graph 
- * @param {*} modifiedNodes the nodes which were modified to get this graph 
+ * @param cy the graph to modify
+ * @param elems all the elements that were mutated
+ * @param deletedNodes the nodes which were deleted to get this graph 
+ * @param deletedEdges the edges which were deleted to get this graph 
+ * @param addedNodes the nodes which were added to get this graph 
+ * @param addedEdges the edges which were added to get this graph 
+ * @param modifiedNodes the nodes which were modified to get this graph 
  */
 function hideDiffs(cy, elems, deletedNodes, deletedEdges, addedNodes, addedEdges, modifiedNodes) {
   // Remove phantom nodes and edges
