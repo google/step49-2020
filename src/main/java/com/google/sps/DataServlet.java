@@ -70,9 +70,7 @@ public class DataServlet extends HttpServlet {
      *********************************
      */
     if (currDataGraph == null && originalDataGraph == null) {
-      success =
-          initializeGraphVariables(
-              getServletContext().getResourceAsStream("/WEB-INF/initial_graph.textproto"));
+      success = initializeGraphVariables(getServletContext().getResourceAsStream("/WEB-INF/initial_graph.textproto"));
       String error = "Failed to parse input graph into Guava graph - not a DAG!";
       if (!success) {
         response.setHeader("serverError", error);
@@ -91,8 +89,7 @@ public class DataServlet extends HttpServlet {
      *************************************
      */
     if (mutList == null) {
-      initializeMutationVariables(
-          getServletContext().getResourceAsStream("/WEB-INF/mutations.textproto"));
+      initializeMutationVariables(getServletContext().getResourceAsStream("/WEB-INF/mutations.textproto"));
       // Populate the list of all possible mutation indices
       defaultIndices = IntStream.range(0, mutList.size() - 1).boxed().collect(Collectors.toList());
       // and initialize the current list of relevant indices to this because
@@ -144,7 +141,17 @@ public class DataServlet extends HttpServlet {
      * Filtering Graph and Mutations By Searched Node
      *************************************************
      */
+    // General run down of cases:
+    // 1. No node searched for
+    // 2. Node searched for IS in the graph (Subcases: mutated in this graph or not
+    // mutated in this graph)
+    // In the case that the node IS in the graph but is NOT mutated, we just set a
+    // header and proceed as we would in the other case.
+    // 3. Node searhced for IS NOT in the graph (Subcases: no mutations pertain to
+    // this node, or future mutations pertain to this node)
+    // If future mutations pertain to this node, we set the header and an empty graph.
 
+    // CASE 1: NO NODE HAS BEEN SEARCHED FOR
     if (nodeNameParam.length() == 0) {
       // No node has been searched for, so just return the requested graph
       // upto the specified depth and reset any filtering of relevant indices
@@ -156,9 +163,7 @@ public class DataServlet extends HttpServlet {
 
       // Try to generate the requested graph, catching and returning any error
       try {
-        currDataGraph =
-            Utility.getGraphAtMutationNumber(
-                originalDataGraph, currDataGraph, mutationNumber, mutList);
+        currDataGraph = Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
       } catch (IllegalArgumentException e) {
         String error = e.getMessage();
         response.setHeader("serverError", error);
@@ -173,49 +178,46 @@ public class DataServlet extends HttpServlet {
       response.getWriter().println(graphJson);
       return;
     }
-    // A node is searched
-
+    // Everything beyond this handles when a node is searched
     // First, get the indices at which this node is mutated, either by looking it
     // up in the cache or generating and caching them.
     if (!mutationIndicesMap.containsKey(nodeNameParam)) {
-      mutationIndicesMap.put(
-          nodeNameParam, Utility.getMutationIndicesOfNode(nodeNameParam, mutList));
+      mutationIndicesMap.put(nodeNameParam, Utility.getMutationIndicesOfNode(nodeNameParam, mutList));
     }
     filteredMutationIndices = mutationIndicesMap.get(nodeNameParam);
 
-    // We case on whether the current graph contains the node or not
+    // CASE 2: NODE SEARCHED FOR IS IN THE GRAPH
     if (currDataGraph.graphNodesMap().containsKey(nodeNameParam)) {
       // The graph displayed on screen does contain the given node
 
-      // The new graph does not mutate the given node
+      // CASE 2A: CURRENT GRAPH DOES NOT MUTATE THE NODE (this should only happen when
+      // a NEW node is searched). We just set the header
       if (filteredMutationIndices.indexOf(mutationNumber) == -1) {
         String message = "The searched node exists, but is not mutated in this graph";
         response.setHeader("serverMessage", message);
       }
+      // Get the diff only if moving forward
       if (mutationNumber > currDataGraph.numMutations()) {
         diff = Utility.getDiffBetween(mutList, mutationNumber);
       }
-      currDataGraph =
-          Utility.getGraphAtMutationNumber(
-              originalDataGraph, currDataGraph, mutationNumber, mutList);
+      currDataGraph = Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
       truncatedGraph = currDataGraph.getReachableNodes(nodeNameParam, depthNumber);
     } else {
-      // The searched node is not in the graph
+      // CASE 3: SEARCHED NODE IS NOT IN THE GRAPH
+      // 3A: SEARCHED NODE IS NOT IN ANY MUTATION EITHER
       if (filteredMutationIndices.size() == 0) {
         // and the searched node is never mutated
-        String error = "The searched node does not exist";
+        String error = "The searched node does not exist anywhere in this graph or in mutations";
         response.setHeader("serverError", error);
         return;
       } else {
-        // the searched node is mutated at some future/previous point
-        String message = "The searched node does not exist in this graph";
+        // 3B: SEARCHED NODE IS IN A MUTATION (must be added somewhere)
+        String message = "The searched node does not exist in this graph, but it does exist in a later graph!";
         response.setHeader("serverMessage", message);
         if (mutationNumber > currDataGraph.numMutations()) {
           diff = Utility.getDiffBetween(mutList, mutationNumber);
         }
-        currDataGraph =
-            Utility.getGraphAtMutationNumber(
-                originalDataGraph, currDataGraph, mutationNumber, mutList);
+        currDataGraph = Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
         truncatedGraph = currDataGraph.getReachableNodes(nodeNameParam, depthNumber);
       }
     }
