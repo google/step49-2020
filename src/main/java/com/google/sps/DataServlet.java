@@ -31,7 +31,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.MutableGraph;
 import com.google.protobuf.TextFormat;
 import com.proto.GraphProtos.Graph;
@@ -196,7 +195,9 @@ public class DataServlet extends HttpServlet {
       if (mutationNumber > currDataGraph.numMutations()) {
         diff = Utility.getDiffBetween(mutList, mutationNumber);
       }
-      currDataGraph = Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
+      currDataGraph =
+          Utility.getGraphAtMutationNumber(
+              originalDataGraph, currDataGraph, mutationNumber, mutList);
       truncatedGraph = currDataGraph.getReachableNodes(nodeNameParam, depthNumber);
     } else {
       // The searched node is not in the graph
@@ -212,7 +213,9 @@ public class DataServlet extends HttpServlet {
         if (mutationNumber > currDataGraph.numMutations()) {
           diff = Utility.getDiffBetween(mutList, mutationNumber);
         }
-        currDataGraph = Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
+        currDataGraph =
+            Utility.getGraphAtMutationNumber(
+                originalDataGraph, currDataGraph, mutationNumber, mutList);
         truncatedGraph = currDataGraph.getReachableNodes(nodeNameParam, depthNumber);
       }
     }
