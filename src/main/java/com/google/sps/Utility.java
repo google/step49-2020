@@ -147,7 +147,7 @@ public final class Utility {
       return null;
     }
     if (nextIndex - currIndex == 1) {
-      // Non-adjacent indices
+      // If indices are adjacent, get the corresponding multimutation
       return multiMutList.get(currIndex);
     }
     return null;
