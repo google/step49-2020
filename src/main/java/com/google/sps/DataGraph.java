@@ -31,7 +31,7 @@ import java.util.List;
 @AutoValue
 abstract class DataGraph {
 
-   /**
+  /**
    * Create a new empty data graph
    *
    * @return the empty data graph with these attributes
@@ -125,7 +125,7 @@ abstract class DataGraph {
     return DataGraph.create(Graphs.copyOf(graph), copyMap, copyRoots, mutationNum, tokenCopyMap);
   }
 
-/**
+  /**
    * Takes in a map from node name to proto-parsed node object. Populates data graph with
    * information from the parsed graph
    *
