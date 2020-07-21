@@ -92,13 +92,12 @@ body {
   background-color: #D3D3D3;
   border-radius: 10px;
   max-height: 75vh;
+  overflow-y: scroll;
 }
 
 #log-list {
   font-size: 15px;
   list-style: none;
-  overflow-x: scroll;
-  overflow-y: scroll;
   padding: 15px;
 }
 
