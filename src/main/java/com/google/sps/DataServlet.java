@@ -113,7 +113,6 @@ public class DataServlet extends HttpServlet {
     String nodeNameParam = request.getParameter("nodeName");
     String tokenParam = request.getParameter("tokenName");
 
-
     if (depthParam == null) {
       String error = "Improper depth parameter, cannot generate graph";
       response.setHeader("serverError", error);
@@ -126,7 +125,7 @@ public class DataServlet extends HttpServlet {
     // If nodeNameParam or tokenParam are null, we should just set them to empty and not error out
     if (nodeNameParam == null) {
       nodeNameParam = "";
-    } 
+    }
     if (tokenParam == null) {
       tokenParam = "";
     }
@@ -166,7 +165,7 @@ public class DataServlet extends HttpServlet {
     // Get the graph at the requested mutation number and truncate it
     currDataGraph =
         Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
-        List<String> queried = new ArrayList<>(Arrays.asList(nodeNameParam)); 
+    List<String> queried = new ArrayList<>(Arrays.asList(nodeNameParam));
     truncatedGraph = currDataGraph.getReachableNodes(queried, depthNumber);
 
     // Handle errors
