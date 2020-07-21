@@ -377,7 +377,10 @@ abstract class DataGraph {
     }
 
     HashMap<String, GraphNode> graphNodesMap = this.graphNodesMap();
-
+    // If no name, we just start from the roots
+    if (name.length() == 0) {
+      return getGraphWithMaxDepth(radius);
+    }
     if (!graphNodesMap.containsKey(name)) {
       return GraphBuilder.directed()
           .build(); // If the specified node is not found, return an empty graph
