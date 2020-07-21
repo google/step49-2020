@@ -17,6 +17,7 @@ package com.google.sps;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.io.InputStreamReader;
 
 import java.util.List;
@@ -110,9 +111,8 @@ public class DataServlet extends HttpServlet {
     String depthParam = request.getParameter("depth");
     String mutationParam = request.getParameter("mutationNum");
     String nodeNameParam = request.getParameter("nodeName");
-    String tokeParam = request.getParameter("tokenName");
+    String tokenParam = request.getParameter("tokenName");
 
-    System.out.println(tokenParam);
 
     if (depthParam == null) {
       String error = "Improper depth parameter, cannot generate graph";
@@ -127,7 +127,7 @@ public class DataServlet extends HttpServlet {
     if (nodeNameParam == null) {
       nodeNameParam = "";
     } 
-    if (tokeParam == null) {
+    if (tokenParam == null) {
       tokenParam = "";
     }
     int depthNumber = Integer.parseInt(depthParam);
@@ -166,7 +166,8 @@ public class DataServlet extends HttpServlet {
     // Get the graph at the requested mutation number and truncate it
     currDataGraph =
         Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
-    truncatedGraph = currDataGraph.getReachableNodes(nodeNameParam, depthNumber);
+        List<String> queried = new ArrayList<>(Arrays.asList(nodeNameParam)); 
+    truncatedGraph = currDataGraph.getReachableNodes(queried, depthNumber);
 
     // Handle errors
     if (truncatedGraph.nodes().size() == 0 && filteredMutationIndices.size() == 0) {
