@@ -295,10 +295,10 @@ function getGraphDisplay(graphNodes, graphEdges, mutList, reason) {
  * Highlights modified nodes and edges in the graph according to the list
  * of mutations
  * 
- * @param {*} cy the graph 
- * @param {*} mutList the list of mutations to highlight
- * @param {*} reason the reason for the mutations
- * @returns {*} an object containing the deleted nodes, deleted edges, added
+ * @param cy the graph 
+ * @param mutList the list of mutations to highlight
+ * @param reason the reason for the mutations
+ * @returns an object containing the deleted nodes, deleted edges, added
  * nodes, added edges and modified nodes as per the mutationList or an empty
  * object if there are no mutations
  */
@@ -421,8 +421,8 @@ function highlightDiff(cy, mutList, reason = "") {
 /**
  * Initializes a tooltip with reason as its contents that displays when the object
  * is hovered over
- * @param {*} obj the cytoscape object to display the tooltip over when hovered
- * @param {*} reason the reason for the mutation
+ * @param obj the cytoscape object to display the tooltip over when hovered
+ * @param reason the reason for the mutation
  */
 function initializeReasonTooltip(obj, reason) {
   const tipPosition = obj.popperRef(); // used only for positioning
@@ -449,13 +449,13 @@ function initializeReasonTooltip(obj, reason) {
  * Shows the mutations made to this graph by highlighting them and enabling their
  * tooltips 
  * 
- * @param {*} cy the graph to modify
- * @param {*} elems all the elements to mutate
- * @param {*} deletedNodes the nodes which were deleted to get this graph (red)
- * @param {*} deletedEdges the edges which were deleted to get this graph (red)
- * @param {*} addedNodes the nodes which were added to get this graph (green)
- * @param {*} addedEdges the edges which were added to get this graph (green)
- * @param {*} modifiedNodes the nodes which were modified to get this graph (yellow)
+ * @param cy the graph to modify
+ * @param elems all the elements to mutate
+ * @param deletedNodes the nodes which were deleted to get this graph (red)
+ * @param deletedEdges the edges which were deleted to get this graph (red)
+ * @param addedNodes the nodes which were added to get this graph (green)
+ * @param addedEdges the edges which were added to get this graph (green)
+ * @param modifiedNodes the nodes which were modified to get this graph (yellow)
  */
 function showDiffs(cy, elems, deletedNodes, deletedEdges, addedNodes, addedEdges, modifiedNodes) {
   // Add phantom nodes and edges to represent deleted objects
@@ -482,8 +482,8 @@ function showDiffs(cy, elems, deletedNodes, deletedEdges, addedNodes, addedEdges
 /**
  * Activates tooltips that open on hovering over objects in elems and then zooms 
  * in on these elements if possible
- * @param {*} cy the graph to modify
- * @param {*} elems the elements for which tooltips should be shown on mouseover
+ * @param cy the graph to modify
+ * @param elems the elements for which tooltips should be shown on mouseover
  */
 function makeInteractiveAndFocus(cy, elems) {
   // Add listeners to show and hide tooltips
@@ -503,13 +503,13 @@ function makeInteractiveAndFocus(cy, elems) {
 /**
  * Reverts the highlighted mutations on the graph, displaying only the base graph
  * 
- * @param {*} cy the graph to modify
- * @param {*} elems all the elements that were mutated
- * @param {*} deletedNodes the nodes which were deleted to get this graph 
- * @param {*} deletedEdges the edges which were deleted to get this graph 
- * @param {*} addedNodes the nodes which were added to get this graph 
- * @param {*} addedEdges the edges which were added to get this graph 
- * @param {*} modifiedNodes the nodes which were modified to get this graph 
+ * @param cy the graph to modify
+ * @param elems all the elements that were mutated
+ * @param deletedNodes the nodes which were deleted to get this graph 
+ * @param deletedEdges the edges which were deleted to get this graph 
+ * @param addedNodes the nodes which were added to get this graph 
+ * @param addedEdges the edges which were added to get this graph 
+ * @param modifiedNodes the nodes which were modified to get this graph 
  */
 function hideDiffs(cy, elems, deletedNodes, deletedEdges, addedNodes, addedEdges, modifiedNodes) {
   // Remove phantom nodes and edges
