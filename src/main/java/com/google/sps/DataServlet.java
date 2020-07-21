@@ -149,7 +149,8 @@ public class DataServlet extends HttpServlet {
     // header and proceed as we would in the other case.
     // 3. Node searhced for IS NOT in the graph (Subcases: no mutations pertain to
     // this node, or future mutations pertain to this node)
-    // If future mutations pertain to this node, we set the header and an empty graph.
+    // If future mutations pertain to this node, we set the header and an empty
+    // graph.
 
     // CASE 1: NO NODE HAS BEEN SEARCHED FOR
     if (nodeNameParam.length() == 0) {
@@ -228,6 +229,15 @@ public class DataServlet extends HttpServlet {
     response.getWriter().println(graphJson);
   }
 
+  /**
+   * Private function to intitialize graph variables. returns a boolean to
+   * represent whether the InpuStream was read successfully.
+   * 
+   * @param graphInput InputStream to initialize graph variables over
+   * @return whether variables were initialized properly; true if successful and
+   *         false otherwise
+   * @throws IOException if something does wrong during the reading
+   */
   private boolean initializeGraphVariables(InputStream graphInput) throws IOException {
     InputStreamReader graphReader = new InputStreamReader(graphInput);
     Graph.Builder graphBuilder = Graph.newBuilder();
@@ -239,6 +249,13 @@ public class DataServlet extends HttpServlet {
     return originalDataGraph.graphFromProtoNodes(protoNodesMap);
   }
 
+  /**
+   * Private function to intialize the mutation list. Returns a boolean to
+   * represent whether the InputStream was read successfully.
+   * 
+   * @param mutationInput InputStream to initialize variable over
+   * @throws IOException if something goes wrong during the reading
+   */
   private void initializeMutationVariables(InputStream mutationInput) throws IOException {
     InputStreamReader mutReader = new InputStreamReader(mutationInput);
     MutationList.Builder mutBuilder = MutationList.newBuilder();
