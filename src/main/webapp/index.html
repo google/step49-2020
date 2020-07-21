@@ -18,28 +18,37 @@
     <input type="number" id="num-layers" name="layers" min="0" max="20" value="3">
     <label for="search-name">Name of node to search for</label>
     <input type="text" id="node-name-filter" name="search-name" placeholder="Name"></input>
+    <button onclick="graph.generateGraph()">Get Graph</button>
+    <div id="num-mutation-display"></div>
   </div>
-  <button onclick="graph.generateGraph()">Get Graph</button>
-  <br />
-  <div id="num-mutation-display"></div>
-  <div id="graphdiv">
-    <div id="graph"></div>
-    <p id="buttontext">Navigate to the next and previous graph using the buttons below:</p>
-    <div id="buttondiv">
-      <button id="prevbutton" class="nextprev material-icons"
-        onclick="graph.navigateGraph(-1); graph.generateGraph()">navigate_before</button>
-      <button id="nextbutton" class="nextprev material-icons"
-        onclick="graph.navigateGraph(1); graph.generateGraph()">navigate_next</button>
+  <div id="graph-content">
+  <!-- COLUMN 1: main column -->
+    <div class="graph-content-column" id="graph-content-main">
+      <div id="graphdiv">
+        <div id="graph"></div>
+        <p id="buttontext">Navigate to the next and previous graph using the buttons below:</p>
+        <div id="buttondiv">
+          <button id="prevbutton" class="nextprev material-icons"
+            onclick="graph.navigateGraph(-1); graph.generateGraph()">navigate_before</button>
+          <button id="nextbutton" class="nextprev material-icons"
+            onclick="graph.navigateGraph(1); graph.generateGraph()">navigate_next</button>
+        </div>
+        <label id="show-mutation-text" for="show-mutations">Select this checkbox to show the mutated nodes in the
+          graph</label><br>
+        <input type="checkbox" id="show-mutations" name="show-mutations" checked=true>
+      </div>
+      <label>Search by Node: </label>
+      <input type="text" id="search" name="search"></input>
+      <button id="search-button">Search</button>
+      <label id="search-error"></label>
     </div>
-    <label id="show-mutation-text" for="show-mutations">Select this checkbox to show the mutated nodes in the
-      graph</label><br>
-    <input type="checkbox" id="show-mutations" name="show-mutations" checked=true>
-  </div>
-  <label>Search by Node: </label>
-  <input type="text" id="search" name="search"></input>
-  <button id="search-button">Search</button>
-  <label id="search-error"></label>
-
+    <!-- COLUMN 2: includes messages -->
+    <div class="graph-content-column" id="graph-content-logs">
+      <ul id="log-list">
+        <li>Welcome to our application! Here you'll see a log of messages pertaining to the graph on the left. Enjoy! :)</li>
+      </ul>
+    </div>
+</div>
 </body>
 
 </html>

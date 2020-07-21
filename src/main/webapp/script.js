@@ -117,7 +117,6 @@ async function generateGraph() {
   const reason = jsonResponse["reason"];
 
   mutationIndexList = JSON.parse(jsonResponse.mutationIndices);
-  console.log(mutationIndexList);
   numMutations = mutationIndexList.length;
 
   // currMutationIndex = jsonResponse.currIndex;
@@ -130,13 +129,13 @@ async function generateGraph() {
 
   // There aren't any nodes in this graph, and there aren't any mutations pertaining to the filtered node
   if (nodes.length === 0 && numMutations === 0) {
-    displayError("Nothing to display from this point forward");
+    displayError("This node does not exist in any stage of the graph!");
     return;
   } else if (response.headers.get("serverMessage")) {
     // This happens if the graph doesn't contain the searched node or 
     // if the graph contains the searched node BUT it isn't mutated in this graph
     // We have to adjust the indices in this case
-    console.log(response.headers.get("serverMessage"));
+    addToLogs(response.headers.get("serverMessage"));
   }
   const indexOfNextLargerNumber = getIndexOfNextLargerNumber(mutationIndexList, currMutationNum);
   const indexOfClosestSmallerNumber = getIndexOfClosestSmallerNumber(mutationIndexList, currMutationNum);
@@ -193,6 +192,16 @@ function getUrl() {
   }
   const url = `/data?depth=${selectedDepth}&mutationNum=${currMutationNum}&nodeName=${nodeName}`;
   return url;
+}
+
+/**
+ * Add to the TOP of the logs list
+ */
+function addToLogs(msg) {
+  const logsList = document.getElementById("log-list");
+  const newMsg = document.createElement("li");
+  newMsg.innerText = msg;
+  logsList.insertBefore(newMsg, logsList.firstChild);
 }
 /**
  * Takes an error message and creates a text element on the page to display this message
@@ -375,7 +384,7 @@ function highlightDiff(cy, mutList, reason = "") {
           modifiedObj.style('background-color', colorScheme["addedObjectColor"]);
           addedNodes = addedNodes.union(modifiedObj);
         } else {
-          console.log("No node called " + startNode + " in graph");
+          addToLogs("No node called " + startNode + " in graph");
         }
         break;
       case 2:
@@ -387,11 +396,11 @@ function highlightDiff(cy, mutList, reason = "") {
           modifiedObj.style('target-arrow-color', colorScheme["addedObjectColor"]);
           addedEdges = addedEdges.union(modifiedObj);
         } else if (!endNode) {
-          console.log(endNode + " not specified");
+          addToLogs(endNode + " not specified");
         } else if (cy.getElementById(startNode).length === 0) {
-          console.log("No node called " + startNode + " in graph");
+          addToLogs("No node called " + startNode + " in graph");
         } else {
-          console.log("No node called " + endNode + " in graph");
+          addToLogs("No node called " + endNode + " in graph");
         }
         break;
       case 3:
