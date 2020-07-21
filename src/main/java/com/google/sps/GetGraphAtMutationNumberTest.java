@@ -277,10 +277,12 @@ public class GetGraphAtMutationNumberTest {
     multiMutList.add(addABM);
     multiMutList.add(removeABM);
     multiMutList.add(removeCM);
+    HashMap<String, Set<String>> tokenMap = new HashMap<>();
 
     // Build the current graph (same graph and map)
     // This graph is the one after adding and removing AB but before removing C
-    DataGraph dataGraphMutated = DataGraph.create(origGraph, origGraphNodesMap, origRoots, 2);
+    DataGraph dataGraphMutated =
+        DataGraph.create(origGraph, origGraphNodesMap, origRoots, 2, tokenMap);
 
     DataGraph mutatedGraph =
         Utility.getGraphAtMutationNumber(dataGraph, dataGraphMutated, 0, multiMutList);
