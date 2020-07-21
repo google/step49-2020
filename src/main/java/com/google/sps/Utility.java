@@ -116,7 +116,7 @@ public final class Utility {
           }
         }
       }
-      return DataGraph.create(curr.graph(), curr.graphNodesMap(), curr.roots(), mutationNum);
+      return DataGraph.create(curr.graph(), curr.graphNodesMap(), curr.roots(), mutationNum, curr.tokenMap());
     } else {
       // Create a copy of the original graph and start from the original graph
       DataGraph originalCopy = original.getCopy();
@@ -131,7 +131,7 @@ public final class Utility {
         }
       }
       return DataGraph.create(
-          originalCopy.graph(), originalCopy.graphNodesMap(), originalCopy.roots(), mutationNum);
+          originalCopy.graph(), originalCopy.graphNodesMap(), originalCopy.roots(), mutationNum, original.tokenMap());
     }
   }
 
