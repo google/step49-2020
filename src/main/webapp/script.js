@@ -49,6 +49,9 @@ let currMutationNum = -1;
 // to a graph beyond this point
 let numMutations = 0;
 
+// Stores the list of relevant mutation indices 
+// (for ex, if a node was searched and the node was modified in the 1st, 4th, and 
+// 5th indices, this would be [1,4,5])
 let mutationIndexList = [];
 
 /**
@@ -208,6 +211,10 @@ function displayError(errorMsg) {
  * Takes in graph nodes and edges and creates a cytoscape graph with this
  * data. Assumes that the graph is a DAG to display it in the optimal layout.
  * Returns the cytoscape graph object.
+ * @param graphNodes a list of nodes
+ * @param graphEdges a list of edges
+ * @param mutList a list of mutations
+ * @param reason for mutation, used for highlighting the difference
  */
 function getGraphDisplay(graphNodes, graphEdges, mutList, reason) {
   const cy = cytoscape({
@@ -669,6 +676,8 @@ function getTooltipContent(node) {
  * When a next/previous button is clicked, modifies the mutation index of the
  * current graph to represent the new state. Then, the corresponding
  * graph is requested from the server.
+ * @param amount the amount to change the currMutationIndex by. 
+ * Either 1 (for next button) or -1 (for previous button)
  */
 function navigateGraph(amount) {
   // this function should not be called if there are no mutations
