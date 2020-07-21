@@ -193,7 +193,6 @@ public class DataServlet extends HttpServlet {
       if (mutationNumber > currDataGraph.numMutations()) {
         diff = Utility.getDiffBetween(mutList, mutationNumber);
       }
-      // case 3: node is in the current graph. then relevant mutationIndices is ok
       currDataGraph = Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
       truncatedGraph = currDataGraph.getReachableNodes(nodeNameParam, depthNumber);
     } else {
@@ -204,12 +203,14 @@ public class DataServlet extends HttpServlet {
         response.setHeader("serverError", error);
         return;
       } else {
-        // TODO: what if the node is deleted at this point
         // the searched node is mutated at some future/previous point
         String message = "The searched node does not exist in this graph";
         response.setHeader("serverMessage", message);
+        if (mutationNumber > currDataGraph.numMutations()) {
+          diff = Utility.getDiffBetween(mutList, mutationNumber);
+        }
         currDataGraph = Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
-        truncatedGraph = GraphBuilder.directed().build();
+        truncatedGraph = currDataGraph.getReachableNodes(nodeNameParam, depthNumber);
       }
     }
     Set<String> truncatedGraphNodeNames = Utility.getNodeNamesInGraph(truncatedGraph);
@@ -217,78 +218,6 @@ public class DataServlet extends HttpServlet {
     diff = Utility.filterMultiMutationByNodes(diff, truncatedGraphNodeNames);
     graphJson = Utility.graphToJson(truncatedGraph, filteredMutationIndices, diff);
     response.getWriter().println(graphJson);
-
-
-    //   // CASES:
-    //   // 1. Node isn't on the current graph, node isn't in any mutations -> error (not
-    //   // fatal)
-    //   // 2. Node is not on the current graph, in a mutation though -> say it's not
-    //   // here, jump to the mutation with it
-    //   // this should only apply when a new node is searched
-    //   // 3. Node is on the current graph -> then display current graph WITH the
-    //   // relevant indices (no need to change indices)
-    //   // Could either be the same node or a different node
-
-    //   // Indicies of relevant mutations from the entire mutList
-    //   // Add to map if doesn't exist yet
-      
-
-    //   // case 1: Node is not in the current graph or any graph
-    //   if (!currDataGraph.graphNodesMap().containsKey(nodeNameParam) && filteredMutationIndices.isEmpty()) {
-    //     String error = "There are no nodes anywhere on this graph!";
-    //     response.setHeader("serverError", error);
-    //     return;
-    //   }
-    //   // case 2: Node is not in the current graph
-    //   if (!currDataGraph.graphNodesMap().containsKey(nodeNameParam)) {
-
-    //     // index of the next element in relevantMutationsIndices that is greater than
-    //     // currDataGraph.numMutations()
-    //     int newNumIndex = Utility.getNextGreatestNumIndex(filteredMutationIndices, currDataGraph.numMutations());
-
-    //     // shouldn't happen, but we're back to case 1.
-    //     if (newNumIndex == -1) {
-    //       String error = "There are no nodes anywhere on this graph!";
-    //       response.setHeader("serverError", error);
-    //       return;
-    //     }
-
-    //     // Give a warning but also move ahead to the next valid graph
-    //     String message = "There are no nodes anywhere on this graph!";
-    //     response.setHeader("serverMessage", message);
-
-    //     // The index of the next mutation to look at in the ORIGINAL mutlist
-    //     int newNum = filteredMutationIndices.get(newNumIndex);
-
-    //     // only get the indices AFTER this one
-    //     filteredMutationIndices = filteredMutationIndices.subList(newNumIndex, filteredMutationIndices.size());
-
-    //     diff = Utility.getDiffBetween(mutList, newNum);
-
-    //     // Update the current graph
-    //     currDataGraph = Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, newNum, mutList);
-
-    //     // This should not happen since
-    //     if (currDataGraph == null) {
-    //       String error = "Something went wrong when mutating the graph!";
-    //       response.setHeader("serverError", error);
-    //       return;
-    //     }
-    //     currIndex = 0;
-    //   } else {
-    //     if (mutationNumber > currDataGraph.numMutations()) {
-    //       diff = Utility.getDiffBetween(mutList, mutationNumber);
-    //     }
-    //     // case 3: node is in the current graph. then relevant mutationIndices is ok
-    //     currDataGraph = Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
-    //     currIndex = filteredMutationIndices.indexOf(mutationNumber);
-    //   }
-    //   // This is the single search
-    //   truncatedGraph = currDataGraph.getReachableNodes(nodeNameParam, depthNumber);
-    //   Set<String> truncatedGraphNodeNames = Utility.getNodeNamesInGraph(truncatedGraph);
-    //   truncatedGraphNodeNames.add(nodeNameParam);
-    //   diff = Utility.filterMultiMutationByNodes(diff, truncatedGraphNodeNames);
-    // }
   }
 
   private boolean initializeGraphVariables(InputStream graphInput) throws IOException {

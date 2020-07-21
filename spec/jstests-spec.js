@@ -1,7 +1,8 @@
 import {
   initializeNumMutations, setMutationIndexList, setCurrMutationNum, initializeTippy,
   generateGraph, getUrl, navigateGraph, currMutationNum, currMutationIndex, numMutations,
-  updateButtons, searchNode, highlightDiff, initializeReasonTooltip, getGraphDisplay
+  updateButtons, searchNode, highlightDiff, initializeReasonTooltip, getGraphDisplay,
+  getIndexOfClosestSmallerNumber, getIndexOfNextLargerNumber
 }
   from "../src/main/webapp/script.js";
 
@@ -213,6 +214,7 @@ describe("Pressing next and previous buttons associated with a graph", function 
   it("correctly updates mutation tracking variables and buttons on click", function () {
     document.body.appendChild(numDisplay);
     initializeNumMutations(3);
+    setCurrMutationNum(-1);
     // Relevant indices are different from actual indices!
     setMutationIndexList([0, 1, 3]);
     const prevButton = document.createElement("button");
@@ -223,6 +225,7 @@ describe("Pressing next and previous buttons associated with a graph", function 
     nextButton.onclick = () => { navigateGraph(1); updateButtons(); };
     document.body.appendChild(prevButton);
     document.body.appendChild(nextButton);
+
 
     expect(currMutationNum).toBe(-1);
     expect(currMutationIndex).toBe(-1);
@@ -579,5 +582,80 @@ describe("Showing and hiding tooltips when checkbox is clicked", function () {
     expect(gNodeA.reasonTip.state.isVisible).toBe(false);
     gNodeA.trigger("mouseout");
     expect(gNodeA.reasonTip.state.isVisible).toBe(false);
+  });
+});
+
+describe("Checking binary search functions", function () {
+  it("correctly returns next greater and smaller indices for an element in the list", function () {
+    const arr = [1,5,7,8,11];
+    const prevLower = getIndexOfClosestSmallerNumber(arr, 5);
+    const nextHigher = getIndexOfNextLargerNumber(arr, 5);
+
+    expect(prevLower).toBe(0);
+    expect(nextHigher).toBe(2);
+  });
+  it("correctly returns next greater and smaller indices for an element not in the list", function () {
+    const arr = [1,5,7,8,11];
+    const prevLower = getIndexOfClosestSmallerNumber(arr, 6);
+    const nextHigher = getIndexOfNextLargerNumber(arr, 6);
+
+    expect(prevLower).toBe(1);
+    expect(nextHigher).toBe(2);
+  });
+  it("correctly returns next greater and smaller indices for an element at the end of the list", function () {
+    const arr = [1,5,7,8,11];
+    const prevLower = getIndexOfClosestSmallerNumber(arr, 11);
+    const nextHigher = getIndexOfNextLargerNumber(arr, 11);
+
+    expect(prevLower).toBe(3);
+    expect(nextHigher).toBe(5);
+  });
+  it("correctly returns next greater and smaller indices for an element at the start of the list", function () {
+    const arr = [1,5,7,8,11];
+    const prevLower = getIndexOfClosestSmallerNumber(arr, 1);
+    const nextHigher = getIndexOfNextLargerNumber(arr, 1);
+
+    expect(prevLower).toBe(-1);
+    expect(nextHigher).toBe(1);
+  });
+  it("correctly returns next greater and smaller indices for an element that is larger than all list elements", function () {
+    const arr = [1,5,7,8,11];
+    const prevLower = getIndexOfClosestSmallerNumber(arr, 12);
+    const nextHigher = getIndexOfNextLargerNumber(arr, 12);
+
+    expect(prevLower).toBe(4);
+    expect(nextHigher).toBe(5);
+  });
+  it("correctly returns next greater and smaller indices for an element that is smaller than all list elements", function () {
+    const arr = [1,5,7,8,11];
+    const prevLower = getIndexOfClosestSmallerNumber(arr, 0);
+    const nextHigher = getIndexOfNextLargerNumber(arr, 0);
+
+    expect(prevLower).toBe(-1);
+    expect(nextHigher).toBe(0);
+  });
+  it("correctly returns next greater and smaller indices for a list with all equal elements", function () {
+    const arr = [5,5,5,5,5];
+    const prevLower = getIndexOfClosestSmallerNumber(arr, 5);
+    const nextHigher = getIndexOfNextLargerNumber(arr, 5);
+
+    expect(prevLower).toBe(-1);
+    expect(nextHigher).toBe(5);
+  });
+  it("correctly returns next greater and smaller indices for a list with some equal elements (start)", function () {
+    const arr = [5,5,5,6,7,8];
+    const prevLower = getIndexOfClosestSmallerNumber(arr, 5);
+    const nextHigher = getIndexOfNextLargerNumber(arr, 5);
+
+    expect(prevLower).toBe(-1);
+    expect(nextHigher).toBe(3);
+  });
+  it("correctly returns next greater and smaller indices for a list with some equal elements (end)", function () {
+    const arr = [1,2,3,5,5,5];
+    const prevLower = getIndexOfClosestSmallerNumber(arr, 5);
+    const nextHigher = getIndexOfNextLargerNumber(arr, 5);
+
+    expect(prevLower).toBe(2);
+    expect(nextHigher).toBe(6);
   });
 });

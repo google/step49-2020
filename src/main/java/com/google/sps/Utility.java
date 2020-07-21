@@ -239,7 +239,7 @@ public final class Utility {
     for (Mutation mut : originalMutationList) {
       String startName = mut.getStartNode();
       String endName = mut.getEndNode();
-      if (nodeNames.contains(startName) || nodeNames.contains(endName)) {
+      if (nodeNames.contains(startName) && (endName.equals("") || nodeNames.contains(endName))) {
         filteredMutationList.add(mut);
       }
     }

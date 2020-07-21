@@ -25,12 +25,13 @@ import tippy, { sticky } from 'tippy.js';
 import 'tippy.js/dist/tippy.css';
 import 'tippy.js/dist/backdrop.css';
 import 'tippy.js/animations/shift-away.css';
-import {colorScheme, opacityScheme} from './constants.js';
+import { colorScheme, opacityScheme } from './constants.js';
 
 export {
   initializeNumMutations, setMutationIndexList, setCurrMutationNum, initializeTippy,
   generateGraph, getUrl, navigateGraph, currMutationNum, currMutationIndex, numMutations,
-  updateButtons, searchNode, highlightDiff, initializeReasonTooltip, getGraphDisplay
+  updateButtons, searchNode, highlightDiff, initializeReasonTooltip, getGraphDisplay,
+  getIndexOfClosestSmallerNumber, getIndexOfNextLargerNumber
 };
 
 cytoscape.use(popper); // register extension
@@ -114,7 +115,7 @@ async function generateGraph() {
 
   mutationIndexList = JSON.parse(jsonResponse.mutationIndices);
   numMutations = mutationIndexList.length;
-  
+
   // currMutationIndex = jsonResponse.currIndex;
   // currMutationNum = currMutationIndex === -1 ? -1 : mutationIndexList[currMutationIndex];
 
@@ -127,8 +128,11 @@ async function generateGraph() {
   if (nodes.length === 0 && numMutations === 0) {
     displayError("Nothing to display from this point forward");
     return;
-  } else if(nodes.length === 0) {
+  } else if (response.headers.get("serverMessage")) {
     console.log(response.headers.get("serverMessage"));
+    const indexOfNextLargerNumber = getIndexOfNextLargerNumber(mutationIndexList, currMutationNum);
+    const indexOfClosestSmallerNumber = getIndexOfClosestSmallerNumber(mutationIndexList, currMutationNum);
+    currMutationIndex = ((indexOfNextLargerNumber + indexOfClosestSmallerNumber) / 2);
   }
 
   // Add node to array of cytoscape nodes
@@ -671,7 +675,15 @@ function navigateGraph(amount) {
   if (numMutations <= 0) {
     return;
   }
-  currMutationIndex += amount;
+  if (Number.isInteger(currMutationIndex)) {
+    currMutationIndex += amount;
+  } else {
+    if (amount === 1) {
+      currMutationIndex = Math.ceil(currMutationIndex);
+    } else {
+      currMutationIndex = Math.floor(currMutationIndex);
+    }
+  }
   if (currMutationIndex <= -1) {
     currMutationIndex = -1;
   }
@@ -688,17 +700,15 @@ function navigateGraph(amount) {
  * Assumes currGraphNum is between 0 and numMutations
  */
 function updateButtons() {
-  const indexOfNextLargerNumber = getIndexOfNextLargerNumber(mutationIndexList, currMutationNum);
-  const indexOfClosestSmallerNumber = getIndexOfClosestSmallerNumber(mutationIndexList, currMutationNum);
   // The use of <= and >= as opposed to === is for safety! 
   // while currGraphIndex should never be < 0 or > numMutations - 1, we just wanted to make sure
   // nothing bad happened!!
-  if (indexOfClosestSmallerNumber <= 0) {
+  if (Math.floor(currMutationIndex) <= -1) {
     document.getElementById("prevbutton").disabled = true;
   } else {
     document.getElementById("prevbutton").disabled = false;
   }
-  if (indexOfNextLargerNumber >= mutationIndexList.length) {
+  if (currMutationIndex >= mutationIndexList.length - 1) {
     // removed: || numMutations == 0 since the first check takes care of it
     document.getElementById("nextbutton").disabled = true;
   } else {
@@ -710,13 +720,13 @@ function updateButtons() {
 
 function getIndexOfNextLargerNumber(indicesList, element) {
   let start = 0;
-  let end = indices.length - 1;
+  let end = indicesList.length - 1;
 
   let index = -1;
   while (start <= end) {
     let mid = Math.floor((start + end) / 2);
     // tgt is not less, so gotta go to the right
-    if (searchList[mid] <= tgt) {
+    if (indicesList[mid] <= element) {
       index = mid + 1;
       start = mid + 1;
     }
@@ -731,19 +741,19 @@ function getIndexOfNextLargerNumber(indicesList, element) {
 
 function getIndexOfClosestSmallerNumber(indicesList, element) {
   let start = 0;
-  let end = indices.length - 1;
+  let end = indicesList.length - 1;
 
   let index = -1;
   while (start <= end) {
     let mid = Math.floor((start + end) / 2);
     // tgt is not less, so gotta go to the right
-    if (searchList[mid] < tgt) {
-      index = mid + 1;
+    if (indicesList[mid] < element) {
+      index = mid;
       start = mid + 1;
     }
     // go to the left otherwise
     else {
-      index = mid;
+      index = mid - 1;
       end = mid - 1;
     }
   }

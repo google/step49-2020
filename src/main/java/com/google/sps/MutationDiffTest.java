@@ -361,9 +361,8 @@ public class MutationDiffTest {
     Assert.assertNotNull(filteredMultiMut);
 
     List<Mutation> filteredMutList = filteredMultiMut.getMutationList();
-    Assert.assertEquals(filteredMutList.size(), 2);
+    Assert.assertEquals(filteredMutList.size(), 1);
     Assert.assertEquals(filteredMutList.get(0), addTokenToA);
-    Assert.assertEquals(filteredMutList.get(1), removeAB);
   }
 
   /*
@@ -412,9 +411,8 @@ public class MutationDiffTest {
     Assert.assertNotNull(filteredMultiMut);
 
     List<Mutation> filteredMutList = filteredMultiMut.getMutationList();
-    Assert.assertEquals(filteredMutList.size(), 2);
-    Assert.assertEquals(filteredMutList.get(0), removeAB);
-    Assert.assertEquals(filteredMutList.get(1), removeB);
+    Assert.assertEquals(filteredMutList.size(), 1);
+    Assert.assertEquals(filteredMutList.get(0), removeB);
   }
 
   /*
@@ -438,11 +436,11 @@ public class MutationDiffTest {
             .setTokenChange(tokenMut)
             .build();
 
-    Mutation removeAB =
+    Mutation removeAC =
         Mutation.newBuilder()
             .setType(Mutation.Type.DELETE_EDGE)
             .setStartNode("A")
-            .setEndNode("B")
+            .setEndNode("C")
             .build();
     Mutation removeB =
         Mutation.newBuilder().setType(Mutation.Type.DELETE_NODE).setStartNode("B").build();
@@ -451,7 +449,7 @@ public class MutationDiffTest {
     MultiMutation originalMultiMut =
         MultiMutation.newBuilder()
             .addMutation(addTokenToA)
-            .addMutation(removeAB)
+            .addMutation(removeAC)
             .addMutation(removeB)
             .addMutation(removeC)
             .setReason("adding token to A and deleting node B")
@@ -468,7 +466,7 @@ public class MutationDiffTest {
     List<Mutation> filteredMutList = filteredMultiMut.getMutationList();
     Assert.assertEquals(filteredMutList.size(), 3);
     Assert.assertEquals(filteredMutList.get(0), addTokenToA);
-    Assert.assertEquals(filteredMutList.get(1), removeAB);
+    Assert.assertEquals(filteredMutList.get(1), removeAC);
     Assert.assertEquals(filteredMutList.get(2), removeC);
   }
 }
