@@ -122,11 +122,11 @@ public class DataServlet extends HttpServlet {
       String error = "Improper mutation number parameter, cannot generate graph";
       response.setHeader("serverError", error);
       return;
-    } 
+    }
     // If nodeNameParam or tokenParam are null, we should just set them to empty and not error out
     if (nodeNameParam == null) {
       nodeNameParam = "";
-    } 
+    }
     if (tokeParam == null) {
       tokenParam = "";
     }
