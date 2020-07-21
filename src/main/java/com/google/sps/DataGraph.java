@@ -31,7 +31,7 @@ import java.util.List;
 @AutoValue
 abstract class DataGraph {
 
-  /**
+   /**
    * Create a new empty data graph
    *
    * @return the empty data graph with these attributes
@@ -41,7 +41,8 @@ abstract class DataGraph {
         /* graph = */ GraphBuilder.directed().build(),
         /* graphNodesMap = */ new HashMap<String, GraphNode>(),
         /* roots = */ new HashSet<String>(),
-        /* numMutations = */ -1);
+        /* numMutations = */ -1,
+        /* tokenMap = */ new HashMap<String, Set<String>>());
   }
 
   /**
@@ -58,8 +59,9 @@ abstract class DataGraph {
       MutableGraph<GraphNode> graph,
       HashMap<String, GraphNode> graphNodesMap,
       HashSet<String> roots,
-      int numMutations) {
-    return new AutoValue_DataGraph(graph, graphNodesMap, roots, numMutations);
+      int numMutations,
+      HashMap<String, Set<String>> tokenMap) {
+    return new AutoValue_DataGraph(graph, graphNodesMap, roots, numMutations, tokenMap);
   }
 
   /**
@@ -92,6 +94,13 @@ abstract class DataGraph {
   abstract int numMutations();
 
   /**
+   * Getter for the token map
+   *
+   * @return the name of the token and a set of names of nodes with the token
+   */
+  abstract HashMap<String, Set<String>> tokenMap();
+
+  /**
    * Return a shallow copy of the given data graph
    *
    * @return a shallow copy of the given data graph containing shallow copies of its attributes
@@ -106,12 +115,17 @@ abstract class DataGraph {
     for (String key : graphNodesMap.keySet()) {
       copyMap.put(key, graphNodesMap.get(key));
     }
+
+    HashMap<String, Set<String>> tokenCopyMap = new HashMap<>();
+    for (String key : this.tokenMap().keySet()) {
+      tokenCopyMap.put(key, this.tokenMap().get(key));
+    }
     HashSet<String> copyRoots = new HashSet<>();
     copyRoots.addAll(roots);
-    return DataGraph.create(Graphs.copyOf(graph), copyMap, copyRoots, mutationNum);
+    return DataGraph.create(Graphs.copyOf(graph), copyMap, copyRoots, mutationNum, tokenCopyMap);
   }
 
-  /**
+/**
    * Takes in a map from node name to proto-parsed node object. Populates data graph with
    * information from the parsed graph
    *
@@ -134,6 +148,18 @@ abstract class DataGraph {
         roots.add(nodeName);
         graph.addNode(graphNode);
         graphNodesMap.put(nodeName, graphNode);
+      }
+
+      // Store the token map
+      for (String tokenName : thisNode.getTokenList()) {
+        // If key is contained, get it. else create a new set
+        Set<String> nodesWithToken =
+            this.tokenMap().containsKey(tokenName)
+                ? this.tokenMap().get(tokenName)
+                : new HashSet<>();
+
+        nodesWithToken.add(tokenName);
+        this.tokenMap().put(tokenName, nodesWithToken);
       }
 
       // Add dependency edges to the graph
@@ -303,8 +329,33 @@ abstract class DataGraph {
     TokenMutation.Type tokenMutType = tokenMut.getType();
     if (tokenMutType == TokenMutation.Type.ADD_TOKEN) {
       tokenList.addAll(tokenNames);
+
+      // Update the map
+      for (String tokenName : tokenNames) {
+        Set<String> nodesWithToken;
+        if (this.tokenMap().containsKey(tokenName)) {
+          nodesWithToken = this.tokenMap().get(tokenName);
+
+        } else {
+          nodesWithToken = new HashSet<>();
+        }
+        nodesWithToken.add(node.name());
+        this.tokenMap().put(tokenName, nodesWithToken);
+      }
     } else if (tokenMutType == TokenMutation.Type.DELETE_TOKEN) {
       tokenList.removeAll(tokenNames);
+      // Update the map
+      for (String tokenName : tokenNames) {
+        if (this.tokenMap().containsKey(tokenName)) {
+          Set<String> nodesWithToken = this.tokenMap().get(tokenName);
+          nodesWithToken.remove(node.name());
+          if (nodesWithToken.size() == 0) { // No more nodes with token
+            this.tokenMap().remove(tokenName);
+          } else {
+            this.tokenMap().put(tokenName, nodesWithToken);
+          }
+        } // Else removing a token that's not in the map, don't need to update
+      }
     } else {
       // unrecognized mutation
       return null;
