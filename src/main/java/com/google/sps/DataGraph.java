@@ -435,8 +435,12 @@ abstract class DataGraph {
     HashSet<GraphNode> nextLayerChildren = new HashSet<GraphNode>();
     HashSet<GraphNode> nextLayerParents = new HashSet<GraphNode>();
 
+    boolean nothingSearched = false; // True if nothing was searched. Ensures that the empty string is not mistaken for a node
     for (String name : names) {
       // add the nodes that exist, ignore the ones that don'e
+      if (name.length() == 0) {
+          nothingSearched = true;
+      }
       if (graphNodesMap.containsKey(name)) {
         GraphNode tgtNode = graphNodesMap.get(name);
         nextLayerChildren.add(tgtNode);
@@ -444,7 +448,7 @@ abstract class DataGraph {
       }
     }
     // None of the nodes are found, return the graph from the roots to the same radius
-    if (nextLayerChildren.isEmpty()) {
+    if (nextLayerChildren.isEmpty() && nothingSearched) {
       return getGraphWithMaxDepth(radius);
     }
 
