@@ -166,7 +166,7 @@ public class DataServlet extends HttpServlet {
       response.setHeader("serverError", error);
       return;
     }
-    // Exists in the graph, not mutated
+    // Exists in the graph, not mutated (should only happen on a new search)
     if (currDataGraph.graphNodesMap().containsKey(nodeNameParam)
         && filteredMutationIndices.indexOf(mutationNumber) == -1) {
       // and the searched node is never mutated
@@ -174,7 +174,7 @@ public class DataServlet extends HttpServlet {
       response.setHeader("serverMessage", message);
     }
     // Does not exist in the graph (and exists in a mutation, since we returned
-    // out otherwise)
+    // out otherwise, should also only happen on a new search)
     if (!currDataGraph.graphNodesMap().containsKey(nodeNameParam)) {
       String message =
           "The searched node does not exist in this graph, but it does exist in a later graph!";
