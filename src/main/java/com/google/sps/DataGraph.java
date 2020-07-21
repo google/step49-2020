@@ -37,23 +37,27 @@ abstract class DataGraph {
    * @return the empty data graph with these attributes
    */
   public static DataGraph create() {
-    return new AutoValue_DataGraph(/* graph = */ GraphBuilder.directed().build(),
-        /* graphNodesMap = */ new HashMap<String, GraphNode>(), /* roots = */ new HashSet<String>(),
+    return new AutoValue_DataGraph(
+        /* graph = */ GraphBuilder.directed().build(),
+        /* graphNodesMap = */ new HashMap<String, GraphNode>(),
+        /* roots = */ new HashSet<String>(),
         /* numMutations = */ 0);
   }
 
   /**
    * Create a new data graph with the given attributes
    *
-   * @param graph         the guava graph
+   * @param graph the guava graph
    * @param graphNodesMap the map from node name to node
-   * @param roots         a set of roots (nodes with no in-edges) of the graph
-   * @param numMutations  the number of mutations applied to the initial graph to
-   *                      get this graph
+   * @param roots a set of roots (nodes with no in-edges) of the graph
+   * @param numMutations the number of mutations applied to the initial graph to get this graph
    * @return the data graph with these attributes
    */
-  static DataGraph create(MutableGraph<GraphNode> graph, HashMap<String, GraphNode> graphNodesMap,
-      HashSet<String> roots, int numMutations) {
+  static DataGraph create(
+      MutableGraph<GraphNode> graph,
+      HashMap<String, GraphNode> graphNodesMap,
+      HashSet<String> roots,
+      int numMutations) {
     return new AutoValue_DataGraph(graph, graphNodesMap, roots, numMutations);
   }
 
@@ -81,16 +85,14 @@ abstract class DataGraph {
   /**
    * Getter for the number of mutations
    *
-   * @return the the number of mutations applied to the initial graph to get this
-   *         graph
+   * @return the the number of mutations applied to the initial graph to get this graph
    */
   abstract int numMutations();
 
   /**
    * Return a shallow copy of the given data graph
    *
-   * @return a shallow copy of the given data graph containing shallow copies of
-   *         its attributes
+   * @return a shallow copy of the given data graph containing shallow copies of its attributes
    */
   public DataGraph getCopy() {
     MutableGraph<GraphNode> graph = this.graph();
@@ -108,11 +110,10 @@ abstract class DataGraph {
   }
 
   /**
-   * Takes in a map from node name to proto-parsed node object. Populates data
-   * graph with information from the parsed graph
+   * Takes in a map from node name to proto-parsed node object. Populates data graph with
+   * information from the parsed graph
    *
-   * @param protoNodesMap map from node name to proto Node object parsed from
-   *                      input
+   * @param protoNodesMap map from node name to proto Node object parsed from input
    * @return false if an error occurred, true otherwise
    */
   boolean graphFromProtoNodes(Map<String, Node> protoNodesMap) {
@@ -267,10 +268,9 @@ abstract class DataGraph {
   }
 
   /**
-   * Modifies the list of tokens of this node to either add or remove tokens
-   * contained in tokenMut
+   * Modifies the list of tokens of this node to either add or remove tokens contained in tokenMut
    *
-   * @param node     the node whose token list should be modified
+   * @param node the node whose token list should be modified
    * @param tokenMut the mutation that should be applied to the token list
    * @return the new GraphNode object, or null if it's an unrecognized mutation
    */
@@ -295,8 +295,7 @@ abstract class DataGraph {
   }
 
   /**
-   * Function for calculating nodes reachable from roots of this graph within at
-   * most maxDepth steps
+   * Function for calculating nodes reachable from roots of this graph within at most maxDepth steps
    *
    * @param maxDepth the maximum depth of a node from a root
    * @return a graph with nodes only a certain distance from a root
@@ -321,14 +320,13 @@ abstract class DataGraph {
   }
 
   /**
-   * Helper function for performing a depth-first traversal of the graph starting
-   * at node and adding all those nodes to visited which are within depthRemaining
-   * steps from the node
+   * Helper function for performing a depth-first traversal of the graph starting at node and adding
+   * all those nodes to visited which are within depthRemaining steps from the node
    *
-   * @param gn             the GraphNode to start at
-   * @param visited        a map that records whether nodes have been visited
-   * @param depthRemaining the number of layers left to explore, decreases by one
-   *                       with each recursive call on a child
+   * @param gn the GraphNode to start at
+   * @param visited a map that records whether nodes have been visited
+   * @param depthRemaining the number of layers left to explore, decreases by one with each
+   *     recursive call on a child
    */
   private void dfsVisit(GraphNode gn, Map<GraphNode, Boolean> visited, int depthRemaining) {
     MutableGraph<GraphNode> graph = this.graph();
