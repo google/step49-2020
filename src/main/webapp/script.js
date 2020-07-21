@@ -117,6 +117,7 @@ async function generateGraph() {
   const reason = jsonResponse["reason"];
 
   mutationIndexList = JSON.parse(jsonResponse.mutationIndices);
+  console.log(mutationIndexList);
   numMutations = mutationIndexList.length;
 
   // currMutationIndex = jsonResponse.currIndex;
@@ -136,10 +137,10 @@ async function generateGraph() {
     // if the graph contains the searched node BUT it isn't mutated in this graph
     // We have to adjust the indices in this case
     console.log(response.headers.get("serverMessage"));
-    const indexOfNextLargerNumber = getIndexOfNextLargerNumber(mutationIndexList, currMutationNum);
-    const indexOfClosestSmallerNumber = getIndexOfClosestSmallerNumber(mutationIndexList, currMutationNum);
-    currMutationIndex = ((indexOfNextLargerNumber + indexOfClosestSmallerNumber) / 2);
   }
+  const indexOfNextLargerNumber = getIndexOfNextLargerNumber(mutationIndexList, currMutationNum);
+  const indexOfClosestSmallerNumber = getIndexOfClosestSmallerNumber(mutationIndexList, currMutationNum);
+  currMutationIndex = ((indexOfNextLargerNumber + indexOfClosestSmallerNumber) / 2);
 
   // Add node to array of cytoscape nodes
   nodes.forEach(node =>
