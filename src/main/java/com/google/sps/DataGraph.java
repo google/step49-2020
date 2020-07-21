@@ -437,7 +437,7 @@ abstract class DataGraph {
 
     boolean nothingSearched =
         false; // True if nothing was searched. Ensures that the empty string is not mistaken for a
-               // node
+    // node
     for (String name : names) {
       // add the nodes that exist, ignore the ones that don'e
       if (name.length() == 0) {
