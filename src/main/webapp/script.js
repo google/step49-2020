@@ -727,6 +727,11 @@ function updateButtons() {
   numElement.innerText = `Graph ${currMutationNum + 1}`;
 }
 
+/**
+ * Get the index of the next largest element in an indiceList
+ * @param indicesList a list of indices, assume it's sorted
+ * @param element the element to find a higher value than
+ */
 function getIndexOfNextLargerNumber(indicesList, element) {
   let start = 0;
   let end = indicesList.length - 1;
@@ -734,12 +739,12 @@ function getIndexOfNextLargerNumber(indicesList, element) {
   let index = -1;
   while (start <= end) {
     let mid = Math.floor((start + end) / 2);
-    // tgt is not less, so gotta go to the right
+    // element is not less (greater or equal to) -> go to the right
     if (indicesList[mid] <= element) {
       index = mid + 1;
       start = mid + 1;
     }
-    // go to the left otherwise
+    // go to the left otherwise, set index to the mid
     else {
       index = mid;
       end = mid - 1;
@@ -748,6 +753,11 @@ function getIndexOfNextLargerNumber(indicesList, element) {
   return index;
 }
 
+/**
+ * Get the index of the element that's immediately smaller than the element
+ * @param indicesList a list of indices, assume it's sorted
+ * @param element the element to find the smaller value than
+ */
 function getIndexOfClosestSmallerNumber(indicesList, element) {
   let start = 0;
   let end = indicesList.length - 1;
@@ -755,12 +765,12 @@ function getIndexOfClosestSmallerNumber(indicesList, element) {
   let index = -1;
   while (start <= end) {
     let mid = Math.floor((start + end) / 2);
-    // tgt is not less, so gotta go to the right
+    // element is greater than mid -> set index to the mid and start to mid + 1
     if (indicesList[mid] < element) {
       index = mid;
       start = mid + 1;
     }
-    // go to the left otherwise
+    // element is less than or equal to
     else {
       index = mid - 1;
       end = mid - 1;
