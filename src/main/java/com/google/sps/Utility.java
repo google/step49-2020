@@ -186,6 +186,12 @@ public final class Utility {
     return lst;
   }
 
+  /**
+   * Returns a list of indices on the original list that related to a given node
+   * @param tokenName the token name to search for
+   * @param origList the original list of mutations
+   * @return a list of indices, empty if tokenName is null or if token is not changed
+   */
   public static ArrayList<Integer> getMutationIndicesOfToken(
       String tokenName, List<MultiMutation> origList) {
     ArrayList<Integer> lst = new ArrayList<>();
@@ -196,7 +202,7 @@ public final class Utility {
       MultiMutation multiMut = origList.get(i);
       List<Mutation> mutList = multiMut.getMutationList();
       for (Mutation mut : mutList) {
-        if (mut.getType().equals(CHANGE_TOKEN)) {
+        if (mut.getType().equals(Mutation.Type.CHANGE_TOKEN)) {
           TokenMutation tokenMut = mut.getTokenChange();
           List<String> tokenNames = tokenMut.getTokenNameList();
           if (tokenNames.contains(tokenName)) {
