@@ -201,7 +201,7 @@ function addToLogs(msg) {
   const logsList = document.getElementById("log-list");
   const newMsg = document.createElement("li");
   newMsg.innerText = msg;
-  logsList.insertBefore(newMsg, logsList.firstChild);
+  logsList.appendChild(newMsg);
 }
 /**
  * Takes an error message and creates a text element on the page to display this message
