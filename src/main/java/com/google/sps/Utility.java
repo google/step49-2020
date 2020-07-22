@@ -181,34 +181,6 @@ public final class Utility {
   }
 
   /**
-   * Finds the INDEX of the element in searchList that is strictly GREATER than tgt in a SORTED list
-   *
-   * @param searchList a list of integers to search through. Assumes it's sorted
-   * @param tgt the number to find the next biggest number from
-   * @return the INDEX of the next greater number. -1 if none
-   */
-  public static int getNextGreatestNumIndex(List<Integer> searchList, int tgt) {
-    int start = 0;
-    int end = searchList.size() - 1;
-
-    int ans = -1;
-    while (start <= end) {
-      int mid = (start + end) / 2;
-      // tgt is not less, so gotta go to the right
-      if (searchList.get(mid) <= tgt) {
-        start = mid + 1;
-      }
-      // go to the left otherwise
-      else {
-        ans = mid;
-        end = mid - 1;
-      }
-    }
-    if (ans == -1) return -1;
-    return ans;
-  }
-
-  /**
    * Converts a Guava graph containing nodes of type GraphNode into a set of names of nodes
    * contained in the graph
    *

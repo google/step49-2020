@@ -376,7 +376,7 @@ abstract class DataGraph {
     }
 
     // HashSet should have expected O(1) lookup, changed from HashMap for space
-    // Two different sets are needed because of cases where a node is both a parents
+    // Two different sets are needed because of cases where a node is both a parent
     // and a child
     HashSet<GraphNode> visitedChildren = new HashSet<>();
     HashSet<GraphNode> visitedParents = new HashSet<>();
