@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/googleinterns/step49-2020#readme",
   "dependencies": {
+    "@material/slider": "^7.0.0",
     "cytoscape": "^3.15.1",
     "cytoscape-dagre": "^2.2.2",
     "cytoscape-popper": "^1.0.7",
