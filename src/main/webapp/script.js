@@ -202,8 +202,14 @@ function getUrl() {
 function addToLogs(msg) {
   const logsList = document.getElementById("log-list");
   const newMsg = document.createElement("li");
+  newMsg.classList.add("log-msg");
   newMsg.innerText = msg;
   logsList.appendChild(newMsg);
+  const allLogs = document.querySelectorAll('.log-msg');
+  for (let i = 0; i < allLogs.length; i++) {
+    allLogs[i].classList.remove('error-text');
+  }
+  newMsg.classList.add("error-text");
 }
 /**
  * Takes an error message and creates a text element on the page to display this message
