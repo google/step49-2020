@@ -26,7 +26,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-/** Test for functions within Utility that are used to filter graphs across nodes */
+/**
+ * Test for functions within Utility that are used to filter graphs across nodes
+ */
 @RunWith(JUnit4.class)
 public class NodeMutationFilterTest {
   // lst1 contains even number of elements
@@ -35,23 +37,15 @@ public class NodeMutationFilterTest {
   List<Integer> lst2 = new ArrayList<>(Arrays.asList(4, 7, 12, 13, 15));
 
   // Following functions test the getMutationIndicesOfNode function in Utility
-  /** Basic test for including mutliple relevant nodes for getMutationIndicesOfNode */
+  /**
+   * Basic test for including mutliple relevant nodes for getMutationIndicesOfNode
+   */
   @Test
   public void getMutationsOfBasic() {
-    Mutation addAB =
-        Mutation.newBuilder()
-            .setType(Mutation.Type.ADD_EDGE)
-            .setStartNode("A")
-            .setEndNode("B")
-            .build();
-    Mutation removeAB =
-        Mutation.newBuilder()
-            .setType(Mutation.Type.DELETE_EDGE)
-            .setStartNode("A")
-            .setEndNode("B")
-            .build();
-    Mutation removeC =
-        Mutation.newBuilder().setType(Mutation.Type.DELETE_NODE).setStartNode("C").build();
+    Mutation addAB = Mutation.newBuilder().setType(Mutation.Type.ADD_EDGE).setStartNode("A").setEndNode("B").build();
+    Mutation removeAB = Mutation.newBuilder().setType(Mutation.Type.DELETE_EDGE).setStartNode("A").setEndNode("B")
+        .build();
+    Mutation removeC = Mutation.newBuilder().setType(Mutation.Type.DELETE_NODE).setStartNode("C").build();
 
     MultiMutation addABM = MultiMutation.newBuilder().addMutation(addAB).build();
     MultiMutation removeABM = MultiMutation.newBuilder().addMutation(removeAB).build();
@@ -72,12 +66,7 @@ public class NodeMutationFilterTest {
   /** Test that a null query returns an empty list */
   @Test
   public void getMutationsOfNull() {
-    Mutation addAB =
-        Mutation.newBuilder()
-            .setType(Mutation.Type.ADD_EDGE)
-            .setStartNode("A")
-            .setEndNode("B")
-            .build();
+    Mutation addAB = Mutation.newBuilder().setType(Mutation.Type.ADD_EDGE).setStartNode("A").setEndNode("B").build();
 
     MultiMutation addABM = MultiMutation.newBuilder().addMutation(addAB).build();
     List<MultiMutation> multiMutList = new ArrayList<>();
@@ -122,8 +111,8 @@ public class NodeMutationFilterTest {
   }
 
   /**
-   * When the tgt value does exist in the middle, value found must get strictly greater (value's
-   * index is returned)
+   * When the tgt value does exist in the middle, value found must get strictly
+   * greater (value's index is returned)
    */
   @Test
   public void testInnerExistsEven() {
@@ -138,8 +127,8 @@ public class NodeMutationFilterTest {
   }
 
   /**
-   * When tgt value does not exist (DNE) in the list, value is just the immediate greater one. This
-   * tests a middle index is returned correctly.
+   * When tgt value does not exist (DNE) in the list, value is just the immediate
+   * greater one. This tests a middle index is returned correctly.
    */
   @Test
   public void testInnerDNEEven() {
@@ -177,5 +166,24 @@ public class NodeMutationFilterTest {
   public void testIsSmallestOdd() {
     int ans2 = Utility.getNextGreatestNumIndex(lst2, 0);
     Assert.assertEquals(0, ans2);
+  }
+
+  // Tests merging lists together
+  @Test
+  public void mergeLists() {
+    List<Integer> list1 = new ArrayList<>(Arrays.asList(1, 4, 7, 15));
+    List<Integer> list2 = new ArrayList<>(Arrays.asList(4, 7, 12, 13, 15));
+    List<Integer> list3 = new ArrayList<>(Arrays.asList(0, 6, 9));
+    List<List<Integer>> lsts = new ArrayList<>();
+    lsts.add(list1);
+    lsts.add(list2);
+    lsts.add(list3);
+
+    // should be 0, 1, 4, 6, 7, 9, 12, 13, 15
+    List<Integer> result = Utility.mergeSortedLists(lsts);
+    Assert.assertNotNull(result);
+    System.out.println(result);
+    Assert.assertEquals(9, result.size());
+
   }
 }
