@@ -216,7 +216,6 @@ public final class Utility {
     return lst;
   }
 
-
   /**
    * Converts a Guava graph containing nodes of type GraphNode into a set of names of nodes
    * contained in the graph

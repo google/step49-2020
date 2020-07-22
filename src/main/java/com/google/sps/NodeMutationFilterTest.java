@@ -224,5 +224,4 @@ public class NodeMutationFilterTest {
     Assert.assertEquals(0, truncatedList.size());
     Assert.assertFalse(truncatedList.contains(0));
   }
-
 }
