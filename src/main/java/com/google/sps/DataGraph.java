@@ -442,6 +442,7 @@ abstract class DataGraph {
       // add the nodes that exist, ignore the ones that don'e
       if (name.length() == 0) {
         nothingSearched = true;
+        continue;
       }
       if (graphNodesMap.containsKey(name)) {
         GraphNode tgtNode = graphNodesMap.get(name);
