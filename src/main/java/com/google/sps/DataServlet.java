@@ -54,7 +54,8 @@ public class DataServlet extends HttpServlet {
   List<Integer> defaultIndices = new ArrayList<>();
 
   // A map from each node name to a list of indices in mutList where
-  // that node is mutated
+  // that node is mutated. In addition, the empty string is mapped
+  // to the list [0, mutList.size() - 1].
   HashMap<String, List<Integer>> mutationIndicesMap = new HashMap<>();
 
   /*
@@ -73,15 +74,14 @@ public class DataServlet extends HttpServlet {
       success =
           initializeGraphVariables(
               getServletContext().getResourceAsStream("/WEB-INF/initial_graph.textproto"));
-      String error = "Failed to parse input graph into Guava graph - not a DAG!";
       if (!success) {
-        response.setHeader("serverError", error);
+        response.setHeader(
+            "serverError", "Failed to parse input graph into Guava graph - not a DAG!");
         return;
       }
       currDataGraph = originalDataGraph.getCopy();
     } else if (currDataGraph == null || originalDataGraph == null) {
-      String error = "Invalid input";
-      response.setHeader("serverError", error);
+      response.setHeader("serverError", "Invalid input");
       return;
     }
 
@@ -95,9 +95,9 @@ public class DataServlet extends HttpServlet {
           getServletContext().getResourceAsStream("/WEB-INF/mutations.textproto"));
       // Populate the list of all possible mutation indices
       defaultIndices = IntStream.range(0, mutList.size() - 1).boxed().collect(Collectors.toList());
-      // and initialize the current list of relevant indices to this because
-      // we start out not filtering by anything
-      // filteredMutationIndices = defaultIndices;
+      // and store this as the list of relevant indices for filtering by empty string
+      // (= not
+      // filtering)
       mutationIndicesMap.put("", defaultIndices);
     }
 
@@ -148,7 +148,7 @@ public class DataServlet extends HttpServlet {
 
     // Get the diff if we are going forward in the list of mutations
     if (mutationNumber > currDataGraph.numMutations()) {
-      diff = Utility.getDiffBetween(mutList, mutationNumber);
+      diff = Utility.getMultiMutationAtIndex(mutList, mutationNumber);
     }
     // Find the indices that mutate the searched node, computing and caching them
     // if this has not been done already
@@ -159,31 +159,38 @@ public class DataServlet extends HttpServlet {
     filteredMutationIndices = mutationIndicesMap.get(nodeNameParam);
 
     // Get the graph at the requested mutation number and truncate it
-    currDataGraph =
-        Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
-    truncatedGraph = currDataGraph.getReachableNodes(nodeNameParam, depthNumber);
-
-    // Handle errors
-    if (truncatedGraph.nodes().size() == 0 && filteredMutationIndices.size() == 0) {
-      // The searched node is not in the graph and is never mutated
-      String error = "The searched node does not exist anywhere in this graph or in mutations";
-      response.setHeader("serverError", error);
+    try {
+      currDataGraph =
+          Utility.getGraphAtMutationNumber(
+              originalDataGraph, currDataGraph, mutationNumber, mutList);
+    } catch (IllegalArgumentException e) {
+      response.setHeader("serverError", e.getMessage());
       return;
     }
-    if (truncatedGraph.nodes().size() == 0 && filteredMutationIndices.size() != 0) {
-      // The searched node is not in the graph but is mutated at some future point
-      String message =
-          "The searched node does not exist in this graph, but it does exist in a later graph!";
-      response.setHeader("serverMessage", message);
+    truncatedGraph = currDataGraph.getReachableNodes(nodeNameParam, depthNumber);
+
+    // We set the headers in the following 3 scenarios:
+    // The searched node is not in the graph and is never mutated
+    if (truncatedGraph.nodes().size() == 0 && filteredMutationIndices.size() == 0) {
+      response.setHeader(
+          "serverError", "The searched node does not exist anywhere in this graph or in mutations");
+      return;
     }
+    // The searched node is not in the graph but is mutated at some past/future point
+    if (truncatedGraph.nodes().size() == 0 && filteredMutationIndices.size() != 0) {
+      response.setHeader(
+          "serverMessage",
+          "The searched node does not exist in this graph, but is mutated at some point");
+    }
+    // The searched node exists but is not mutated in the current graph
     if (truncatedGraph.nodes().size() != 0
         && mutationNumber != -1
         && filteredMutationIndices.indexOf(mutationNumber) == -1) {
-      // The searched node exists but is not mutated in the current graph
-      String message = "The searched node exists, but is not mutated in this graph";
-      response.setHeader("serverMessage", message);
+      response.setHeader(
+          "serverMessage", "The searched node exists, but is not mutated in this graph");
     }
 
+    // We filter the multimutation if there was a node searched
     if (nodeNameParam.length() != 0) {
       Set<String> truncatedGraphNodeNames = Utility.getNodeNamesInGraph(truncatedGraph);
       truncatedGraphNodeNames.add(nodeNameParam);
@@ -194,12 +201,12 @@ public class DataServlet extends HttpServlet {
   }
 
   /**
-   * Private function to intitialize graph variables. returns a boolean to represent whether the
+   * Private function to intitialize graph variables. Returns a boolean to represent whether the
    * InpuStream was read successfully.
    *
    * @param graphInput InputStream to initialize graph variables over
    * @return whether variables were initialized properly; true if successful and false otherwise
-   * @throws IOException if something does wrong during the reading
+   * @throws IOException if something goes wrong during the reading
    */
   private boolean initializeGraphVariables(InputStream graphInput) throws IOException {
     InputStreamReader graphReader = new InputStreamReader(graphInput);
@@ -217,6 +224,7 @@ public class DataServlet extends HttpServlet {
    * InputStream was read successfully.
    *
    * @param mutationInput InputStream to initialize variable over
+   * @return whether variables were initialized properly; true if successful and false otherwise
    * @throws IOException if something goes wrong during the reading
    */
   private void initializeMutationVariables(InputStream mutationInput) throws IOException {

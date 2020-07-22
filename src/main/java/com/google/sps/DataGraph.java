@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.HashSet;
 import java.util.List;
 
@@ -173,15 +174,13 @@ abstract class DataGraph {
     // Getting the corresponding graph nodes from the graph map
     GraphNode startNode = graphNodesMap.get(startName);
     GraphNode endNode = graphNodesMap.get(endName);
-    String error = "";
 
     switch (mut.getType()) {
       case ADD_NODE:
         {
           // Check whether node to be added is a duplicate
           if (graphNodesMap.containsKey(startName)) {
-            error = "Add node: Adding a duplicate node " + startName + "\n";
-            break;
+            return "Add node: Adding a duplicate node " + startName + "\n";
           }
           // New lone node is a root
           roots.add(startName);
@@ -195,15 +194,13 @@ abstract class DataGraph {
       case ADD_EDGE:
         {
           // Check nodes exist before adding an edge
-          if (startNode == null || endNode == null) {
-            if (startNode == null) {
-              error = "Add edge: Start node " + startName + " doesn't exist\n";
-            }
-            if (endNode == null) {
-              error += "Add edge: End node " + endName + " doesn't exist\n";
-            }
-            break;
+          if (startNode == null) {
+            return "Add edge: Start node " + startName + " doesn't exist\n";
           }
+          if (endNode == null) {
+            return "Add edge: End node " + endName + " doesn't exist\n";
+          }
+
           // The target cannot be a root since it has an in-edge
           roots.remove(endName);
           graph.putEdge(startNode, endNode);
@@ -211,15 +208,13 @@ abstract class DataGraph {
         }
       case DELETE_EDGE:
         {
-          if (startNode == null || endNode == null) {
-            if (startNode == null) {
-              error = "Delete edge: Start node " + startName + " doesn't exist\n";
-            }
-            if (endNode == null) {
-              error += "Delete edge: End node " + endName + " doesn't exist\n";
-            }
-            break;
+          if (startNode == null) {
+            return "Delete edge: Start node " + startName + " doesn't exist\n";
           }
+          if (endNode == null) {
+            return "Delete edge: End node " + endName + " doesn't exist\n";
+          }
+
           graph.removeEdge(startNode, endNode);
           // If the target now has no in-edges, it becomes a root
           if (graph.inDegree(endNode) == 0) {
@@ -230,8 +225,7 @@ abstract class DataGraph {
       case DELETE_NODE:
         {
           if (startNode == null) { // Check node exists before removing
-            error = "Delete node: Deleting a non-existent node " + startName + "\n";
-            break;
+            return "Delete node: Deleting a non-existent node " + startName + "\n";
           }
           Set<GraphNode> successors = graph.successors(startNode);
 
@@ -251,15 +245,14 @@ abstract class DataGraph {
       case CHANGE_TOKEN:
         {
           if (startNode == null) {
-            error = "Change node: Changing a non-existent node " + startName + "\n";
-            break;
+            return "Change node: Changing a non-existent node " + startName + "\n";
           }
           GraphNode newNode = changeNodeToken(startNode, mut.getTokenChange());
 
           if (newNode == null) {
-            error =
-                "Change node: Unrecognized token mutation " + mut.getTokenChange().getType() + "\n";
-            break;
+            return "Change node: Unrecognized token mutation "
+                + mut.getTokenChange().getType()
+                + "\n";
           }
 
           graphNodesMap.put(startName, newNode);
@@ -279,10 +272,9 @@ abstract class DataGraph {
         }
       default:
         // unrecognized mutation type
-        error = "Unrecognized mutation  " + mut.getType() + "\n";
-        break;
+        return "Unrecognized mutation  " + mut.getType() + "\n";
     }
-    return error;
+    return "";
   }
 
   /**
@@ -361,15 +353,15 @@ abstract class DataGraph {
 
   /**
    * Returns a MutableGraph with nodes that are at most a certain radius from a given node. If the
-   * radius is less than 0 or the node specified isn't present, return an empty graph. Since
-   * maxDepth was implemented as DFS, we use BFS for *diversity*.
-   *
-   * <p>Here, we only consider children of children and parents of parents.
+   * specified node name is the empty string, return nodes within 'radius' distance from the roots
+   * of the graph. If the radius is less than 0 or the node specified isn't present, return an empty
+   * graph. Since maxDepth was implemented as DFS, we use BFS for *diversity*. Here, we only
+   * consider children of children and parents of parents.
    *
    * @param name the name of the node to search for
    * @param radius the distance from the node to search for parents and children
    * @return a graph comprised of only nodes and edges within a certain distance from the specified
-   *     node. Empty if radius is less than 0 or if the node isn't found.
+   *     node (or roots if name is ""). Empty if radius is less than 0 or if the node isn't found.
    */
   public MutableGraph<GraphNode> getReachableNodes(String name, int radius) {
     if (radius < 0) {
@@ -377,20 +369,13 @@ abstract class DataGraph {
     }
 
     HashMap<String, GraphNode> graphNodesMap = this.graphNodesMap();
-    // If no name, we just start from the roots
-    if (name.length() == 0) {
-      return getGraphWithMaxDepth(radius);
-    }
-    if (!graphNodesMap.containsKey(name)) {
+    if (!(name.length() == 0) && !graphNodesMap.containsKey(name)) {
       return GraphBuilder.directed()
           .build(); // If the specified node is not found, return an empty graph
     }
 
-    MutableGraph<GraphNode> graph = this.graph();
-    GraphNode tgtNode = graphNodesMap.get(name);
-
     // HashSet should have expected O(1) lookup, changed from HashMap for space
-    // Two different sets are needed because of cases where a node is both a parents
+    // Two different sets are needed because of cases where a node is both a parent
     // and a child
     HashSet<GraphNode> visitedChildren = new HashSet<>();
     HashSet<GraphNode> visitedParents = new HashSet<>();
@@ -398,8 +383,18 @@ abstract class DataGraph {
     HashSet<GraphNode> nextLayerChildren = new HashSet<GraphNode>();
     HashSet<GraphNode> nextLayerParents = new HashSet<GraphNode>();
 
-    nextLayerChildren.add(tgtNode);
-    nextLayerParents.add(tgtNode);
+    MutableGraph<GraphNode> graph = this.graph();
+    if (name.length() == 0) {
+      List<GraphNode> rootNodes =
+          this.roots().stream()
+              .map(rootName -> this.graphNodesMap().get(rootName))
+              .collect(Collectors.toList());
+      nextLayerChildren.addAll(rootNodes);
+    } else {
+      GraphNode tgtNode = graphNodesMap.get(name);
+      nextLayerChildren.add(tgtNode);
+      nextLayerParents.add(tgtNode);
+    }
 
     for (int i = 0; i <= radius; i++) {
       // Break out early if queue is empty

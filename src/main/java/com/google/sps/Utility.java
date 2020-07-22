@@ -144,14 +144,15 @@ public final class Utility {
    * @return a multimutation with all the changes to apply to the current graph to get the next
    *     graph or null if the provided indices are out of bounds or non-consecutive
    */
-  public static MultiMutation getDiffBetween(List<MultiMutation> multiMutList, int index) {
+  public static MultiMutation getMultiMutationAtIndex(List<MultiMutation> multiMutList, int index) {
     if (index < 0 || index >= multiMutList.size()) {
       return null;
     }
     return multiMutList.get(index);
   }
+
   /**
-   * Returns a list of the indices of the relevant
+   * Returns a list of the indices of the mutations in origList that mutate nodeName
    *
    * @param nodeName the name of the node to filter
    * @param origList the original list of mutations
@@ -177,34 +178,6 @@ public final class Utility {
       }
     }
     return lst;
-  }
-
-  /**
-   * Finds the INDEX of the element in searchList that is strictly GREATER than tgt in a SORTED list
-   *
-   * @param searchList a list of integers to search through. Assumes it's sorted
-   * @param tgt the number to find the next biggest number from
-   * @return the INDEX of the next greater number. -1 if none
-   */
-  public static int getNextGreatestNumIndex(List<Integer> searchList, int tgt) {
-    int start = 0;
-    int end = searchList.size() - 1;
-
-    int ans = -1;
-    while (start <= end) {
-      int mid = (start + end) / 2;
-      // tgt is not less, so gotta go to the right
-      if (searchList.get(mid) <= tgt) {
-        start = mid + 1;
-      }
-      // go to the left otherwise
-      else {
-        ans = mid;
-        end = mid - 1;
-      }
-    }
-    if (ans == -1) return -1;
-    return ans;
   }
 
   /**
