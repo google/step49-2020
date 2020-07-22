@@ -416,6 +416,11 @@ abstract class DataGraph {
    * radius is less than 0 or the node specified isn't present, return an empty graph. Since
    * maxDepth was implemented as DFS, we use BFS for *diversity*.
    *
+   * <p>The names passed reflect what could possibly happen from the user input. If no nodeName is
+   * searched, there will be an empty string. If that's the case and it's the only node in names, we
+   * return everything. Otherwise if an empty string is searched with other nodes, we go by the
+   * result of the other nodes.
+   *
    * <p>Here, we only consider children of children and parents of parents. If a node doesn't exist
    * in the graph, we skip it. If all the nodes in the collection don't exist in the graph, we
    * return an empty graph.
@@ -435,13 +440,15 @@ abstract class DataGraph {
     HashSet<GraphNode> nextLayerChildren = new HashSet<GraphNode>();
     HashSet<GraphNode> nextLayerParents = new HashSet<GraphNode>();
 
-    boolean nothingSearched =
-        false; // True if nothing was searched. Ensures that the empty string is not mistaken for a
-    // node
+    // True if no node name was searched - check to see these exists an empty string in the
+    // collection
+    boolean noNodeNameSearched = false;
+
     for (String name : names) {
       // add the nodes that exist, ignore the ones that don'e
       if (name.length() == 0) {
-        nothingSearched = true;
+        noNodeNameSearched = true;
+        continue;
       }
       if (graphNodesMap.containsKey(name)) {
         GraphNode tgtNode = graphNodesMap.get(name);
@@ -449,9 +456,13 @@ abstract class DataGraph {
         nextLayerParents.add(tgtNode);
       }
     }
-    // None of the nodes are found, return the graph from the roots to the same radius
-    if (nextLayerChildren.isEmpty() && nothingSearched) {
+    // Nothing was searched (no nodeName or tokens)
+    if (names.size() == 1 && noNodeNameSearched) {
       return getGraphWithMaxDepth(radius);
+    }
+    // None of the other nodes were found, so return empty
+    if (nextLayerChildren.isEmpty()) {
+      return GraphBuilder.directed().build();
     }
 
     MutableGraph<GraphNode> graph = this.graph();
