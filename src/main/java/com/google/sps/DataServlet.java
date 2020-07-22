@@ -164,11 +164,11 @@ public class DataServlet extends HttpServlet {
     List<String> queried = new ArrayList<>();
     List<List<Integer>> allRelevantMutationIndices = new ArrayList<>();
 
-    // Possible cominations of nodeName and token:
-    // Both empty -> can just look at nodeNameParam
-    // nodeName nonempty, token empty -> just look at nodeNameParam
-    // nodeName empty, token nonempty -> look only at token
-    // Both nondempty -> look at both
+    // Possible combinations of nodeName and token:
+    // 1. Both empty -> can just look at nodeNameParam
+    // 2. nodeName nonempty, token empty -> just look at nodeNameParam
+    // 3. nodeName empty, token nonempty -> look only at token
+    // 4. Both nondempty -> look at both
     // So we look at nodeName param in the case that both are empty and token is
     // empty
 
@@ -181,8 +181,8 @@ public class DataServlet extends HttpServlet {
       queried.add(nodeNameParam);
       allRelevantMutationIndices.add(mutationIndicesMap.get(nodeNameParam));
     }
-    allRelevantMutationIndices.add(Utility.getMutationIndicesOfNode(tokenParam, mutList));
-    // DO WE NEED THIS???
+    allRelevantMutationIndices.add(Utility.getMutationIndicesOfToken(tokenParam, mutList));
+    
     // Process the tokens here - if tokens are empty it won't be in the map, this
     // won't happen
     // If the token is contained, then get the nodes associated with the token and
@@ -197,9 +197,8 @@ public class DataServlet extends HttpServlet {
       }
     }
 
-    // Get a sorted one
+    // Get a sorted indice list with everything
     filteredMutationIndices = Utility.mergeSortedLists(allRelevantMutationIndices);
-
     // Get the graph at the requested mutation number and truncate it
     currDataGraph =
         Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
