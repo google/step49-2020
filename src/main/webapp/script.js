@@ -38,7 +38,9 @@ cytoscape.use(popper); // register extension
 cytoscape.use(dagre); // register extension
 
 // Stores the index of the most recently-applied mutation in mutationIndexList
-// or -1 if no mutations have been applied
+// or -1 if no mutations have been applied. The value could be a decimal, in 
+// which case currMutationNum is not in the list and the variable's value
+// represents the average of the indices between which currMutationNum should be
 let currMutationIndex = -1;
 
 // Stores the actual number of the most recently-applied mutation
@@ -49,7 +51,7 @@ let currMutationNum = -1;
 // to a graph beyond this point
 let numMutations = 0;
 
-// Stores the list of relevant mutation indices 
+// Stores the list of indices at which the currently searched node is mutated
 // (for ex, if a node was searched and the node was modified in the 1st, 4th, and 
 // 5th indices, this would be [1,4,5])
 let mutationIndexList = [];
@@ -69,14 +71,14 @@ function setCurrMutationNum(num) {
 }
 
 /**
- * Sets the current graph index
+ * Sets the current mutation index
  */
 function setCurrMutationIndex(num) {
   currMutationIndex = num;
 }
 
 /**
- * Sets the relevant indices from the mutation list
+ * Sets the mutation index list
  */
 function setMutationIndexList(lst) {
   mutationIndexList = lst;
@@ -119,9 +121,6 @@ async function generateGraph() {
   mutationIndexList = JSON.parse(jsonResponse.mutationIndices);
   numMutations = mutationIndexList.length;
 
-  // currMutationIndex = jsonResponse.currIndex;
-  // currMutationNum = currMutationIndex === -1 ? -1 : mutationIndexList[currMutationIndex];
-
   if (!nodes || !edges || !Array.isArray(nodes) || !Array.isArray(edges)) {
     displayError("Malformed graph received from server - edges or nodes are empty");
     return;
@@ -134,9 +133,11 @@ async function generateGraph() {
   } else if (response.headers.get("serverMessage")) {
     // This happens if the graph doesn't contain the searched node or 
     // if the graph contains the searched node BUT it isn't mutated in this graph
-    // We have to adjust the indices in this case
     addToLogs(response.headers.get("serverMessage"));
   }
+  // Update the current mutation index to reflect the new position of currMutationNumber
+  // in the updated mutationIndexList between the previous smaller and the next larger
+  // element.
   const indexOfNextLargerNumber = getIndexOfNextLargerNumber(mutationIndexList, currMutationNum);
   const indexOfClosestSmallerNumber = getIndexOfClosestSmallerNumber(mutationIndexList, currMutationNum);
   currMutationIndex = ((indexOfNextLargerNumber + indexOfClosestSmallerNumber) / 2);
@@ -195,7 +196,8 @@ function getUrl() {
 }
 
 /**
- * Add to the TOP of the logs list
+ * Add a list element with the given message to the top of the logs list
+ * @param msg the message to display in the new list element
  */
 function addToLogs(msg) {
   const logsList = document.getElementById("log-list");
@@ -699,8 +701,14 @@ function navigateGraph(amount) {
     return;
   }
   if (Number.isInteger(currMutationIndex)) {
+    // In this case, currMutationNum is in mutationIndexList, so update the 
+    // index by the given amount (either +1 or -1)
     currMutationIndex += amount;
   } else {
+    // In this case, currMutationNum is the average of two adjacent indices
+    // in mutationIndex list, so pressing next should move the index to the 
+    // higher index (the ceil of the average) and pressing prev should move
+    // the index to the lower index (the floor of the average)
     if (amount === 1) {
       currMutationIndex = Math.ceil(currMutationIndex);
     } else {
@@ -723,16 +731,13 @@ function navigateGraph(amount) {
  * Assumes currGraphNum is between 0 and numMutations
  */
 function updateButtons() {
-  // The use of <= and >= as opposed to === is for safety! 
-  // while currGraphIndex should never be < 0 or > numMutations - 1, we just wanted to make sure
-  // nothing bad happened!!
+  // The use of <= and >= as opposed to === is for safety
   if (Math.floor(currMutationIndex) <= -1) {
     document.getElementById("prevbutton").disabled = true;
   } else {
     document.getElementById("prevbutton").disabled = false;
   }
   if (currMutationIndex >= mutationIndexList.length - 1) {
-    // removed: || numMutations == 0 since the first check takes care of it
     document.getElementById("nextbutton").disabled = true;
   } else {
     document.getElementById("nextbutton").disabled = false;
@@ -745,6 +750,9 @@ function updateButtons() {
  * Get the index of the next largest element in an indiceList
  * @param indicesList a list of indices, assume it's sorted
  * @param element the element to find a higher value than
+ * @return the index of the first element in indicesList larger than
+ * element or indicesList.length if element is larger than all elements
+ * in indicesList
  */
 function getIndexOfNextLargerNumber(indicesList, element) {
   let start = 0;
@@ -771,6 +779,8 @@ function getIndexOfNextLargerNumber(indicesList, element) {
  * Get the index of the element that's immediately smaller than the element
  * @param indicesList a list of indices, assume it's sorted
  * @param element the element to find the smaller value than
+ * @return the index of the last element in indicesList smaller than
+ * element or -1 if element is smaller than all elements in indicesList
  */
 function getIndexOfClosestSmallerNumber(indicesList, element) {
   let start = 0;

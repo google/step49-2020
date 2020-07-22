@@ -210,6 +210,7 @@ describe("Pressing next and previous buttons associated with a graph", function 
   afterEach(function () {
     document.body.innerHTML = '';
   });
+
   it("correctly updates mutation tracking variables and buttons on click", function () {
     document.body.appendChild(numDisplay);
     initializeNumMutations(3);
@@ -336,6 +337,7 @@ describe("Node search", function () {
 
 describe("Check correct url params", function () {
   let nodeName = {};
+
   beforeEach(function () {
     setCurrMutationNum(1);
     nodeName = document.createElement("input");
@@ -372,7 +374,7 @@ describe("Check correct url params", function () {
     const constructedUrl = new URLSearchParams(requestParams);
     expect(constructedUrl.has("nodeName")).toBe(true);
     expect(constructedUrl.get("nodeName")).toBe("A");
-  })
+  });
 });
 
 describe("Ensuring correct nodes are highlighted in mutated graph", function () {
@@ -381,7 +383,6 @@ describe("Ensuring correct nodes are highlighted in mutated graph", function () 
   const red = "rgb(255,0,0)";
   const yellow = "rgb(255,255,0)";
   const translucentOpacity = "0.25";
-
 
   beforeEach(function () {
     document.body.innerHTML = `<div id="cy"></div>`;
@@ -595,6 +596,7 @@ describe("Checking binary search functions", function () {
     expect(prevLower).toBe(0);
     expect(nextHigher).toBe(2);
   });
+
   it("correctly returns next greater and smaller indices for an element not in the list", function () {
     const arr = [1,5,7,8,11];
     const prevLower = getIndexOfClosestSmallerNumber(arr, 6);
@@ -603,6 +605,7 @@ describe("Checking binary search functions", function () {
     expect(prevLower).toBe(1);
     expect(nextHigher).toBe(2);
   });
+
   it("correctly returns next greater and smaller indices for an element at the end of the list", function () {
     const arr = [1,5,7,8,11];
     const prevLower = getIndexOfClosestSmallerNumber(arr, 11);
@@ -611,6 +614,7 @@ describe("Checking binary search functions", function () {
     expect(prevLower).toBe(3);
     expect(nextHigher).toBe(5);
   });
+
   it("correctly returns next greater and smaller indices for an element at the start of the list", function () {
     const arr = [1,5,7,8,11];
     const prevLower = getIndexOfClosestSmallerNumber(arr, 1);
@@ -619,6 +623,7 @@ describe("Checking binary search functions", function () {
     expect(prevLower).toBe(-1);
     expect(nextHigher).toBe(1);
   });
+
   it("correctly returns next greater and smaller indices for an element that is larger than all list elements", function () {
     const arr = [1,5,7,8,11];
     const prevLower = getIndexOfClosestSmallerNumber(arr, 12);
@@ -627,6 +632,7 @@ describe("Checking binary search functions", function () {
     expect(prevLower).toBe(4);
     expect(nextHigher).toBe(5);
   });
+
   it("correctly returns next greater and smaller indices for an element that is smaller than all list elements", function () {
     const arr = [1,5,7,8,11];
     const prevLower = getIndexOfClosestSmallerNumber(arr, 0);
@@ -635,6 +641,7 @@ describe("Checking binary search functions", function () {
     expect(prevLower).toBe(-1);
     expect(nextHigher).toBe(0);
   });
+
   it("correctly returns next greater and smaller indices for a list with all equal elements", function () {
     const arr = [5,5,5,5,5];
     const prevLower = getIndexOfClosestSmallerNumber(arr, 5);
@@ -643,6 +650,7 @@ describe("Checking binary search functions", function () {
     expect(prevLower).toBe(-1);
     expect(nextHigher).toBe(5);
   });
+
   it("correctly returns next greater and smaller indices for a list with some equal elements (start)", function () {
     const arr = [5,5,5,6,7,8];
     const prevLower = getIndexOfClosestSmallerNumber(arr, 5);
@@ -651,6 +659,7 @@ describe("Checking binary search functions", function () {
     expect(prevLower).toBe(-1);
     expect(nextHigher).toBe(3);
   });
+  
   it("correctly returns next greater and smaller indices for a list with some equal elements (end)", function () {
     const arr = [1,2,3,5,5,5];
     const prevLower = getIndexOfClosestSmallerNumber(arr, 5);

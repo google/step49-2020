@@ -74,9 +74,9 @@ public class MutationDiffTest {
     multiMutList.add(addABM);
     multiMutList.add(addACM);
 
-    MultiMutation result = Utility.getDiffBetween(multiMutList, 2);
+    MultiMutation result = Utility.getMultiMutationAtIndex(multiMutList, 2);
     Assert.assertNull(result);
-    result = Utility.getDiffBetween(multiMutList, 1);
+    result = Utility.getMultiMutationAtIndex(multiMutList, 1);
     Assert.assertNotNull(result);
   }
 
@@ -105,14 +105,14 @@ public class MutationDiffTest {
     multiMutList.add(addABM);
     multiMutList.add(addACM);
 
-    MultiMutation result = Utility.getDiffBetween(multiMutList, -1);
+    MultiMutation result = Utility.getMultiMutationAtIndex(multiMutList, -1);
     Assert.assertNull(result);
-    result = Utility.getDiffBetween(multiMutList, 0);
+    result = Utility.getMultiMutationAtIndex(multiMutList, 0);
     Assert.assertNotNull(result);
   }
 
   /*
-   * Tests that a diff the function on a valid index just returns the
+   * Tests that calling the function on a valid index just returns the
    * multi-mutation entry at index - add node
    */
   @Test
@@ -132,12 +132,12 @@ public class MutationDiffTest {
     multiMutList.add(addAM);
     multiMutList.add(addABM);
 
-    MultiMutation result = Utility.getDiffBetween(multiMutList, 0);
+    MultiMutation result = Utility.getMultiMutationAtIndex(multiMutList, 0);
     Assert.assertEquals(result, addAM);
   }
 
   /*
-   * Tests that a diff the function on a valid index just returns the
+   * Tests that calling the function on a valid index just returns the
    * multi-mutation entry at index - add edge
    */
   @Test
@@ -157,12 +157,12 @@ public class MutationDiffTest {
     multiMutList.add(addAM);
     multiMutList.add(addABM);
 
-    MultiMutation result = Utility.getDiffBetween(multiMutList, 1);
+    MultiMutation result = Utility.getMultiMutationAtIndex(multiMutList, 1);
     Assert.assertEquals(result, addABM);
   }
 
   /*
-   * Tests that a diff the function on a valid index just returns the
+   * Tests that calling the function on a valid index just returns the
    * multi-mutation entry at index - change token
    */
   @Test
@@ -195,12 +195,12 @@ public class MutationDiffTest {
     multiMutList.add(addTokenToAM);
     multiMutList.add(addABM);
 
-    MultiMutation result = Utility.getDiffBetween(multiMutList, 0);
+    MultiMutation result = Utility.getMultiMutationAtIndex(multiMutList, 0);
     Assert.assertEquals(result, addTokenToAM);
   }
 
   /*
-   * Tests that a diff the function on a valid index just returns the
+   * Tests that calling the function on a valid index just returns the
    * multi-mutation entry at index - delete edge
    */
   @Test
@@ -233,12 +233,12 @@ public class MutationDiffTest {
     multiMutList.add(addTokenToAM);
     multiMutList.add(removeABM);
 
-    MultiMutation result = Utility.getDiffBetween(multiMutList, 1);
+    MultiMutation result = Utility.getMultiMutationAtIndex(multiMutList, 1);
     Assert.assertEquals(result, removeABM);
   }
 
   /*
-   * Tests that a diff the function on a valid index just returns the
+   * Tests that calling the function on a valid index just returns the
    * multi-mutation entry at index - delete node
    */
   @Test
@@ -278,7 +278,7 @@ public class MutationDiffTest {
     multiMutList.add(addTokenToAM);
     multiMutList.add(deleteBM);
 
-    MultiMutation result = Utility.getDiffBetween(multiMutList, 1);
+    MultiMutation result = Utility.getMultiMutationAtIndex(multiMutList, 1);
     Assert.assertEquals(result, deleteBM);
   }
 

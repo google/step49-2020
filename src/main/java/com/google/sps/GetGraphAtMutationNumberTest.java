@@ -210,8 +210,8 @@ public class GetGraphAtMutationNumberTest {
   }
 
   /**
-   * Mutation Number requested exceeds the length of the mutation list, should return the last
-   * mutation
+   * Mutation Number requested exceeds the length of the mutation list, should return the 
+   * graph after applying all the mutations
    */
   @Test
   public void numberRequestedTooBig() {
