@@ -157,14 +157,23 @@ public class DataServlet extends HttpServlet {
     if (!mutationIndicesMap.containsKey(nodeNameParam)) {
       mutationIndicesMap.put(nodeNameParam, Utility.getMutationIndicesOfNode(nodeNameParam, mutList));
     }
-    // filteredMutationIndices = mutationIndicesMap.get(nodeNameParam);
-    // Add the indices for the nodeNameParam to the list
-    List<List<Integer>> allRelevantMutationIndices = new ArrayList<>(Arrays.asList(mutationIndicesMap.get(nodeNameParam)));
-    allRelevantMutationIndices.add(filteredMutationIndices);
-    // ALl relevant nodes we are concerned about, first add node name
-    List<String> queried = new ArrayList<>(Arrays.asList(nodeNameParam));
+    List<String> queried = new ArrayList<>();
+    List<List<Integer>> allRelevantMutationIndices = new ArrayList<>();
 
-    // Process the tokens here
+    // Both empty -> can just look at nodeNameParam
+    // nodeName nonempty, token empty -> just look at nodeNameParam
+    // nodeName empty, token nonempty -> look only at token
+    // Both nondempty -> look at both
+    // So we look at nodeName param in the case that both are empty and token is empty 
+
+    // nodeNameParam is relevant in this case. otherwise this means tokenParam is not empty, and we should 
+    // statement is shortened from tokenParam.length() == 0 || (tokenParam.length() != 0 && nodeNameParam.length() != 0)
+    if (tokenParam.length() == 0 || nodeNameParam.length() != 0) {
+      queried.add(nodeNameParam);
+      allRelevantMutationIndices.add(mutationIndicesMap.get(nodeNameParam));
+    }
+
+    // Process the tokens here - if tokens are empty it won't be in the map, this won't happen
     // If the token is contained, then get the nodes associated with the token and
     // add them to the queried nodes
     if (currDataGraph.tokenMap().containsKey(tokenParam)) {

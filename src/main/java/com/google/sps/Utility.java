@@ -226,7 +226,7 @@ public final class Utility {
 
   public static List<Integer> mergeSortedLists(List<List<Integer>> sortedLists) {
     int numLists = sortedLists.size();
-    if (sortedLists.size() == 0) return null;
+    if (sortedLists.size() == 0) return new ArrayList<>();
     else if (sortedLists.size() == 1) {
       return sortedLists.get(0);
     } else {
@@ -255,8 +255,6 @@ public final class Utility {
   }
 
   public static List<Integer> mergeTwoLists(List<Integer> l1, List<Integer> l2) {
-    System.out.println(l1);
-    System.out.println(l2);
     ArrayList<Integer> result = new ArrayList<>();
     int pointer1 = 0;
     int pointer2 = 0;
@@ -275,11 +273,8 @@ public final class Utility {
         result.add(smallest);
       }
     }
-    System.out.println(pointer1);
-    System.out.println(pointer2);
     // Check individual, if the other has reached the bounds
     while (pointer1 < l1.size()) {
-      System.out.println("hello");
       if (result.size() == 0 || result.get(result.size() - 1) != l1.get(pointer1)) {
         result.add(l1.get(pointer1));
       }
@@ -291,7 +286,6 @@ public final class Utility {
       }
       pointer2++;
     }
-    System.out.println(result);
     return result;
   }
 
