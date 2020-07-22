@@ -1,4 +1,6 @@
+@use "@material/slider";
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,700;1,400&display=swap');
+@include slider.core-styles;
 
 /* Define color scheme of page */
 :root {
@@ -51,7 +53,7 @@ body {
   float: right;
 }
 
-#buttondiv, #buttontext, #show-mutations, #show-mutation-text {
+#buttondiv, #buttontext, #show-mutations, #show-mutation-text, #slider {
   display: flex;
   align-items: center;
   justify-content: center;

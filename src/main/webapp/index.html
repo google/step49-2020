@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <title>Graphs</title>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="bundle.css">
   <script src="./dist/main.js"></script>
 </head>
 
@@ -19,10 +19,14 @@
     <label for="search-name">Name of node to search for</label>
     <input type="text" id="node-name-filter" name="search-name" placeholder="Name"></input>
     <button onclick="graph.generateGraph()">Get Graph</button>
+    <label>Search by Node: </label>
+    <input type="text" id="search" name="search"></input>
+    <button id="search-button">Search</button>
+    <label id="search-error"></label>
     <div id="num-mutation-display"></div>
   </div>
   <div id="graph-content">
-  <!-- COLUMN 1: main column -->
+    <!-- COLUMN 1: main column -->
     <div class="graph-content-column" id="graph-content-main">
       <div id="graphdiv">
         <div id="graph"></div>
@@ -36,19 +40,34 @@
         <label id="show-mutation-text" for="show-mutations">Select this checkbox to show the mutated nodes in the
           graph</label><br>
         <input type="checkbox" id="show-mutations" name="show-mutations" checked=true>
+
+        <!-- Slider code begins -->
+        <div id="slider" class="mdc-slider mdc-slider--discrete" tabindex="0" role="slider" aria-valuemin="0" aria-valuemax="100"
+          aria-valuenow="0" aria-label="Select Value">
+          <div class="mdc-slider__track-container">
+            <div class="mdc-slider__track"></div>
+          </div>
+          <div class="mdc-slider__thumb-container">
+            <div class="mdc-slider__pin">
+              <span class="mdc-slider__pin-value-marker"></span>
+            </div>
+            <svg class="mdc-slider__thumb" width="21" height="21">
+              <circle cx="10.5" cy="10.5" r="7.875"></circle>
+            </svg>
+            <div class="mdc-slider__focus-ring"></div>
+          </div>
+        </div>
+        <!-- Slider code ends -->
       </div>
-      <label>Search by Node: </label>
-      <input type="text" id="search" name="search"></input>
-      <button id="search-button">Search</button>
-      <label id="search-error"></label>
     </div>
     <!-- COLUMN 2: includes messages -->
     <div class="graph-content-column" id="graph-content-logs">
       <ul id="log-list">
-        <li>Welcome to our application! Here you'll see a log of messages pertaining to the graph on the left. Enjoy! :)</li>
+        <li>Welcome to our application! Here you'll see a log of messages pertaining to the graph on the left. Enjoy! :)
+        </li>
       </ul>
     </div>
-</div>
+  </div>
 </body>
 
 </html>

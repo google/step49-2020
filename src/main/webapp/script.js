@@ -18,6 +18,7 @@
  * the cytoscape.js library
  */
 
+import { MDCSlider } from '@material/slider';
 import cytoscape from 'cytoscape';
 import dagre from 'cytoscape-dagre';
 import popper from 'cytoscape-popper';
@@ -26,6 +27,7 @@ import 'tippy.js/dist/tippy.css';
 import 'tippy.js/dist/backdrop.css';
 import 'tippy.js/animations/shift-away.css';
 import { colorScheme, opacityScheme } from './constants.js';
+import "./style.scss";
 
 export {
   initializeNumMutations, setMutationIndexList, setCurrMutationNum, initializeTippy,
@@ -89,6 +91,9 @@ function setMutationIndexList(lst) {
  * and then displays it on the page
  */
 async function generateGraph() {
+
+  const slider = new MDCSlider(document.querySelector('.mdc-slider'));
+  slider.listen('MDCSlider:change', () => console.log(`Value changed to ${slider.value}`));
   // Arrays to store the cytoscape graph node and edge objects
   let graphNodes = [];
   let graphEdges = [];
@@ -320,7 +325,7 @@ function getGraphDisplay(graphNodes, graphEdges, mutList, reason) {
   // Zoom in on them and activate their reason tooltips
   makeInteractiveAndFocus(cy, elems);
 
-  
+
   // Break the list down into individual constituents
   const deletedNodes = result["deletedNodes"] || cy.collection();
   const deletedEdges = result["deletedEdges"] || cy.collection();
