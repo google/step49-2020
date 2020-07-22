@@ -30,10 +30,6 @@ import org.junit.runners.JUnit4;
 /** Test for functions within Utility that are used to filter graphs across nodes */
 @RunWith(JUnit4.class)
 public class NodeMutationFilterTest {
-  // lst1 contains even number of elements
-  List<Integer> lst1 = new ArrayList<>(Arrays.asList(1, 4, 7, 15));
-  // lst2 contains odd number of elements
-  List<Integer> lst2 = new ArrayList<>(Arrays.asList(4, 7, 12, 13, 15));
 
   // Following functions test the getMutationIndicesOfNode function in Utility
   /** Basic test for including mutliple relevant nodes for getMutationIndicesOfNode */
@@ -224,4 +220,33 @@ public class NodeMutationFilterTest {
     Assert.assertEquals(0, truncatedList.size());
     Assert.assertFalse(truncatedList.contains(0));
   }
+
+    // Tests merging lists together
+    @Test
+    public void mergeLists() {
+      List<Integer> list1 = new ArrayList<>(Arrays.asList(1, 4, 7, 15));
+      List<Integer> list2 = new ArrayList<>(Arrays.asList(4, 7, 12, 13, 15));
+      List<Integer> list3 = new ArrayList<>(Arrays.asList(0, 6, 9));
+      List<List<Integer>> lsts = new ArrayList<>();
+      lsts.add(list1);
+      lsts.add(list2);
+      lsts.add(list3);
+  
+      // should be 0, 1, 4, 6, 7, 9, 12, 13, 15
+      List<Integer> result = Utility.mergeSortedLists(lsts);
+      Assert.assertNotNull(result);
+      System.out.println(result);
+      Assert.assertEquals(9, result.size());
+    }
+
+    @Test
+    public void mergeEmpty() {
+      List<Integer> list1 = new ArrayList<>();
+      List<Integer> list2 = new ArrayList<>();
+      List<List<Integer>> lsts = new ArrayList<>();
+      lsts.add(list1);
+      lsts.add(list2);
+      List<Integer> result = Utility.mergeSortedLists(lsts);
+      Assert.assertEquals(0, result.size());
+    }
 }
