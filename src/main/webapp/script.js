@@ -286,6 +286,8 @@ function getGraphDisplay(graphNodes, graphEdges, mutList, reason) {
        * highlightDiff again each time the checkbox is clicked
        */
       showDiffs(cy, elems, deletedNodes, deletedEdges, addedNodes, addedEdges, modifiedNodes);
+      // Activate tooltips and zoom in on mutated objects
+      makeInteractiveAndFocus(cy, elems);
     } else {
       hideDiffs(cy, elems, deletedNodes, deletedEdges, addedNodes, addedEdges, modifiedNodes);
     }
@@ -450,8 +452,7 @@ function initializeReasonTooltip(obj, reason) {
 }
 
 /**
- * Shows the mutations made to this graph by highlighting them and enabling their
- * tooltips 
+ * Shows the mutations made to this graph by highlighting them
  * 
  * @param cy the graph to modify
  * @param elems all the elements to mutate
@@ -478,9 +479,6 @@ function showDiffs(cy, elems, deletedNodes, deletedEdges, addedNodes, addedEdges
 
   // Color nodes whose metadata changed in yellow
   modifiedNodes.style("background-color", colorScheme["modifiedNodeColor"]);
-
-  // Activate tooltips and zoom in on mutated objects
-  makeInteractiveAndFocus(cy, elems);
 }
 
 /**

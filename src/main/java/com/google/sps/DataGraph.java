@@ -191,7 +191,6 @@ abstract class DataGraph {
       case ADD_EDGE:
         {
           // Check nodes exist before adding an edge
-
           if (startNode == null) {
             return "Add edge: Start node " + startName + " doesn't exist\n";
           }
