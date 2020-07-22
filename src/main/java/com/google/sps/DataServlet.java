@@ -17,7 +17,6 @@ package com.google.sps;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.io.InputStreamReader;
 
 import java.util.List;
@@ -169,10 +168,12 @@ public class DataServlet extends HttpServlet {
     // nodeName nonempty, token empty -> just look at nodeNameParam
     // nodeName empty, token nonempty -> look only at token
     // Both nondempty -> look at both
-    // So we look at nodeName param in the case that both are empty and token is empty 
+    // So we look at nodeName param in the case that both are empty and token is empty
 
-    // nodeNameParam is relevant in this case. otherwise this means tokenParam is not empty, and we should 
-    // statement is shortened from tokenParam.length() == 0 || (tokenParam.length() != 0 && nodeNameParam.length() != 0)
+    // nodeNameParam is relevant in this case. otherwise this means tokenParam is not empty, and we
+    // should
+    // statement is shortened from tokenParam.length() == 0 || (tokenParam.length() != 0 &&
+    // nodeNameParam.length() != 0)
     if (tokenParam.length() == 0 || nodeNameParam.length() != 0) {
       queried.add(nodeNameParam);
       allRelevantMutationIndices.add(mutationIndicesMap.get(nodeNameParam));
