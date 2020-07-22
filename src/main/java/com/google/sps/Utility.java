@@ -29,6 +29,7 @@ import com.google.protobuf.Struct;
 import com.proto.GraphProtos.Node;
 import com.proto.MutationProtos.MultiMutation;
 import com.proto.MutationProtos.Mutation;
+import com.proto.MutationProtos.TokenMutation;
 
 import org.json.JSONObject;
 
@@ -183,6 +184,28 @@ public final class Utility {
       }
     }
     return lst;
+  }
+
+  public static ArrayList<Integer> getMutationIndicesOfToken(String tokenName, List<MultiMutation> origList) {
+    ArrayList<Integer> lst = new ArrayList<>();
+    if (tokenName == null) {
+      return lst;
+    }
+    for (int i = 0; i < origList.size(); i++) {
+      MultiMutation multiMut = origList.get(i);
+      List<Mutation> mutList = multiMut.getMutationList();
+      for (Mutation mut : mutList) {
+        if (mut.getType().equals(CHANGE_TOKEN)) {
+          TokenMutation tokenMut = mut.getTokenChange();
+          List<String> tokenNames = tokenMut.getTokenNameList();
+          if (tokenNames.contains(tokenName)) {
+            lst.add(i);
+            break;
+          }
+        }
+      }
+    }
+    return lst; 
   }
 
   /**
