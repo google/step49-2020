@@ -30,13 +30,13 @@ import com.google.common.graph.MutableGraph;
 import com.google.protobuf.TextFormat;
 import com.proto.GraphProtos.Graph;
 import com.proto.GraphProtos.Node;
-import com.proto.MutationProtos.Mutation;
+import com.proto.MutationProtos.MultiMutation;
 import com.proto.MutationProtos.MutationList;
 
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
 
-  private List<Mutation> mutList = null;
+  private List<MultiMutation> mutList = null;
 
   private DataGraph currDataGraph = null;
   private DataGraph originalDataGraph = null;
@@ -111,10 +111,17 @@ public class DataServlet extends HttpServlet {
     // Parameter for the nodeName the user searched for in the frontend
     String nodeNameParam = request.getParameter("nodeName");
 
-    currDataGraph =
-        Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
-    if (currDataGraph == null) {
-      String error = "Failed to apply mutations!";
+    // Get the multi-mutation difference between the current graph and the requested
+    // graph
+    MultiMutation mutDiff =
+        Utility.getDiffBetween(mutList, currDataGraph.numMutations(), mutationNumber);
+
+    try {
+      currDataGraph =
+          Utility.getGraphAtMutationNumber(
+              originalDataGraph, currDataGraph, mutationNumber, mutList);
+    } catch (IllegalArgumentException e) {
+      String error = e.getMessage();
       response.setHeader("serverError", error);
       return;
     }
@@ -129,7 +136,7 @@ public class DataServlet extends HttpServlet {
       truncatedGraph = currDataGraph.getReachableNodes(nodeNameParam, depthNumber);
     }
 
-    String graphJson = Utility.graphToJson(truncatedGraph, mutList.size());
+    String graphJson = Utility.graphToJson(truncatedGraph, mutList.size(), mutDiff);
     response.getWriter().println(graphJson);
   }
 }

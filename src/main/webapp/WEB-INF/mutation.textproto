@@ -1,4 +1,5 @@
 mutation {
+mutation {
   type: DELETE_EDGE
   start_node: "E"
   end_node: "F"
@@ -8,7 +9,10 @@ mutation {
   type: DELETE_NODE
   start_node: "F"
 }
+reason: "Deleting node F"
+}
 
+mutation {
 mutation {
   type: ADD_NODE
   start_node: "G"
@@ -19,7 +23,10 @@ mutation {
   start_node: "E"
   end_node: "G"
 }
+reason: "Adding node G"
+}
 
+mutation {
 mutation {
   type: ADD_NODE
   start_node: "H"
@@ -30,12 +37,18 @@ mutation {
   start_node: "H"
   end_node: "G"
 }
+reason: "Adding node H"
+}
 
+mutation {
 mutation {
   type: ADD_EDGE
   start_node: "D"
   end_node: "G"
 }
+reason: "Adding edge DG"
+}
+mutation {
 mutation {
   type: CHANGE_TOKEN
   start_node: "B"
@@ -44,4 +57,6 @@ mutation {
     token_name: "d.js"
     token_name: "e.js"
   }
+}
+reason: "Changing tokens of node B"
 }
