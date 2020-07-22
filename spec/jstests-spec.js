@@ -164,8 +164,7 @@ describe("Initializing tooltips", function () {
   });
 
   it("indicates that a node without tokens has no tokens", function () {
-    document.body.innerHTML = `
-    <div id="cy"></div>`;
+    document.body.innerHTML = `<div id="cy"></div>`;
     const cy = cytoscape({
       elements: [
       ]
@@ -211,6 +210,7 @@ describe("Pressing next and previous buttons associated with a graph", function 
   afterEach(function () {
     document.body.innerHTML = '';
   });
+
   it("correctly updates mutation tracking variables and buttons on click", function () {
     document.body.appendChild(numDisplay);
     initializeNumMutations(3);
@@ -337,6 +337,7 @@ describe("Node search", function () {
 
 describe("Check correct url params", function () {
   let nodeName = {};
+
   beforeEach(function () {
     setCurrMutationNum(1);
     nodeName = document.createElement("input");
@@ -373,14 +374,18 @@ describe("Check correct url params", function () {
     const constructedUrl = new URLSearchParams(requestParams);
     expect(constructedUrl.has("nodeName")).toBe(true);
     expect(constructedUrl.get("nodeName")).toBe("A");
-  })
+  });
 });
 
 describe("Ensuring correct nodes are highlighted in mutated graph", function () {
   let cy;
+  const green = "rgb(0,128,0)";
+  const red = "rgb(255,0,0)";
+  const yellow = "rgb(255,255,0)";
+  const translucentOpacity = "0.25";
+
   beforeEach(function () {
-    document.body.innerHTML = `
-    <div id="cy"></div>`;
+    document.body.innerHTML = `<div id="cy"></div>`;
     cy = cytoscape({
       container: document.getElementById("cy"),
       elements: [{
@@ -416,8 +421,7 @@ describe("Ensuring correct nodes are highlighted in mutated graph", function () 
     mutList.push(mutObj);
     highlightDiff(cy, mutList);
 
-    // expect node to be green
-    expect(cy.getElementById("A").style("background-color")).toBe('rgb(0,128,0)');
+    expect(cy.$id("A").style("background-color")).toBe(green);
   });
 
   it("highlights an added edge in green", function () {
@@ -429,9 +433,9 @@ describe("Ensuring correct nodes are highlighted in mutated graph", function () 
     const mutList = [];
     mutList.push(mutObj);
     highlightDiff(cy, mutList);
-    // expect node to be green
-    expect(cy.getElementById("edgeAB").style("line-color")).toBe('rgb(0,128,0)');
-    expect(cy.getElementById("edgeAB").style("target-arrow-color")).toBe('rgb(0,128,0)');
+
+    expect(cy.$id("edgeAB").style("line-color")).toBe(green);
+    expect(cy.$id("edgeAB").style("target-arrow-color")).toBe(green);
   });
 
   it("highlights a deleted node + edges in red", function () {
@@ -452,17 +456,17 @@ describe("Ensuring correct nodes are highlighted in mutated graph", function () 
     const mutList = [];
     mutList.push(deleteNode, deleteEdge1, deleteEdge2);
     highlightDiff(cy, mutList);
-    // expect node and associated edges to be red and transparent
-    expect(cy.getElementById("C").length).toBe(1);
-    expect(cy.getElementById("C").style("background-color")).toBe("rgb(255,0,0)");
-    expect(cy.getElementById("C").style("opacity")).toBe("0.25");
-    expect(cy.getElementById("edgeBC").length).toBe(1);
-    expect(cy.getElementById("edgeBC").style("line-color")).toBe('rgb(255,0,0)');
-    expect(cy.getElementById("edgeBC").style("target-arrow-color")).toBe('rgb(255,0,0)');
-    expect(cy.getElementById("edgeBC").style("opacity")).toBe('0.25');
-    expect(cy.getElementById("edgeCA").style("line-color")).toBe('rgb(255,0,0)');
-    expect(cy.getElementById("edgeCA").style("target-arrow-color")).toBe('rgb(255,0,0)');
-    expect(cy.getElementById("edgeCA").style("opacity")).toBe('0.25');
+
+    expect(cy.$id("C").length).toBe(1);
+    expect(cy.$id("C").style("background-color")).toBe(red);
+    expect(cy.$id("C").style("opacity")).toBe(translucentOpacity);
+    expect(cy.$id("edgeBC").length).toBe(1);
+    expect(cy.$id("edgeBC").style("line-color")).toBe(red);
+    expect(cy.$id("edgeBC").style("target-arrow-color")).toBe(red);
+    expect(cy.$id("edgeBC").style("opacity")).toBe(translucentOpacity);
+    expect(cy.$id("edgeCA").style("line-color")).toBe(red);
+    expect(cy.$id("edgeCA").style("target-arrow-color")).toBe(red);
+    expect(cy.$id("edgeCA").style("opacity")).toBe(translucentOpacity);
   });
 
   it("highlights a changed node in yellow", function () {
@@ -473,15 +477,14 @@ describe("Ensuring correct nodes are highlighted in mutated graph", function () 
     const mutList = [];
     mutList.push(mutObj);
     highlightDiff(cy, mutList);
-    // expect node to be yellow
-    expect(cy.getElementById("A").style("background-color")).toBe("rgb(255,255,0)");
+
+    expect(cy.$id("A").style("background-color")).toBe(yellow);
   });
 });
 
 describe("Initializing mutation reason tooltips", function () {
   it("initializes the tooltip of a node without a specified reason correctly", function () {
-    document.body.innerHTML = `
-    <div id="cy"></div>`;
+    document.body.innerHTML = `<div id="cy"></div>`;
     const cy = cytoscape({
       elements: [
       ]
@@ -500,8 +503,7 @@ describe("Initializing mutation reason tooltips", function () {
   });
 
   it("initializes the tooltip of an edge with a specified reason correctly", function () {
-    document.body.innerHTML = `
-    <div id="cy"></div>`;
+    document.body.innerHTML = `<div id="cy"></div>`;
     const cy = cytoscape({
       elements: [
       ]
@@ -569,7 +571,7 @@ describe("Showing and hiding tooltips when checkbox is clicked", function () {
     expect(showMutCheckbox.checked).toBe(true);
 
     // and we can hover over nodes and see the reason tooltip
-    const gNodeA = cy.getElementById("A");
+    const gNodeA = cy.$id("A");
     gNodeA.trigger("mouseover");
     expect(gNodeA.reasonTip.state.isVisible).toBe(true);
     gNodeA.trigger("mouseout");
@@ -594,6 +596,7 @@ describe("Checking binary search functions", function () {
     expect(prevLower).toBe(0);
     expect(nextHigher).toBe(2);
   });
+
   it("correctly returns next greater and smaller indices for an element not in the list", function () {
     const arr = [1,5,7,8,11];
     const prevLower = getIndexOfClosestSmallerNumber(arr, 6);
@@ -602,6 +605,7 @@ describe("Checking binary search functions", function () {
     expect(prevLower).toBe(1);
     expect(nextHigher).toBe(2);
   });
+
   it("correctly returns next greater and smaller indices for an element at the end of the list", function () {
     const arr = [1,5,7,8,11];
     const prevLower = getIndexOfClosestSmallerNumber(arr, 11);
@@ -610,6 +614,7 @@ describe("Checking binary search functions", function () {
     expect(prevLower).toBe(3);
     expect(nextHigher).toBe(5);
   });
+
   it("correctly returns next greater and smaller indices for an element at the start of the list", function () {
     const arr = [1,5,7,8,11];
     const prevLower = getIndexOfClosestSmallerNumber(arr, 1);
@@ -618,6 +623,7 @@ describe("Checking binary search functions", function () {
     expect(prevLower).toBe(-1);
     expect(nextHigher).toBe(1);
   });
+
   it("correctly returns next greater and smaller indices for an element that is larger than all list elements", function () {
     const arr = [1,5,7,8,11];
     const prevLower = getIndexOfClosestSmallerNumber(arr, 12);
@@ -626,6 +632,7 @@ describe("Checking binary search functions", function () {
     expect(prevLower).toBe(4);
     expect(nextHigher).toBe(5);
   });
+
   it("correctly returns next greater and smaller indices for an element that is smaller than all list elements", function () {
     const arr = [1,5,7,8,11];
     const prevLower = getIndexOfClosestSmallerNumber(arr, 0);
@@ -634,6 +641,7 @@ describe("Checking binary search functions", function () {
     expect(prevLower).toBe(-1);
     expect(nextHigher).toBe(0);
   });
+
   it("correctly returns next greater and smaller indices for a list with all equal elements", function () {
     const arr = [5,5,5,5,5];
     const prevLower = getIndexOfClosestSmallerNumber(arr, 5);
@@ -642,6 +650,7 @@ describe("Checking binary search functions", function () {
     expect(prevLower).toBe(-1);
     expect(nextHigher).toBe(5);
   });
+
   it("correctly returns next greater and smaller indices for a list with some equal elements (start)", function () {
     const arr = [5,5,5,6,7,8];
     const prevLower = getIndexOfClosestSmallerNumber(arr, 5);
@@ -650,6 +659,7 @@ describe("Checking binary search functions", function () {
     expect(prevLower).toBe(-1);
     expect(nextHigher).toBe(3);
   });
+  
   it("correctly returns next greater and smaller indices for a list with some equal elements (end)", function () {
     const arr = [1,2,3,5,5,5];
     const prevLower = getIndexOfClosestSmallerNumber(arr, 5);
