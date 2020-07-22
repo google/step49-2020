@@ -188,6 +188,7 @@ public final class Utility {
 
   /**
    * Returns a list of indices on the original list that related to a given node
+   *
    * @param tokenName the token name to search for
    * @param origList the original list of mutations
    * @return a list of indices, empty if tokenName is null or if token is not changed
