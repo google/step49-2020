@@ -159,7 +159,7 @@ abstract class DataGraph {
                 ? this.tokenMap().get(tokenName)
                 : new HashSet<>();
 
-        nodesWithToken.add(tokenName);
+        nodesWithToken.add(nodeName);
         this.tokenMap().put(tokenName, nodesWithToken);
       }
 
