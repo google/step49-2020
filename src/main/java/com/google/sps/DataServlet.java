@@ -70,7 +70,9 @@ public class DataServlet extends HttpServlet {
      *********************************
      */
     if (currDataGraph == null && originalDataGraph == null) {
-      success = initializeGraphVariables(getServletContext().getResourceAsStream("/WEB-INF/initial_graph.textproto"));
+      success =
+          initializeGraphVariables(
+              getServletContext().getResourceAsStream("/WEB-INF/initial_graph.textproto"));
       String error = "Failed to parse input graph into Guava graph - not a DAG!";
       if (!success) {
         response.setHeader("serverError", error);
@@ -89,7 +91,8 @@ public class DataServlet extends HttpServlet {
      *************************************
      */
     if (mutList == null) {
-      initializeMutationVariables(getServletContext().getResourceAsStream("/WEB-INF/mutations.textproto"));
+      initializeMutationVariables(
+          getServletContext().getResourceAsStream("/WEB-INF/mutations.textproto"));
       // Populate the list of all possible mutation indices
       defaultIndices = IntStream.range(0, mutList.size() - 1).boxed().collect(Collectors.toList());
       // and initialize the current list of relevant indices to this because
@@ -154,7 +157,8 @@ public class DataServlet extends HttpServlet {
     // Find the indices that mutate the searched node, computing and caching them
     // if this has not been done already
     if (!mutationIndicesMap.containsKey(nodeNameParam)) {
-      mutationIndicesMap.put(nodeNameParam, Utility.getMutationIndicesOfNode(nodeNameParam, mutList));
+      mutationIndicesMap.put(
+          nodeNameParam, Utility.getMutationIndicesOfNode(nodeNameParam, mutList));
     }
 
     List<String> queried = new ArrayList<>();
@@ -196,7 +200,8 @@ public class DataServlet extends HttpServlet {
     filteredMutationIndices = Utility.mergeSortedLists(allRelevantMutationIndices);
 
     // Get the graph at the requested mutation number and truncate it
-    currDataGraph = Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
+    currDataGraph =
+        Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
 
     truncatedGraph = currDataGraph.getReachableNodes(queried, depthNumber);
 
@@ -209,10 +214,12 @@ public class DataServlet extends HttpServlet {
     }
     if (truncatedGraph.nodes().size() == 0 && filteredMutationIndices.size() != 0) {
       // The searched node is not in the graph but is mutated at some future point
-      String message = "The searched node does not exist in this graph, but it does exist in a later graph!";
+      String message =
+          "The searched node does not exist in this graph, but it does exist in a later graph!";
       response.setHeader("serverMessage", message);
     }
-    if (truncatedGraph.nodes().size() != 0 && mutationNumber != -1
+    if (truncatedGraph.nodes().size() != 0
+        && mutationNumber != -1
         && filteredMutationIndices.indexOf(mutationNumber) == -1) {
       // The searched node exists but is not mutated in the current graph
       String message = "The searched node exists, but is not mutated in this graph";
@@ -229,12 +236,11 @@ public class DataServlet extends HttpServlet {
   }
 
   /**
-   * Private function to intitialize graph variables. returns a boolean to
-   * represent whether the InpuStream was read successfully.
+   * Private function to intitialize graph variables. returns a boolean to represent whether the
+   * InpuStream was read successfully.
    *
    * @param graphInput InputStream to initialize graph variables over
-   * @return whether variables were initialized properly; true if successful and
-   *         false otherwise
+   * @return whether variables were initialized properly; true if successful and false otherwise
    * @throws IOException if something does wrong during the reading
    */
   private boolean initializeGraphVariables(InputStream graphInput) throws IOException {
@@ -249,8 +255,8 @@ public class DataServlet extends HttpServlet {
   }
 
   /**
-   * Private function to intialize the mutation list. Returns a boolean to
-   * represent whether the InputStream was read successfully.
+   * Private function to intialize the mutation list. Returns a boolean to represent whether the
+   * InputStream was read successfully.
    *
    * @param mutationInput InputStream to initialize variable over
    * @throws IOException if something goes wrong during the reading

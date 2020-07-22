@@ -186,7 +186,8 @@ public final class Utility {
     return lst;
   }
 
-  public static ArrayList<Integer> getMutationIndicesOfToken(String tokenName, List<MultiMutation> origList) {
+  public static ArrayList<Integer> getMutationIndicesOfToken(
+      String tokenName, List<MultiMutation> origList) {
     ArrayList<Integer> lst = new ArrayList<>();
     if (tokenName == null) {
       return lst;
@@ -205,7 +206,7 @@ public final class Utility {
         }
       }
     }
-    return lst; 
+    return lst;
   }
 
   /**
