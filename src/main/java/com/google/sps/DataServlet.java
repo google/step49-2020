@@ -182,7 +182,7 @@ public class DataServlet extends HttpServlet {
       allRelevantMutationIndices.add(mutationIndicesMap.get(nodeNameParam));
     }
     allRelevantMutationIndices.add(Utility.getMutationIndicesOfToken(tokenParam, mutList));
-    
+
     // Process the tokens here - if tokens are empty it won't be in the map, this
     // won't happen
     // If the token is contained, then get the nodes associated with the token and
