@@ -445,30 +445,30 @@ public class ReachableNodesTest {
     Assert.assertEquals(0, graphEdges.size());
   }
 
-    /** Empty String with invalid nodes should come back as an empty graph */
-    @Test
-    public void emtpyWithValidNodes() {
-      nodeA.addChildren("B");
-      nodeA.addChildren("C");
-  
-      HashMap<String, Node> protoNodesMap = new HashMap<>();
-      protoNodesMap.put("A", nodeA.build());
-      protoNodesMap.put("B", nodeB.build());
-      protoNodesMap.put("C", nodeC.build());
-  
-      DataGraph dataGraph = DataGraph.create();
-      dataGraph.graphFromProtoNodes(protoNodesMap);
-      List<String> lst = new ArrayList<>(Arrays.asList("", "B"));
-  
-      MutableGraph<GraphNode> truncatedGraph = dataGraph.getReachableNodes(lst, 1);
-      Set<GraphNode> graphNodes = truncatedGraph.nodes();
-      Set<EndpointPair<GraphNode>> graphEdges = truncatedGraph.edges();
-  
-      Assert.assertEquals(2, graphNodes.size());
-      Assert.assertTrue(graphNodes.contains(gNodeA));
-      Assert.assertTrue(graphNodes.contains(gNodeB));
-      Assert.assertFalse(graphNodes.contains(gNodeC));
-  
-      Assert.assertEquals(1, graphEdges.size());
-    }
+  /** Empty String with invalid nodes should come back as an empty graph */
+  @Test
+  public void emtpyWithValidNodes() {
+    nodeA.addChildren("B");
+    nodeA.addChildren("C");
+
+    HashMap<String, Node> protoNodesMap = new HashMap<>();
+    protoNodesMap.put("A", nodeA.build());
+    protoNodesMap.put("B", nodeB.build());
+    protoNodesMap.put("C", nodeC.build());
+
+    DataGraph dataGraph = DataGraph.create();
+    dataGraph.graphFromProtoNodes(protoNodesMap);
+    List<String> lst = new ArrayList<>(Arrays.asList("", "B"));
+
+    MutableGraph<GraphNode> truncatedGraph = dataGraph.getReachableNodes(lst, 1);
+    Set<GraphNode> graphNodes = truncatedGraph.nodes();
+    Set<EndpointPair<GraphNode>> graphEdges = truncatedGraph.edges();
+
+    Assert.assertEquals(2, graphNodes.size());
+    Assert.assertTrue(graphNodes.contains(gNodeA));
+    Assert.assertTrue(graphNodes.contains(gNodeB));
+    Assert.assertFalse(graphNodes.contains(gNodeC));
+
+    Assert.assertEquals(1, graphEdges.size());
+  }
 }
