@@ -184,7 +184,7 @@ public class DataServlet extends HttpServlet {
     }
     // The searched node exists but is not mutated in the current graph
     if (truncatedGraph.nodes().size() != 0
-        && mutationNumber != -1
+        && !(mutationNumber == -1 && nodeNameParam.equals(""))
         && filteredMutationIndices.indexOf(mutationNumber) == -1) {
       response.setHeader(
           "serverMessage", "The searched node exists, but is not mutated in this graph");

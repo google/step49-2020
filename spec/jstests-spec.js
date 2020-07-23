@@ -1,8 +1,9 @@
 import {
-  initializeNumMutations, setMutationIndexList, setCurrMutationNum, initializeTippy,
-  generateGraph, getUrl, navigateGraph, currMutationNum, currMutationIndex, numMutations,
-  updateButtons, searchNode, highlightDiff, initializeReasonTooltip, getGraphDisplay,
-  getIndexOfClosestSmallerNumber, getIndexOfNextLargerNumber
+  initializeNumMutations, setMutationIndexList, setCurrMutationNum, setCurrMutationIndex,
+  initializeTippy, generateGraph, getUrl, navigateGraph, currMutationNum, currMutationIndex,
+  numMutations, updateButtons, searchNode, highlightDiff, initializeReasonTooltip, getGraphDisplay,
+  getIndexOfClosestSmallerNumber, getIndexOfNextLargerNumber, initializeSlider,
+  resetMutationSlider, mutationNumSlider, setMutationSliderValue, readGraphNumber
 }
   from "../src/main/webapp/script.js";
 
@@ -589,7 +590,7 @@ describe("Showing and hiding tooltips when checkbox is clicked", function () {
 
 describe("Checking binary search functions", function () {
   it("correctly returns next greater and smaller indices for an element in the list", function () {
-    const arr = [1,5,7,8,11];
+    const arr = [1, 5, 7, 8, 11];
     const prevLower = getIndexOfClosestSmallerNumber(arr, 5);
     const nextHigher = getIndexOfNextLargerNumber(arr, 5);
 
@@ -598,7 +599,7 @@ describe("Checking binary search functions", function () {
   });
 
   it("correctly returns next greater and smaller indices for an element not in the list", function () {
-    const arr = [1,5,7,8,11];
+    const arr = [1, 5, 7, 8, 11];
     const prevLower = getIndexOfClosestSmallerNumber(arr, 6);
     const nextHigher = getIndexOfNextLargerNumber(arr, 6);
 
@@ -607,7 +608,7 @@ describe("Checking binary search functions", function () {
   });
 
   it("correctly returns next greater and smaller indices for an element at the end of the list", function () {
-    const arr = [1,5,7,8,11];
+    const arr = [1, 5, 7, 8, 11];
     const prevLower = getIndexOfClosestSmallerNumber(arr, 11);
     const nextHigher = getIndexOfNextLargerNumber(arr, 11);
 
@@ -616,7 +617,7 @@ describe("Checking binary search functions", function () {
   });
 
   it("correctly returns next greater and smaller indices for an element at the start of the list", function () {
-    const arr = [1,5,7,8,11];
+    const arr = [1, 5, 7, 8, 11];
     const prevLower = getIndexOfClosestSmallerNumber(arr, 1);
     const nextHigher = getIndexOfNextLargerNumber(arr, 1);
 
@@ -625,7 +626,7 @@ describe("Checking binary search functions", function () {
   });
 
   it("correctly returns next greater and smaller indices for an element that is larger than all list elements", function () {
-    const arr = [1,5,7,8,11];
+    const arr = [1, 5, 7, 8, 11];
     const prevLower = getIndexOfClosestSmallerNumber(arr, 12);
     const nextHigher = getIndexOfNextLargerNumber(arr, 12);
 
@@ -634,7 +635,7 @@ describe("Checking binary search functions", function () {
   });
 
   it("correctly returns next greater and smaller indices for an element that is smaller than all list elements", function () {
-    const arr = [1,5,7,8,11];
+    const arr = [1, 5, 7, 8, 11];
     const prevLower = getIndexOfClosestSmallerNumber(arr, 0);
     const nextHigher = getIndexOfNextLargerNumber(arr, 0);
 
@@ -643,7 +644,7 @@ describe("Checking binary search functions", function () {
   });
 
   it("correctly returns next greater and smaller indices for a list with all equal elements", function () {
-    const arr = [5,5,5,5,5];
+    const arr = [5, 5, 5, 5, 5];
     const prevLower = getIndexOfClosestSmallerNumber(arr, 5);
     const nextHigher = getIndexOfNextLargerNumber(arr, 5);
 
@@ -652,20 +653,134 @@ describe("Checking binary search functions", function () {
   });
 
   it("correctly returns next greater and smaller indices for a list with some equal elements (start)", function () {
-    const arr = [5,5,5,6,7,8];
+    const arr = [5, 5, 5, 6, 7, 8];
     const prevLower = getIndexOfClosestSmallerNumber(arr, 5);
     const nextHigher = getIndexOfNextLargerNumber(arr, 5);
 
     expect(prevLower).toBe(-1);
     expect(nextHigher).toBe(3);
   });
-  
+
   it("correctly returns next greater and smaller indices for a list with some equal elements (end)", function () {
-    const arr = [1,2,3,5,5,5];
+    const arr = [1, 2, 3, 5, 5, 5];
     const prevLower = getIndexOfClosestSmallerNumber(arr, 5);
     const nextHigher = getIndexOfNextLargerNumber(arr, 5);
 
     expect(prevLower).toBe(2);
     expect(nextHigher).toBe(6);
+  });
+});
+
+describe("Testing slider functionality", function () {
+  beforeAll(function () {
+    document.body.innerHTML = '';
+  });
+
+  beforeEach(function () {
+    document.body.innerHTML = `
+    <div id="slider" class="mdc-slider mdc-slider--discrete mdc-slider--display-markers" tabindex="0" role="slider" aria-valuemin="0" aria-valuemax="0" aria-valuenow="0" aria-label="Select Value">
+      <div class="mdc-slider__track-container">
+        <div class="mdc-slider__track"></div>
+        <div class="mdc-slider__track-marker-container"></div>
+      </div>
+      <div class="mdc-slider__thumb-container">
+        <div class="mdc-slider__pin">
+          <span class="mdc-slider__pin-value-marker"></span>
+        </div>
+        <svg class="mdc-slider__thumb" width="21" height="21">
+          <circle cx="10.5" cy="10.5" r="7.875"></circle>
+        </svg>
+        <div class="mdc-slider__focus-ring"></div>
+      </div>
+    </div>
+    <div id="num-mutation-display"></div>
+    `;
+    initializeSlider();
+  });
+
+  it("correctly sets up the slider when the mutation index list is empty", function () {
+    setMutationIndexList([]);
+    initializeNumMutations(0);
+    setCurrMutationNum(-1);
+    setCurrMutationIndex(-1);
+
+    resetMutationSlider();
+
+    expect(mutationNumSlider.min).toBe(-1);
+    expect(mutationNumSlider.max).toBe(-1);
+    expect(mutationNumSlider.step).toBe(1);
+
+    setMutationSliderValue(7);
+    expect(mutationNumSlider.value).toBe(-1);
+  });
+
+  it("correctly sets up the slider when the mutation index list is non-empty", function () {
+    // Array from 0 to 109
+    setMutationIndexList(Array(110).keys());
+    initializeNumMutations(110);
+    setCurrMutationNum(2);
+    setCurrMutationIndex(2);
+
+    resetMutationSlider();
+
+    expect(mutationNumSlider.min).toBe(-1);
+    expect(mutationNumSlider.max).toBe(109);
+    expect(mutationNumSlider.step).toBe(2);
+
+    setMutationSliderValue(7);
+    // Snap to nearest even number because step value is 2
+    expect(mutationNumSlider.value).toBe(8);
+
+    setMutationSliderValue(-1);
+    expect(mutationNumSlider.value).toBe(-1);
+
+    setMutationSliderValue(-2);
+    expect(mutationNumSlider.value).toBe(-1);
+  });
+
+  it("correctly integrates slider with next and previous buttons", function () {
+    initializeNumMutations(3);
+    setCurrMutationNum(1);
+    setCurrMutationIndex(-0.5);
+    // Relevant indices are different from actual indices!
+    setMutationIndexList([2, 3, 5]);
+    resetMutationSlider();
+    const prevButton = document.createElement("button");
+    prevButton.id = "prevbutton";
+    prevButton.onclick = () => { navigateGraph(-1); updateButtons(); };
+    const nextButton = document.createElement("button");
+    nextButton.id = "nextbutton";
+    nextButton.onclick = () => { navigateGraph(1); updateButtons(); };
+    document.body.appendChild(prevButton);
+    document.body.appendChild(nextButton);
+
+
+    // snapped to the nearest integer
+    expect(mutationNumSlider.value).toBe(0);
+
+    nextButton.click();
+    expect(mutationNumSlider.value).toBe(0);
+
+    nextButton.click();
+    expect(mutationNumSlider.value).toBe(1);
+
+    nextButton.click();
+    expect(mutationNumSlider.value).toBe(2);
+
+    prevButton.click();
+    expect(mutationNumSlider.value).toBe(1);
+
+    prevButton.click();
+    expect(mutationNumSlider.value).toBe(0);
+
+    prevButton.click();
+    expect(mutationNumSlider.value).toBe(-1);
+
+    setMutationSliderValue(1.5);
+    // Trigger change listener to update currMutationIndex
+    mutationNumSlider.foundation.adapter.notifyChange();
+    expect(mutationNumSlider.value).toBe(2);
+    nextButton.click();
+    expect(mutationNumSlider.value).toBe(2);
   });
 });
