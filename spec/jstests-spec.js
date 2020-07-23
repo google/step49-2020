@@ -339,7 +339,7 @@ describe("Node search", function() {
     document.body.appendChild(query);
   });
 
-  it("should be successful", function() {
+  it("should be successful finding a node in the graph", function() {
     query.value = "A";
     const result = searchAndHighlight(cy, "node", searchNode);
 
@@ -349,7 +349,7 @@ describe("Node search", function() {
     expect(result.style("border-width")).toBe("4px");
   });
 
-  it("should be unsuccessful", function() {
+  it("should be unsuccessful because node does not exist", function() {
     query.value = "C";
     const result = searchAndHighlight(cy, "node", searchNode);
 
@@ -358,7 +358,7 @@ describe("Node search", function() {
     expect(result).toBeUndefined();
   });
 
-  it("should not execute at all", function() {
+  it("should not execute at all because there is no query", function() {
     query.value = "";
     const result = searchAndHighlight(cy, "node", searchNode);
 
@@ -410,7 +410,7 @@ describe("Token search", function() {
     document.body.appendChild(query);
   });
 
-  it("should be successful", function() {
+  it("should be successful because the token exists in one node", function() {
     query.value = "a.js";
     const result = searchAndHighlight(cy, "token", searchToken);
 
@@ -421,7 +421,7 @@ describe("Token search", function() {
     expect(result[0].style("border-width")).toBe("4px");
   });
 
-  it("should be successful with multiple tokens", function() {
+  it("should be successful with finding token in multiples nodes", function() {
     query.value = "b.js";
     const result = searchAndHighlight(cy, "token", searchToken);
 
@@ -434,7 +434,7 @@ describe("Token search", function() {
     expect(result[1].style("border-width")).toBe("4px");
   });
 
-  it("should be unsuccessful", function() {
+  it("should be unsuccessful because token does not exist", function() {
     query.value = "fake_file.js";
     const result = searchAndHighlight(cy, "token", searchToken);
 
@@ -443,7 +443,7 @@ describe("Token search", function() {
     expect(result).toBeUndefined();
   });
 
-  it("should not be executed at all", function() {
+  it("should not be executed at all because there is no query", function() {
     query.value = "";
     const result = searchAndHighlight(cy, "token", searchToken);
 
