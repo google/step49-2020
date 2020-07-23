@@ -206,7 +206,7 @@ describe("Pressing next and previous buttons associated with a graph", function 
   beforeEach(function () {
     numDisplay = document.createElement("div");
     numDisplay.id = "num-mutation-display";
-  });
+  }); 
 
   afterEach(function () {
     document.body.innerHTML = '';
@@ -313,6 +313,7 @@ describe("Pressing next and previous buttons associated with a graph", function 
     setCurrMutationIndex(.5);
     setCurrMutationNum(0);
     setMutationIndexList([0, 1, 3]);
+    initializeNumMutations(3);
     navigateGraph(1);
     expect(currMutationIndex).toBe(1);
     expect(currMutationNum).toBe(1);
@@ -323,6 +324,7 @@ describe("Pressing next and previous buttons associated with a graph", function 
     setCurrMutationIndex(.5);
     setCurrMutationNum(0);
     setMutationIndexList([0, 1, 3]);
+    initializeNumMutations(3);
     navigateGraph(-1);
     expect(currMutationIndex).toBe(0);
     expect(currMutationNum).toBe(0);

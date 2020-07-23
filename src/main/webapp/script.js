@@ -843,7 +843,9 @@ function getClosestIndices(indicesList, element) {
     }
   }
   toReturn['higher'] = indexHigher;
-  toReturn['lower'] = (indexHigher !== 0 && indicesList[indexHigher - 1]) < element ? indexHigher - 1 : Math.max(indexHigher - 2, -1);
+  // if indexHigher is 0, then nothing is less (so lower is -1)
+  // otherwise check the previous element and either go back by 1 or 2
+  toReturn['lower'] = indexHigher === 0 ? -1 : (indicesList[indexHigher - 1] < element ? indexHigher - 1 : Math.max(indexHigher - 2, -1));
   return toReturn;
 }
 
