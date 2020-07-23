@@ -225,11 +225,9 @@ public class DataServlet extends HttpServlet {
   }
 
   /**
-   * Private function to intialize the mutation list. Returns a boolean to represent whether the
-   * InputStream was read successfully.
+   * Private function to intialize the mutation list. 
    *
    * @param mutationInput InputStream to initialize variable over
-   * @return whether variables were initialized properly; true if successful and false otherwise
    * @throws IOException if something goes wrong during the reading
    */
   private void initializeMutationVariables(InputStream mutationInput) throws IOException {
