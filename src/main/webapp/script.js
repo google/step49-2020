@@ -115,6 +115,12 @@ async function generateGraph() {
   const nodes = JSON.parse(jsonResponse.nodes);
   const edges = JSON.parse(jsonResponse.edges);
 
+  // Set all logs to be black
+  const allLogs = document.querySelectorAll('.log-msg');
+  for (let i = 0; i < allLogs.length; i++) {
+    allLogs[i].classList.remove('recent-log-text');
+  }
+
   const mutList = jsonResponse["mutationDiff"].length === 0 ? null : JSON.parse(jsonResponse["mutationDiff"]);
   const reason = jsonResponse["reason"];
 
@@ -205,11 +211,7 @@ function addToLogs(msg) {
   newMsg.classList.add("log-msg");
   newMsg.innerText = msg;
   logsList.appendChild(newMsg);
-  const allLogs = document.querySelectorAll('.log-msg');
-  for (let i = 0; i < allLogs.length; i++) {
-    allLogs[i].classList.remove('error-text');
-  }
-  newMsg.classList.add("error-text");
+  newMsg.classList.add("recent-log-text");
 }
 /**
  * Takes an error message and creates a text element on the page to display this message
