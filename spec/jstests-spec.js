@@ -1,5 +1,5 @@
 import {
-  initializeNumMutations, setMutationIndexList, setCurrMutationNum, initializeTippy,
+  initializeNumMutations, setMutationIndexList, setCurrMutationNum, setCurrMutationIndex, initializeTippy,
   generateGraph, getUrl, navigateGraph, currMutationNum, currMutationIndex, numMutations,
   updateButtons, searchNode, highlightDiff, initializeReasonTooltip, getGraphDisplay,
   getIndexOfClosestSmallerNumber, getIndexOfNextLargerNumber
@@ -209,12 +209,15 @@ describe("Pressing next and previous buttons associated with a graph", function 
 
   afterEach(function () {
     document.body.innerHTML = '';
+    // setCurrMutationIndex(-1);
+    // setCurrMutationNum(-1);
   });
 
   it("correctly updates mutation tracking variables and button properties on click", function () {
     document.body.appendChild(numDisplay);
     initializeNumMutations(3);
     setCurrMutationNum(-1);
+    setCurrMutationIndex(-1);
     // Relevant indices are different from actual indices!
     setMutationIndexList([0, 1, 3]);
     const prevButton = document.createElement("button");
@@ -297,14 +300,31 @@ describe("Pressing next and previous buttons associated with a graph", function 
     initializeNumMutations(-1);
     setCurrMutationNum(10);
    
-    navigateGraph(-1)
+   // Nothing changes with a negative numMutations
+    navigateGraph(-1);
     expect(currMutationNum).toBe(10);
-    expect(currMutationIndex).toBe(-1); // Nothing changes with a negative numMutations
 
-    navigateGraph(1)
+    navigateGraph(1);
     expect(currMutationNum).toBe(10);
-    expect(currMutationIndex).toBe(-1); // Nothing changes with a negative numMutations
-  }) 
+  });
+  it("Index is a decimal navigate forward", function() {
+    document.body.appendChild(numDisplay);
+    setCurrMutationIndex(.5);
+    setCurrMutationNum(0);
+    setMutationIndexList([0, 1, 3]);
+    navigateGraph(1);
+    expect(currMutationIndex).toBe(1);
+    expect(currMutationNum).toBe(1);
+  });
+  it("Index is a decimal navigate backward", function() {
+    document.body.appendChild(numDisplay);
+    setCurrMutationIndex(.5);
+    setCurrMutationNum(0);
+    setMutationIndexList([0, 1, 3]);
+    navigateGraph(-1);
+    expect(currMutationIndex).toBe(0);
+    expect(currMutationNum).toBe(0);
+  });
 });
 
 describe("Node search", function () {

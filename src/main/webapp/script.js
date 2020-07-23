@@ -28,7 +28,7 @@ import 'tippy.js/animations/shift-away.css';
 import { colorScheme, opacityScheme } from './constants.js';
 
 export {
-  initializeNumMutations, setMutationIndexList, setCurrMutationNum, initializeTippy,
+  initializeNumMutations, setMutationIndexList, setCurrMutationNum, setCurrMutationIndex, initializeTippy,
   generateGraph, getUrl, navigateGraph, currMutationNum, currMutationIndex, numMutations,
   updateButtons, searchNode, highlightDiff, initializeReasonTooltip, getGraphDisplay,
   getIndexOfClosestSmallerNumber, getIndexOfNextLargerNumber
