@@ -56,6 +56,8 @@ let numMutations = 0;
 // 5th indices, this would be [1,4,5])
 let mutationIndexList = [];
 
+let totalNum = 0;
+
 /**
  * Initializes the number of mutations
  */
@@ -114,6 +116,9 @@ async function generateGraph() {
   // Graph nodes and edges received from server
   const nodes = JSON.parse(jsonResponse.nodes);
   const edges = JSON.parse(jsonResponse.edges);
+  totalNum = jsonResponse.totalMutNumber;
+
+  console.log("max", totalNum);
 
   // Set all logs to be black
   const allLogs = document.querySelectorAll('.log-msg');
@@ -751,7 +756,7 @@ function updateButtons() {
     document.getElementById("nextbutton").disabled = false;
   }
   const numElement = document.getElementById("num-mutation-display");
-  numElement.innerText = `Graph ${currMutationNum + 1} (there are ${numMutations} total!)`;
+  numElement.innerText = `Graph ${currMutationNum + 1} out of ${totalNum} total!)`;
 }
 
 /**
