@@ -822,7 +822,6 @@ describe("Testing slider functionality", function () {
   });
 });
 
-
 describe("Testing graph input functionality", function () {
   let graphNumberInput;
   let totalMutNumberText;
