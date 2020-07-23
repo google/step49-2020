@@ -57,13 +57,17 @@ public final class Utility {
    * edges of the graph.
    *
    * @param graph the graph to convert into a JSON String
-   * @param maxMutations the length of the list of mutations
+   * @param mutationIndices the list of indices of relevant mutations
    * @param mutDiff the difference between the current graph and the requested graph
+   * @param maxNumber the total number of mutations, without filtering
    * @return a JSON object containing as entries the nodes and edges of this graph as well as the
    *     length of the list of mutations this graph is an intermediate result of applying
    */
   public static String graphToJson(
-      MutableGraph<GraphNode> graph, List<Integer> mutationIndices, MultiMutation mutDiff) {
+      MutableGraph<GraphNode> graph,
+      List<Integer> mutationIndices,
+      MultiMutation mutDiff,
+      int maxNumber) {
     Type typeOfNode = new TypeToken<Set<GraphNode>>() {}.getType();
     Type typeOfEdge = new TypeToken<Set<EndpointPair<GraphNode>>>() {}.getType();
     Type typeOfIndices = new TypeToken<List<Integer>>() {}.getType();
@@ -81,16 +85,23 @@ public final class Utility {
             .put("mutationDiff", mutDiffJson)
             .put("reason", reason)
             .put("mutationIndices", mutationIndicesJson)
+            .put("totalMutNumber", maxNumber)
             .toString();
     return resultJson;
   }
 
   /**
+   * Returns the graph at the given mutation number null if the requested number is less than -1. If
+   * the user requests a number greater than the total number of mutations, we return the final
+   * graph.
+   *
    * @param original the original graph
    * @param curr the current (most recently-requested) graph (requires that original != curr)
    * @param mutationNum number of mutations to apply
    * @param multiMutList multi-mutation list
-   * @return the resulting data graph or null if there was an error
+   * @throws IllegalArgumentException if original and current graph refer to the same object
+   * @return the resulting data graph, null if the mutation number was too small, and the final
+   *     graph if the mutation number was too big
    */
   public static DataGraph getGraphAtMutationNumber(
       DataGraph original, DataGraph curr, int mutationNum, List<MultiMutation> multiMutList)
