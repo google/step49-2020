@@ -104,7 +104,6 @@ body {
 }
 
 #log-list > li {
-  color: var(--error);
   margin: 10px;
   padding: 10px;
   background-color: white;
@@ -114,4 +113,8 @@ body {
 #graph-number-text, #graph-number, #total-mutation-number-text {
   margin: 5px;
   display: inline;
+}
+
+.recent-log-text {
+  color: red;
 }

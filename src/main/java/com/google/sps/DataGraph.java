@@ -369,7 +369,7 @@ abstract class DataGraph {
     }
 
     HashMap<String, GraphNode> graphNodesMap = this.graphNodesMap();
-    if (!(name.length() == 0) && !graphNodesMap.containsKey(name)) {
+    if (name.length() != 0 && !graphNodesMap.containsKey(name)) {
       return GraphBuilder.directed()
           .build(); // If the specified node is not found, return an empty graph
     }

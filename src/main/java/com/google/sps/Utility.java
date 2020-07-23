@@ -93,11 +93,17 @@ public final class Utility {
   }
 
   /**
+   * Returns the graph at the given mutation number null if the requested number is less than -1. If
+   * the user requests a number greater than the total number of mutations, we return the final
+   * graph.
+   *
    * @param original the original graph
    * @param curr the current (most recently-requested) graph (requires that original != curr)
    * @param mutationNum number of mutations to apply
    * @param multiMutList multi-mutation list
-   * @return the resulting data graph or null if there was an error
+   * @throws IllegalArgumentException if original and current graph refer to the same object
+   * @return the resulting data graph, null if the mutation number was too small, and the final
+   *     graph if the mutation number was too big
    */
   public static DataGraph getGraphAtMutationNumber(
       DataGraph original, DataGraph curr, int mutationNum, List<MultiMutation> multiMutList)

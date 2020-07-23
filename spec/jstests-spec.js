@@ -213,10 +213,11 @@ describe("Pressing next and previous buttons associated with a graph", function 
     document.body.innerHTML = '';
   });
 
-  it("correctly updates mutation tracking variables and buttons on click", function () {
+  it("correctly updates mutation tracking variables and button properties on click", function () {
     document.body.appendChild(numDisplay);
     initializeNumMutations(3);
     setCurrMutationNum(-1);
+    setCurrMutationIndex(-1);
     // Relevant indices are different from actual indices!
     setMutationIndexList([0, 1, 3]);
     const prevButton = document.createElement("button");
@@ -233,6 +234,7 @@ describe("Pressing next and previous buttons associated with a graph", function 
     expect(currMutationIndex).toBe(-1);
     expect(numMutations).toBe(3);
 
+    // Check the button properties and variables with buttons are clicked
     nextButton.click();
     expect(currMutationNum).toBe(0);
     expect(currMutationIndex).toBe(0);
@@ -292,12 +294,39 @@ describe("Pressing next and previous buttons associated with a graph", function 
     expect(currMutationIndex).toBe(-1);
     expect(nextButton.disabled).toBe(false);
     expect(prevButton.disabled).toBe(true);
+  });
 
-    nextButton.click();
-    expect(currMutationNum).toBe(0);
+  it("Correctly doesn't change anything when there aren't any mutations", function() {
+    document.body.appendChild(numDisplay);
+    initializeNumMutations(-1);
+    setCurrMutationNum(10);
+   
+   // Nothing changes with a negative numMutations
+    navigateGraph(-1);
+    expect(currMutationNum).toBe(10);
+
+    navigateGraph(1);
+    expect(currMutationNum).toBe(10);
+  });
+
+  it("Correctly navigates forward when index is a decimal", function() {
+    document.body.appendChild(numDisplay);
+    setCurrMutationIndex(.5);
+    setCurrMutationNum(0);
+    setMutationIndexList([0, 1, 3]);
+    navigateGraph(1);
+    expect(currMutationIndex).toBe(1);
+    expect(currMutationNum).toBe(1);
+  });
+
+  it("correctly navigates backward when index is a decimal", function() {
+    document.body.appendChild(numDisplay);
+    setCurrMutationIndex(.5);
+    setCurrMutationNum(0);
+    setMutationIndexList([0, 1, 3]);
+    navigateGraph(-1);
     expect(currMutationIndex).toBe(0);
-    expect(nextButton.disabled).toBe(false);
-    expect(prevButton.disabled).toBe(false);
+    expect(currMutationNum).toBe(0);
   });
 });
 

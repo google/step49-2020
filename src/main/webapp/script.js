@@ -148,6 +148,12 @@ async function generateGraph() {
   const nodes = JSON.parse(jsonResponse.nodes);
   const edges = JSON.parse(jsonResponse.edges);
 
+  // Set all logs to be black
+  const allLogs = document.querySelectorAll('.log-msg');
+  for (let i = 0; i < allLogs.length; i++) {
+    allLogs[i].classList.remove('recent-log-text');
+  }
+
   const mutList = jsonResponse["mutationDiff"].length === 0 ? null : JSON.parse(jsonResponse["mutationDiff"]);
   const reason = jsonResponse["reason"];
 
@@ -269,8 +275,10 @@ function getUrl() {
 function addToLogs(msg) {
   const logsList = document.getElementById("log-list");
   const newMsg = document.createElement("li");
+  newMsg.classList.add("log-msg");
   newMsg.innerText = msg;
-  logsList.insertBefore(newMsg, logsList.firstChild);
+  logsList.appendChild(newMsg);
+  newMsg.classList.add("recent-log-text");
 }
 /**
  * Takes an error message and creates a text element on the page to display this message
@@ -757,6 +765,8 @@ function getTooltipContent(node) {
  * When a next/previous button is clicked, modifies the mutation index of the
  * current graph to represent the new state. Then, the corresponding
  * graph is requested from the server.
+ * If currMutationIndex is decimal, next/prev would set it to the 
+ * next/previous integer index (either a floor or a ceiling)
  * @param amount the amount to change the currMutationIndex by. 
  * Either 1 (for next button) or -1 (for previous button)
  */
