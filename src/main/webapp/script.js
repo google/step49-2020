@@ -33,9 +33,8 @@ export {
   initializeNumMutations, setMutationIndexList, setCurrMutationNum, setCurrMutationIndex,
   initializeTippy, generateGraph, getUrl, navigateGraph, currMutationNum, currMutationIndex,
   numMutations, updateButtons, searchNode, highlightDiff, initializeReasonTooltip, getGraphDisplay,
-  getIndexOfClosestSmallerNumber, getIndexOfNextLargerNumber, initializeSlider,
-  resetMutationSlider, mutationNumSlider, setMutationSliderValue, readGraphNumberInput,
-  updateGraphNumInput, setMaxNumMutations
+  getClosestIndices, initializeSlider, resetMutationSlider, mutationNumSlider, setMutationSliderValue,
+  readGraphNumberInput, updateGraphNumInput, setMaxNumMutations
 };
 
 cytoscape.use(popper); // register extension
@@ -159,7 +158,7 @@ async function generateGraph() {
 
   mutationIndexList = JSON.parse(jsonResponse.mutationIndices);
   numMutations = mutationIndexList.length;
-  maxNumMutations = jsonResponse.totalSize;
+  maxNumMutations = jsonResponse.totalMutNumber;
 
   if (!nodes || !edges || !Array.isArray(nodes) || !Array.isArray(edges)) {
     displayError("Malformed graph received from server - edges or nodes are empty");
@@ -179,8 +178,8 @@ async function generateGraph() {
   // in the updated mutationIndexList between the previous smaller and the next larger
   // element.
   if (currMutationNum !== -1) {
-    const indexOfNextLargerNumber = getIndexOfNextLargerNumber(mutationIndexList, currMutationNum);
-    const indexOfClosestSmallerNumber = getIndexOfClosestSmallerNumber(mutationIndexList, currMutationNum);
+    const indexOfNextLargerNumber = getClosestIndices(mutationIndexList, currMutationNum).higher;
+    const indexOfClosestSmallerNumber = getClosestIndices(mutationIndexList, currMutationNum).lower;
     currMutationIndex = ((indexOfNextLargerNumber + indexOfClosestSmallerNumber) / 2);
   } else {
     currMutationIndex = -1;
@@ -456,7 +455,7 @@ function highlightDiff(cy, mutList, reason = "") {
           modifiedObj.style('background-color', colorScheme["addedObjectColor"]);
           addedNodes = addedNodes.union(modifiedObj);
         } else {
-          addToLogs("No node called " + startNode + " in graph");
+          displayError("No node called " + startNode + " in graph");
         }
         break;
       case 2:
@@ -468,11 +467,11 @@ function highlightDiff(cy, mutList, reason = "") {
           modifiedObj.style('target-arrow-color', colorScheme["addedObjectColor"]);
           addedEdges = addedEdges.union(modifiedObj);
         } else if (!endNode) {
-          addToLogs(endNode + " not specified");
+          displayError(endNode + " not specified");
         } else if (cy.getElementById(startNode).length === 0) {
-          addToLogs("No node called " + startNode + " in graph");
+          displayError("No node called " + startNode + " in graph");
         } else {
-          addToLogs("No node called " + endNode + " in graph");
+          displayError("No node called " + endNode + " in graph");
         }
         break;
       case 3:
@@ -811,62 +810,41 @@ function updateButtons() {
     document.getElementById("nextbutton").disabled = false;
   }
 }
-
+ 
 /**
- * Get the index of the next largest element in an indiceList
+ * Get an object with the index of the element that's immediately smaller 
+ * and immediately greater than the element
  * @param indicesList a list of indices, assume it's sorted
- * @param element the element to find a higher value than
- * @return the index of the first element in indicesList larger than
+ * @param element the element to find the smaller value than
+ * @return an object with the properties 'lower' and 'higher';
+ * lower contains the index of the last element in indicesList smaller than
+ * element or -1 if element is smaller than all elements in indicesList
+ * higher contains the index of the first element in indicesList larger than
  * element or indicesList.length if element is larger than all elements
  * in indicesList
  */
-function getIndexOfNextLargerNumber(indicesList, element) {
-  let start = 0;
+function getClosestIndices(indicesList, element) {
+  let start = 0; 
   let end = indicesList.length - 1;
 
-  let index = -1;
+  let toReturn = {lower: -1, higher: -1};
+  let indexHigher = -1;
   while (start <= end) {
     let mid = Math.floor((start + end) / 2);
     // element is not less (greater or equal to) -> go to the right
     if (indicesList[mid] <= element) {
-      index = mid + 1;
+      indexHigher = mid + 1;
       start = mid + 1;
     }
-    // go to the left otherwise, set index to the mid
+    // go to the left otherwise, set indexHigher to the mid
     else {
-      index = mid;
+      indexHigher = mid;
       end = mid - 1;
     }
   }
-  return index;
-}
-
-/**
- * Get the index of the element that's immediately smaller than the element
- * @param indicesList a list of indices, assume it's sorted
- * @param element the element to find the smaller value than
- * @return the index of the last element in indicesList smaller than
- * element or -1 if element is smaller than all elements in indicesList
- */
-function getIndexOfClosestSmallerNumber(indicesList, element) {
-  let start = 0;
-  let end = indicesList.length - 1;
-
-  let index = -1;
-  while (start <= end) {
-    let mid = Math.floor((start + end) / 2);
-    // element is greater than mid -> set index to the mid and start to mid + 1
-    if (indicesList[mid] < element) {
-      index = mid;
-      start = mid + 1;
-    }
-    // element is less than or equal to
-    else {
-      index = mid - 1;
-      end = mid - 1;
-    }
-  }
-  return index;
+  toReturn['higher'] = indexHigher;
+  toReturn['lower'] = (indexHigher !== 0 && indicesList[indexHigher - 1]) < element ? indexHigher - 1 : Math.max(indexHigher - 2, -1);
+  return toReturn;
 }
 
 /**
