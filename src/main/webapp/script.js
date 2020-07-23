@@ -34,7 +34,8 @@ export {
   initializeTippy, generateGraph, getUrl, navigateGraph, currMutationNum, currMutationIndex, 
   numMutations, updateButtons, searchNode, highlightDiff, initializeReasonTooltip, getGraphDisplay,
   getIndexOfClosestSmallerNumber, getIndexOfNextLargerNumber, initializeSlider,
-  resetMutationSlider, mutationNumSlider, setMutationSliderValue, readGraphNumber
+  resetMutationSlider, mutationNumSlider, setMutationSliderValue, readGraphNumberInput, 
+  updateGraphNumInput, setMaxNumMutations
 };
 
 cytoscape.use(popper); // register extension
@@ -104,6 +105,13 @@ function setCurrMutationIndex(num) {
  */
 function setMutationIndexList(lst) {
   mutationIndexList = lst;
+}
+
+/*
+ * Sets the value of the length of the mutation list
+ */
+function setMaxNumMutations(num) {
+  maxNumMutations = num;
 }
 
 /**
@@ -202,7 +210,6 @@ async function generateGraph() {
   getGraphDisplay(graphNodes, graphEdges, mutList, reason);
   updateButtons();
   updateGraphNumInput();
-
 
   mutationNumSlider.disabled = false;
   graphNumInput.disabled = false;
@@ -880,13 +887,17 @@ function updateGraphNumInput() {
   graphNumberInput.min = 0;
   graphNumberInput.max = maxNumMutations;
   graphNumberInput.value = currMutationNum + 1;
+  const totalMutNumberText = document.getElementById("total-mutation-number-text");
+  if(totalMutNumberText) {
+    totalMutNumberText.innerText = `out of ${maxNumMutations}`;
+  }
 }
 
 /**
  * Changes the current mutation number based on a change in the value
  * of the mutation number input
  */
-function readGraphNumber() {
+function readGraphNumberInput() {
   const graphNumberInput = document.getElementById("graph-number");
   if(!graphNumberInput || graphNumberInput.length === 0) {
     return;
@@ -898,5 +909,4 @@ function readGraphNumber() {
     graphNumberInput.value = 0;
   }
   currMutationNum = graphNumberInput.value - 1;
-  generateGraph();
 }

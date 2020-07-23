@@ -3,7 +3,8 @@ import {
   initializeTippy, generateGraph, getUrl, navigateGraph, currMutationNum, currMutationIndex,
   numMutations, updateButtons, searchNode, highlightDiff, initializeReasonTooltip, getGraphDisplay,
   getIndexOfClosestSmallerNumber, getIndexOfNextLargerNumber, initializeSlider,
-  resetMutationSlider, mutationNumSlider, setMutationSliderValue, readGraphNumber
+  resetMutationSlider, mutationNumSlider, setMutationSliderValue, readGraphNumberInput,
+  updateGraphNumInput, setMaxNumMutations
 }
   from "../src/main/webapp/script.js";
 
@@ -671,7 +672,7 @@ describe("Checking binary search functions", function () {
   });
 });
 
-describe("Testing slider functionality", function () {
+describe("Testing graph input functionality", function () {
   beforeAll(function () {
     document.body.innerHTML = '';
   });
@@ -693,7 +694,10 @@ describe("Testing slider functionality", function () {
         <div class="mdc-slider__focus-ring"></div>
       </div>
     </div>
-    <div id="num-mutation-display"></div>
+    <div id="num-mutation-display">
+      <p id="graph-number-text">Graph </p>
+      <input type="number" id="graph-number"  min="0" max="0" value="0" onchange="graph.readGraphNumberInput()">
+    </div>
     `;
     initializeSlider();
   });
@@ -782,5 +786,189 @@ describe("Testing slider functionality", function () {
     expect(mutationNumSlider.value).toBe(2);
     nextButton.click();
     expect(mutationNumSlider.value).toBe(2);
+  });
+});
+
+describe("Testing slider functionality", function () {
+  beforeAll(function () {
+    document.body.innerHTML = '';
+  });
+
+  beforeEach(function () {
+    document.body.innerHTML = `
+    <div id="slider" class="mdc-slider mdc-slider--discrete mdc-slider--display-markers" tabindex="0" role="slider" aria-valuemin="0" aria-valuemax="0" aria-valuenow="0" aria-label="Select Value">
+      <div class="mdc-slider__track-container">
+        <div class="mdc-slider__track"></div>
+        <div class="mdc-slider__track-marker-container"></div>
+      </div>
+      <div class="mdc-slider__thumb-container">
+        <div class="mdc-slider__pin">
+          <span class="mdc-slider__pin-value-marker"></span>
+        </div>
+        <svg class="mdc-slider__thumb" width="21" height="21">
+          <circle cx="10.5" cy="10.5" r="7.875"></circle>
+        </svg>
+        <div class="mdc-slider__focus-ring"></div>
+      </div>
+    </div>
+    <div id="num-mutation-display">
+      <p id="graph-number-text"></p>
+      <input type="number" id="graph-number"  min="0" max="0" value="0">
+      <p id="total-mutation-number-text">out of 0</p>
+    </div>
+    `;
+    initializeSlider();
+  });
+
+  it("correctly sets up the slider when the mutation index list is empty", function () {
+    setMutationIndexList([]);
+    initializeNumMutations(0);
+    setCurrMutationNum(-1);
+    setCurrMutationIndex(-1);
+
+    resetMutationSlider();
+
+    expect(mutationNumSlider.min).toBe(-1);
+    expect(mutationNumSlider.max).toBe(-1);
+    expect(mutationNumSlider.step).toBe(1);
+
+    setMutationSliderValue(7);
+    expect(mutationNumSlider.value).toBe(-1);
+  });
+
+  it("correctly sets up the slider when the mutation index list is non-empty", function () {
+    // Array from 0 to 109
+    setMutationIndexList(Array(110).keys());
+    initializeNumMutations(110);
+    setCurrMutationNum(2);
+    setCurrMutationIndex(2);
+
+    resetMutationSlider();
+
+    expect(mutationNumSlider.min).toBe(-1);
+    expect(mutationNumSlider.max).toBe(109);
+    expect(mutationNumSlider.step).toBe(2);
+
+    setMutationSliderValue(7);
+    // Snap to nearest even number because step value is 2
+    expect(mutationNumSlider.value).toBe(8);
+
+    setMutationSliderValue(-1);
+    expect(mutationNumSlider.value).toBe(-1);
+
+    setMutationSliderValue(-2);
+    expect(mutationNumSlider.value).toBe(-1);
+  });
+
+  it("correctly integrates slider with next and previous buttons", function () {
+    initializeNumMutations(3);
+    setCurrMutationNum(1);
+    setCurrMutationIndex(-0.5);
+    // Relevant indices are different from actual indices!
+    setMutationIndexList([2, 3, 5]);
+    resetMutationSlider();
+    const prevButton = document.createElement("button");
+    prevButton.id = "prevbutton";
+    prevButton.onclick = () => { navigateGraph(-1); updateButtons(); };
+    const nextButton = document.createElement("button");
+    nextButton.id = "nextbutton";
+    nextButton.onclick = () => { navigateGraph(1); updateButtons(); };
+    document.body.appendChild(prevButton);
+    document.body.appendChild(nextButton);
+
+
+    // snapped to the nearest integer
+    expect(mutationNumSlider.value).toBe(0);
+
+    nextButton.click();
+    expect(mutationNumSlider.value).toBe(0);
+
+    nextButton.click();
+    expect(mutationNumSlider.value).toBe(1);
+
+    nextButton.click();
+    expect(mutationNumSlider.value).toBe(2);
+
+    prevButton.click();
+    expect(mutationNumSlider.value).toBe(1);
+
+    prevButton.click();
+    expect(mutationNumSlider.value).toBe(0);
+
+    prevButton.click();
+    expect(mutationNumSlider.value).toBe(-1);
+
+    setMutationSliderValue(1.5);
+    // Trigger change listener to update currMutationIndex
+    mutationNumSlider.foundation.adapter.notifyChange();
+    expect(mutationNumSlider.value).toBe(2);
+    nextButton.click();
+    expect(mutationNumSlider.value).toBe(2);
+  });
+});
+
+
+describe("Testing graph input functionality", function () {
+  let graphNumberInput;
+  let totalMutNumberText;
+
+  beforeEach(function () {
+    document.body.innerHTML = 
+    `
+      <div id="num-mutation-display">
+        <p id="graph-number-text">Graph </p>
+        <input type="number" id="graph-number"  min="0" max="0" value="0">
+        <p id="total-mutation-number-text">out of 0</p>
+      </div>`;
+    graphNumberInput = document.getElementById("graph-number");
+    graphNumberInput.onchange = readGraphNumberInput;
+
+    totalMutNumberText = document.getElementById("total-mutation-number-text");
+  });
+
+  it("correctly updates graph number input when mutation list is empty", function () {
+    setMutationIndexList([]);
+    initializeNumMutations(0);
+    setCurrMutationNum(-1);
+    setCurrMutationIndex(-1);
+    setMaxNumMutations(0);
+
+    updateGraphNumInput();
+    expect(graphNumberInput.value).toBe("0");
+    expect(graphNumberInput.min).toBe("0");
+    expect(graphNumberInput.max).toBe("0");
+    expect(totalMutNumberText.textContent).toBe("out of 0");
+
+    // Trigger an onchange event
+    graphNumberInput.value = 7;
+    document.getElementById("graph-number").onchange();
+    expect(graphNumberInput.value).toBe("0");
+  });
+
+  it("correctly updates graph number input when the mutation index list is non-empty", function () {
+    setMutationIndexList([1, 5, 7, 11]);
+    initializeNumMutations(4);
+    setCurrMutationNum(1);
+    setCurrMutationIndex(0);
+    setMaxNumMutations(20);
+
+    updateGraphNumInput();
+    expect(graphNumberInput.value).toBe("2");
+    expect(graphNumberInput.min).toBe("0");
+    expect(graphNumberInput.max).toBe("20");
+    expect(totalMutNumberText.textContent).toBe("out of 20");
+
+    // Trigger an onchange event
+    graphNumberInput.value = 8;
+    document.getElementById("graph-number").onchange();
+    expect(graphNumberInput.value).toBe("8");
+
+    graphNumberInput.value = 30;
+    document.getElementById("graph-number").onchange();
+    expect(graphNumberInput.value).toBe("20");
+
+    graphNumberInput.value = -5;
+    document.getElementById("graph-number").onchange();
+    expect(graphNumberInput.value).toBe("0");
   });
 });
