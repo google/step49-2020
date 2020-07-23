@@ -57,13 +57,16 @@ public final class Utility {
    * edges of the graph.
    *
    * @param graph the graph to convert into a JSON String
-   * @param maxMutations the length of the list of mutations
+   * @param totalSize the total size of the complete mutation list
+   * @param mutationIndices the indices in the entire mutation list that mutate the relevant nodes
    * @param mutDiff the difference between the current graph and the requested graph
    * @return a JSON object containing as entries the nodes and edges of this graph as well as the
-   *     length of the list of mutations this graph is an intermediate result of applying
+   *     length of the list of mutations this graph is an intermediate result of applying, the
+   *     indices at which relevant nodes are mutated and the change made to relevant nodes to
+   *     obtain the new graph
    */
   public static String graphToJson(
-      MutableGraph<GraphNode> graph, List<Integer> mutationIndices, MultiMutation mutDiff) {
+      MutableGraph<GraphNode> graph, int totalSize, List<Integer> mutationIndices, MultiMutation mutDiff) {
     Type typeOfNode = new TypeToken<Set<GraphNode>>() {}.getType();
     Type typeOfEdge = new TypeToken<Set<EndpointPair<GraphNode>>>() {}.getType();
     Type typeOfIndices = new TypeToken<List<Integer>>() {}.getType();
@@ -78,6 +81,7 @@ public final class Utility {
         new JSONObject()
             .put("nodes", nodeJson)
             .put("edges", edgeJson)
+            .put("totalSize", totalSize)
             .put("mutationDiff", mutDiffJson)
             .put("reason", reason)
             .put("mutationIndices", mutationIndicesJson)

@@ -61,7 +61,10 @@ let mutationIndexList = [];
 // An object representing a slider whose value can be changed by the user to 
 // modify currMutationIndex
 let mutationNumSlider;
- 
+// The maximum number of mutations that can be applied to the initial graph
+// ie. the length of the mutations list
+let maxNumMutations = 0;
+
 /**
  * Initializes the mutation index slider upon document load and sets it up to
  * regenerate the graph when its value is changed
@@ -112,12 +115,14 @@ async function generateGraph() {
   let graphNodes = [];
   let graphEdges = [];
 
-  // disable buttons
+  // disable inputs
   const prevBtn = document.getElementById("prevbutton");
   const nextBtn = document.getElementById("nextbutton");
   prevBtn.disabled = true;
   nextBtn.disabled = true;
   mutationNumSlider.disabled = true;
+  const graphNumInput = document.getElementById("graph-number");
+  graphNumInput.disabled = true;  
 
   const url = getUrl();
   const response = await fetch(url);
@@ -140,6 +145,7 @@ async function generateGraph() {
 
   mutationIndexList = JSON.parse(jsonResponse.mutationIndices);
   numMutations = mutationIndexList.length;
+  maxNumMutations = jsonResponse.totalSize;
 
   if (!nodes || !edges || !Array.isArray(nodes) || !Array.isArray(edges)) {
     displayError("Malformed graph received from server - edges or nodes are empty");
@@ -162,11 +168,12 @@ async function generateGraph() {
     const indexOfNextLargerNumber = getIndexOfNextLargerNumber(mutationIndexList, currMutationNum);
     const indexOfClosestSmallerNumber = getIndexOfClosestSmallerNumber(mutationIndexList, currMutationNum);
     currMutationIndex = ((indexOfNextLargerNumber + indexOfClosestSmallerNumber) / 2);
+  } else {
+    currMutationIndex = -1;
   }
 
   // Modifies the range of the slider to reflect the modified mutationIndexList
   resetMutationSlider();
-  mutationNumSlider.disabled = false;
 
 
   document.getElementById("graph-number").value = currMutationNum;
@@ -194,6 +201,12 @@ async function generateGraph() {
   });
   getGraphDisplay(graphNodes, graphEdges, mutList, reason);
   updateButtons();
+  updateGraphNumInput();
+
+
+  mutationNumSlider.disabled = false;
+  graphNumInput.disabled = false;
+
   return;
 }
 
@@ -208,6 +221,7 @@ function resetMutationSlider() {
   }
   mutationNumSlider.min = -1;
   mutationNumSlider.max = numMutations - 1;
+  mutationNumSlider.value = currMutationIndex;
   // When numMutations < 10^(k+1), step is k
   mutationNumSlider.step = Math.max(1, Math.floor(Math.log10(numMutations)));
 }
@@ -787,8 +801,6 @@ function updateButtons() {
   } else {
     document.getElementById("nextbutton").disabled = false;
   }
-  const numElement = document.getElementById("num-mutation-display");
-  numElement.innerText = `Graph ${currMutationNum + 1}`;
 }
 
 /**
@@ -859,17 +871,32 @@ function setMutationSliderValue(amount) {
   mutationNumSlider.value = amount;
 }
 
+/**
+ * Updates the maximum, minimum and current values of the graph number
+ * input field
+ */
+function updateGraphNumInput() {
+  const graphNumberInput = document.getElementById("graph-number");
+  graphNumberInput.min = 0;
+  graphNumberInput.max = maxNumMutations;
+  graphNumberInput.value = currMutationNum + 1;
+}
+
+/**
+ * Changes the current mutation number based on a change in the value
+ * of the mutation number input
+ */
 function readGraphNumber() {
   const graphNumberInput = document.getElementById("graph-number");
   if(!graphNumberInput || graphNumberInput.length === 0) {
     return;
   }
-  if(graphNumberInput.value >= numMutations - 1) {
-    graphNumberInput.value = numMutations - 1;
+  if(graphNumberInput.value >= maxNumMutations) {
+    graphNumberInput.value = maxNumMutations;
   } 
-  if(graphNumberInput.value <= -1) {
-    graphNumberInput.value = -1;
+  if(graphNumberInput.value <= 0) {
+    graphNumberInput.value = 0;
   }
-  currMutationNum = graphNumberInput.value;
+  currMutationNum = graphNumberInput.value - 1;
   generateGraph();
 }

@@ -23,7 +23,10 @@
     <input type="text" id="search" name="search"></input>
     <button id="search-button">Search</button>
     <label id="search-error"></label>
-    <div id="num-mutation-display"></div>
+    <div id="num-mutation-display">
+      <p id="graph-number-text">Graph </p>
+      <input type="number" id="graph-number"  min="0" max="0" value="0" onchange="graph.readGraphNumber()">
+    </div>
   </div>
   <div id="graph-content">
     <!-- COLUMN 1: main column -->
@@ -59,8 +62,6 @@
           </div>
         </div>
         <!-- Slider code ends -->
-        <label id="graph-number-text" for="graph-number">or directly set the graph number using the field below</label>
-        <input type="number" id="graph-number"  min="0" max="0" value="0" onchange="graph.readGraphNumber()">
       </div>
     </div>
     <!-- COLUMN 2: includes messages -->

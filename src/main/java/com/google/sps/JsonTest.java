@@ -93,16 +93,17 @@ public final class JsonTest {
 
     String result =
         Utility.graphToJson(
-            graph, new ArrayList<Integer>(), MultiMutation.newBuilder().setReason("test").build());
+            graph, 0, new ArrayList<Integer>(), MultiMutation.newBuilder().setReason("test").build());
     JSONObject jsonObject = new JSONObject(result);
 
-    Assert.assertEquals(jsonObject.length(), 5);
+    Assert.assertEquals(jsonObject.length(), 6);
 
     JSONArray elements = jsonObject.names();
-    Assert.assertEquals(elements.length(), 5);
+    Assert.assertEquals(elements.length(), 6);
 
     Assert.assertTrue(jsonObject.has("nodes"));
     Assert.assertTrue(jsonObject.has("edges"));
+    Assert.assertTrue(jsonObject.has("totalSize"));
     Assert.assertTrue(jsonObject.has("mutationDiff"));
     Assert.assertTrue(jsonObject.has("reason"));
     Assert.assertEquals(jsonObject.get("reason"), "test");
