@@ -64,7 +64,10 @@ public final class Utility {
    *     length of the list of mutations this graph is an intermediate result of applying
    */
   public static String graphToJson(
-      MutableGraph<GraphNode> graph, List<Integer> mutationIndices, MultiMutation mutDiff, int maxNumber) {
+      MutableGraph<GraphNode> graph,
+      List<Integer> mutationIndices,
+      MultiMutation mutDiff,
+      int maxNumber) {
     Type typeOfNode = new TypeToken<Set<GraphNode>>() {}.getType();
     Type typeOfEdge = new TypeToken<Set<EndpointPair<GraphNode>>>() {}.getType();
     Type typeOfIndices = new TypeToken<List<Integer>>() {}.getType();
