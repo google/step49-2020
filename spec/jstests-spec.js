@@ -296,16 +296,14 @@ describe("Pressing next and previous buttons associated with a graph", function 
     document.body.appendChild(numDisplay);
     initializeNumMutations(-1);
     setCurrMutationNum(10);
-    setCurrMutationIndex(10);
+   
     navigateGraph(-1)
-    expect(currMutationNum).toBe(-1);
-    expect(currMutationIndex).toBe(10); // Nothing changes with a negative numMutations
-    expect(setCurrMutationIndex).toBe(10);
+    expect(currMutationNum).toBe(10);
+    expect(currMutationIndex).toBe(-1); // Nothing changes with a negative numMutations
 
     navigateGraph(1)
-    expect(currMutationNum).toBe(-1);
-    expect(currMutationIndex).toBe(10); // Nothing changes with a negative numMutations
-    expect(setCurrMutationIndex).toBe(10);
+    expect(currMutationNum).toBe(10);
+    expect(currMutationIndex).toBe(-1); // Nothing changes with a negative numMutations
   }) 
 });
 
