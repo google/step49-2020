@@ -749,7 +749,7 @@ function updateButtons() {
     document.getElementById("nextbutton").disabled = false;
   }
   const numElement = document.getElementById("num-mutation-display");
-  numElement.innerText = `Graph ${currMutationNum + 1}`;
+  numElement.innerText = `Graph ${currMutationNum + 1} (there are ${numMutations} total!)`;
 }
 
 /**
