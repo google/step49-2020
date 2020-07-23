@@ -698,6 +698,8 @@ function getTooltipContent(node) {
  * When a next/previous button is clicked, modifies the mutation index of the
  * current graph to represent the new state. Then, the corresponding
  * graph is requested from the server.
+ * If currMutationIndex is decimal, next/prev would set it to the 
+ * next/previous integer index (either a floor or a ceiling)
  * @param amount the amount to change the currMutationIndex by. 
  * Either 1 (for next button) or -1 (for previous button)
  */
