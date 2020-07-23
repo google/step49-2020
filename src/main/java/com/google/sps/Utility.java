@@ -62,11 +62,14 @@ public final class Utility {
    * @param mutDiff the difference between the current graph and the requested graph
    * @return a JSON object containing as entries the nodes and edges of this graph as well as the
    *     length of the list of mutations this graph is an intermediate result of applying, the
-   *     indices at which relevant nodes are mutated and the change made to relevant nodes to
-   *     obtain the new graph
+   *     indices at which relevant nodes are mutated and the change made to relevant nodes to obtain
+   *     the new graph
    */
   public static String graphToJson(
-      MutableGraph<GraphNode> graph, int totalSize, List<Integer> mutationIndices, MultiMutation mutDiff) {
+      MutableGraph<GraphNode> graph,
+      int totalSize,
+      List<Integer> mutationIndices,
+      MultiMutation mutDiff) {
     Type typeOfNode = new TypeToken<Set<GraphNode>>() {}.getType();
     Type typeOfEdge = new TypeToken<Set<EndpointPair<GraphNode>>>() {}.getType();
     Type typeOfIndices = new TypeToken<List<Integer>>() {}.getType();
