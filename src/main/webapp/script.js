@@ -31,7 +31,7 @@ export {
   initializeNumMutations, setMutationIndexList, setCurrMutationNum, setCurrMutationIndex, initializeTippy,
   generateGraph, getUrl, navigateGraph, currMutationNum, currMutationIndex, numMutations,
   updateButtons, searchNode, highlightDiff, initializeReasonTooltip, getGraphDisplay,
-  getIndexOfClosestSmallerNumber, getIndexOfNextLargerNumber
+  getClosestIndices
 };
 
 cytoscape.use(popper); // register extension
@@ -56,6 +56,7 @@ let numMutations = 0;
 // 5th indices, this would be [1,4,5])
 let mutationIndexList = [];
 
+// Stores total number of mutations, for display
 let totalNum = 0;
 
 /**
@@ -118,8 +119,6 @@ async function generateGraph() {
   const edges = JSON.parse(jsonResponse.edges);
   totalNum = jsonResponse.totalMutNumber;
 
-  console.log("max", totalNum);
-
   // Set all logs to be black
   const allLogs = document.querySelectorAll('.log-msg');
   for (let i = 0; i < allLogs.length; i++) {
@@ -149,8 +148,9 @@ async function generateGraph() {
   // Update the current mutation index to reflect the new position of currMutationNumber
   // in the updated mutationIndexList between the previous smaller and the next larger
   // element.
-  const indexOfNextLargerNumber = getIndexOfNextLargerNumber(mutationIndexList, currMutationNum);
-  const indexOfClosestSmallerNumber = getIndexOfClosestSmallerNumber(mutationIndexList, currMutationNum);
+  const indexOfNextLargerNumber = getClosestIndices(mutationIndexList, currMutationNum).higher;
+  const indexOfClosestSmallerNumber = getClosestIndices(mutationIndexList, currMutationNum).lower;
+  
   currMutationIndex = ((indexOfNextLargerNumber + indexOfClosestSmallerNumber) / 2);
 
   // Add node to array of cytoscape nodes
@@ -756,62 +756,42 @@ function updateButtons() {
     document.getElementById("nextbutton").disabled = false;
   }
   const numElement = document.getElementById("num-mutation-display");
-  numElement.innerText = `Graph ${currMutationNum + 1} out of ${totalNum} total!)`;
+  numElement.innerText = `Graph ${currMutationNum + 1} out of ${totalNum} total`;
 }
-
+ 
 /**
- * Get the index of the next largest element in an indiceList
+ * Get an object with the index of the element that's immediately smaller 
+ * and immediately greater than the element
  * @param indicesList a list of indices, assume it's sorted
- * @param element the element to find a higher value than
- * @return the index of the first element in indicesList larger than
+ * @param element the element to find the smaller value than
+ * @return an object with the properties 'lower' and 'higher';
+ * lower contains the index of the last element in indicesList smaller than
+ * element or -1 if element is smaller than all elements in indicesList
+ * higher contains the index of the first element in indicesList larger than
  * element or indicesList.length if element is larger than all elements
  * in indicesList
  */
-function getIndexOfNextLargerNumber(indicesList, element) {
-  let start = 0;
+function getClosestIndices(indicesList, element) {
+  let start = 0; 
   let end = indicesList.length - 1;
 
-  let index = -1;
+  let toReturn = {lower: -1, higher: -1};
+  let indexHigher = -1;
   while (start <= end) {
     let mid = Math.floor((start + end) / 2);
     // element is not less (greater or equal to) -> go to the right
     if (indicesList[mid] <= element) {
-      index = mid + 1;
+      indexHigher = mid + 1;
       start = mid + 1;
     }
-    // go to the left otherwise, set index to the mid
+    // go to the left otherwise, set indexHigher to the mid
     else {
-      index = mid;
+      indexHigher = mid;
       end = mid - 1;
     }
   }
-  return index;
+  toReturn['higher'] = indexHigher;
+  toReturn['lower'] = indicesList[indexHigher - 1] < element ? indexHigher - 1 : Math.max(indexHigher - 2, -1);
+  return toReturn;
 }
 
-/**
- * Get the index of the element that's immediately smaller than the element
- * @param indicesList a list of indices, assume it's sorted
- * @param element the element to find the smaller value than
- * @return the index of the last element in indicesList smaller than
- * element or -1 if element is smaller than all elements in indicesList
- */
-function getIndexOfClosestSmallerNumber(indicesList, element) {
-  let start = 0;
-  let end = indicesList.length - 1;
-
-  let index = -1;
-  while (start <= end) {
-    let mid = Math.floor((start + end) / 2);
-    // element is greater than mid -> set index to the mid and start to mid + 1
-    if (indicesList[mid] < element) {
-      index = mid;
-      start = mid + 1;
-    }
-    // element is less than or equal to
-    else {
-      index = mid - 1;
-      end = mid - 1;
-    }
-  }
-  return index;
-}
