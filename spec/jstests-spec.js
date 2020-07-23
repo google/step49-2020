@@ -290,12 +290,6 @@ describe("Pressing next and previous buttons associated with a graph", function 
     expect(currMutationIndex).toBe(-1);
     expect(nextButton.disabled).toBe(false);
     expect(prevButton.disabled).toBe(true);
-
-    nextButton.click();
-    expect(currMutationNum).toBe(0);
-    expect(currMutationIndex).toBe(0);
-    expect(nextButton.disabled).toBe(false);
-    expect(prevButton.disabled).toBe(false);
   });
 });
 
