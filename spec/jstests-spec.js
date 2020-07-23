@@ -296,12 +296,12 @@ describe("Pressing next and previous buttons associated with a graph", function 
     expect(prevButton.disabled).toBe(true);
   });
 
-  it("Correctly doesn't change anything when there aren't any mutations", function() {
+  it("Correctly doesn't change anything when there aren't any mutations", function () {
     document.body.appendChild(numDisplay);
     initializeNumMutations(-1);
     setCurrMutationNum(10);
-   
-   // Nothing changes with a negative numMutations
+
+    // Nothing changes with a negative numMutations
     navigateGraph(-1);
     expect(currMutationNum).toBe(10);
 
@@ -309,7 +309,7 @@ describe("Pressing next and previous buttons associated with a graph", function 
     expect(currMutationNum).toBe(10);
   });
 
-  it("Correctly navigates forward when index is a decimal", function() {
+  it("Correctly navigates forward when index is a decimal", function () {
     document.body.appendChild(numDisplay);
     setCurrMutationIndex(.5);
     setCurrMutationNum(0);
@@ -319,7 +319,7 @@ describe("Pressing next and previous buttons associated with a graph", function 
     expect(currMutationNum).toBe(1);
   });
 
-  it("correctly navigates backward when index is a decimal", function() {
+  it("correctly navigates backward when index is a decimal", function () {
     document.body.appendChild(numDisplay);
     setCurrMutationIndex(.5);
     setCurrMutationNum(0);
@@ -828,9 +828,8 @@ describe("Testing graph input functionality", function () {
   let totalMutNumberText;
 
   beforeEach(function () {
-    document.body.innerHTML = 
-    `
-      <div id="num-mutation-display">
+    document.body.innerHTML =
+      `<div id="num-mutation-display">
         <p id="graph-number-text">Graph </p>
         <input type="number" id="graph-number"  min="0" max="0" value="0">
         <p id="total-mutation-number-text">out of 0</p>
@@ -843,12 +842,12 @@ describe("Testing graph input functionality", function () {
 
   it("correctly updates graph number input when mutation list is empty", function () {
     setMutationIndexList([]);
-    initializeNumMutations(0);
     setCurrMutationNum(-1);
     setCurrMutationIndex(-1);
     setMaxNumMutations(0);
 
     updateGraphNumInput();
+    // Just the initial graph
     expect(graphNumberInput.value).toBe("0");
     expect(graphNumberInput.min).toBe("0");
     expect(graphNumberInput.max).toBe("0");
@@ -862,12 +861,12 @@ describe("Testing graph input functionality", function () {
 
   it("correctly updates graph number input when the mutation index list is non-empty", function () {
     setMutationIndexList([1, 5, 7, 11]);
-    initializeNumMutations(4);
     setCurrMutationNum(1);
     setCurrMutationIndex(0);
     setMaxNumMutations(20);
 
     updateGraphNumInput();
+    // Current graph is the graph after mutation 1
     expect(graphNumberInput.value).toBe("2");
     expect(graphNumberInput.min).toBe("0");
     expect(graphNumberInput.max).toBe("20");

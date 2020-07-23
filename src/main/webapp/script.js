@@ -30,11 +30,11 @@ import { colorScheme, opacityScheme } from './constants.js';
 import "./style.scss";
 
 export {
-  initializeNumMutations, setMutationIndexList, setCurrMutationNum, setCurrMutationIndex, 
-  initializeTippy, generateGraph, getUrl, navigateGraph, currMutationNum, currMutationIndex, 
+  initializeNumMutations, setMutationIndexList, setCurrMutationNum, setCurrMutationIndex,
+  initializeTippy, generateGraph, getUrl, navigateGraph, currMutationNum, currMutationIndex,
   numMutations, updateButtons, searchNode, highlightDiff, initializeReasonTooltip, getGraphDisplay,
   getIndexOfClosestSmallerNumber, getIndexOfNextLargerNumber, initializeSlider,
-  resetMutationSlider, mutationNumSlider, setMutationSliderValue, readGraphNumberInput, 
+  resetMutationSlider, mutationNumSlider, setMutationSliderValue, readGraphNumberInput,
   updateGraphNumInput, setMaxNumMutations
 };
 
@@ -130,7 +130,7 @@ async function generateGraph() {
   nextBtn.disabled = true;
   mutationNumSlider.disabled = true;
   const graphNumInput = document.getElementById("graph-number");
-  graphNumInput.disabled = true;  
+  graphNumInput.disabled = true;
 
   const url = getUrl();
   const response = await fetch(url);
@@ -178,7 +178,7 @@ async function generateGraph() {
   // Update the current mutation index to reflect the new position of currMutationNumber
   // in the updated mutationIndexList between the previous smaller and the next larger
   // element.
-  if(currMutationNum !== -1) {
+  if (currMutationNum !== -1) {
     const indexOfNextLargerNumber = getIndexOfNextLargerNumber(mutationIndexList, currMutationNum);
     const indexOfClosestSmallerNumber = getIndexOfClosestSmallerNumber(mutationIndexList, currMutationNum);
     currMutationIndex = ((indexOfNextLargerNumber + indexOfClosestSmallerNumber) / 2);
@@ -229,7 +229,7 @@ async function generateGraph() {
  * mutationIndicesList (fewer steps for a large number of mutations). 
  */
 function resetMutationSlider() {
-  if(!mutationNumSlider) {
+  if (!mutationNumSlider) {
     return;
   }
   mutationNumSlider.min = -1;
@@ -882,7 +882,7 @@ function getIndexOfClosestSmallerNumber(indicesList, element) {
  * @param {any} amount the desired value of the mutation slider
  */
 function setMutationSliderValue(amount) {
-  if(!mutationNumSlider) {
+  if (!mutationNumSlider) {
     return;
   }
   mutationNumSlider.value = amount;
@@ -898,7 +898,7 @@ function updateGraphNumInput() {
   graphNumberInput.max = maxNumMutations;
   graphNumberInput.value = currMutationNum + 1;
   const totalMutNumberText = document.getElementById("total-mutation-number-text");
-  if(totalMutNumberText) {
+  if (totalMutNumberText) {
     totalMutNumberText.innerText = `out of ${maxNumMutations}`;
   }
 }
@@ -909,13 +909,13 @@ function updateGraphNumInput() {
  */
 function readGraphNumberInput() {
   const graphNumberInput = document.getElementById("graph-number");
-  if(!graphNumberInput || graphNumberInput.length === 0) {
+  if (!graphNumberInput || graphNumberInput.length === 0) {
     return;
   }
-  if(graphNumberInput.value >= maxNumMutations) {
+  if (graphNumberInput.value >= maxNumMutations) {
     graphNumberInput.value = maxNumMutations;
-  } 
-  if(graphNumberInput.value <= 0) {
+  }
+  if (graphNumberInput.value <= 0) {
     graphNumberInput.value = 0;
   }
   currMutationNum = graphNumberInput.value - 1;
