@@ -211,7 +211,7 @@ describe("Pressing next and previous buttons associated with a graph", function 
     document.body.innerHTML = '';
   });
 
-  it("correctly updates mutation tracking variables and buttons on click", function () {
+  it("correctly updates mutation tracking variables and button properties on click", function () {
     document.body.appendChild(numDisplay);
     initializeNumMutations(3);
     setCurrMutationNum(-1);
@@ -231,6 +231,7 @@ describe("Pressing next and previous buttons associated with a graph", function 
     expect(currMutationIndex).toBe(-1);
     expect(numMutations).toBe(3);
 
+    // Check the button properties and variables with buttons are clicked
     nextButton.click();
     expect(currMutationNum).toBe(0);
     expect(currMutationIndex).toBe(0);
@@ -291,6 +292,21 @@ describe("Pressing next and previous buttons associated with a graph", function 
     expect(nextButton.disabled).toBe(false);
     expect(prevButton.disabled).toBe(true);
   });
+  it("Navigate graph returns with no mutations doesn't change anything", function() {
+    document.body.appendChild(numDisplay);
+    initializeNumMutations(-1);
+    setCurrMutationNum(10);
+    setCurrMutationIndex(10);
+    navigateGraph(-1)
+    expect(currMutationNum).toBe(-1);
+    expect(currMutationIndex).toBe(10); // Nothing changes with a negative numMutations
+    expect(setCurrMutationIndex).toBe(10);
+
+    navigateGraph(1)
+    expect(currMutationNum).toBe(-1);
+    expect(currMutationIndex).toBe(10); // Nothing changes with a negative numMutations
+    expect(setCurrMutationIndex).toBe(10);
+  }) 
 });
 
 describe("Node search", function () {
