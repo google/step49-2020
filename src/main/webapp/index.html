@@ -25,7 +25,8 @@
     <label id="search-error"></label>
     <div id="num-mutation-display">
       <p id="graph-number-text">Graph </p>
-      <input type="number" id="graph-number"  min="0" max="0" value="0" onchange="graph.readGraphNumberInput(); graph.generateGraph()">
+      <input type="number" id="graph-number" min="0" max="0" value="0"
+        onchange="graph.readGraphNumberInput(); graph.generateGraph()">
       <p id="total-mutation-number-text">out of 0</p>
     </div>
   </div>
@@ -46,8 +47,10 @@
         <input type="checkbox" id="show-mutations" name="show-mutations" checked=true>
 
         <!-- Slider code begins -->
-        <label id="slider-text" for="slider">Use the slider to adjust the index of the currently displayed mutation</label>
-        <div id="slider" class="mdc-slider mdc-slider--discrete mdc-slider--display-markers" tabindex="0" role="slider" aria-valuemin="0" aria-valuemax="0" aria-valuenow="0" aria-label="Select Value">
+        <label id="slider-text" for="slider">Use the slider to adjust the index of the currently displayed
+          mutation</label>
+        <div id="slider" class="mdc-slider mdc-slider--discrete mdc-slider--display-markers" tabindex="0" role="slider"
+          aria-valuemin="0" aria-valuemax="0" aria-valuenow="0" aria-label="Select Value">
           <div class="mdc-slider__track-container">
             <div class="mdc-slider__track"></div>
             <div class="mdc-slider__track-marker-container"></div>
@@ -74,5 +77,4 @@
     </div>
   </div>
 </body>
-
 </html>

@@ -123,7 +123,7 @@ async function generateGraph() {
   let graphNodes = [];
   let graphEdges = [];
 
-  // disable inputs
+  // disable all possible input fields
   const prevBtn = document.getElementById("prevbutton");
   const nextBtn = document.getElementById("nextbutton");
   prevBtn.disabled = true;
@@ -186,14 +186,6 @@ async function generateGraph() {
     currMutationIndex = -1;
   }
 
-  // Modifies the range of the slider to reflect the modified mutationIndexList
-  resetMutationSlider();
-
-
-  document.getElementById("graph-number").value = currMutationNum;
-  document.getElementById("graph-number").max = numMutations - 1;
-  document.getElementById("graph-number").min = -1;
-
   // Add node to array of cytoscape nodes
   nodes.forEach(node =>
     graphNodes.push({
@@ -213,19 +205,19 @@ async function generateGraph() {
       }
     });
   });
+
   getGraphDisplay(graphNodes, graphEdges, mutList, reason);
   updateButtons();
   updateGraphNumInput();
+  resetMutationSlider();
 
   mutationNumSlider.disabled = false;
   graphNumInput.disabled = false;
-
-  return;
 }
 
 /**
- * Resets the mutation index slider's maximum and minimum values based on the length
- * of mutationIndexList. Also modifies the step value to reflect the length of 
+ * Resets the mutation index slider's current, maximum and minimum values based on 
+ * currMutationIndex and numMutations. Also modifies the step value to reflect the length of 
  * mutationIndicesList (fewer steps for a large number of mutations). 
  */
 function resetMutationSlider() {
@@ -367,7 +359,7 @@ function getGraphDisplay(graphNodes, graphEdges, mutList, reason) {
 
   const searchElement = document.getElementById('search');
   document.getElementById('search-button').onclick = function () {
-    if (searchElement.value == "" || searchNode(cy, searchElement.value)) {
+    if (searchNode(cy, searchElement.value) || searchElement.value == "") {
       document.getElementById('search-error').innerText = "";
     } else {
       document.getElementById('search-error').innerText = "Node does not exist.";
