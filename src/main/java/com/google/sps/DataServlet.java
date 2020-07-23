@@ -226,7 +226,7 @@ public class DataServlet extends HttpServlet {
   }
 
   /**
-   * Private function to intialize the mutation list. 
+   * Private function to intialize the mutation list.
    *
    * @param mutationInput InputStream to initialize variable over
    * @throws IOException if something goes wrong during the reading
