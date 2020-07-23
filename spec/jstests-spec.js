@@ -209,8 +209,6 @@ describe("Pressing next and previous buttons associated with a graph", function 
 
   afterEach(function () {
     document.body.innerHTML = '';
-    // setCurrMutationIndex(-1);
-    // setCurrMutationNum(-1);
   });
 
   it("correctly updates mutation tracking variables and button properties on click", function () {
@@ -295,7 +293,8 @@ describe("Pressing next and previous buttons associated with a graph", function 
     expect(nextButton.disabled).toBe(false);
     expect(prevButton.disabled).toBe(true);
   });
-  it("Navigate graph returns with no mutations doesn't change anything", function() {
+
+  it("Correctly doesn't change anything when there aren't any mutations", function() {
     document.body.appendChild(numDisplay);
     initializeNumMutations(-1);
     setCurrMutationNum(10);
@@ -307,7 +306,8 @@ describe("Pressing next and previous buttons associated with a graph", function 
     navigateGraph(1);
     expect(currMutationNum).toBe(10);
   });
-  it("Index is a decimal navigate forward", function() {
+
+  it("Correctly navigates forward when index is a decimal", function() {
     document.body.appendChild(numDisplay);
     setCurrMutationIndex(.5);
     setCurrMutationNum(0);
@@ -316,7 +316,8 @@ describe("Pressing next and previous buttons associated with a graph", function 
     expect(currMutationIndex).toBe(1);
     expect(currMutationNum).toBe(1);
   });
-  it("Index is a decimal navigate backward", function() {
+
+  it("correctly navigates backward when index is a decimal", function() {
     document.body.appendChild(numDisplay);
     setCurrMutationIndex(.5);
     setCurrMutationNum(0);
