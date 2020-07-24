@@ -234,12 +234,14 @@ public final class Utility {
         .build();
   }
 
-  public static List<Integer> findRelevantMutations(Set<String> nodeNames, Map<String, List<Integer>> mutationIndicesMap, List<MultiMutation> multiMutList) {
+  public static List<Integer> findRelevantMutations(
+      Set<String> nodeNames,
+      Map<String, List<Integer>> mutationIndicesMap,
+      List<MultiMutation> multiMutList) {
     Set<Integer> relevantIndices = new HashSet<>();
-    for(String nodeName : nodeNames) {
+    for (String nodeName : nodeNames) {
       if (!mutationIndicesMap.containsKey(nodeName)) {
-        mutationIndicesMap.put(
-            nodeName, getMutationIndicesOfNode(nodeName, multiMutList));
+        mutationIndicesMap.put(nodeName, getMutationIndicesOfNode(nodeName, multiMutList));
       }
       relevantIndices.addAll(mutationIndicesMap.get(nodeName));
     }

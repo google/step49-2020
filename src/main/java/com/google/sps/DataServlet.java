@@ -169,15 +169,15 @@ public class DataServlet extends HttpServlet {
     }
     truncatedGraph = currDataGraph.getReachableNodes(nodeNameParam, depthNumber);
     Set<String> truncatedGraphNodeNames = Utility.getNodeNamesInGraph(truncatedGraph);
-    if(nodeNameParam.length() != 0) {
+    if (nodeNameParam.length() != 0) {
       truncatedGraphNodeNames.add(nodeNameParam);
     }
 
-    filteredMutationIndices = Utility.findRelevantMutations(truncatedGraphNodeNames, mutationIndicesMap, mutList);
+    filteredMutationIndices =
+        Utility.findRelevantMutations(truncatedGraphNodeNames, mutationIndicesMap, mutList);
 
     // We filter the multimutation if there was a node searched
     diff = Utility.filterMultiMutationByNodes(diff, truncatedGraphNodeNames);
-
 
     // We set the headers in the following 3 scenarios:
     // The searched node is not in the graph and is never mutated
@@ -204,14 +204,13 @@ public class DataServlet extends HttpServlet {
           "The searched node exists in this graph! However, it is not mutated in this graph."
               + " Please click next or previous if you wish to see where it was mutated!");
     }
-    if(diff != null && diff.getMutationList().size() == 0) {
+    if (diff != null && diff.getMutationList().size() == 0) {
       response.setHeader(
           "serverMessage",
-          "The desired set of nodes is mutated in this graph but your other parameters (for eg."
-             + "depth), limit the display of the mutations. Please try increasing your radius to view"
-             + "the mutation.");
+          "The desired set of nodes is mutated in this graph but your other parameters (for"
+              + " eg.depth), limit the display of the mutations. Please try increasing your radius"
+              + " to viewthe mutation.");
     }
-
 
     graphJson = Utility.graphToJson(truncatedGraph, filteredMutationIndices, diff, mutList.size());
     response.getWriter().println(graphJson);
