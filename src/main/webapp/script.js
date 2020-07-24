@@ -130,6 +130,7 @@ async function generateGraph() {
 
   mutationIndexList = JSON.parse(jsonResponse.mutationIndices);
   numMutations = mutationIndexList.length;
+  console.log(mutationIndexList);
 
   if (!nodes || !edges || !Array.isArray(nodes) || !Array.isArray(edges)) {
     displayError("Malformed graph received from server - edges or nodes are empty");

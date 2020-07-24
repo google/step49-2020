@@ -16,8 +16,11 @@ package com.google.sps;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.HashSet;
 import java.util.stream.Collectors;
 
 import com.google.common.base.Preconditions;
@@ -229,5 +232,19 @@ public final class Utility {
         .addAllMutation(filteredMutationList)
         .setReason(mm.getReason())
         .build();
+  }
+
+  public static List<Integer> findRelevantMutations(Set<String> nodeNames, Map<String, List<Integer>> mutationIndicesMap, List<MultiMutation> multiMutList) {
+    Set<Integer> relevantIndices = new HashSet<>();
+    for(String nodeName : nodeNames) {
+      if (!mutationIndicesMap.containsKey(nodeName)) {
+        mutationIndicesMap.put(
+            nodeName, getMutationIndicesOfNode(nodeName, multiMutList));
+      }
+      relevantIndices.addAll(mutationIndicesMap.get(nodeName));
+    }
+    ArrayList<Integer> result = new ArrayList<>(relevantIndices);
+    Collections.sort(result);
+    return result;
   }
 }
