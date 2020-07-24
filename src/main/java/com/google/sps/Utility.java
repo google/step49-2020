@@ -67,13 +67,16 @@ public final class Utility {
       MutableGraph<GraphNode> graph,
       List<Integer> mutationIndices,
       MultiMutation mutDiff,
-      int maxNumber) {
+      int maxNumber, 
+      List<String> queried) {
     Type typeOfNode = new TypeToken<Set<GraphNode>>() {}.getType();
     Type typeOfEdge = new TypeToken<Set<EndpointPair<GraphNode>>>() {}.getType();
     Type typeOfIndices = new TypeToken<List<Integer>>() {}.getType();
+    Type typeOfQueried = new TypeToken<List<String>>(){}.getType();
     Gson gson = new Gson();
     String nodeJson = gson.toJson(graph.nodes(), typeOfNode);
     String edgeJson = gson.toJson(graph.edges(), typeOfEdge);
+    String queriedJson = gson.toJson(queried, typeOfQueried);
     String mutDiffJson =
         (mutDiff == null || !mutDiff.isInitialized()) ? "" : gson.toJson(mutDiff.getMutationList());
     String reason = (mutDiff == null || !mutDiff.isInitialized()) ? "" : mutDiff.getReason();
@@ -86,6 +89,7 @@ public final class Utility {
             .put("reason", reason)
             .put("mutationIndices", mutationIndicesJson)
             .put("totalMutNumber", maxNumber)
+            .put("queriedNodes", queriedJson)
             .toString();
     return resultJson;
   }
