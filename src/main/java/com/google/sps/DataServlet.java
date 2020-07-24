@@ -198,7 +198,7 @@ public class DataServlet extends HttpServlet {
           "The searched node exists in this graph! However, it is not mutated in this graph."
               + " Please click next or previous if you wish to see where it was mutated!");
     }
-    // There is a diff between the previously-displayed graph and the current graph but 
+    // There is a diff between the previously-displayed graph and the current graph but
     // no mutations in it only mutate on-screen nodes
     if (diff != null && diff.getMutationList().size() == 0) {
       response.setHeader(
