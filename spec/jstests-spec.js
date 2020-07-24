@@ -309,6 +309,7 @@ describe("Node search", function() {
   let numSelected;
   let nodeError;
   let query;
+  const expectedBorderWidth = "4px";
   beforeEach(function() {
     document.body.innerHTML = `<div id="cy"></div>`;
 
@@ -346,7 +347,7 @@ describe("Node search", function() {
     // should not display error message
     expect(nodeError.innerText).toBe("");
     expect(result.id()).toBe("A");
-    expect(result.style("border-width")).toBe("4px");
+    expect(result.style("border-width")).toBe(expectedBorderWidth);
   });
 
   it("should be unsuccessful because node does not exist", function() {
@@ -386,16 +387,12 @@ describe("Token search", function() {
     nodeWithToken1["data"]["id"] = "A";
     nodeWithToken1["data"]["tokens"] = ["a.js", "b.js", "c.js"];
     cy.add(nodeWithToken1);
-    let myNode = cy.nodes()[0];
-    initializeTippy(myNode);
 
     const nodeWithToken2 = {};
     nodeWithToken2["data"] = {};
     nodeWithToken2["data"]["id"] = "B";
     nodeWithToken2["data"]["tokens"] = ["b.js"];
     cy.add(nodeWithToken2);
-    myNode = cy.nodes()[1];
-    initializeTippy(myNode);
 
     numSelected = document.createElement("label");
     numSelected.id = "num-selected";

@@ -57,3 +57,7 @@ body {
   display: flex;
   flex-direction: column;
 }
+
+.error-text {
+  color: red;
+}

@@ -279,8 +279,6 @@ function searchToken(cy, query) {
     }
   });
   if (target.length > 0) {
-    const showNode = target[0][0];
-    showNode.tip.show();
     return target;
   }
 }
