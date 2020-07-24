@@ -18,7 +18,8 @@
   },
   "homepage": "https://github.com/googleinterns/step49-2020#readme",
   "dependencies": {
-    "cytoscape": "^3.15.1",
+    "@material/slider": "^7.0.0",
+    "cytoscape": "^3.15.2",
     "cytoscape-dagre": "^2.2.2",
     "cytoscape-popper": "^1.0.7",
     "karma-webpack": "^4.0.2",
@@ -26,15 +27,22 @@
     "tippy.js": "^5.2.1"
   },
   "devDependencies": {
+    "autoprefixer": "^9.8.5",
     "css-loader": "^3.6.0",
+    "extract-loader": "^5.1.0",
+    "file-loader": "^6.0.0",
     "jasmine": "^3.5.0",
     "karma": "^5.1.0",
     "karma-chrome-launcher": "^3.1.0",
     "karma-jasmine": "^3.3.1",
     "karma-phantomjs-launcher": "^1.0.4",
     "karma-requirejs": "^1.1.0",
+    "postcss-loader": "^3.0.0",
+    "sass": "^1.26.10",
+    "sass-loader": "^9.0.2",
     "style-loader": "^1.2.1",
     "webpack": "^4.43.0",
-    "webpack-cli": "^3.3.12"
+    "webpack-cli": "^3.3.12",
+    "webpack-dev-server": "^3.11.0"
   }
 }
