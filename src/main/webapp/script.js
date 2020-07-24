@@ -200,6 +200,12 @@ function getGraphDisplay(graphNodes, graphEdges) {
           'target-arrow-color': '#ccc',
           'target-arrow-shape': 'triangle',
           'curve-style': 'bezier'
+        },
+      },
+      {
+        selector: '.non-highlighted',
+        style: {
+          'opacity': '0.25'
         }
       }],
     layout: {
@@ -283,23 +289,19 @@ function searchToken(cy, query) {
  * Highlights collection of nodes and edges
  */
 function highlightElements(cy, target) {
-  // set all nodes to background state
-  // set to 0.24 to distinguish between being blurred
-  // for highlighting or because of a mutation
-  cy.nodes().forEach(node => node.style('opacity', '0.24'));
+  cy.nodes().forEach(node => node.toggleClass('non-highlighted', true));
 
   // highlight desired nodes
   target.forEach(node => {
     node.style('border-width', '4px');
-    node.style('opacity', '1');
+    node.toggleClass('non-highlighted', false);
   });
   cy.fit(target[0], 50);
   document.getElementById('num-selected').innerText = "Number of nodes selected: " + target.length;
 
   // highlight adjacent edges
   target.connectedEdges().forEach(edge => {
-    edge.style('line-color', 'black');
-    edge.style('target-arrow-color', 'black');
+    edge.style('line-style', 'dashed');
     edge.style('z-index', '2');
   });
 }
@@ -312,22 +314,15 @@ function resetElements(cy) {
   cy.nodes().forEach(node => {
     node.style('border-width', '0px');
     // only change opacity of nodes that were changed
-    // because of highlighting
-    if (node.style('opacity') === "0.24") {
-      node.style('opacity', '1');
+    // because of highlighting (leave nodes changed due to
+    // mutation alone)
+    if (node.hasClass('non-highlighted')) {
+      node.toggleClass('non-highlighted', false);
     }
   });
 
-  // reset edge color
-  cy.edges().forEach(edge => {
-    // only change color of edges that were changed
-    // because of highlighting
-    if (edge.style('line-color') === 'rgb(0,0,0)') {
-      edge.style('line-color', 'rgb(204, 204, 204)');
-      edge.style('target-arrow-color', 'rgb(204, 204, 204)');
-      edge.style('z-index', '1');
-    }
-  });
+  // reset edge style
+  cy.edges().forEach(edge => edge.style('line-style', 'solid'));
   document.getElementById('num-selected').innerText = "Number of nodes selected: 0";
 }
 
