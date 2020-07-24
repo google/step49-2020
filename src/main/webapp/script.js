@@ -403,7 +403,7 @@ function highlightDiff(cy, mutList, reason = "") {
           modifiedObj.style('background-color', colorScheme["addedObjectColor"]);
           addedNodes = addedNodes.union(modifiedObj);
         } else {
-          addToLogs("No node called " + startNode + " in graph");
+          displayError("No node called " + startNode + " in graph");
         }
         break;
       case 2:
@@ -415,11 +415,11 @@ function highlightDiff(cy, mutList, reason = "") {
           modifiedObj.style('target-arrow-color', colorScheme["addedObjectColor"]);
           addedEdges = addedEdges.union(modifiedObj);
         } else if (!endNode) {
-          addToLogs(endNode + " not specified");
+          displayError(endNode + " not specified");
         } else if (cy.getElementById(startNode).length === 0) {
-          addToLogs("No node called " + startNode + " in graph");
+          displayError("No node called " + startNode + " in graph");
         } else {
-          addToLogs("No node called " + endNode + " in graph");
+          displayError("No node called " + endNode + " in graph");
         }
         break;
       case 3:
@@ -792,7 +792,9 @@ function getClosestIndices(indicesList, element) {
     }
   }
   toReturn['higher'] = indexHigher;
-  toReturn['lower'] = indicesList[indexHigher - 1] < element ? indexHigher - 1 : Math.max(indexHigher - 2, -1);
+  // if indexHigher is 0, then nothing is less (so lower is -1)
+  // otherwise check the previous element and either go back by 1 or 2
+  toReturn['lower'] = indexHigher === 0 ? -1 : (indicesList[indexHigher - 1] < element ? indexHigher - 1 : Math.max(indexHigher - 2, -1));
   return toReturn;
 }
 
