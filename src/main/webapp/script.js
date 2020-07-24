@@ -245,6 +245,7 @@ function displayError(errorMsg) {
  * @param graphEdges a list of edges
  * @param mutList a list of mutations
  * @param reason for mutation, used for highlighting the difference
+ * @param queriedNodes a list of nodes that the user had searched for
  */
 function getGraphDisplay(graphNodes, graphEdges, mutList, reason, queriedNodes) {
   const cy = cytoscape({
@@ -302,7 +303,6 @@ function getGraphDisplay(graphNodes, graphEdges, mutList, reason, queriedNodes) 
       cy.$(nodeName).style('background-color', colorScheme["filteredNodeColor"]);
     })
   }
-  // cy.$id(startNode)
 
   const searchElement = document.getElementById('search');
   document.getElementById('search-button').onclick = function () {

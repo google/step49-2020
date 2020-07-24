@@ -60,6 +60,7 @@ public final class Utility {
    * @param mutationIndices the list of indices of relevant mutations
    * @param mutDiff the difference between the current graph and the requested graph
    * @param maxNumber the total number of mutations, without filtering
+   * @param queried a list of node names the client had requested
    * @return a JSON object containing as entries the nodes and edges of this graph as well as the
    *     length of the list of mutations this graph is an intermediate result of applying
    */
