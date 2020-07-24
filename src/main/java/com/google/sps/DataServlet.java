@@ -198,7 +198,6 @@ public class DataServlet extends HttpServlet {
     // If the token is contained, then get the nodes associated with the token and
     // add them to the queried nodes
 
-
     currDataGraph =
         Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
 
