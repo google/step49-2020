@@ -168,6 +168,7 @@ public class DataServlet extends HttpServlet {
       // Get the names of all the displayed nodes and find all indices of mutations
       // that mutate any of them
       Set<String> truncatedGraphNodeNames = Utility.getNodeNamesInGraph(truncatedGraph);
+      // Also get mutations relevant to the searched node if it is not an empty string
       if (nodeNameParam.length() != 0) {
         truncatedGraphNodeNames.add(nodeNameParam);
       }
@@ -191,8 +192,7 @@ public class DataServlet extends HttpServlet {
     // means that there is some mutation pertaining to the searched node to show
     if (truncatedGraph.nodes().size() == 0
         && filteredMutationIndices.size() != 0
-        && filteredMutationIndices.indexOf(mutationNumber) == -1
-        && (diff == null || diff.getMutationList().size() == 0)) {
+        && filteredMutationIndices.indexOf(mutationNumber) == -1) {
       response.setHeader(
           "serverMessage",
           "The searched node does not exist in this graph, so nothing is shown. However, it is"
