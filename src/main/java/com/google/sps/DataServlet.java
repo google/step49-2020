@@ -216,7 +216,8 @@ public class DataServlet extends HttpServlet {
       diff = Utility.filterMultiMutationByNodes(diff, truncatedGraphNodeNames);
     }
 
-    graphJson = Utility.graphToJson(truncatedGraph, filteredMutationIndices, diff, mutList.size(), queried);
+    graphJson =
+        Utility.graphToJson(truncatedGraph, filteredMutationIndices, diff, mutList.size(), queried);
     response.getWriter().println(graphJson);
   }
 

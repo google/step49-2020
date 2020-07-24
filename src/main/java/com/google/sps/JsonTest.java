@@ -96,7 +96,8 @@ public final class JsonTest {
             graph,
             new ArrayList<Integer>(),
             MultiMutation.newBuilder().setReason("test").build(),
-            0, new ArrayList<String>());
+            0,
+            new ArrayList<String>());
     JSONObject jsonObject = new JSONObject(result);
 
     Assert.assertEquals(jsonObject.length(), 7);

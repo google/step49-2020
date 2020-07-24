@@ -67,12 +67,12 @@ public final class Utility {
       MutableGraph<GraphNode> graph,
       List<Integer> mutationIndices,
       MultiMutation mutDiff,
-      int maxNumber, 
+      int maxNumber,
       List<String> queried) {
     Type typeOfNode = new TypeToken<Set<GraphNode>>() {}.getType();
     Type typeOfEdge = new TypeToken<Set<EndpointPair<GraphNode>>>() {}.getType();
     Type typeOfIndices = new TypeToken<List<Integer>>() {}.getType();
-    Type typeOfQueried = new TypeToken<List<String>>(){}.getType();
+    Type typeOfQueried = new TypeToken<List<String>>() {}.getType();
     Gson gson = new Gson();
     String nodeJson = gson.toJson(graph.nodes(), typeOfNode);
     String edgeJson = gson.toJson(graph.edges(), typeOfEdge);
