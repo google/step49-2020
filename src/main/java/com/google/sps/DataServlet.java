@@ -154,50 +154,15 @@ public class DataServlet extends HttpServlet {
     if (mutationNumber > currDataGraph.numMutations()) {
       diff = Utility.getMultiMutationAtIndex(mutList, mutationNumber);
     }
-    // Find the indices that mutate the searched node, computing and caching them
-    // if this has not been done already
-    if (!mutationIndicesMap.containsKey(nodeNameParam)) {
-      mutationIndicesMap.put(
-          nodeNameParam, Utility.getMutationIndicesOfNode(nodeNameParam, mutList));
-    }
 
     // A list of "roots" to return nodes at most depth radius from
-    // List<String> queried = new ArrayList<>();
     HashSet<String> queried = new HashSet<>();
-    // A set of all indices that mutate any node whose name is equal to
-    // nodeNameParam (if non-empty) or contains token tokenParam (if non-empty),
-    // otherwise all possible indices
-    // Set<Integer> relevantMutationIndices = new HashSet<>();
-
+    // We start by adding the node name if it was searched for
     if (nodeNameParam.length() > 0) {
       queried.add(nodeNameParam);
     }
 
-    // Possible combinations of nodeName and token:
-    // 1. Both empty -> can just look at nodeNameParam
-    // 2. nodeName nonempty, token empty -> just look at nodeNameParam
-    // 3. nodeName empty, token nonempty -> look only at token
-    // 4. Both nondempty -> look at both
-    // So we look at nodeName param in the case that both are empty and token is
-    // empty
-
-    // nodeNameParam is relevant in these case. otherwise this means tokenParam is
-    // not empty but nodeName is, so we should not consider the nodeNameParam.
-    // statement is shortened from tokenParam.length() == 0 || (tokenParam.length()
-    // != 0 &&
-    // nodeNameParam.length() != 0)
-
-    // If the token name parameter is empty, we go completely by the node name searched
-    // If the token name parameter is nonempty, we only consider the node name if it
-    // is nonempty
-    // if (tokenParam.length() == 0 || nodeNameParam.length() != 0) {
-    //   relevantMutationIndices.addAll(mutationIndicesMap.get(nodeNameParam));
-    // }
-    // relevantMutationIndices.addAll(Utility.getMutationIndicesOfToken(tokenParam, mutList));
-
-    // Process the tokens here - if tokens are empty it won't be in the map, this
-    // won't happen
-    // Get the graph at the requested mutation number and truncate it
+    // Get the graph at the requested mutation number
     try {
       currDataGraph =
           Utility.getGraphAtMutationNumber(
@@ -206,30 +171,24 @@ public class DataServlet extends HttpServlet {
       response.setHeader("serverError", e.getMessage());
       return;
     }
-
+    // Find the indices that mutate the searched node, computing and caching them
+    // if this has not been done already
+    if (!mutationIndicesMap.containsKey(nodeNameParam)) {
+      mutationIndicesMap.put(
+          nodeNameParam, Utility.getMutationIndicesOfNode(nodeNameParam, mutList));
+    }
     // If any node in this graph contains the token, watch it for mutations
     // If the token is contained, then get the nodes associated with the token and
     // add them to the queried nodes
     if (currDataGraph.tokenMap().containsKey(tokenParam)) {
       queried.addAll(currDataGraph.tokenMap().get(tokenParam));
-      // for (String s : currDataGraph.tokenMap().get(tokenParam)) {
-      //   if (!mutationIndicesMap.containsKey(s)) {
-      //     mutationIndicesMap.put(s, Utility.getMutationIndicesOfNode(s, mutList));
-      //   }
-      //   // relevantMutationIndices.addAll(mutationIndicesMap.get(s));
-      // }
     }
 
-    // filteredMutationIndices = new ArrayList<>(relevantMutationIndices);
-    // Get a sorted indices list with everything
-    // Collections.sort(filteredMutationIndices);
-    // Get the graph at the requested mutation number and truncate it
-
+    // Truncate the graph from the nodes that the client had searched for
     truncatedGraph = currDataGraph.getReachableNodes(queried, depthNumber);
 
     // If we are not filtering the graph or limiting its depth, show all mutations of all nodes
     if (nodeNameParam.length() == 0 && truncatedGraph.equals(currDataGraph.graph())) {
-
       filteredMutationIndices = defaultIndices;
     } else {
       // Get the names of all the displayed nodes and find all indices of mutations

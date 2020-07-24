@@ -64,7 +64,7 @@ public final class Utility {
    * @param mutationIndices the indices in the entire mutation list that mutate the relevant nodes
    * @param mutDiff the difference between the current graph and the requested graph
    * @param maxNumber the total number of mutations, without filtering
-   * @param queried a list of node names the client had requested
+   * @param queried a set of node names the client had requested
    * @return a JSON object containing as entries the nodes and edges of this graph as well as the
    *     length of the list of mutations this graph is an intermediate result of applying, the
    *     indices at which relevant nodes are mutated and the change made to relevant nodes to obtain
