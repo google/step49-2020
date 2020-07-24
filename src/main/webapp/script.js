@@ -227,7 +227,7 @@ function getGraphDisplay(graphNodes, graphEdges, mutList, reason) {
       {
         selector: '.non-highlighted',
         style: {
-          'opacity': '0.25'
+          'opacity': opacityScheme["deletedObjectOpacity"]
         }
       }],
     layout: {
@@ -537,9 +537,12 @@ function hideDiffs(cy, elems, deletedNodes, deletedEdges, addedNodes, addedEdges
 }
 
 /**
- * Searches a cytoscape graph (cy) based on type (node or token)
- * using a specified search function.
- * Returns the result of the search.
+ * Calls specified search function and modifies error text if necessary
+ *
+ * @param cy the graph to search through
+ * @param type a string representing the type of search (node or token)
+ * @param searchFunction the function to run the search with
+ * @returns the result of the search.
  */
 function searchAndHighlight(cy, type, searchFunction) {
   resetElements(cy);
@@ -559,8 +562,11 @@ function searchAndHighlight(cy, type, searchFunction) {
 }
 
 /**
- * Finds specific node from query and zooms in on it.
- * Returns node if it exists
+ * Searches and highlights/zooms a graph for specified node
+ *
+ * @param cy the graph to search through
+ * @param query the name of the node to search for
+ * @returns the result of the search.
  */
 function searchNode(cy, query) {
   let target = cy.$id(query);
@@ -569,10 +575,13 @@ function searchNode(cy, query) {
     return target;
   }
 }
+
 /**
- * Constructs list of nodes that contain specified token
- * and zooms in.
- * Returns list of nodes that contain token
+ * Searches and highlights/zooms a graph for specified token
+ *
+ * @param cy the graph to search through
+ * @param query the name of the token to search for
+ * @returns the result of the search.
  */
 function searchToken(cy, query) {
   let target = cy.collection();
@@ -587,7 +596,10 @@ function searchToken(cy, query) {
 }
 
 /**
- * Highlights collection of nodes and edges
+ * Highlights collection of nodes/edges
+ *
+ * @param cy the graph that contains nodes/edges
+ * @param target collection of nodes to highlight
  */
 function highlightElements(cy, target) {
   cy.nodes().forEach(node => node.toggleClass('non-highlighted', true));
@@ -608,7 +620,9 @@ function highlightElements(cy, target) {
 }
 
 /**
- * Resets highlighted elements to default state
+ * Resets collection of nodes/edges to default state
+ *
+ * @param cy the graph that contains nodes/edges
  */
 function resetElements(cy) {
   // reset node borders and opacity
