@@ -17,6 +17,7 @@ package com.google.sps;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.io.InputStreamReader;
 
 import java.util.List;
@@ -25,6 +26,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -161,8 +163,12 @@ public class DataServlet extends HttpServlet {
           nodeNameParam, Utility.getMutationIndicesOfNode(nodeNameParam, mutList));
     }
 
+    // A list of "roots" to return nodes at most depth radius from
     List<String> queried = new ArrayList<>();
-    List<List<Integer>> allRelevantMutationIndices = new ArrayList<>();
+    // A set of all indices that mutate any node whose name is equal to
+    // nodeNameParam (if non-empty) or contains token tokenParam (if non-empty),
+    // otherwise all possible indices
+    Set<Integer> relevantMutationIndices = new HashSet<>();
 
     // Possible combinations of nodeName and token:
     // 1. Both empty -> can just look at nodeNameParam
@@ -177,31 +183,39 @@ public class DataServlet extends HttpServlet {
     // statement is shortened from tokenParam.length() == 0 || (tokenParam.length()
     // != 0 &&
     // nodeNameParam.length() != 0)
+
+    // If the token name parameter is empty, we go completely by the node name searched
+    // If the token name parameter is nonempty, we only consider the node name if it
+    // is nonempty
     if (tokenParam.length() == 0 || nodeNameParam.length() != 0) {
       queried.add(nodeNameParam);
-      allRelevantMutationIndices.add(mutationIndicesMap.get(nodeNameParam));
+      relevantMutationIndices.addAll(mutationIndicesMap.get(nodeNameParam));
     }
-    allRelevantMutationIndices.add(Utility.getMutationIndicesOfToken(tokenParam, mutList));
+    relevantMutationIndices.addAll(Utility.getMutationIndicesOfToken(tokenParam, mutList));
 
     // Process the tokens here - if tokens are empty it won't be in the map, this
     // won't happen
     // If the token is contained, then get the nodes associated with the token and
     // add them to the queried nodes
+
+    currDataGraph =
+        Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
+
+    // If any node in this graph contains the token, watch it for mutations
     if (currDataGraph.tokenMap().containsKey(tokenParam)) {
       queried.addAll(currDataGraph.tokenMap().get(tokenParam));
       for (String s : currDataGraph.tokenMap().get(tokenParam)) {
         if (!mutationIndicesMap.containsKey(s)) {
           mutationIndicesMap.put(s, Utility.getMutationIndicesOfNode(s, mutList));
         }
-        allRelevantMutationIndices.add(mutationIndicesMap.get(s));
+        relevantMutationIndices.addAll(mutationIndicesMap.get(s));
       }
     }
 
-    // Get a sorted indice list with everything
-    filteredMutationIndices = Utility.mergeSortedLists(allRelevantMutationIndices);
+    filteredMutationIndices = new ArrayList<>(relevantMutationIndices);
+    // Get a sorted indices list with everything
+    Collections.sort(filteredMutationIndices);
     // Get the graph at the requested mutation number and truncate it
-    currDataGraph =
-        Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
 
     truncatedGraph = currDataGraph.getReachableNodes(queried, depthNumber);
 
@@ -227,7 +241,7 @@ public class DataServlet extends HttpServlet {
     }
 
     // We filter the multimutation if there was a node searched
-    if (nodeNameParam.length() != 0) {
+    if (nodeNameParam.length() != 0 || tokenParam.length() != 0) {
       Set<String> truncatedGraphNodeNames = Utility.getNodeNamesInGraph(truncatedGraph);
       truncatedGraphNodeNames.add(nodeNameParam);
       diff = Utility.filterMultiMutationByNodes(diff, truncatedGraphNodeNames);
