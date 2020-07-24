@@ -416,7 +416,8 @@ abstract class DataGraph {
    * in the graph, we skip it. If all the nodes in the collection don't exist in the graph, we
    * return an empty graph.
    *
-   * @param names the names of the nodes whose descendants within radius distance and all associated edges should be included in the graph
+   * @param names the names of the nodes whose descendants within radius distance and all associated
+   *     edges should be included in the graph
    * @param radius the distance from the node to search for parents and children
    * @return a graph comprised of only nodes and edges within a certain distance from the specified
    *     node (or roots if name is ""). Empty if radius is less than 0 or if the node isn't found.

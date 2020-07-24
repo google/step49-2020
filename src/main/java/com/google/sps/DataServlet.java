@@ -162,7 +162,7 @@ public class DataServlet extends HttpServlet {
           nodeNameParam, Utility.getMutationIndicesOfNode(nodeNameParam, mutList));
     }
     filteredMutationIndices = mutationIndicesMap.get(nodeNameParam);
-    
+
     // Get the graph at the requested mutation number and truncate it
     try {
       currDataGraph =
