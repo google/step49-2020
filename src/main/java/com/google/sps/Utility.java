@@ -59,14 +59,14 @@ public final class Utility {
    * Converts a Guava graph into a String encoding of a JSON Object. The object
    * contains nodes and edges of the graph.
    *
-   * @param graph           the graph to convert into a JSON String
-   * @param mutationIndices the list of indices of relevant mutations
-   * @param mutDiff         the difference between the current graph and the
-   *                        requested graph
-   * @param maxNumber       the total number of mutations, without filtering
-   * @return a JSON object containing as entries the nodes and edges of this graph
-   *         as well as the length of the list of mutations this graph is an
-   *         intermediate result of applying
+   * @param graph the graph to convert into a JSON String
+   * @param mutationIndices the indices in the entire mutation list that mutate the relevant nodes
+   * @param mutDiff the difference between the current graph and the requested graph
+   * @param maxNumber the total number of mutations, without filtering
+   * @return a JSON object containing as entries the nodes and edges of this graph as well as the
+   *     length of the list of mutations this graph is an intermediate result of applying, the
+   *     indices at which relevant nodes are mutated and the change made to relevant nodes to obtain
+   *     the new graph
    */
   public static String graphToJson(MutableGraph<GraphNode> graph, List<Integer> mutationIndices, MultiMutation mutDiff,
       int maxNumber) {

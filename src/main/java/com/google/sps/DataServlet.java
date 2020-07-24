@@ -178,8 +178,9 @@ public class DataServlet extends HttpServlet {
       return;
     }
     // The searched node is not in the graph but is mutated at some past/future
-    // point. The diff conditions are included to prevent entry into this condition
-    // when the searched node is deleted for example.
+    // point. The diff conditions are included to prevent entry into this case
+    // when the searched node is deleted for example. The diff being non-empty
+    // means that there is some mutation pertaining to the searched node to show
     if (truncatedGraph.nodes().size() == 0 && filteredMutationIndices.size() != 0 &&
         filteredMutationIndices.indexOf(mutationNumber) == -1 && 
         (diff == null || diff.getMutationList().size() == 0)) {
@@ -189,7 +190,8 @@ public class DataServlet extends HttpServlet {
               + " where this node exists.");
     }
     // The searched node exists but is not mutated in the current graph
-    if (truncatedGraph.nodes().size() != 0 && !(mutationNumber == -1 && nodeNameParam.equals(""))
+    if (truncatedGraph.nodes().size() != 0
+        && !(mutationNumber == -1 && nodeNameParam.equals(""))
         && filteredMutationIndices.indexOf(mutationNumber) == -1) {
       response.setHeader("serverMessage",
           "The searched node exists in this graph! However, it is not mutated in this graph."

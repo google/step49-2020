@@ -18,6 +18,7 @@
  * the cytoscape.js library
  */
 
+import { MDCSlider } from '@material/slider';
 import cytoscape from 'cytoscape';
 import dagre from 'cytoscape-dagre';
 import popper from 'cytoscape-popper';
@@ -26,12 +27,14 @@ import 'tippy.js/dist/tippy.css';
 import 'tippy.js/dist/backdrop.css';
 import 'tippy.js/animations/shift-away.css';
 import { colorScheme, opacityScheme } from './constants.js';
+import "./style.scss";
 
 export {
-  initializeNumMutations, setMutationIndexList, setCurrMutationNum, setCurrMutationIndex, initializeTippy,
-  generateGraph, getUrl, navigateGraph, currMutationNum, currMutationIndex, numMutations,
-  updateButtons, searchNode, highlightDiff, initializeReasonTooltip, getGraphDisplay,
-  getClosestIndices
+  initializeNumMutations, setMutationIndexList, setCurrMutationNum, setCurrMutationIndex,
+  initializeTippy, generateGraph, getUrl, navigateGraph, currMutationNum, currMutationIndex,
+  numMutations, updateButtons, searchNode, highlightDiff, initializeReasonTooltip, getGraphDisplay,
+  getClosestIndices, initializeSlider, resetMutationSlider, mutationNumSlider, setMutationSliderValue,
+  readGraphNumberInput, updateGraphNumInput, setMaxNumMutations
 };
 
 cytoscape.use(popper); // register extension
@@ -55,9 +58,25 @@ let numMutations = 0;
 // (for ex, if a node was searched and the node was modified in the 1st, 4th, and 
 // 5th indices, this would be [1,4,5])
 let mutationIndexList = [];
+// An object representing a slider whose value can be changed by the user to 
+// modify currMutationIndex
+let mutationNumSlider;
+// The maximum number of mutations that can be applied to the initial graph
+// ie. the length of the mutations list
+let maxNumMutations = 0;
 
-// Stores total number of mutations, for display
-let totalNum = 0;
+/**
+ * Initializes the mutation index slider upon document load and sets it up to
+ * regenerate the graph when its value is changed
+ */
+function initializeSlider() {
+  mutationNumSlider = new MDCSlider(document.querySelector('.mdc-slider'));
+  mutationNumSlider.listen('MDCSlider:change', () => {
+    currMutationIndex = mutationNumSlider.value;
+    currMutationNum = (currMutationIndex === -1) ? -1 : mutationIndexList[currMutationIndex];
+    generateGraph();
+  });
+}
 
 /**
  * Initializes the number of mutations
@@ -87,6 +106,13 @@ function setMutationIndexList(lst) {
   mutationIndexList = lst;
 }
 
+/*
+ * Sets the value of the length of the mutation list
+ */
+function setMaxNumMutations(num) {
+  maxNumMutations = num;
+}
+
 /**
  * Submits a fetch request to the /data URL to retrieve the graph
  * and then displays it on the page
@@ -96,11 +122,14 @@ async function generateGraph() {
   let graphNodes = [];
   let graphEdges = [];
 
-  // disable buttons
+  // disable all possible input fields
   const prevBtn = document.getElementById("prevbutton");
   const nextBtn = document.getElementById("nextbutton");
   prevBtn.disabled = true;
   nextBtn.disabled = true;
+  mutationNumSlider.disabled = true;
+  const graphNumInput = document.getElementById("graph-number");
+  graphNumInput.disabled = true;
 
   const url = getUrl();
   const response = await fetch(url);
@@ -117,7 +146,6 @@ async function generateGraph() {
   // Graph nodes and edges received from server
   const nodes = JSON.parse(jsonResponse.nodes);
   const edges = JSON.parse(jsonResponse.edges);
-  totalNum = jsonResponse.totalMutNumber;
 
   // Set all logs to be black
   const allLogs = document.querySelectorAll('.log-msg');
@@ -130,7 +158,7 @@ async function generateGraph() {
 
   mutationIndexList = JSON.parse(jsonResponse.mutationIndices);
   numMutations = mutationIndexList.length;
-  console.log(mutationIndexList);
+  maxNumMutations = jsonResponse.totalMutNumber;
 
   if (!nodes || !edges || !Array.isArray(nodes) || !Array.isArray(edges)) {
     displayError("Malformed graph received from server - edges or nodes are empty");
@@ -149,11 +177,13 @@ async function generateGraph() {
   // Update the current mutation index to reflect the new position of currMutationNumber
   // in the updated mutationIndexList between the previous smaller and the next larger
   // element.
-  const indexOfNextLargerNumber = getClosestIndices(mutationIndexList, currMutationNum).higher;
-  const indexOfClosestSmallerNumber = getClosestIndices(mutationIndexList, currMutationNum).lower;
-  
-  currMutationIndex = ((indexOfNextLargerNumber + indexOfClosestSmallerNumber) / 2);
-  console.log(currMutationIndex);
+  if (currMutationNum !== -1) {
+    const indexOfNextLargerNumber = getClosestIndices(mutationIndexList, currMutationNum).higher;
+    const indexOfClosestSmallerNumber = getClosestIndices(mutationIndexList, currMutationNum).lower;
+    currMutationIndex = ((indexOfNextLargerNumber + indexOfClosestSmallerNumber) / 2);
+  } else {
+    currMutationIndex = -1;
+  }
 
   // Add node to array of cytoscape nodes
   nodes.forEach(node =>
@@ -174,9 +204,30 @@ async function generateGraph() {
       }
     });
   });
+
   getGraphDisplay(graphNodes, graphEdges, mutList, reason);
   updateButtons();
-  return;
+  updateGraphNumInput();
+  resetMutationSlider();
+
+  mutationNumSlider.disabled = false;
+  graphNumInput.disabled = false;
+}
+
+/**
+ * Resets the mutation index slider's current, maximum and minimum values based on 
+ * currMutationIndex and numMutations. Also modifies the step value to reflect the length of 
+ * mutationIndicesList (fewer steps for a large number of mutations). 
+ */
+function resetMutationSlider() {
+  if (!mutationNumSlider) {
+    return;
+  }
+  mutationNumSlider.min = -1;
+  mutationNumSlider.max = numMutations - 1;
+  mutationNumSlider.value = currMutationIndex;
+  // When numMutations < 10^(k+1), step is k
+  mutationNumSlider.step = Math.max(1, Math.floor(Math.log10(numMutations)));
 }
 
 /**
@@ -335,7 +386,7 @@ function getGraphDisplay(graphNodes, graphEdges, mutList, reason) {
   // Zoom in on them and activate their reason tooltips
   makeInteractiveAndFocus(cy, elems);
 
-  
+
   // Break the list down into individual constituents
   const deletedNodes = result["deletedNodes"] || cy.collection();
   const deletedEdges = result["deletedEdges"] || cy.collection();
@@ -736,6 +787,7 @@ function navigateGraph(amount) {
   if (currMutationIndex >= numMutations) {
     currMutationIndex = numMutations - 1;
   }
+  setMutationSliderValue(currMutationIndex);
   currMutationNum = (currMutationIndex === -1) ? -1 : mutationIndexList[currMutationIndex];
 }
 
@@ -747,7 +799,7 @@ function navigateGraph(amount) {
  */
 function updateButtons() {
   // The use of <= and >= as opposed to === is for safety
-  if (Math.floor(currMutationIndex) <= -1) {
+  if (currMutationIndex <= -1) {
     document.getElementById("prevbutton").disabled = true;
   } else {
     document.getElementById("prevbutton").disabled = false;
@@ -757,8 +809,6 @@ function updateButtons() {
   } else {
     document.getElementById("nextbutton").disabled = false;
   }
-  const numElement = document.getElementById("num-mutation-display");
-  numElement.innerText = `Graph ${currMutationNum + 1} out of ${totalNum} total`;
 }
  
 /**
@@ -799,3 +849,46 @@ function getClosestIndices(indicesList, element) {
   return toReturn;
 }
 
+/**
+ * Sets the value of the mutation slider to the passed amount if it exists
+ * @param {any} amount the desired value of the mutation slider
+ */
+function setMutationSliderValue(amount) {
+  if (!mutationNumSlider) {
+    return;
+  }
+  mutationNumSlider.value = amount;
+}
+
+/**
+ * Updates the maximum, minimum and current values of the graph number
+ * input field
+ */
+function updateGraphNumInput() {
+  const graphNumberInput = document.getElementById("graph-number");
+  graphNumberInput.min = 0;
+  graphNumberInput.max = maxNumMutations;
+  graphNumberInput.value = currMutationNum + 1;
+  const totalMutNumberText = document.getElementById("total-mutation-number-text");
+  if (totalMutNumberText) {
+    totalMutNumberText.innerText = `out of ${maxNumMutations}`;
+  }
+}
+
+/**
+ * Changes the current mutation number based on a change in the value
+ * of the mutation number input
+ */
+function readGraphNumberInput() {
+  const graphNumberInput = document.getElementById("graph-number");
+  if (!graphNumberInput || graphNumberInput.length === 0) {
+    return;
+  }
+  if (graphNumberInput.value >= maxNumMutations) {
+    graphNumberInput.value = maxNumMutations;
+  }
+  if (graphNumberInput.value <= 0) {
+    graphNumberInput.value = 0;
+  }
+  currMutationNum = graphNumberInput.value - 1;
+}
