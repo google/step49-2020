@@ -25,7 +25,7 @@ import tippy, { sticky } from 'tippy.js';
 import 'tippy.js/dist/tippy.css';
 import 'tippy.js/dist/backdrop.css';
 import 'tippy.js/animations/shift-away.css';
-import { colorScheme, opacityScheme } from './constants.js';
+import { colorScheme, opacityScheme, borderScheme } from './constants.js';
 
 export {
   initializeNumMutations, setMutationIndexList, setCurrMutationNum, setCurrMutationIndex, initializeTippy,
@@ -301,6 +301,7 @@ function getGraphDisplay(graphNodes, graphEdges, mutList, reason, queriedNodes) 
   if(queriedNodes) {
     queriedNodes.forEach(nodeName => {
       cy.$(nodeName).style('background-color', colorScheme["filteredNodeColor"]);
+      cy.$(nodeName).style('border-width', borderScheme['queriedBorder']);
     })
   }
 
