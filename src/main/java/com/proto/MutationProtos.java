@@ -885,27 +885,6 @@ public final class MutationProtos {
      * <code>.com.proto.TokenMutation token_change = 4;</code>
      */
     com.proto.MutationProtos.TokenMutationOrBuilder getTokenChangeOrBuilder();
-
-    /**
-     *
-     *
-     * <pre>
-     * * Reason the mutation happened
-     * </pre>
-     *
-     * <code>string reason = 5;</code>
-     */
-    java.lang.String getReason();
-    /**
-     *
-     *
-     * <pre>
-     * * Reason the mutation happened
-     * </pre>
-     *
-     * <code>string reason = 5;</code>
-     */
-    com.google.protobuf.ByteString getReasonBytes();
   }
   /**
    *
@@ -930,7 +909,6 @@ public final class MutationProtos {
       type_ = 0;
       startNode_ = "";
       endNode_ = "";
-      reason_ = "";
     }
 
     @java.lang.Override
@@ -992,13 +970,6 @@ public final class MutationProtos {
                   tokenChange_ = subBuilder.buildPartial();
                 }
 
-                break;
-              }
-            case 42:
-              {
-                java.lang.String s = input.readStringRequireUtf8();
-
-                reason_ = s;
                 break;
               }
             default:
@@ -1317,49 +1288,6 @@ public final class MutationProtos {
       return getTokenChange();
     }
 
-    public static final int REASON_FIELD_NUMBER = 5;
-    private volatile java.lang.Object reason_;
-    /**
-     *
-     *
-     * <pre>
-     * * Reason the mutation happened
-     * </pre>
-     *
-     * <code>string reason = 5;</code>
-     */
-    public java.lang.String getReason() {
-      java.lang.Object ref = reason_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        reason_ = s;
-        return s;
-      }
-    }
-    /**
-     *
-     *
-     * <pre>
-     * * Reason the mutation happened
-     * </pre>
-     *
-     * <code>string reason = 5;</code>
-     */
-    public com.google.protobuf.ByteString getReasonBytes() {
-      java.lang.Object ref = reason_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b =
-            com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
-        reason_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
     private byte memoizedIsInitialized = -1;
 
     @java.lang.Override
@@ -1386,9 +1314,6 @@ public final class MutationProtos {
       if (tokenChange_ != null) {
         output.writeMessage(4, getTokenChange());
       }
-      if (!getReasonBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 5, reason_);
-      }
       unknownFields.writeTo(output);
     }
 
@@ -1409,9 +1334,6 @@ public final class MutationProtos {
       }
       if (tokenChange_ != null) {
         size += com.google.protobuf.CodedOutputStream.computeMessageSize(4, getTokenChange());
-      }
-      if (!getReasonBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(5, reason_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -1436,7 +1358,6 @@ public final class MutationProtos {
       if (hasTokenChange()) {
         result = result && getTokenChange().equals(other.getTokenChange());
       }
-      result = result && getReason().equals(other.getReason());
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -1458,8 +1379,6 @@ public final class MutationProtos {
         hash = (37 * hash) + TOKEN_CHANGE_FIELD_NUMBER;
         hash = (53 * hash) + getTokenChange().hashCode();
       }
-      hash = (37 * hash) + REASON_FIELD_NUMBER;
-      hash = (53 * hash) + getReason().hashCode();
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -1616,8 +1535,6 @@ public final class MutationProtos {
           tokenChange_ = null;
           tokenChangeBuilder_ = null;
         }
-        reason_ = "";
-
         return this;
       }
 
@@ -1651,7 +1568,6 @@ public final class MutationProtos {
         } else {
           result.tokenChange_ = tokenChangeBuilder_.build();
         }
-        result.reason_ = reason_;
         onBuilt();
         return result;
       }
@@ -1716,10 +1632,6 @@ public final class MutationProtos {
         }
         if (other.hasTokenChange()) {
           mergeTokenChange(other.getTokenChange());
-        }
-        if (!other.getReason().isEmpty()) {
-          reason_ = other.reason_;
-          onChanged();
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -2249,100 +2161,6 @@ public final class MutationProtos {
         return tokenChangeBuilder_;
       }
 
-      private java.lang.Object reason_ = "";
-      /**
-       *
-       *
-       * <pre>
-       * * Reason the mutation happened
-       * </pre>
-       *
-       * <code>string reason = 5;</code>
-       */
-      public java.lang.String getReason() {
-        java.lang.Object ref = reason_;
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          reason_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
-      }
-      /**
-       *
-       *
-       * <pre>
-       * * Reason the mutation happened
-       * </pre>
-       *
-       * <code>string reason = 5;</code>
-       */
-      public com.google.protobuf.ByteString getReasonBytes() {
-        java.lang.Object ref = reason_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b =
-              com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
-          reason_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       *
-       *
-       * <pre>
-       * * Reason the mutation happened
-       * </pre>
-       *
-       * <code>string reason = 5;</code>
-       */
-      public Builder setReason(java.lang.String value) {
-        if (value == null) {
-          throw new NullPointerException();
-        }
-
-        reason_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       *
-       *
-       * <pre>
-       * * Reason the mutation happened
-       * </pre>
-       *
-       * <code>string reason = 5;</code>
-       */
-      public Builder clearReason() {
-
-        reason_ = getDefaultInstance().getReason();
-        onChanged();
-        return this;
-      }
-      /**
-       *
-       *
-       * <pre>
-       * * Reason the mutation happened
-       * </pre>
-       *
-       * <code>string reason = 5;</code>
-       */
-      public Builder setReasonBytes(com.google.protobuf.ByteString value) {
-        if (value == null) {
-          throw new NullPointerException();
-        }
-        checkByteStringIsUtf8(value);
-
-        reason_ = value;
-        onChanged();
-        return this;
-      }
-
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
@@ -2395,21 +2213,1166 @@ public final class MutationProtos {
     }
   }
 
+  public interface MultiMutationOrBuilder
+      extends
+      // @@protoc_insertion_point(interface_extends:com.proto.MultiMutation)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     *
+     *
+     * <pre>
+     * * All the mutations that compose this multimutation
+     * </pre>
+     *
+     * <code>repeated .com.proto.Mutation mutation = 1;</code>
+     */
+    java.util.List<com.proto.MutationProtos.Mutation> getMutationList();
+    /**
+     *
+     *
+     * <pre>
+     * * All the mutations that compose this multimutation
+     * </pre>
+     *
+     * <code>repeated .com.proto.Mutation mutation = 1;</code>
+     */
+    com.proto.MutationProtos.Mutation getMutation(int index);
+    /**
+     *
+     *
+     * <pre>
+     * * All the mutations that compose this multimutation
+     * </pre>
+     *
+     * <code>repeated .com.proto.Mutation mutation = 1;</code>
+     */
+    int getMutationCount();
+    /**
+     *
+     *
+     * <pre>
+     * * All the mutations that compose this multimutation
+     * </pre>
+     *
+     * <code>repeated .com.proto.Mutation mutation = 1;</code>
+     */
+    java.util.List<? extends com.proto.MutationProtos.MutationOrBuilder> getMutationOrBuilderList();
+    /**
+     *
+     *
+     * <pre>
+     * * All the mutations that compose this multimutation
+     * </pre>
+     *
+     * <code>repeated .com.proto.Mutation mutation = 1;</code>
+     */
+    com.proto.MutationProtos.MutationOrBuilder getMutationOrBuilder(int index);
+
+    /**
+     *
+     *
+     * <pre>
+     * * Reason the multi-mutation happened
+     * </pre>
+     *
+     * <code>string reason = 2;</code>
+     */
+    java.lang.String getReason();
+    /**
+     *
+     *
+     * <pre>
+     * * Reason the multi-mutation happened
+     * </pre>
+     *
+     * <code>string reason = 2;</code>
+     */
+    com.google.protobuf.ByteString getReasonBytes();
+  }
+  /** Protobuf type {@code com.proto.MultiMutation} */
+  public static final class MultiMutation extends com.google.protobuf.GeneratedMessageV3
+      implements
+      // @@protoc_insertion_point(message_implements:com.proto.MultiMutation)
+      MultiMutationOrBuilder {
+    private static final long serialVersionUID = 0L;
+    // Use MultiMutation.newBuilder() to construct.
+    private MultiMutation(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+
+    private MultiMutation() {
+      mutation_ = java.util.Collections.emptyList();
+      reason_ = "";
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet getUnknownFields() {
+      return this.unknownFields;
+    }
+
+    private MultiMutation(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 10:
+              {
+                if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+                  mutation_ = new java.util.ArrayList<com.proto.MutationProtos.Mutation>();
+                  mutable_bitField0_ |= 0x00000001;
+                }
+                mutation_.add(
+                    input.readMessage(
+                        com.proto.MutationProtos.Mutation.parser(), extensionRegistry));
+                break;
+              }
+            case 18:
+              {
+                java.lang.String s = input.readStringRequireUtf8();
+
+                reason_ = s;
+                break;
+              }
+            default:
+              {
+                if (!parseUnknownFieldProto3(input, unknownFields, extensionRegistry, tag)) {
+                  done = true;
+                }
+                break;
+              }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(e).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+          mutation_ = java.util.Collections.unmodifiableList(mutation_);
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+
+    public static final com.google.protobuf.Descriptors.Descriptor getDescriptor() {
+      return com.proto.MutationProtos.internal_static_com_proto_MultiMutation_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return com.proto.MutationProtos.internal_static_com_proto_MultiMutation_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              com.proto.MutationProtos.MultiMutation.class,
+              com.proto.MutationProtos.MultiMutation.Builder.class);
+    }
+
+    private int bitField0_;
+    public static final int MUTATION_FIELD_NUMBER = 1;
+    private java.util.List<com.proto.MutationProtos.Mutation> mutation_;
+    /**
+     *
+     *
+     * <pre>
+     * * All the mutations that compose this multimutation
+     * </pre>
+     *
+     * <code>repeated .com.proto.Mutation mutation = 1;</code>
+     */
+    public java.util.List<com.proto.MutationProtos.Mutation> getMutationList() {
+      return mutation_;
+    }
+    /**
+     *
+     *
+     * <pre>
+     * * All the mutations that compose this multimutation
+     * </pre>
+     *
+     * <code>repeated .com.proto.Mutation mutation = 1;</code>
+     */
+    public java.util.List<? extends com.proto.MutationProtos.MutationOrBuilder>
+        getMutationOrBuilderList() {
+      return mutation_;
+    }
+    /**
+     *
+     *
+     * <pre>
+     * * All the mutations that compose this multimutation
+     * </pre>
+     *
+     * <code>repeated .com.proto.Mutation mutation = 1;</code>
+     */
+    public int getMutationCount() {
+      return mutation_.size();
+    }
+    /**
+     *
+     *
+     * <pre>
+     * * All the mutations that compose this multimutation
+     * </pre>
+     *
+     * <code>repeated .com.proto.Mutation mutation = 1;</code>
+     */
+    public com.proto.MutationProtos.Mutation getMutation(int index) {
+      return mutation_.get(index);
+    }
+    /**
+     *
+     *
+     * <pre>
+     * * All the mutations that compose this multimutation
+     * </pre>
+     *
+     * <code>repeated .com.proto.Mutation mutation = 1;</code>
+     */
+    public com.proto.MutationProtos.MutationOrBuilder getMutationOrBuilder(int index) {
+      return mutation_.get(index);
+    }
+
+    public static final int REASON_FIELD_NUMBER = 2;
+    private volatile java.lang.Object reason_;
+    /**
+     *
+     *
+     * <pre>
+     * * Reason the multi-mutation happened
+     * </pre>
+     *
+     * <code>string reason = 2;</code>
+     */
+    public java.lang.String getReason() {
+      java.lang.Object ref = reason_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        reason_ = s;
+        return s;
+      }
+    }
+    /**
+     *
+     *
+     * <pre>
+     * * Reason the multi-mutation happened
+     * </pre>
+     *
+     * <code>string reason = 2;</code>
+     */
+    public com.google.protobuf.ByteString getReasonBytes() {
+      java.lang.Object ref = reason_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b =
+            com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
+        reason_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    private byte memoizedIsInitialized = -1;
+
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output) throws java.io.IOException {
+      for (int i = 0; i < mutation_.size(); i++) {
+        output.writeMessage(1, mutation_.get(i));
+      }
+      if (!getReasonBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, reason_);
+      }
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      for (int i = 0; i < mutation_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream.computeMessageSize(1, mutation_.get(i));
+      }
+      if (!getReasonBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, reason_);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+        return true;
+      }
+      if (!(obj instanceof com.proto.MutationProtos.MultiMutation)) {
+        return super.equals(obj);
+      }
+      com.proto.MutationProtos.MultiMutation other = (com.proto.MutationProtos.MultiMutation) obj;
+
+      boolean result = true;
+      result = result && getMutationList().equals(other.getMutationList());
+      result = result && getReason().equals(other.getReason());
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (getMutationCount() > 0) {
+        hash = (37 * hash) + MUTATION_FIELD_NUMBER;
+        hash = (53 * hash) + getMutationList().hashCode();
+      }
+      hash = (37 * hash) + REASON_FIELD_NUMBER;
+      hash = (53 * hash) + getReason().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static com.proto.MutationProtos.MultiMutation parseFrom(java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+
+    public static com.proto.MutationProtos.MultiMutation parseFrom(
+        java.nio.ByteBuffer data, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+
+    public static com.proto.MutationProtos.MultiMutation parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+
+    public static com.proto.MutationProtos.MultiMutation parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+
+    public static com.proto.MutationProtos.MultiMutation parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+
+    public static com.proto.MutationProtos.MultiMutation parseFrom(
+        byte[] data, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+
+    public static com.proto.MutationProtos.MultiMutation parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input);
+    }
+
+    public static com.proto.MutationProtos.MultiMutation parseFrom(
+        java.io.InputStream input, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(
+          PARSER, input, extensionRegistry);
+    }
+
+    public static com.proto.MutationProtos.MultiMutation parseDelimitedFrom(
+        java.io.InputStream input) throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseDelimitedWithIOException(PARSER, input);
+    }
+
+    public static com.proto.MutationProtos.MultiMutation parseDelimitedFrom(
+        java.io.InputStream input, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseDelimitedWithIOException(
+          PARSER, input, extensionRegistry);
+    }
+
+    public static com.proto.MutationProtos.MultiMutation parseFrom(
+        com.google.protobuf.CodedInputStream input) throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(PARSER, input);
+    }
+
+    public static com.proto.MutationProtos.MultiMutation parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3.parseWithIOException(
+          PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() {
+      return newBuilder();
+    }
+
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+
+    public static Builder newBuilder(com.proto.MutationProtos.MultiMutation prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /** Protobuf type {@code com.proto.MultiMutation} */
+    public static final class Builder
+        extends com.google.protobuf.GeneratedMessageV3.Builder<Builder>
+        implements
+        // @@protoc_insertion_point(builder_implements:com.proto.MultiMutation)
+        com.proto.MutationProtos.MultiMutationOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor getDescriptor() {
+        return com.proto.MutationProtos.internal_static_com_proto_MultiMutation_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return com.proto.MutationProtos.internal_static_com_proto_MultiMutation_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                com.proto.MutationProtos.MultiMutation.class,
+                com.proto.MutationProtos.MultiMutation.Builder.class);
+      }
+
+      // Construct using com.proto.MutationProtos.MultiMutation.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders) {
+          getMutationFieldBuilder();
+        }
+      }
+
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        if (mutationBuilder_ == null) {
+          mutation_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+        } else {
+          mutationBuilder_.clear();
+        }
+        reason_ = "";
+
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor getDescriptorForType() {
+        return com.proto.MutationProtos.internal_static_com_proto_MultiMutation_descriptor;
+      }
+
+      @java.lang.Override
+      public com.proto.MutationProtos.MultiMutation getDefaultInstanceForType() {
+        return com.proto.MutationProtos.MultiMutation.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public com.proto.MutationProtos.MultiMutation build() {
+        com.proto.MutationProtos.MultiMutation result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public com.proto.MutationProtos.MultiMutation buildPartial() {
+        com.proto.MutationProtos.MultiMutation result =
+            new com.proto.MutationProtos.MultiMutation(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (mutationBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) == 0x00000001)) {
+            mutation_ = java.util.Collections.unmodifiableList(mutation_);
+            bitField0_ = (bitField0_ & ~0x00000001);
+          }
+          result.mutation_ = mutation_;
+        } else {
+          result.mutation_ = mutationBuilder_.build();
+        }
+        result.reason_ = reason_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field, java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+
+      @java.lang.Override
+      public Builder clearField(com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+
+      @java.lang.Override
+      public Builder clearOneof(com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index,
+          java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field, java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof com.proto.MutationProtos.MultiMutation) {
+          return mergeFrom((com.proto.MutationProtos.MultiMutation) other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(com.proto.MutationProtos.MultiMutation other) {
+        if (other == com.proto.MutationProtos.MultiMutation.getDefaultInstance()) return this;
+        if (mutationBuilder_ == null) {
+          if (!other.mutation_.isEmpty()) {
+            if (mutation_.isEmpty()) {
+              mutation_ = other.mutation_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+            } else {
+              ensureMutationIsMutable();
+              mutation_.addAll(other.mutation_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.mutation_.isEmpty()) {
+            if (mutationBuilder_.isEmpty()) {
+              mutationBuilder_.dispose();
+              mutationBuilder_ = null;
+              mutation_ = other.mutation_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+              mutationBuilder_ =
+                  com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders
+                      ? getMutationFieldBuilder()
+                      : null;
+            } else {
+              mutationBuilder_.addAllMessages(other.mutation_);
+            }
+          }
+        }
+        if (!other.getReason().isEmpty()) {
+          reason_ = other.reason_;
+          onChanged();
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.proto.MutationProtos.MultiMutation parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (com.proto.MutationProtos.MultiMutation) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private int bitField0_;
+
+      private java.util.List<com.proto.MutationProtos.Mutation> mutation_ =
+          java.util.Collections.emptyList();
+
+      private void ensureMutationIsMutable() {
+        if (!((bitField0_ & 0x00000001) == 0x00000001)) {
+          mutation_ = new java.util.ArrayList<com.proto.MutationProtos.Mutation>(mutation_);
+          bitField0_ |= 0x00000001;
+        }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+              com.proto.MutationProtos.Mutation,
+              com.proto.MutationProtos.Mutation.Builder,
+              com.proto.MutationProtos.MutationOrBuilder>
+          mutationBuilder_;
+
+      /**
+       *
+       *
+       * <pre>
+       * * All the mutations that compose this multimutation
+       * </pre>
+       *
+       * <code>repeated .com.proto.Mutation mutation = 1;</code>
+       */
+      public java.util.List<com.proto.MutationProtos.Mutation> getMutationList() {
+        if (mutationBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(mutation_);
+        } else {
+          return mutationBuilder_.getMessageList();
+        }
+      }
+      /**
+       *
+       *
+       * <pre>
+       * * All the mutations that compose this multimutation
+       * </pre>
+       *
+       * <code>repeated .com.proto.Mutation mutation = 1;</code>
+       */
+      public int getMutationCount() {
+        if (mutationBuilder_ == null) {
+          return mutation_.size();
+        } else {
+          return mutationBuilder_.getCount();
+        }
+      }
+      /**
+       *
+       *
+       * <pre>
+       * * All the mutations that compose this multimutation
+       * </pre>
+       *
+       * <code>repeated .com.proto.Mutation mutation = 1;</code>
+       */
+      public com.proto.MutationProtos.Mutation getMutation(int index) {
+        if (mutationBuilder_ == null) {
+          return mutation_.get(index);
+        } else {
+          return mutationBuilder_.getMessage(index);
+        }
+      }
+      /**
+       *
+       *
+       * <pre>
+       * * All the mutations that compose this multimutation
+       * </pre>
+       *
+       * <code>repeated .com.proto.Mutation mutation = 1;</code>
+       */
+      public Builder setMutation(int index, com.proto.MutationProtos.Mutation value) {
+        if (mutationBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureMutationIsMutable();
+          mutation_.set(index, value);
+          onChanged();
+        } else {
+          mutationBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       *
+       *
+       * <pre>
+       * * All the mutations that compose this multimutation
+       * </pre>
+       *
+       * <code>repeated .com.proto.Mutation mutation = 1;</code>
+       */
+      public Builder setMutation(
+          int index, com.proto.MutationProtos.Mutation.Builder builderForValue) {
+        if (mutationBuilder_ == null) {
+          ensureMutationIsMutable();
+          mutation_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          mutationBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       *
+       *
+       * <pre>
+       * * All the mutations that compose this multimutation
+       * </pre>
+       *
+       * <code>repeated .com.proto.Mutation mutation = 1;</code>
+       */
+      public Builder addMutation(com.proto.MutationProtos.Mutation value) {
+        if (mutationBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureMutationIsMutable();
+          mutation_.add(value);
+          onChanged();
+        } else {
+          mutationBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       *
+       *
+       * <pre>
+       * * All the mutations that compose this multimutation
+       * </pre>
+       *
+       * <code>repeated .com.proto.Mutation mutation = 1;</code>
+       */
+      public Builder addMutation(int index, com.proto.MutationProtos.Mutation value) {
+        if (mutationBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureMutationIsMutable();
+          mutation_.add(index, value);
+          onChanged();
+        } else {
+          mutationBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       *
+       *
+       * <pre>
+       * * All the mutations that compose this multimutation
+       * </pre>
+       *
+       * <code>repeated .com.proto.Mutation mutation = 1;</code>
+       */
+      public Builder addMutation(com.proto.MutationProtos.Mutation.Builder builderForValue) {
+        if (mutationBuilder_ == null) {
+          ensureMutationIsMutable();
+          mutation_.add(builderForValue.build());
+          onChanged();
+        } else {
+          mutationBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       *
+       *
+       * <pre>
+       * * All the mutations that compose this multimutation
+       * </pre>
+       *
+       * <code>repeated .com.proto.Mutation mutation = 1;</code>
+       */
+      public Builder addMutation(
+          int index, com.proto.MutationProtos.Mutation.Builder builderForValue) {
+        if (mutationBuilder_ == null) {
+          ensureMutationIsMutable();
+          mutation_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          mutationBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       *
+       *
+       * <pre>
+       * * All the mutations that compose this multimutation
+       * </pre>
+       *
+       * <code>repeated .com.proto.Mutation mutation = 1;</code>
+       */
+      public Builder addAllMutation(
+          java.lang.Iterable<? extends com.proto.MutationProtos.Mutation> values) {
+        if (mutationBuilder_ == null) {
+          ensureMutationIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(values, mutation_);
+          onChanged();
+        } else {
+          mutationBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       *
+       *
+       * <pre>
+       * * All the mutations that compose this multimutation
+       * </pre>
+       *
+       * <code>repeated .com.proto.Mutation mutation = 1;</code>
+       */
+      public Builder clearMutation() {
+        if (mutationBuilder_ == null) {
+          mutation_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+          onChanged();
+        } else {
+          mutationBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       *
+       *
+       * <pre>
+       * * All the mutations that compose this multimutation
+       * </pre>
+       *
+       * <code>repeated .com.proto.Mutation mutation = 1;</code>
+       */
+      public Builder removeMutation(int index) {
+        if (mutationBuilder_ == null) {
+          ensureMutationIsMutable();
+          mutation_.remove(index);
+          onChanged();
+        } else {
+          mutationBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       *
+       *
+       * <pre>
+       * * All the mutations that compose this multimutation
+       * </pre>
+       *
+       * <code>repeated .com.proto.Mutation mutation = 1;</code>
+       */
+      public com.proto.MutationProtos.Mutation.Builder getMutationBuilder(int index) {
+        return getMutationFieldBuilder().getBuilder(index);
+      }
+      /**
+       *
+       *
+       * <pre>
+       * * All the mutations that compose this multimutation
+       * </pre>
+       *
+       * <code>repeated .com.proto.Mutation mutation = 1;</code>
+       */
+      public com.proto.MutationProtos.MutationOrBuilder getMutationOrBuilder(int index) {
+        if (mutationBuilder_ == null) {
+          return mutation_.get(index);
+        } else {
+          return mutationBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       *
+       *
+       * <pre>
+       * * All the mutations that compose this multimutation
+       * </pre>
+       *
+       * <code>repeated .com.proto.Mutation mutation = 1;</code>
+       */
+      public java.util.List<? extends com.proto.MutationProtos.MutationOrBuilder>
+          getMutationOrBuilderList() {
+        if (mutationBuilder_ != null) {
+          return mutationBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(mutation_);
+        }
+      }
+      /**
+       *
+       *
+       * <pre>
+       * * All the mutations that compose this multimutation
+       * </pre>
+       *
+       * <code>repeated .com.proto.Mutation mutation = 1;</code>
+       */
+      public com.proto.MutationProtos.Mutation.Builder addMutationBuilder() {
+        return getMutationFieldBuilder()
+            .addBuilder(com.proto.MutationProtos.Mutation.getDefaultInstance());
+      }
+      /**
+       *
+       *
+       * <pre>
+       * * All the mutations that compose this multimutation
+       * </pre>
+       *
+       * <code>repeated .com.proto.Mutation mutation = 1;</code>
+       */
+      public com.proto.MutationProtos.Mutation.Builder addMutationBuilder(int index) {
+        return getMutationFieldBuilder()
+            .addBuilder(index, com.proto.MutationProtos.Mutation.getDefaultInstance());
+      }
+      /**
+       *
+       *
+       * <pre>
+       * * All the mutations that compose this multimutation
+       * </pre>
+       *
+       * <code>repeated .com.proto.Mutation mutation = 1;</code>
+       */
+      public java.util.List<com.proto.MutationProtos.Mutation.Builder> getMutationBuilderList() {
+        return getMutationFieldBuilder().getBuilderList();
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+              com.proto.MutationProtos.Mutation,
+              com.proto.MutationProtos.Mutation.Builder,
+              com.proto.MutationProtos.MutationOrBuilder>
+          getMutationFieldBuilder() {
+        if (mutationBuilder_ == null) {
+          mutationBuilder_ =
+              new com.google.protobuf.RepeatedFieldBuilderV3<
+                  com.proto.MutationProtos.Mutation,
+                  com.proto.MutationProtos.Mutation.Builder,
+                  com.proto.MutationProtos.MutationOrBuilder>(
+                  mutation_,
+                  ((bitField0_ & 0x00000001) == 0x00000001),
+                  getParentForChildren(),
+                  isClean());
+          mutation_ = null;
+        }
+        return mutationBuilder_;
+      }
+
+      private java.lang.Object reason_ = "";
+      /**
+       *
+       *
+       * <pre>
+       * * Reason the multi-mutation happened
+       * </pre>
+       *
+       * <code>string reason = 2;</code>
+       */
+      public java.lang.String getReason() {
+        java.lang.Object ref = reason_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs = (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          reason_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       *
+       *
+       * <pre>
+       * * Reason the multi-mutation happened
+       * </pre>
+       *
+       * <code>string reason = 2;</code>
+       */
+      public com.google.protobuf.ByteString getReasonBytes() {
+        java.lang.Object ref = reason_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b =
+              com.google.protobuf.ByteString.copyFromUtf8((java.lang.String) ref);
+          reason_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       *
+       *
+       * <pre>
+       * * Reason the multi-mutation happened
+       * </pre>
+       *
+       * <code>string reason = 2;</code>
+       */
+      public Builder setReason(java.lang.String value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+
+        reason_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       *
+       *
+       * <pre>
+       * * Reason the multi-mutation happened
+       * </pre>
+       *
+       * <code>string reason = 2;</code>
+       */
+      public Builder clearReason() {
+
+        reason_ = getDefaultInstance().getReason();
+        onChanged();
+        return this;
+      }
+      /**
+       *
+       *
+       * <pre>
+       * * Reason the multi-mutation happened
+       * </pre>
+       *
+       * <code>string reason = 2;</code>
+       */
+      public Builder setReasonBytes(com.google.protobuf.ByteString value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        checkByteStringIsUtf8(value);
+
+        reason_ = value;
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFieldsProto3(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+      // @@protoc_insertion_point(builder_scope:com.proto.MultiMutation)
+    }
+
+    // @@protoc_insertion_point(class_scope:com.proto.MultiMutation)
+    private static final com.proto.MutationProtos.MultiMutation DEFAULT_INSTANCE;
+
+    static {
+      DEFAULT_INSTANCE = new com.proto.MutationProtos.MultiMutation();
+    }
+
+    public static com.proto.MutationProtos.MultiMutation getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<MultiMutation> PARSER =
+        new com.google.protobuf.AbstractParser<MultiMutation>() {
+          @java.lang.Override
+          public MultiMutation parsePartialFrom(
+              com.google.protobuf.CodedInputStream input,
+              com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+              throws com.google.protobuf.InvalidProtocolBufferException {
+            return new MultiMutation(input, extensionRegistry);
+          }
+        };
+
+    public static com.google.protobuf.Parser<MultiMutation> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<MultiMutation> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.proto.MutationProtos.MultiMutation getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+  }
+
   public interface MutationListOrBuilder
       extends
       // @@protoc_insertion_point(interface_extends:com.proto.MutationList)
       com.google.protobuf.MessageOrBuilder {
 
-    /** <code>repeated .com.proto.Mutation mutation = 1;</code> */
-    java.util.List<com.proto.MutationProtos.Mutation> getMutationList();
-    /** <code>repeated .com.proto.Mutation mutation = 1;</code> */
-    com.proto.MutationProtos.Mutation getMutation(int index);
-    /** <code>repeated .com.proto.Mutation mutation = 1;</code> */
+    /** <code>repeated .com.proto.MultiMutation mutation = 1;</code> */
+    java.util.List<com.proto.MutationProtos.MultiMutation> getMutationList();
+    /** <code>repeated .com.proto.MultiMutation mutation = 1;</code> */
+    com.proto.MutationProtos.MultiMutation getMutation(int index);
+    /** <code>repeated .com.proto.MultiMutation mutation = 1;</code> */
     int getMutationCount();
-    /** <code>repeated .com.proto.Mutation mutation = 1;</code> */
-    java.util.List<? extends com.proto.MutationProtos.MutationOrBuilder> getMutationOrBuilderList();
-    /** <code>repeated .com.proto.Mutation mutation = 1;</code> */
-    com.proto.MutationProtos.MutationOrBuilder getMutationOrBuilder(int index);
+    /** <code>repeated .com.proto.MultiMutation mutation = 1;</code> */
+    java.util.List<? extends com.proto.MutationProtos.MultiMutationOrBuilder>
+        getMutationOrBuilderList();
+    /** <code>repeated .com.proto.MultiMutation mutation = 1;</code> */
+    com.proto.MutationProtos.MultiMutationOrBuilder getMutationOrBuilder(int index);
   }
   /** Protobuf type {@code com.proto.MutationList} */
   public static final class MutationList extends com.google.protobuf.GeneratedMessageV3
@@ -2453,12 +3416,12 @@ public final class MutationProtos {
             case 10:
               {
                 if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
-                  mutation_ = new java.util.ArrayList<com.proto.MutationProtos.Mutation>();
+                  mutation_ = new java.util.ArrayList<com.proto.MutationProtos.MultiMutation>();
                   mutable_bitField0_ |= 0x00000001;
                 }
                 mutation_.add(
                     input.readMessage(
-                        com.proto.MutationProtos.Mutation.parser(), extensionRegistry));
+                        com.proto.MutationProtos.MultiMutation.parser(), extensionRegistry));
                 break;
               }
             default:
@@ -2497,26 +3460,26 @@ public final class MutationProtos {
     }
 
     public static final int MUTATION_FIELD_NUMBER = 1;
-    private java.util.List<com.proto.MutationProtos.Mutation> mutation_;
-    /** <code>repeated .com.proto.Mutation mutation = 1;</code> */
-    public java.util.List<com.proto.MutationProtos.Mutation> getMutationList() {
+    private java.util.List<com.proto.MutationProtos.MultiMutation> mutation_;
+    /** <code>repeated .com.proto.MultiMutation mutation = 1;</code> */
+    public java.util.List<com.proto.MutationProtos.MultiMutation> getMutationList() {
       return mutation_;
     }
-    /** <code>repeated .com.proto.Mutation mutation = 1;</code> */
-    public java.util.List<? extends com.proto.MutationProtos.MutationOrBuilder>
+    /** <code>repeated .com.proto.MultiMutation mutation = 1;</code> */
+    public java.util.List<? extends com.proto.MutationProtos.MultiMutationOrBuilder>
         getMutationOrBuilderList() {
       return mutation_;
     }
-    /** <code>repeated .com.proto.Mutation mutation = 1;</code> */
+    /** <code>repeated .com.proto.MultiMutation mutation = 1;</code> */
     public int getMutationCount() {
       return mutation_.size();
     }
-    /** <code>repeated .com.proto.Mutation mutation = 1;</code> */
-    public com.proto.MutationProtos.Mutation getMutation(int index) {
+    /** <code>repeated .com.proto.MultiMutation mutation = 1;</code> */
+    public com.proto.MutationProtos.MultiMutation getMutation(int index) {
       return mutation_.get(index);
     }
-    /** <code>repeated .com.proto.Mutation mutation = 1;</code> */
-    public com.proto.MutationProtos.MutationOrBuilder getMutationOrBuilder(int index) {
+    /** <code>repeated .com.proto.MultiMutation mutation = 1;</code> */
+    public com.proto.MutationProtos.MultiMutationOrBuilder getMutationOrBuilder(int index) {
       return mutation_.get(index);
     }
 
@@ -2871,31 +3834,31 @@ public final class MutationProtos {
 
       private int bitField0_;
 
-      private java.util.List<com.proto.MutationProtos.Mutation> mutation_ =
+      private java.util.List<com.proto.MutationProtos.MultiMutation> mutation_ =
           java.util.Collections.emptyList();
 
       private void ensureMutationIsMutable() {
         if (!((bitField0_ & 0x00000001) == 0x00000001)) {
-          mutation_ = new java.util.ArrayList<com.proto.MutationProtos.Mutation>(mutation_);
+          mutation_ = new java.util.ArrayList<com.proto.MutationProtos.MultiMutation>(mutation_);
           bitField0_ |= 0x00000001;
         }
       }
 
       private com.google.protobuf.RepeatedFieldBuilderV3<
-              com.proto.MutationProtos.Mutation,
-              com.proto.MutationProtos.Mutation.Builder,
-              com.proto.MutationProtos.MutationOrBuilder>
+              com.proto.MutationProtos.MultiMutation,
+              com.proto.MutationProtos.MultiMutation.Builder,
+              com.proto.MutationProtos.MultiMutationOrBuilder>
           mutationBuilder_;
 
-      /** <code>repeated .com.proto.Mutation mutation = 1;</code> */
-      public java.util.List<com.proto.MutationProtos.Mutation> getMutationList() {
+      /** <code>repeated .com.proto.MultiMutation mutation = 1;</code> */
+      public java.util.List<com.proto.MutationProtos.MultiMutation> getMutationList() {
         if (mutationBuilder_ == null) {
           return java.util.Collections.unmodifiableList(mutation_);
         } else {
           return mutationBuilder_.getMessageList();
         }
       }
-      /** <code>repeated .com.proto.Mutation mutation = 1;</code> */
+      /** <code>repeated .com.proto.MultiMutation mutation = 1;</code> */
       public int getMutationCount() {
         if (mutationBuilder_ == null) {
           return mutation_.size();
@@ -2903,16 +3866,16 @@ public final class MutationProtos {
           return mutationBuilder_.getCount();
         }
       }
-      /** <code>repeated .com.proto.Mutation mutation = 1;</code> */
-      public com.proto.MutationProtos.Mutation getMutation(int index) {
+      /** <code>repeated .com.proto.MultiMutation mutation = 1;</code> */
+      public com.proto.MutationProtos.MultiMutation getMutation(int index) {
         if (mutationBuilder_ == null) {
           return mutation_.get(index);
         } else {
           return mutationBuilder_.getMessage(index);
         }
       }
-      /** <code>repeated .com.proto.Mutation mutation = 1;</code> */
-      public Builder setMutation(int index, com.proto.MutationProtos.Mutation value) {
+      /** <code>repeated .com.proto.MultiMutation mutation = 1;</code> */
+      public Builder setMutation(int index, com.proto.MutationProtos.MultiMutation value) {
         if (mutationBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -2925,9 +3888,9 @@ public final class MutationProtos {
         }
         return this;
       }
-      /** <code>repeated .com.proto.Mutation mutation = 1;</code> */
+      /** <code>repeated .com.proto.MultiMutation mutation = 1;</code> */
       public Builder setMutation(
-          int index, com.proto.MutationProtos.Mutation.Builder builderForValue) {
+          int index, com.proto.MutationProtos.MultiMutation.Builder builderForValue) {
         if (mutationBuilder_ == null) {
           ensureMutationIsMutable();
           mutation_.set(index, builderForValue.build());
@@ -2937,8 +3900,8 @@ public final class MutationProtos {
         }
         return this;
       }
-      /** <code>repeated .com.proto.Mutation mutation = 1;</code> */
-      public Builder addMutation(com.proto.MutationProtos.Mutation value) {
+      /** <code>repeated .com.proto.MultiMutation mutation = 1;</code> */
+      public Builder addMutation(com.proto.MutationProtos.MultiMutation value) {
         if (mutationBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -2951,8 +3914,8 @@ public final class MutationProtos {
         }
         return this;
       }
-      /** <code>repeated .com.proto.Mutation mutation = 1;</code> */
-      public Builder addMutation(int index, com.proto.MutationProtos.Mutation value) {
+      /** <code>repeated .com.proto.MultiMutation mutation = 1;</code> */
+      public Builder addMutation(int index, com.proto.MutationProtos.MultiMutation value) {
         if (mutationBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -2965,8 +3928,8 @@ public final class MutationProtos {
         }
         return this;
       }
-      /** <code>repeated .com.proto.Mutation mutation = 1;</code> */
-      public Builder addMutation(com.proto.MutationProtos.Mutation.Builder builderForValue) {
+      /** <code>repeated .com.proto.MultiMutation mutation = 1;</code> */
+      public Builder addMutation(com.proto.MutationProtos.MultiMutation.Builder builderForValue) {
         if (mutationBuilder_ == null) {
           ensureMutationIsMutable();
           mutation_.add(builderForValue.build());
@@ -2976,9 +3939,9 @@ public final class MutationProtos {
         }
         return this;
       }
-      /** <code>repeated .com.proto.Mutation mutation = 1;</code> */
+      /** <code>repeated .com.proto.MultiMutation mutation = 1;</code> */
       public Builder addMutation(
-          int index, com.proto.MutationProtos.Mutation.Builder builderForValue) {
+          int index, com.proto.MutationProtos.MultiMutation.Builder builderForValue) {
         if (mutationBuilder_ == null) {
           ensureMutationIsMutable();
           mutation_.add(index, builderForValue.build());
@@ -2988,9 +3951,9 @@ public final class MutationProtos {
         }
         return this;
       }
-      /** <code>repeated .com.proto.Mutation mutation = 1;</code> */
+      /** <code>repeated .com.proto.MultiMutation mutation = 1;</code> */
       public Builder addAllMutation(
-          java.lang.Iterable<? extends com.proto.MutationProtos.Mutation> values) {
+          java.lang.Iterable<? extends com.proto.MutationProtos.MultiMutation> values) {
         if (mutationBuilder_ == null) {
           ensureMutationIsMutable();
           com.google.protobuf.AbstractMessageLite.Builder.addAll(values, mutation_);
@@ -3000,7 +3963,7 @@ public final class MutationProtos {
         }
         return this;
       }
-      /** <code>repeated .com.proto.Mutation mutation = 1;</code> */
+      /** <code>repeated .com.proto.MultiMutation mutation = 1;</code> */
       public Builder clearMutation() {
         if (mutationBuilder_ == null) {
           mutation_ = java.util.Collections.emptyList();
@@ -3011,7 +3974,7 @@ public final class MutationProtos {
         }
         return this;
       }
-      /** <code>repeated .com.proto.Mutation mutation = 1;</code> */
+      /** <code>repeated .com.proto.MultiMutation mutation = 1;</code> */
       public Builder removeMutation(int index) {
         if (mutationBuilder_ == null) {
           ensureMutationIsMutable();
@@ -3022,20 +3985,20 @@ public final class MutationProtos {
         }
         return this;
       }
-      /** <code>repeated .com.proto.Mutation mutation = 1;</code> */
-      public com.proto.MutationProtos.Mutation.Builder getMutationBuilder(int index) {
+      /** <code>repeated .com.proto.MultiMutation mutation = 1;</code> */
+      public com.proto.MutationProtos.MultiMutation.Builder getMutationBuilder(int index) {
         return getMutationFieldBuilder().getBuilder(index);
       }
-      /** <code>repeated .com.proto.Mutation mutation = 1;</code> */
-      public com.proto.MutationProtos.MutationOrBuilder getMutationOrBuilder(int index) {
+      /** <code>repeated .com.proto.MultiMutation mutation = 1;</code> */
+      public com.proto.MutationProtos.MultiMutationOrBuilder getMutationOrBuilder(int index) {
         if (mutationBuilder_ == null) {
           return mutation_.get(index);
         } else {
           return mutationBuilder_.getMessageOrBuilder(index);
         }
       }
-      /** <code>repeated .com.proto.Mutation mutation = 1;</code> */
-      public java.util.List<? extends com.proto.MutationProtos.MutationOrBuilder>
+      /** <code>repeated .com.proto.MultiMutation mutation = 1;</code> */
+      public java.util.List<? extends com.proto.MutationProtos.MultiMutationOrBuilder>
           getMutationOrBuilderList() {
         if (mutationBuilder_ != null) {
           return mutationBuilder_.getMessageOrBuilderList();
@@ -3043,32 +4006,33 @@ public final class MutationProtos {
           return java.util.Collections.unmodifiableList(mutation_);
         }
       }
-      /** <code>repeated .com.proto.Mutation mutation = 1;</code> */
-      public com.proto.MutationProtos.Mutation.Builder addMutationBuilder() {
+      /** <code>repeated .com.proto.MultiMutation mutation = 1;</code> */
+      public com.proto.MutationProtos.MultiMutation.Builder addMutationBuilder() {
         return getMutationFieldBuilder()
-            .addBuilder(com.proto.MutationProtos.Mutation.getDefaultInstance());
+            .addBuilder(com.proto.MutationProtos.MultiMutation.getDefaultInstance());
       }
-      /** <code>repeated .com.proto.Mutation mutation = 1;</code> */
-      public com.proto.MutationProtos.Mutation.Builder addMutationBuilder(int index) {
+      /** <code>repeated .com.proto.MultiMutation mutation = 1;</code> */
+      public com.proto.MutationProtos.MultiMutation.Builder addMutationBuilder(int index) {
         return getMutationFieldBuilder()
-            .addBuilder(index, com.proto.MutationProtos.Mutation.getDefaultInstance());
+            .addBuilder(index, com.proto.MutationProtos.MultiMutation.getDefaultInstance());
       }
-      /** <code>repeated .com.proto.Mutation mutation = 1;</code> */
-      public java.util.List<com.proto.MutationProtos.Mutation.Builder> getMutationBuilderList() {
+      /** <code>repeated .com.proto.MultiMutation mutation = 1;</code> */
+      public java.util.List<com.proto.MutationProtos.MultiMutation.Builder>
+          getMutationBuilderList() {
         return getMutationFieldBuilder().getBuilderList();
       }
 
       private com.google.protobuf.RepeatedFieldBuilderV3<
-              com.proto.MutationProtos.Mutation,
-              com.proto.MutationProtos.Mutation.Builder,
-              com.proto.MutationProtos.MutationOrBuilder>
+              com.proto.MutationProtos.MultiMutation,
+              com.proto.MutationProtos.MultiMutation.Builder,
+              com.proto.MutationProtos.MultiMutationOrBuilder>
           getMutationFieldBuilder() {
         if (mutationBuilder_ == null) {
           mutationBuilder_ =
               new com.google.protobuf.RepeatedFieldBuilderV3<
-                  com.proto.MutationProtos.Mutation,
-                  com.proto.MutationProtos.Mutation.Builder,
-                  com.proto.MutationProtos.MutationOrBuilder>(
+                  com.proto.MutationProtos.MultiMutation,
+                  com.proto.MutationProtos.MultiMutation.Builder,
+                  com.proto.MutationProtos.MultiMutationOrBuilder>(
                   mutation_,
                   ((bitField0_ & 0x00000001) == 0x00000001),
                   getParentForChildren(),
@@ -3139,6 +4103,10 @@ public final class MutationProtos {
   private static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_com_proto_Mutation_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
+      internal_static_com_proto_MultiMutation_descriptor;
+  private static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_com_proto_MultiMutation_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
       internal_static_com_proto_MutationList_descriptor;
   private static final com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_com_proto_MutationList_fieldAccessorTable;
@@ -3151,19 +4119,33 @@ public final class MutationProtos {
 
   static {
     java.lang.String[] descriptorData = {
-      "\n\016mutation.proto\022\tcom.proto\"\206\001\n\rTokenMut"
-          + "ation\022+\n\004type\030\001 \001(\0162\035.com.proto.TokenMut"
-          + "ation.Type\022\022\n\ntoken_name\030\002 \003(\t\"4\n\004Type\022\013"
-          + "\n\007UNKNOWN\020\000\022\r\n\tADD_TOKEN\020\001\022\020\n\014DELETE_TOK"
-          + "EN\020\002\"\375\001\n\010Mutation\022&\n\004type\030\001 \001(\0162\030.com.pr"
-          + "oto.Mutation.Type\022\022\n\nstart_node\030\002 \001(\t\022\020\n"
-          + "\010end_node\030\003 \001(\t\022.\n\014token_change\030\004 \001(\0132\030."
-          + "com.proto.TokenMutation\022\016\n\006reason\030\005 \001(\t\""
-          + "c\n\004Type\022\013\n\007UNKNOWN\020\000\022\014\n\010ADD_NODE\020\001\022\014\n\010AD"
-          + "D_EDGE\020\002\022\017\n\013DELETE_NODE\020\003\022\017\n\013DELETE_EDGE"
-          + "\020\004\022\020\n\014CHANGE_TOKEN\020\005\"5\n\014MutationList\022%\n\010"
-          + "mutation\030\001 \003(\0132\023.com.proto.MutationB\033\n\tc"
-          + "om.protoB\016MutationProtosb\006proto3"
+      "\n"
+          + "\016mutation.proto\022\tcom.proto\"\206\001\n\r"
+          + "TokenMutation\022+\n"
+          + "\004type\030\001 \001(\0162\035.com.proto.TokenMutation.Type\022\022\n\n"
+          + "token_name\030\002 \003(\t\"4\n"
+          + "\004Type\022\013\n"
+          + "\007UNKNOWN\020\000\022\r\n"
+          + "\tADD_TOKEN\020\001\022\020\n"
+          + "\014DELETE_TOKEN\020\002\"\355\001\n"
+          + "\010Mutation\022&\n"
+          + "\004type\030\001 \001(\0162\030.com.proto.Mutation.Type\022\022\n\n"
+          + "start_node\030\002 \001(\t\022\020\n"
+          + "\010end_node\030\003 \001(\t\022.\n"
+          + "\014token_change\030\004 \001(\0132\030.com.proto.TokenMutation\"c\n"
+          + "\004Type\022\013\n"
+          + "\007UNKNOWN\020\000\022\014\n"
+          + "\010ADD_NODE\020\001\022\014\n"
+          + "\010ADD_EDGE\020\002\022\017\n"
+          + "\013DELETE_NODE\020\003\022\017\n"
+          + "\013DELETE_EDGE\020\004\022\020\n"
+          + "\014CHANGE_TOKEN\020\005\"F\n\r"
+          + "MultiMutation\022%\n"
+          + "\010mutation\030\001 \003(\0132\023.com.proto.Mutation\022\016\n"
+          + "\006reason\030\002 \001(\t\":\n"
+          + "\014MutationList\022*\n"
+          + "\010mutation\030\001 \003(\0132\030.com.proto.MultiMutationB\033\n"
+          + "\tcom.protoB\016MutationProtosb\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -3187,9 +4169,16 @@ public final class MutationProtos {
         new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
             internal_static_com_proto_Mutation_descriptor,
             new java.lang.String[] {
-              "Type", "StartNode", "EndNode", "TokenChange", "Reason",
+              "Type", "StartNode", "EndNode", "TokenChange",
             });
-    internal_static_com_proto_MutationList_descriptor = getDescriptor().getMessageTypes().get(2);
+    internal_static_com_proto_MultiMutation_descriptor = getDescriptor().getMessageTypes().get(2);
+    internal_static_com_proto_MultiMutation_fieldAccessorTable =
+        new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+            internal_static_com_proto_MultiMutation_descriptor,
+            new java.lang.String[] {
+              "Mutation", "Reason",
+            });
+    internal_static_com_proto_MutationList_descriptor = getDescriptor().getMessageTypes().get(3);
     internal_static_com_proto_MutationList_fieldAccessorTable =
         new com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
             internal_static_com_proto_MutationList_descriptor,
