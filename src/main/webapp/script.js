@@ -153,6 +153,7 @@ async function generateGraph() {
   const indexOfClosestSmallerNumber = getClosestIndices(mutationIndexList, currMutationNum).lower;
   
   currMutationIndex = ((indexOfNextLargerNumber + indexOfClosestSmallerNumber) / 2);
+  console.log(currMutationIndex);
 
   // Add node to array of cytoscape nodes
   nodes.forEach(node =>
