@@ -75,11 +75,11 @@ public final class Utility {
       List<Integer> mutationIndices,
       MultiMutation mutDiff,
       int maxNumber,
-      List<String> queried) {
+      HashSet<String> queried) {
     Type typeOfNode = new TypeToken<Set<GraphNode>>() {}.getType();
     Type typeOfEdge = new TypeToken<Set<EndpointPair<GraphNode>>>() {}.getType();
     Type typeOfIndices = new TypeToken<List<Integer>>() {}.getType();
-    Type typeOfQueried = new TypeToken<List<String>>() {}.getType();
+    Type typeOfQueried = new TypeToken<Set<String>>() {}.getType();
     Gson gson = new Gson();
     String nodeJson = gson.toJson(graph.nodes(), typeOfNode);
     String edgeJson = gson.toJson(graph.edges(), typeOfEdge);
@@ -417,5 +417,5 @@ public final class Utility {
     ArrayList<Integer> result = new ArrayList<>(relevantIndices);
     Collections.sort(result);
     return result;
-  }
+  } 
 }
