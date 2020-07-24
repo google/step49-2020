@@ -417,5 +417,5 @@ public final class Utility {
     ArrayList<Integer> result = new ArrayList<>(relevantIndices);
     Collections.sort(result);
     return result;
-  } 
+  }
 }

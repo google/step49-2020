@@ -17,7 +17,6 @@ package com.google.sps;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.io.InputStreamReader;
 
 import java.util.List;
@@ -230,7 +229,7 @@ public class DataServlet extends HttpServlet {
 
     // If we are not filtering the graph or limiting its depth, show all mutations of all nodes
     if (nodeNameParam.length() == 0 && truncatedGraph.equals(currDataGraph.graph())) {
-      
+
       filteredMutationIndices = defaultIndices;
     } else {
       // Get the names of all the displayed nodes and find all indices of mutations
