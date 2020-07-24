@@ -393,7 +393,7 @@ public class ReachableNodesTest {
 
   /** Only empty string returns a graph with max depth of radius from roots */
   @Test
-  public void onlyEmptyString() {
+  public void onlyEmptyStringWholeGraph() {
     nodeA.addChildren("B");
     nodeA.addChildren("C");
 
@@ -470,5 +470,32 @@ public class ReachableNodesTest {
     Assert.assertFalse(graphNodes.contains(gNodeC));
 
     Assert.assertEquals(1, graphEdges.size());
+  }
+
+  /** Only empty string returns a graph with max depth of radius from roots, limited radius */
+  @Test
+  public void onlyEmptyStringLimited() {
+    nodeA.addChildren("B");
+    nodeA.addChildren("C");
+
+    HashMap<String, Node> protoNodesMap = new HashMap<>();
+    protoNodesMap.put("A", nodeA.build());
+    protoNodesMap.put("B", nodeB.build());
+    protoNodesMap.put("C", nodeC.build());
+
+    DataGraph dataGraph = DataGraph.create();
+    dataGraph.graphFromProtoNodes(protoNodesMap);
+    List<String> lst = new ArrayList<>(Arrays.asList(""));
+
+    MutableGraph<GraphNode> truncatedGraph = dataGraph.getReachableNodes(lst, 0);
+    Set<GraphNode> graphNodes = truncatedGraph.nodes();
+    Set<EndpointPair<GraphNode>> graphEdges = truncatedGraph.edges();
+
+    Assert.assertEquals(1, graphNodes.size());
+    Assert.assertTrue(graphNodes.contains(gNodeA));
+    Assert.assertFalse(graphNodes.contains(gNodeB));
+    Assert.assertFalse(graphNodes.contains(gNodeC));
+
+    Assert.assertEquals(0, graphEdges.size());
   }
 }

@@ -98,7 +98,7 @@ abstract class DataGraph {
   /**
    * Getter for the token map
    *
-   * @return the name of the token and a set of names of nodes with the token
+   * @return A map from token name to names of nodes with the token
    */
   abstract HashMap<String, Set<String>> tokenMap();
 
@@ -404,9 +404,8 @@ abstract class DataGraph {
   }
 
   /**
-   * Returns a MutableGraph with nodes that are at most a certain radius from a given nodes. If the
-   * radius is less than 0 or the node specified isn't present, return an empty graph. Since
-   * maxDepth was implemented as DFS, we use BFS for *diversity*.
+   * Returns a MutableGraph from given nodes that are at most a certain radius from a given nodes.
+   * If the radius is less than 0 or the nodes specified aren't present, return an empty graph.
    *
    * <p>The names passed reflect what could possibly happen from the user input. If no nodeName is
    * searched, there will be an empty string. If that's the case and it's the only node in names, we
