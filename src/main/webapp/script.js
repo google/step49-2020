@@ -26,12 +26,9 @@ import tippy, { sticky } from 'tippy.js';
 import 'tippy.js/dist/tippy.css';
 import 'tippy.js/dist/backdrop.css';
 import 'tippy.js/animations/shift-away.css';
-<<<<<<< HEAD
+
 import { colorScheme, opacityScheme, borderScheme } from './constants.js';
-=======
-import { colorScheme, opacityScheme } from './constants.js';
 import "./style.scss";
->>>>>>> highToggle
 
 export {
   initializeNumMutations, setMutationIndexList, setCurrMutationNum, setCurrMutationIndex,
@@ -150,7 +147,7 @@ async function generateGraph() {
   // Graph nodes and edges received from server
   const nodes = JSON.parse(jsonResponse.nodes);
   const edges = JSON.parse(jsonResponse.edges);
-  totalNum = jsonResponse.totalMutNumber;
+  // totalNum = jsonResponse.totalMutNumber;
   const queriedNodes = JSON.parse(jsonResponse.queriedNodes);
 
   // Set all logs to be black
