@@ -197,9 +197,9 @@ public class DataServlet extends HttpServlet {
           "The searched node exists in this graph! However, it is not mutated in this graph."
               + " Please click next or previous if you wish to see where it was mutated!");
     }
-    // There is a diff between the previously-displayed graph and the current graph
-    // but no mutations in it only mutate on-screen nodes
-    if (diff != null && diff.getMutationList().size() == 0) {
+    // There is a diff between the previously-displayed graph and the current graph but
+    // no mutations in it only mutate on-screen nodes
+    if (filteredMutationIndices.indexOf(mutationNumber) != -1 && diff != null && diff.getMutationList().size() == 0) {
       response.setHeader("serverMessage",
           "The desired set of nodes is mutated in this graph but your other parameters (for"
               + " eg.depth), limit the display of the mutations. Please try increasing your radius"

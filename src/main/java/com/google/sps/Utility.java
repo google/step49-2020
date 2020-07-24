@@ -42,8 +42,8 @@ public final class Utility {
   }
 
   /**
-   * Converts a proto node object into a graph node object that does not store the
-   * names of the child nodes but may store additional information.
+   * Converts a proto node object into a graph node object that does not store the names of the
+   * child nodes but may store additional information.
    *
    * @param thisNode the input data Node object
    * @return a useful node used to construct the Guava Graph
@@ -56,8 +56,8 @@ public final class Utility {
   }
 
   /**
-   * Converts a Guava graph into a String encoding of a JSON Object. The object
-   * contains nodes and edges of the graph.
+   * Converts a Guava graph into a String encoding of a JSON Object. The object contains nodes and
+   * edges of the graph.
    *
    * @param graph the graph to convert into a JSON String
    * @param mutationIndices the indices in the entire mutation list that mutate the relevant nodes
@@ -68,43 +68,51 @@ public final class Utility {
    *     indices at which relevant nodes are mutated and the change made to relevant nodes to obtain
    *     the new graph
    */
-  public static String graphToJson(MutableGraph<GraphNode> graph, List<Integer> mutationIndices, MultiMutation mutDiff,
+  public static String graphToJson(
+      MutableGraph<GraphNode> graph,
+      List<Integer> mutationIndices,
+      MultiMutation mutDiff,
       int maxNumber) {
-    Type typeOfNode = new TypeToken<Set<GraphNode>>() {
-    }.getType();
-    Type typeOfEdge = new TypeToken<Set<EndpointPair<GraphNode>>>() {
-    }.getType();
-    Type typeOfIndices = new TypeToken<List<Integer>>() {
-    }.getType();
+    Type typeOfNode = new TypeToken<Set<GraphNode>>() {}.getType();
+    Type typeOfEdge = new TypeToken<Set<EndpointPair<GraphNode>>>() {}.getType();
+    Type typeOfIndices = new TypeToken<List<Integer>>() {}.getType();
     Gson gson = new Gson();
     String nodeJson = gson.toJson(graph.nodes(), typeOfNode);
     String edgeJson = gson.toJson(graph.edges(), typeOfEdge);
-    String mutDiffJson = (mutDiff == null || !mutDiff.isInitialized()) ? "" : gson.toJson(mutDiff.getMutationList());
+    String mutDiffJson =
+        (mutDiff == null || !mutDiff.isInitialized()) ? "" : gson.toJson(mutDiff.getMutationList());
     String reason = (mutDiff == null || !mutDiff.isInitialized()) ? "" : mutDiff.getReason();
     String mutationIndicesJson = gson.toJson(mutationIndices, typeOfIndices);
-    String resultJson = new JSONObject().put("nodes", nodeJson).put("edges", edgeJson).put("mutationDiff", mutDiffJson)
-        .put("reason", reason).put("mutationIndices", mutationIndicesJson).put("totalMutNumber", maxNumber).toString();
+    String resultJson =
+        new JSONObject()
+            .put("nodes", nodeJson)
+            .put("edges", edgeJson)
+            .put("mutationDiff", mutDiffJson)
+            .put("reason", reason)
+            .put("mutationIndices", mutationIndicesJson)
+            .put("totalMutNumber", maxNumber)
+            .toString();
     return resultJson;
   }
 
   /**
-   * Returns the graph at the given mutation number null if the requested number
-   * is less than -1. If the user requests a number greater than the total number
-   * of mutations, we return the final graph.
+   * Returns the graph at the given mutation number null if the requested number is less than -1. If
+   * the user requests a number greater than the total number of mutations, we return the final
+   * graph.
    *
-   * @param original     the original graph
-   * @param curr         the current (most recently-requested) graph (requires
-   *                     that original != curr)
-   * @param mutationNum  number of mutations to apply
+   * @param original the original graph
+   * @param curr the current (most recently-requested) graph (requires that original != curr)
+   * @param mutationNum number of mutations to apply
    * @param multiMutList multi-mutation list
-   * @throws IllegalArgumentException if original and current graph refer to the
-   *                                  same object
-   * @return the resulting data graph, null if the mutation number was too small,
-   *         and the final graph if the mutation number was too big
+   * @throws IllegalArgumentException if original and current graph refer to the same object
+   * @return the resulting data graph, null if the mutation number was too small, and the final
+   *     graph if the mutation number was too big
    */
-  public static DataGraph getGraphAtMutationNumber(DataGraph original, DataGraph curr, int mutationNum,
-      List<MultiMutation> multiMutList) throws IllegalArgumentException {
-    Preconditions.checkArgument(original != curr, "The current graph and the original graph refer to the same object");
+  public static DataGraph getGraphAtMutationNumber(
+      DataGraph original, DataGraph curr, int mutationNum, List<MultiMutation> multiMutList)
+      throws IllegalArgumentException {
+    Preconditions.checkArgument(
+        original != curr, "The current graph and the original graph refer to the same object");
 
     if (mutationNum < -1) {
       return null;
@@ -138,22 +146,19 @@ public final class Utility {
           }
         }
       }
-      return DataGraph.create(originalCopy.graph(), originalCopy.graphNodesMap(), originalCopy.roots(), mutationNum);
+      return DataGraph.create(
+          originalCopy.graph(), originalCopy.graphNodesMap(), originalCopy.roots(), mutationNum);
     }
   }
 
   /**
-   * Returns a multi-mutation (list of mutations) that need to be applied to get
-   * from the graph at currIndex to the graph at nextIndex as long as nextIndex =
-   * currIndex + 1
+   * Returns a multi-mutation (list of mutations) that need to be applied to get from the graph at
+   * currIndex to the graph at nextIndex as long as nextIndex = currIndex + 1
    *
-   * @param multiMutList the list of multi-mutations that are to be applied to the
-   *                     initial graph
-   * @param index        the index in the above list at which the multimutation to
-   *                     apply is
-   * @return a multimutation with all the changes to apply to the current graph to
-   *         get the next graph or null if the provided indices are out of bounds
-   *         or non-consecutive
+   * @param multiMutList the list of multi-mutations that are to be applied to the initial graph
+   * @param index the index in the above list at which the multimutation to apply is
+   * @return a multimutation with all the changes to apply to the current graph to get the next
+   *     graph or null if the provided indices are out of bounds or non-consecutive
    */
   public static MultiMutation getMultiMutationAtIndex(List<MultiMutation> multiMutList, int index) {
     if (index < 0 || index >= multiMutList.size()) {
@@ -163,14 +168,14 @@ public final class Utility {
   }
 
   /**
-   * Returns a list of the indices of the mutations in origList that mutate
-   * nodeName
+   * Returns a list of the indices of the mutations in origList that mutate nodeName
    *
    * @param nodeName the name of the node to filter
    * @param origList the original list of mutations
    * @return a list of indices that are relevant to the node
    */
-  public static ArrayList<Integer> getMutationIndicesOfNode(String nodeName, List<MultiMutation> origList) {
+  public static ArrayList<Integer> getMutationIndicesOfNode(
+      String nodeName, List<MultiMutation> origList) {
     ArrayList<Integer> lst = new ArrayList<>();
     // Shouldn't happen, but in case the nodeName is null an empty list is returned
     if (nodeName == null) {
@@ -192,8 +197,8 @@ public final class Utility {
   }
 
   /**
-   * Converts a Guava graph containing nodes of type GraphNode into a set of names
-   * of nodes contained in the graph
+   * Converts a Guava graph containing nodes of type GraphNode into a set of names of nodes
+   * contained in the graph
    *
    * @param graph the graph to return node names for
    * @return a set of names of nodes in the graph
@@ -203,14 +208,14 @@ public final class Utility {
   }
 
   /**
-   * Filters the mutations contained in this multimutation to be only the ones
-   * that affect the nodes in the provided set
+   * Filters the mutations contained in this multimutation to be only the ones that affect the nodes
+   * in the provided set
    *
-   * @param mm        the multimutation to filter
+   * @param mm the multimutation to filter
    * @param nodeNames the list of node names to return perninent mutations for
-   * @return a multimutation containing only those mutations in mm affecting nodes
-   *         in nodeNames, null if the multimutation is null and the multimutation
-   *         itself if there is no name to filter by
+   * @return a multimutation containing only those mutations in mm affecting nodes in nodeNames,
+   *     null if the multimutation is null and the multimutation itself if there is no name to
+   *     filter by
    */
   public static MultiMutation filterMultiMutationByNodes(MultiMutation mm, Set<String> nodeNames) {
     if (mm == null || nodeNames.size() == 0) {
@@ -225,27 +230,32 @@ public final class Utility {
         filteredMutationList.add(mut);
       }
     }
-    return MultiMutation.newBuilder().addAllMutation(filteredMutationList).setReason(mm.getReason()).build();
+    return MultiMutation.newBuilder()
+        .addAllMutation(filteredMutationList)
+        .setReason(mm.getReason())
+        .build();
   }
 
   /**
-   * Given a list of node names, a map from node name to mutation indices of that node and
-   * a list of multimutations applied to all nodes, returns a list of indices of multimutations
-   * in which any of the nodes in nodeNames get mutated (returned in sorted order)
+   * Given a list of node names, a map from node name to mutation indices of that node and a list of
+   * multimutations applied to all nodes, returns a list of indices of multimutations in which any
+   * of the nodes in nodeNames get mutated (returned in sorted order)
+   *
    * @param nodeNames the names of nodes to restrict the returned list of mutations to
    * @param mutationIndicesMap a map from node name -> indices of mutations that mutate it
    * @param multiMutList a list of multimutations which mutationIndices map indexes into
-   * @return a list of indices in multiMutList at which any of the nodes in nodeNames 
-   * are mutated
-   * Might modify mutationIndices map by caching information about relevant mutation
-   * indices of some nodes 
+   * @return a list of indices in multiMutList at which any of the nodes in nodeNames are mutated
+   *     Might modify mutationIndices map by caching information about relevant mutation indices of
+   *     some nodes
    */
-  public static List<Integer> findRelevantMutations(Set<String> nodeNames,
-      Map<String, List<Integer>> mutationIndicesMap, List<MultiMutation> multiMutList) {
+  public static List<Integer> findRelevantMutations(
+      Set<String> nodeNames,
+      Map<String, List<Integer>> mutationIndicesMap,
+      List<MultiMutation> multiMutList) {
     Set<Integer> relevantIndices = new HashSet<>();
     for (String nodeName : nodeNames) {
       // No node name should be an empty string
-      if(nodeName.equals("")) {
+      if (nodeName.equals("")) {
         continue;
       }
       // Find or compute and cache the relevant mutation indices for each node
