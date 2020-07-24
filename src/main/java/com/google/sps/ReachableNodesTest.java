@@ -365,7 +365,7 @@ public class ReachableNodesTest {
 
   /** empty names gives a graph from the roots */
   @Test
-  public void emptyNodesGivesEntireGraph() { 
+  public void emptyNodesGivesEntireGraph() {
     nodeA.addChildren("B");
     nodeA.addChildren("C");
 
