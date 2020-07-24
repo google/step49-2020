@@ -309,34 +309,6 @@ public class ReachableNodesTest {
     Assert.assertEquals(6, graph.edges().size());
   }
 
-  /** An empty string as a node that doesn't exist in the graph should be ignored */
-  @Test
-  public void emptyStringIgnored() {
-    nodeA.addChildren("B");
-    nodeA.addChildren("C");
-
-    HashMap<String, Node> protoNodesMap = new HashMap<>();
-    protoNodesMap.put("A", nodeA.build());
-    protoNodesMap.put("B", nodeB.build());
-    protoNodesMap.put("C", nodeC.build());
-
-    DataGraph dataGraph = DataGraph.create();
-    dataGraph.graphFromProtoNodes(protoNodesMap);
-    List<String> lst = new ArrayList<>(Arrays.asList("A"));
-    lst.add("");
-
-    MutableGraph<GraphNode> truncatedGraph = dataGraph.getReachableNodes(lst, 0);
-    Set<GraphNode> graphNodes = truncatedGraph.nodes();
-    Set<EndpointPair<GraphNode>> graphEdges = truncatedGraph.edges();
-
-    Assert.assertEquals(1, graphNodes.size());
-    Assert.assertTrue(graphNodes.contains(gNodeA));
-    Assert.assertFalse(graphNodes.contains(gNodeB));
-    Assert.assertFalse(graphNodes.contains(gNodeC));
-
-    Assert.assertEquals(0, graphEdges.size());
-  }
-
   /** Multiple nodes that are valid are all in the graph, edges preserved */
   @Test
   public void multipleValidNodesAccountedFor() {
@@ -391,9 +363,9 @@ public class ReachableNodesTest {
     Assert.assertEquals(1, graphEdges.size());
   }
 
-  /** Only empty string returns a graph with max depth of radius from roots */
+  /** empty names gives a graph from the roots */
   @Test
-  public void onlyEmptyStringWholeGraph() {
+  public void emptyNodesGivesEntireGraph() { 
     nodeA.addChildren("B");
     nodeA.addChildren("C");
 
@@ -404,7 +376,7 @@ public class ReachableNodesTest {
 
     DataGraph dataGraph = DataGraph.create();
     dataGraph.graphFromProtoNodes(protoNodesMap);
-    List<String> lst = new ArrayList<>(Arrays.asList(""));
+    List<String> lst = new ArrayList<>();
 
     MutableGraph<GraphNode> truncatedGraph = dataGraph.getReachableNodes(lst, 2);
     Set<GraphNode> graphNodes = truncatedGraph.nodes();
@@ -418,9 +390,9 @@ public class ReachableNodesTest {
     Assert.assertEquals(2, graphEdges.size());
   }
 
-  /** Empty String with invalid nodes should come back as an empty graph */
+  /** All nodes searched for don't exist in the graph */
   @Test
-  public void emptyWithInvalidNodes() {
+  public void nonExistentNodesOnly() {
     nodeA.addChildren("B");
     nodeA.addChildren("C");
 
@@ -431,7 +403,7 @@ public class ReachableNodesTest {
 
     DataGraph dataGraph = DataGraph.create();
     dataGraph.graphFromProtoNodes(protoNodesMap);
-    List<String> lst = new ArrayList<>(Arrays.asList("", "D"));
+    List<String> lst = new ArrayList<>(Arrays.asList("X", "D"));
 
     MutableGraph<GraphNode> truncatedGraph = dataGraph.getReachableNodes(lst, 2);
     Set<GraphNode> graphNodes = truncatedGraph.nodes();
@@ -442,9 +414,9 @@ public class ReachableNodesTest {
     Assert.assertEquals(0, graphEdges.size());
   }
 
-  /** Empty String with invalid nodes should come back as an empty graph */
+  /** Only consider nodes found in the graph */
   @Test
-  public void emtpyWithValidNodes() {
+  public void invalidWithValidNodes() {
     nodeA.addChildren("B");
     nodeA.addChildren("C");
 
@@ -455,7 +427,7 @@ public class ReachableNodesTest {
 
     DataGraph dataGraph = DataGraph.create();
     dataGraph.graphFromProtoNodes(protoNodesMap);
-    List<String> lst = new ArrayList<>(Arrays.asList("", "B"));
+    List<String> lst = new ArrayList<>(Arrays.asList("X", "B"));
 
     MutableGraph<GraphNode> truncatedGraph = dataGraph.getReachableNodes(lst, 1);
     Set<GraphNode> graphNodes = truncatedGraph.nodes();
@@ -469,9 +441,9 @@ public class ReachableNodesTest {
     Assert.assertEquals(1, graphEdges.size());
   }
 
-  /** Only empty string returns a graph with max depth of radius from roots, limited radius */
+  /** When the node searched doesn't exist, empty graph is returned */
   @Test
-  public void onlyEmptyStringLimited() {
+  public void allNodesSearchedDontExist() {
     nodeA.addChildren("B");
     nodeA.addChildren("C");
 
@@ -482,16 +454,13 @@ public class ReachableNodesTest {
 
     DataGraph dataGraph = DataGraph.create();
     dataGraph.graphFromProtoNodes(protoNodesMap);
-    List<String> lst = new ArrayList<>(Arrays.asList(""));
+    List<String> lst = new ArrayList<>(Arrays.asList("X"));
 
     MutableGraph<GraphNode> truncatedGraph = dataGraph.getReachableNodes(lst, 0);
     Set<GraphNode> graphNodes = truncatedGraph.nodes();
     Set<EndpointPair<GraphNode>> graphEdges = truncatedGraph.edges();
 
-    Assert.assertEquals(1, graphNodes.size());
-    Assert.assertTrue(graphNodes.contains(gNodeA));
-    Assert.assertFalse(graphNodes.contains(gNodeB));
-    Assert.assertFalse(graphNodes.contains(gNodeC));
+    Assert.assertEquals(0, graphNodes.size());
 
     Assert.assertEquals(0, graphEdges.size());
   }

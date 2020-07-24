@@ -173,7 +173,10 @@ public class DataServlet extends HttpServlet {
       return;
     }
 
-    List<String> queried = new ArrayList<>(Arrays.asList(nodeNameParam));
+    List<String> queried = new ArrayList<>();
+    if (nodeNameParam.length() > 0 ) {
+      queried.add(nodeNameParam);
+    }
     // If the token is contained, then get the nodes associated with the token and
     // add them to the queried nodes
     if (currDataGraph.tokenMap().containsKey(tokenParam)) {
