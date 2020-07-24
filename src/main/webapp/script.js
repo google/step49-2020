@@ -118,6 +118,7 @@ async function generateGraph() {
   const nodes = JSON.parse(jsonResponse.nodes);
   const edges = JSON.parse(jsonResponse.edges);
   totalNum = jsonResponse.totalMutNumber;
+  const queriedNodes = JSON.parse(jsonResponse.queriedNodes);
 
   // Set all logs to be black
   const allLogs = document.querySelectorAll('.log-msg');
@@ -172,7 +173,7 @@ async function generateGraph() {
       }
     });
   });
-  getGraphDisplay(graphNodes, graphEdges, mutList, reason);
+  getGraphDisplay(graphNodes, graphEdges, mutList, reason, queriedNodes);
   updateButtons();
   return;
 }
@@ -245,7 +246,7 @@ function displayError(errorMsg) {
  * @param mutList a list of mutations
  * @param reason for mutation, used for highlighting the difference
  */
-function getGraphDisplay(graphNodes, graphEdges, mutList, reason) {
+function getGraphDisplay(graphNodes, graphEdges, mutList, reason, queriedNodes) {
   const cy = cytoscape({
     container: document.getElementById("graph"),
     elements: {
@@ -295,14 +296,13 @@ function getGraphDisplay(graphNodes, graphEdges, mutList, reason) {
     node.tip.show();
   });
 
-  // If a node is searched, color it (it's fuchsia because I thought it was pretty, but definitely open to change! )
-  const nodeFilter = document.getElementById("node-name-filter");
-  if (nodeFilter && nodeFilter.value) {
-    const target = findNodeInGraph(cy, nodeFilter.value);
-    if (target) {
-      target.style('background-color', colorScheme["filteredNodeColor"]);
-    }
+  // Color the queried nodes (it's fuchsia because I thought it was pretty, but definitely open to change! )
+  if(queriedNodes) {
+    queriedNodes.forEach(nodeName => {
+      cy.$(nodeName).style('background-color', colorScheme["filteredNodeColor"]);
+    })
   }
+  // cy.$id(startNode)
 
   const searchElement = document.getElementById('search');
   document.getElementById('search-button').onclick = function () {
