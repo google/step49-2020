@@ -58,11 +58,11 @@ public class NodeMutationFilterTest {
     multiMutList.add(removeABM);
     multiMutList.add(removeCM);
 
-    List<Integer> truncatedList = Utility.getMutationIndicesOfNode("A", multiMutList);
+    ArrayList<Integer> truncatedList = Utility.getMutationIndicesOfNode("A", multiMutList);
 
     Assert.assertEquals(2, truncatedList.size());
-    Assert.assertTrue(truncatedList.contains(0));
-    Assert.assertTrue(truncatedList.contains(1));
+    Assert.assertTrue(truncatedList.get(0) == 0);
+    Assert.assertTrue(truncatedList.get(1) == 1);
   }
 
   /** Test that a null query returns an empty list */

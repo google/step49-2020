@@ -170,6 +170,10 @@ public class DataServlet extends HttpServlet {
     // otherwise all possible indices
     Set<Integer> relevantMutationIndices = new HashSet<>();
 
+    if (nodeNameParam.length() > 0) {
+      queried.add(nodeNameParam);
+    }
+
     // Possible combinations of nodeName and token:
     // 1. Both empty -> can just look at nodeNameParam
     // 2. nodeName nonempty, token empty -> just look at nodeNameParam
@@ -188,20 +192,25 @@ public class DataServlet extends HttpServlet {
     // If the token name parameter is nonempty, we only consider the node name if it
     // is nonempty
     if (tokenParam.length() == 0 || nodeNameParam.length() != 0) {
-      queried.add(nodeNameParam);
       relevantMutationIndices.addAll(mutationIndicesMap.get(nodeNameParam));
     }
     relevantMutationIndices.addAll(Utility.getMutationIndicesOfToken(tokenParam, mutList));
 
     // Process the tokens here - if tokens are empty it won't be in the map, this
     // won't happen
-    // If the token is contained, then get the nodes associated with the token and
-    // add them to the queried nodes
-
-    currDataGraph =
-        Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
+    // Get the graph at the requested mutation number and truncate it
+    try {
+      currDataGraph =
+          Utility.getGraphAtMutationNumber(
+              originalDataGraph, currDataGraph, mutationNumber, mutList);
+    } catch (IllegalArgumentException e) {
+      response.setHeader("serverError", e.getMessage());
+      return;
+    }
 
     // If any node in this graph contains the token, watch it for mutations
+    // If the token is contained, then get the nodes associated with the token and
+    // add them to the queried nodes
     if (currDataGraph.tokenMap().containsKey(tokenParam)) {
       queried.addAll(currDataGraph.tokenMap().get(tokenParam));
       for (String s : currDataGraph.tokenMap().get(tokenParam)) {
@@ -226,18 +235,23 @@ public class DataServlet extends HttpServlet {
           "serverError", "The searched node does not exist anywhere in this graph or in mutations");
       return;
     }
-    // The searched node is not in the graph but is mutated at some past/future point
+    // The searched node is not in the graph but is mutated at some past/future
+    // point
     if (truncatedGraph.nodes().size() == 0 && filteredMutationIndices.size() != 0) {
       response.setHeader(
           "serverMessage",
-          "The searched node does not exist in this graph, but is mutated at some point");
+          "The searched node does not exist in this graph, so nothing is shown. However, it is"
+              + " mutated at some other step. Please click next or previous to navigate to a graph"
+              + " where this node exists.");
     }
     // The searched node exists but is not mutated in the current graph
     if (truncatedGraph.nodes().size() != 0
         && mutationNumber != -1
         && filteredMutationIndices.indexOf(mutationNumber) == -1) {
       response.setHeader(
-          "serverMessage", "The searched node exists, but is not mutated in this graph");
+          "serverMessage",
+          "The searched node exists in this graph! However, it is not mutated in this graph."
+              + " Please click next or previous if you wish to see where it was mutated!");
     }
 
     // We filter the multimutation if there was a node searched
@@ -246,7 +260,9 @@ public class DataServlet extends HttpServlet {
       truncatedGraphNodeNames.add(nodeNameParam);
       diff = Utility.filterMultiMutationByNodes(diff, truncatedGraphNodeNames);
     }
-    graphJson = Utility.graphToJson(truncatedGraph, filteredMutationIndices, diff);
+
+    graphJson =
+        Utility.graphToJson(truncatedGraph, filteredMutationIndices, diff, mutList.size(), queried);
     response.getWriter().println(graphJson);
   }
 
@@ -270,11 +286,9 @@ public class DataServlet extends HttpServlet {
   }
 
   /**
-   * Private function to intialize the mutation list. Returns a boolean to represent whether the
-   * InputStream was read successfully.
+   * Private function to intialize the mutation list.
    *
    * @param mutationInput InputStream to initialize variable over
-   * @return whether variables were initialized properly; true if successful and false otherwise
    * @throws IOException if something goes wrong during the reading
    */
   private void initializeMutationVariables(InputStream mutationInput) throws IOException {

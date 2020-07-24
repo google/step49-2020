@@ -469,4 +469,54 @@ public class MutationDiffTest {
     Assert.assertEquals(filteredMutList.get(1), removeAC);
     Assert.assertEquals(filteredMutList.get(2), removeC);
   }
+
+  /*
+   * Tests that a filter correctly removes irrelevant mutations from a
+   * multimutation that occur after, but keep mutations of the node before
+   * its deletiong
+   */
+  @Test
+  public void filterMultiMutDeletedNodePreviousKept() {
+    TokenMutation tokenMut =
+        TokenMutation.newBuilder()
+            .setType(TokenMutation.Type.ADD_TOKEN)
+            .addTokenName("1")
+            .addTokenName("2")
+            .addTokenName("3")
+            .build();
+
+    Mutation addTokenToB =
+        Mutation.newBuilder()
+            .setStartNode("B")
+            .setType(Mutation.Type.CHANGE_TOKEN)
+            .setTokenChange(tokenMut)
+            .build();
+
+    Mutation removeAB =
+        Mutation.newBuilder()
+            .setType(Mutation.Type.DELETE_EDGE)
+            .setStartNode("A")
+            .setEndNode("B")
+            .build();
+    Mutation removeB =
+        Mutation.newBuilder().setType(Mutation.Type.DELETE_NODE).setStartNode("B").build();
+    MultiMutation originalMultiMut =
+        MultiMutation.newBuilder()
+            .addMutation(addTokenToB)
+            .addMutation(removeAB)
+            .addMutation(removeB)
+            .setReason("adding token to A and deleting node B")
+            .build();
+
+    HashSet<String> nodeNames = new HashSet<>();
+    nodeNames.add("B");
+
+    MultiMutation filteredMultiMut =
+        Utility.filterMultiMutationByNodes(originalMultiMut, nodeNames);
+    Assert.assertNotNull(filteredMultiMut);
+
+    List<Mutation> filteredMutList = filteredMultiMut.getMutationList();
+    Assert.assertEquals(filteredMutList.size(), 2);
+    Assert.assertEquals(filteredMutList.get(0), addTokenToB);
+  }
 }

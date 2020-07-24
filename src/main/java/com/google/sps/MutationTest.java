@@ -606,7 +606,9 @@ public final class MutationTest {
 
     HashMap<String, Set<String>> tokenMapNew = dataGraph.tokenMap();
     Assert.assertTrue(tokenMapNew.containsKey("1"));
+    Assert.assertTrue(tokenMapNew.get("1").contains("A"));
     Assert.assertTrue(tokenMapNew.containsKey("3"));
+    Assert.assertTrue(tokenMapNew.get("3").contains("A"));
     Assert.assertFalse(tokenMapNew.containsKey("2"));
     Assert.assertFalse(tokenMapNew.containsKey("4"));
 

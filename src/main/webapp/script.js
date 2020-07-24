@@ -25,13 +25,13 @@ import tippy, { sticky } from 'tippy.js';
 import 'tippy.js/dist/tippy.css';
 import 'tippy.js/dist/backdrop.css';
 import 'tippy.js/animations/shift-away.css';
-import { colorScheme, opacityScheme } from './constants.js';
+import { colorScheme, opacityScheme, borderScheme } from './constants.js';
 
 export {
-  initializeNumMutations, setMutationIndexList, setCurrMutationNum, initializeTippy,
+  initializeNumMutations, setMutationIndexList, setCurrMutationNum, setCurrMutationIndex, initializeTippy,
   generateGraph, getUrl, navigateGraph, currMutationNum, currMutationIndex, numMutations,
   updateButtons, searchNode, highlightDiff, initializeReasonTooltip, getGraphDisplay,
-  getIndexOfClosestSmallerNumber, getIndexOfNextLargerNumber
+  getClosestIndices
 };
 
 cytoscape.use(popper); // register extension
@@ -55,6 +55,9 @@ let numMutations = 0;
 // (for ex, if a node was searched and the node was modified in the 1st, 4th, and 
 // 5th indices, this would be [1,4,5])
 let mutationIndexList = [];
+
+// Stores total number of mutations, for display
+let totalNum = 0;
 
 /**
  * Initializes the number of mutations
@@ -114,6 +117,14 @@ async function generateGraph() {
   // Graph nodes and edges received from server
   const nodes = JSON.parse(jsonResponse.nodes);
   const edges = JSON.parse(jsonResponse.edges);
+  totalNum = jsonResponse.totalMutNumber;
+  const queriedNodes = JSON.parse(jsonResponse.queriedNodes);
+
+  // Set all logs to be black
+  const allLogs = document.querySelectorAll('.log-msg');
+  for (let i = 0; i < allLogs.length; i++) {
+    allLogs[i].classList.remove('recent-log-text');
+  }
 
   const mutList = jsonResponse["mutationDiff"].length === 0 ? null : JSON.parse(jsonResponse["mutationDiff"]);
   const reason = jsonResponse["reason"];
@@ -138,8 +149,9 @@ async function generateGraph() {
   // Update the current mutation index to reflect the new position of currMutationNumber
   // in the updated mutationIndexList between the previous smaller and the next larger
   // element.
-  const indexOfNextLargerNumber = getIndexOfNextLargerNumber(mutationIndexList, currMutationNum);
-  const indexOfClosestSmallerNumber = getIndexOfClosestSmallerNumber(mutationIndexList, currMutationNum);
+  const indexOfNextLargerNumber = getClosestIndices(mutationIndexList, currMutationNum).higher;
+  const indexOfClosestSmallerNumber = getClosestIndices(mutationIndexList, currMutationNum).lower;
+  
   currMutationIndex = ((indexOfNextLargerNumber + indexOfClosestSmallerNumber) / 2);
 
   // Add node to array of cytoscape nodes
@@ -161,7 +173,7 @@ async function generateGraph() {
       }
     });
   });
-  getGraphDisplay(graphNodes, graphEdges, mutList, reason);
+  getGraphDisplay(graphNodes, graphEdges, mutList, reason, queriedNodes);
   updateButtons();
   return;
 }
@@ -203,8 +215,10 @@ function getUrl() {
 function addToLogs(msg) {
   const logsList = document.getElementById("log-list");
   const newMsg = document.createElement("li");
+  newMsg.classList.add("log-msg");
   newMsg.innerText = msg;
-  logsList.insertBefore(newMsg, logsList.firstChild);
+  logsList.appendChild(newMsg);
+  newMsg.classList.add("recent-log-text");
 }
 /**
  * Takes an error message and creates a text element on the page to display this message
@@ -231,8 +245,9 @@ function displayError(errorMsg) {
  * @param graphEdges a list of edges
  * @param mutList a list of mutations
  * @param reason for mutation, used for highlighting the difference
+ * @param queriedNodes a list of nodes that the user had searched for
  */
-function getGraphDisplay(graphNodes, graphEdges, mutList, reason) {
+function getGraphDisplay(graphNodes, graphEdges, mutList, reason, queriedNodes) {
   const cy = cytoscape({
     container: document.getElementById("graph"),
     elements: {
@@ -282,13 +297,12 @@ function getGraphDisplay(graphNodes, graphEdges, mutList, reason) {
     node.tip.show();
   });
 
-  // If a node is searched, color it (it's fuchsia because I thought it was pretty, but definitely open to change! )
-  const nodeFilter = document.getElementById("node-name-filter");
-  if (nodeFilter && nodeFilter.value) {
-    const target = findNodeInGraph(cy, nodeFilter.value);
-    if (target) {
-      target.style('background-color', colorScheme["filteredNodeColor"]);
-    }
+  // Color the queried nodes (it's fuchsia because I thought it was pretty, but definitely open to change! )
+  if(queriedNodes) {
+    queriedNodes.forEach(nodeName => {
+      cy.$(nodeName).style('background-color', colorScheme["filteredNodeColor"]);
+      cy.$(nodeName).style('border-width', borderScheme['queriedBorder']);
+    })
   }
 
   const searchElement = document.getElementById('search');
@@ -390,7 +404,7 @@ function highlightDiff(cy, mutList, reason = "") {
           modifiedObj.style('background-color', colorScheme["addedObjectColor"]);
           addedNodes = addedNodes.union(modifiedObj);
         } else {
-          addToLogs("No node called " + startNode + " in graph");
+          displayError("No node called " + startNode + " in graph");
         }
         break;
       case 2:
@@ -402,11 +416,11 @@ function highlightDiff(cy, mutList, reason = "") {
           modifiedObj.style('target-arrow-color', colorScheme["addedObjectColor"]);
           addedEdges = addedEdges.union(modifiedObj);
         } else if (!endNode) {
-          addToLogs(endNode + " not specified");
+          displayError(endNode + " not specified");
         } else if (cy.getElementById(startNode).length === 0) {
-          addToLogs("No node called " + startNode + " in graph");
+          displayError("No node called " + startNode + " in graph");
         } else {
-          addToLogs("No node called " + endNode + " in graph");
+          displayError("No node called " + endNode + " in graph");
         }
         break;
       case 3:
@@ -691,6 +705,8 @@ function getTooltipContent(node) {
  * When a next/previous button is clicked, modifies the mutation index of the
  * current graph to represent the new state. Then, the corresponding
  * graph is requested from the server.
+ * If currMutationIndex is decimal, next/prev would set it to the 
+ * next/previous integer index (either a floor or a ceiling)
  * @param amount the amount to change the currMutationIndex by. 
  * Either 1 (for next button) or -1 (for previous button)
  */
@@ -742,62 +758,44 @@ function updateButtons() {
     document.getElementById("nextbutton").disabled = false;
   }
   const numElement = document.getElementById("num-mutation-display");
-  numElement.innerText = `Graph ${currMutationNum + 1}`;
+  numElement.innerText = `Graph ${currMutationNum + 1} out of ${totalNum} total`;
 }
-
+ 
 /**
- * Get the index of the next largest element in an indiceList
+ * Get an object with the index of the element that's immediately smaller 
+ * and immediately greater than the element
  * @param indicesList a list of indices, assume it's sorted
- * @param element the element to find a higher value than
- * @return the index of the first element in indicesList larger than
+ * @param element the element to find the smaller value than
+ * @return an object with the properties 'lower' and 'higher';
+ * lower contains the index of the last element in indicesList smaller than
+ * element or -1 if element is smaller than all elements in indicesList
+ * higher contains the index of the first element in indicesList larger than
  * element or indicesList.length if element is larger than all elements
  * in indicesList
  */
-function getIndexOfNextLargerNumber(indicesList, element) {
-  let start = 0;
+function getClosestIndices(indicesList, element) {
+  let start = 0; 
   let end = indicesList.length - 1;
 
-  let index = -1;
+  let toReturn = {lower: -1, higher: -1};
+  let indexHigher = -1;
   while (start <= end) {
     let mid = Math.floor((start + end) / 2);
     // element is not less (greater or equal to) -> go to the right
     if (indicesList[mid] <= element) {
-      index = mid + 1;
+      indexHigher = mid + 1;
       start = mid + 1;
     }
-    // go to the left otherwise, set index to the mid
+    // go to the left otherwise, set indexHigher to the mid
     else {
-      index = mid;
+      indexHigher = mid;
       end = mid - 1;
     }
   }
-  return index;
+  toReturn['higher'] = indexHigher;
+  // if indexHigher is 0, then nothing is less (so lower is -1)
+  // otherwise check the previous element and either go back by 1 or 2
+  toReturn['lower'] = indexHigher === 0 ? -1 : (indicesList[indexHigher - 1] < element ? indexHigher - 1 : Math.max(indexHigher - 2, -1));
+  return toReturn;
 }
 
-/**
- * Get the index of the element that's immediately smaller than the element
- * @param indicesList a list of indices, assume it's sorted
- * @param element the element to find the smaller value than
- * @return the index of the last element in indicesList smaller than
- * element or -1 if element is smaller than all elements in indicesList
- */
-function getIndexOfClosestSmallerNumber(indicesList, element) {
-  let start = 0;
-  let end = indicesList.length - 1;
-
-  let index = -1;
-  while (start <= end) {
-    let mid = Math.floor((start + end) / 2);
-    // element is greater than mid -> set index to the mid and start to mid + 1
-    if (indicesList[mid] < element) {
-      index = mid;
-      start = mid + 1;
-    }
-    // element is less than or equal to
-    else {
-      index = mid - 1;
-      end = mid - 1;
-    }
-  }
-  return index;
-}
