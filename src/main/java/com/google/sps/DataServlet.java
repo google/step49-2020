@@ -17,7 +17,6 @@ package com.google.sps;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.io.InputStreamReader;
 
 import java.util.List;
@@ -174,7 +173,7 @@ public class DataServlet extends HttpServlet {
     }
 
     List<String> queried = new ArrayList<>();
-    if (nodeNameParam.length() > 0 ) {
+    if (nodeNameParam.length() > 0) {
       queried.add(nodeNameParam);
     }
     // If the token is contained, then get the nodes associated with the token and
