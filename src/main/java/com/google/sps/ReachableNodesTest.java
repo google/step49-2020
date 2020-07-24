@@ -438,9 +438,6 @@ public class ReachableNodesTest {
     Set<EndpointPair<GraphNode>> graphEdges = truncatedGraph.edges();
 
     Assert.assertEquals(0, graphNodes.size());
-    Assert.assertFalse(graphNodes.contains(gNodeA));
-    Assert.assertFalse(graphNodes.contains(gNodeB));
-    Assert.assertFalse(graphNodes.contains(gNodeC));
 
     Assert.assertEquals(0, graphEdges.size());
   }
