@@ -309,7 +309,7 @@ public class ReachableNodesTest {
     Assert.assertEquals(6, graph.edges().size());
   }
 
-  /** An empty string as a node (that doesn't exist in the graph should be ignored) */
+  /** An empty string as a node that doesn't exist in the graph should be ignored */
   @Test
   public void emptyStringIgnored() {
     nodeA.addChildren("B");

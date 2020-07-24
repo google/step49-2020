@@ -435,7 +435,7 @@ abstract class DataGraph {
     boolean noNodeNameSearched = false;
 
     for (String name : names) {
-      // add the nodes that exist, ignore the ones that don'e
+      // add the nodes that exist, ignore the ones that don't
       if (name.length() == 0) {
         noNodeNameSearched = true;
         continue;

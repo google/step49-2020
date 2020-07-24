@@ -162,10 +162,16 @@ public class DataServlet extends HttpServlet {
           nodeNameParam, Utility.getMutationIndicesOfNode(nodeNameParam, mutList));
     }
     filteredMutationIndices = mutationIndicesMap.get(nodeNameParam);
-
-    // Get the graph at the requested mutation number
-    currDataGraph =
-        Utility.getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
+    
+    // Get the graph at the requested mutation number and truncate it
+    try {
+      currDataGraph =
+          Utility.getGraphAtMutationNumber(
+              originalDataGraph, currDataGraph, mutationNumber, mutList);
+    } catch (IllegalArgumentException e) {
+      response.setHeader("serverError", e.getMessage());
+      return;
+    }
 
     List<String> queried = new ArrayList<>(Arrays.asList(nodeNameParam));
     // If the token is contained, then get the nodes associated with the token and
