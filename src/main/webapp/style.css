@@ -39,10 +39,14 @@ body {
   float: right;
 }
 
-#buttondiv, #buttontext {
+#buttondiv, #buttontext, #show-mutations, #show-mutation-text {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+#show-mutations {
+  margin: auto;
 }
 
 #graphdiv {

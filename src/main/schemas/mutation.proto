@@ -50,11 +50,17 @@ message Mutation {
    * change to the list of tokens of the node
    */
   TokenMutation token_change = 4;
+}
+
+message MultiMutation {
+  /** All the mutations that compose this multimutation */
+  repeated Mutation mutation = 1;
+
   
-  /** Reason the mutation happened */
-  string reason = 5;
+  /** Reason the multi-mutation happened */
+  string reason = 2;
 }
 
 message MutationList {
-  repeated Mutation mutation = 1;
+  repeated MultiMutation mutation = 1;
 }

@@ -26,7 +26,12 @@ import 'tippy.js/dist/tippy.css';
 import 'tippy.js/dist/backdrop.css';
 import 'tippy.js/animations/shift-away.css';
 
-export { initializeNumMutations, setCurrGraphNum, initializeTippy, generateGraph, getUrl, navigateGraph, currGraphNum, numMutations, updateButtons, searchAndHighlight, searchNode, searchToken };
+export {
+  searchNode, initializeNumMutations, setCurrGraphNum, initializeTippy,
+  generateGraph, getUrl, navigateGraph, currGraphNum, numMutations, updateButtons,
+  highlightDiff, initializeReasonTooltip, getGraphDisplay
+};
+
 
 cytoscape.use(popper); // register extension
 cytoscape.use(dagre); // register extension
@@ -37,6 +42,20 @@ let currGraphNum = 0;
 // Stores the number of mutations in the list this graph is applying
 // The user cannot click next to a graph beyond this point
 let numMutations = 0;
+// An object containing key-value pairs of various types of graph
+// objects and their custom colors
+const colorScheme = {
+  "unmodifiedNodeColor": "blue",
+  "addedObjectColor": "green",
+  "deletedObjectColor": "red",
+  "modifiedNodeColor": "yellow",
+  "unmodifiedEdgeColor": "grey",
+  "labelColor": "white"
+};
+// Sets the opacity constants for different types of objects in the graph
+const opacityScheme = {
+  "deletedObjectOpacity": 0.25
+};
 
 /**
  * Initializes the number of mutations
@@ -87,6 +106,8 @@ async function generateGraph() {
   const nodes = JSON.parse(jsonResponse.nodes);
   const edges = JSON.parse(jsonResponse.edges);
   initializeNumMutations(JSON.parse(jsonResponse.numMutations));
+  const mutList = jsonResponse["mutationDiff"].length === 0 ? null : JSON.parse(jsonResponse["mutationDiff"]);
+  const reason = jsonResponse["reason"];
 
   if (!nodes || !edges || !Array.isArray(nodes) || !Array.isArray(edges)) {
     displayError("Malformed graph received from server - edges or nodes are empty");
@@ -117,7 +138,7 @@ async function generateGraph() {
       }
     });
   })
-  getGraphDisplay(graphNodes, graphEdges);
+  getGraphDisplay(graphNodes, graphEdges, mutList, reason);
   updateButtons();
   return;
 }
@@ -170,8 +191,9 @@ function displayError(errorMsg) {
 /**
  * Takes in graph nodes and edges and creates a cytoscape graph with this
  * data. Assumes that the graph is a DAG to display it in the optimal layout.
+ * Returns the cytoscape graph object.
  */
-function getGraphDisplay(graphNodes, graphEdges) {
+function getGraphDisplay(graphNodes, graphEdges, mutList, reason) {
   const cy = cytoscape({
     container: document.getElementById("graph"),
     elements: {
@@ -184,9 +206,9 @@ function getGraphDisplay(graphNodes, graphEdges) {
         style: {
           width: '50px',
           height: '50px',
-          'background-color': 'blue',
+          'background-color': colorScheme["unmodifiedNodeColor"],
           'label': 'data(id)',
-          'color': 'white',
+          'color': colorScheme["labelColor"],
           'font-size': '20px',
           'text-halign': 'center',
           'text-valign': 'center',
@@ -196,8 +218,8 @@ function getGraphDisplay(graphNodes, graphEdges) {
         selector: 'edge',
         style: {
           'width': 3,
-          'line-color': '#ccc',
-          'target-arrow-color': '#ccc',
+          'line-color': colorScheme["unmodifiedEdgeColor"],
+          'target-arrow-color': colorScheme["unmodifiedEdgeColor"],
           'target-arrow-shape': 'triangle',
           'curve-style': 'bezier'
         },
@@ -231,6 +253,287 @@ function getGraphDisplay(graphNodes, graphEdges) {
   document.getElementById('search-button').onclick = function() { searchAndHighlight(cy, "node", searchNode) };
 
   document.getElementById('search-token-button').onclick = function() { searchAndHighlight(cy, "token", searchToken) };
+
+  // When a new graph is loaded, mutations are always shown by default
+  const showMutButton = document.getElementById("show-mutations");
+  showMutButton.checked = true;
+
+  // Highlight and retrieve the objects that will be modified by this mutation
+  const result = highlightDiff(cy, mutList, reason);
+  if (Object.keys(result).length === 0) {
+    return;
+  }
+
+  let elems = cy.collection();
+  Object.entries(result).forEach(([, value]) => { elems = elems.union(value); })
+
+  // Reposition added elements
+  cy.layout({
+    name: 'dagre'
+  }).run();
+
+  // Zoom in on them and activate their reason tooltips
+  makeInteractiveAndFocus(cy, elems);
+
+  
+  // Break the list down into individual constituents
+  const deletedNodes = result["deletedNodes"] || cy.collection();
+  const deletedEdges = result["deletedEdges"] || cy.collection();
+  const addedNodes = result["addedNodes"] || cy.collection();
+  const addedEdges = result["addedEdges"] || cy.collection();
+  const modifiedNodes = result["modifiedNodes"] || cy.collection();
+
+  showMutButton.addEventListener("change", () => {
+    if (showMutButton.checked) {
+      /*
+       * We take advantage of the efficiency of batch operations to avoid calling
+       * highlightDiff again each time the checkbox is clicked
+       */
+      showDiffs(cy, elems, deletedNodes, deletedEdges, addedNodes, addedEdges, modifiedNodes);
+      // Activate tooltips and zoom in on mutated objects
+      makeInteractiveAndFocus(cy, elems);
+    } else {
+      hideDiffs(cy, elems, deletedNodes, deletedEdges, addedNodes, addedEdges, modifiedNodes);
+    }
+  });
+  return cy;
+}
+
+
+/**
+ * Highlights modified nodes and edges in the graph according to the list
+ * of mutations
+ * 
+ * @param cy the graph 
+ * @param mutList the list of mutations to highlight
+ * @param reason the reason for the mutations
+ * @returns an object containing the deleted nodes, deleted edges, added
+ * nodes, added edges and modified nodes as per the mutationList or an empty
+ * object if there are no mutations
+ */
+function highlightDiff(cy, mutList, reason = "") {
+  // If the mutation list is null/undefined
+  if (!mutList) {
+    return {};
+  }
+
+  // Initialize empty collections
+  let deletedNodes = cy.collection();
+  let deletedEdges = cy.collection();
+  let addedNodes = cy.collection();
+  let addedEdges = cy.collection();
+  let modifiedNodes = cy.collection();
+
+  // Apply each mutation
+  mutList.forEach(mutation => {
+    const type = mutation["type_"] || -1;
+    const startNode = mutation["startNode_"];
+    const endNode = mutation["endNode_"];
+    let modifiedObj = cy.collection();
+
+    if (!type || !startNode) {
+      return;
+    }
+
+    switch (type) {
+      case 1:
+        // add node
+        if (cy.$id(startNode).length !== 0) {
+          modifiedObj = cy.$id(startNode);
+          // color this node green
+          modifiedObj.style('background-color', colorScheme["addedObjectColor"]);
+          addedNodes = addedNodes.union(modifiedObj);
+        }
+        break;
+      case 2:
+        // add edge
+        if (endNode && cy.$id(startNode).length !== 0 && cy.$id(endNode).length !== 0) {
+          modifiedObj = cy.$id(`edge${startNode}${endNode}`);
+          // color this edge green
+          modifiedObj.style('line-color', colorScheme["addedObjectColor"]);
+          modifiedObj.style('target-arrow-color', colorScheme["addedObjectColor"]);
+          addedEdges = addedEdges.union(modifiedObj);
+        }
+        break;
+      case 3:
+        // delete node
+        // add a phantom node (if it doesn't already exist) and color it red
+        if (cy.$id(startNode).length === 0) {
+          cy.add({
+            group: "nodes",
+            data: { id: startNode }
+          });
+        }
+        modifiedObj = cy.$id(startNode);
+        modifiedObj.style('background-color', colorScheme["deletedObjectColor"]);
+        modifiedObj.style('opacity', opacityScheme["deletedObjectOpacity"]);
+        deletedNodes = deletedNodes.union(modifiedObj);
+        break;
+      case 4:
+        // delete edge
+        if (!endNode) {
+          break;
+        }
+        // if corresponding nodes don't exist, add them
+        if (cy.$id(startNode).length === 0) {
+          cy.add({
+            group: "nodes",
+            data: { id: startNode }
+          });
+        }
+        if (cy.$id(endNode).length === 0) {
+          cy.add({
+            group: "nodes",
+            data: { id: endNode }
+          });
+        }
+        // Add a phantom edge and color it red
+        cy.add({
+          group: "edges",
+          data: {
+            id: `edge${startNode}${endNode}`,
+            target: endNode,
+            source: startNode
+          }
+        });
+        modifiedObj = cy.$id(`edge${startNode}${endNode}`);
+        modifiedObj.style('line-color', colorScheme["deletedObjectColor"]);
+        modifiedObj.style('target-arrow-color', colorScheme["deletedObjectColor"]);
+        modifiedObj.style('opacity', opacityScheme["deletedObjectOpacity"]);
+        deletedEdges = deletedEdges.union(modifiedObj);
+        break;
+      case 5:
+        // change node
+        if (cy.$id(startNode).length !== 0) {
+          modifiedObj = cy.$id(startNode);
+          modifiedObj.style('background-color', colorScheme["modifiedNodeColor"]);
+          modifiedNodes = modifiedNodes.union(modifiedObj);
+        }
+        break;
+      default:
+        break;
+    }
+    if (modifiedObj.length !== 0) {
+      initializeReasonTooltip(modifiedObj, reason);
+    }
+  });
+  const returnObject = {
+    "deletedNodes": deletedNodes,
+    "deletedEdges": deletedEdges,
+    "addedNodes": addedNodes,
+    "addedEdges": addedEdges,
+    "modifiedNodes": modifiedNodes
+  }
+  return returnObject;
+}
+
+
+/**
+ * Initializes a tooltip with reason as its contents that displays when the object
+ * is hovered over
+ * @param obj the cytoscape object to display the tooltip over when hovered
+ * @param reason the reason for the mutation
+ */
+function initializeReasonTooltip(obj, reason) {
+  const tipPosition = obj.popperRef(); // used only for positioning
+
+  // a dummy element must be passed as tippy only accepts a dom element as the target
+  const dummyDomEle = document.createElement('div');
+
+  obj.reasonTip = tippy(dummyDomEle, {
+    trigger: 'manual',
+    lazy: false,
+    onCreate: instance => { instance.popperInstance.reference = tipPosition; },
+
+    content: () => {
+      let text = document.createElement("p");
+      text.innerText = (!reason || reason.length === 0) ? "Reason not specified" : reason;
+      return text;
+    },
+    sticky: true,
+    plugins: [sticky]
+  });
+}
+
+/**
+ * Shows the mutations made to this graph by highlighting them
+ * 
+ * @param cy the graph to modify
+ * @param elems all the elements to mutate
+ * @param deletedNodes the nodes which were deleted to get this graph (red)
+ * @param deletedEdges the edges which were deleted to get this graph (red)
+ * @param addedNodes the nodes which were added to get this graph (green)
+ * @param addedEdges the edges which were added to get this graph (green)
+ * @param modifiedNodes the nodes which were modified to get this graph (yellow)
+ */
+function showDiffs(cy, elems, deletedNodes, deletedEdges, addedNodes, addedEdges, modifiedNodes) {
+  // Add phantom nodes and edges to represent deleted objects
+  cy.add(deletedNodes);
+  cy.add(deletedEdges);
+
+  // Color "deleted" nodes and edges in red 
+  deletedNodes.style("background-color", colorScheme["deletedObjectColor"]);
+  deletedEdges.style("line-color", colorScheme["deletedObjectColor"]);
+  deletedEdges.style("target-arrow-color", colorScheme["deletedObjectColor"]);
+
+  // Color "added" nodes and edges in green
+  addedNodes.style("background-color", colorScheme["addedObjectColor"]);
+  addedEdges.style("line-color", colorScheme["addedObjectColor"]);
+  addedEdges.style("target-arrow-color", colorScheme["addedObjectColor"]);
+
+  // Color nodes whose metadata changed in yellow
+  modifiedNodes.style("background-color", colorScheme["modifiedNodeColor"]);
+}
+
+/**
+ * Activates tooltips that open on hovering over objects in elems and then zooms 
+ * in on these elements if possible
+ * @param cy the graph to modify
+ * @param elems the elements for which tooltips should be shown on mouseover
+ */
+function makeInteractiveAndFocus(cy, elems) {
+  // Add listeners to show and hide tooltips
+  elems.on('mouseover', function (evt) {
+    if (evt.target.reasonTip) {
+      evt.target.reasonTip.show();
+    }
+  });
+  elems.on('mouseout', function (evt) {
+    if (evt.target.reasonTip) {
+      evt.target.reasonTip.hide();
+    }
+  });
+  cy.fit(elems);
+}
+
+/**
+ * Reverts the highlighted mutations on the graph, displaying only the base graph
+ * 
+ * @param cy the graph to modify
+ * @param elems all the elements that were mutated
+ * @param deletedNodes the nodes which were deleted to get this graph 
+ * @param deletedEdges the edges which were deleted to get this graph 
+ * @param addedNodes the nodes which were added to get this graph 
+ * @param addedEdges the edges which were added to get this graph 
+ * @param modifiedNodes the nodes which were modified to get this graph 
+ */
+function hideDiffs(cy, elems, deletedNodes, deletedEdges, addedNodes, addedEdges, modifiedNodes) {
+  // Remove phantom nodes and edges
+  cy.remove(deletedEdges);
+  cy.remove(deletedNodes);
+
+  // Reset the color of "added" and modified" nodes and edges 
+  addedNodes.style("background-color", colorScheme["unmodifiedNodeColor"]);
+  modifiedNodes.style("background-color", colorScheme["unmodifiedNodeColor"]);
+  addedEdges.style("line-color", colorScheme["unmodifiedEdgeColor"]);
+  addedEdges.style("target-arrow-color", colorScheme["unmodifiedEdgeColor"]);
+
+  // Remove event listeners for tooltip manipulation
+  elems.removeListener('mouseover');
+  elems.removeListener('mouseout');
+
+  // zoom out
+  cy.fit();
 }
 
 /**
@@ -365,7 +668,7 @@ function getTooltipContent(node) {
   content.appendChild(closeButton);
 
   const nodeTokens = node.data("tokens");
-  if (nodeTokens.length === 0) {
+  if (!nodeTokens || nodeTokens.length === 0) {
     // The node has an empty token list
     const noTokenMsg = document.createElement("p");
     noTokenMsg.innerText = "No tokens";

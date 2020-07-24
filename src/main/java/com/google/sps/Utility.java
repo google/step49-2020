@@ -14,18 +14,21 @@
 
 package com.google.sps;
 
-import com.google.common.graph.*;
-import com.google.gson.Gson;
-import com.proto.GraphProtos.Node;
-import com.google.common.graph.EndpointPair;
-import java.util.List;
-import java.util.ArrayList;
-import com.google.protobuf.Struct;
-import com.google.common.base.Preconditions;
-import java.util.Set;
-import com.proto.MutationProtos.Mutation;
-import com.google.common.reflect.TypeToken;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+import com.google.common.base.Preconditions;
+import com.google.common.graph.EndpointPair;
+import com.google.common.graph.MutableGraph;
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
+import com.google.protobuf.Struct;
+import com.proto.GraphProtos.Node;
+import com.proto.MutationProtos.MultiMutation;
+import com.proto.MutationProtos.Mutation;
+
 import org.json.JSONObject;
 
 public final class Utility {
@@ -54,20 +57,27 @@ public final class Utility {
    *
    * @param graph the graph to convert into a JSON String
    * @param maxMutations the length of the list of mutations
+   * @param mutDiff the difference between the current graph and the requested graph
    * @return a JSON object containing as entries the nodes and edges of this graph as well as the
    *     length of the list of mutations this graph is an intermediate result of applying
    */
-  public static String graphToJson(MutableGraph<GraphNode> graph, int maxMutations) {
+  public static String graphToJson(
+      MutableGraph<GraphNode> graph, int maxMutations, MultiMutation mutDiff) {
     Type typeOfNode = new TypeToken<Set<GraphNode>>() {}.getType();
     Type typeOfEdge = new TypeToken<Set<EndpointPair<GraphNode>>>() {}.getType();
     Gson gson = new Gson();
     String nodeJson = gson.toJson(graph.nodes(), typeOfNode);
     String edgeJson = gson.toJson(graph.edges(), typeOfEdge);
+    String mutDiffJson =
+        (mutDiff == null || !mutDiff.isInitialized()) ? "" : gson.toJson(mutDiff.getMutationList());
+    String reason = (mutDiff == null || !mutDiff.isInitialized()) ? "" : mutDiff.getReason();
     String resultJson =
         new JSONObject()
             .put("nodes", nodeJson)
             .put("edges", edgeJson)
             .put("numMutations", maxMutations)
+            .put("mutationDiff", mutDiffJson)
+            .put("reason", reason)
             .toString();
     return resultJson;
   }
@@ -76,25 +86,29 @@ public final class Utility {
    * @param original the original graph
    * @param curr the current (most recently-requested) graph (requires that original != curr)
    * @param mutationNum number of mutations to apply
-   * @param mutList mutation list
+   * @param multiMutList multi-mutation list
    * @return the resulting data graph or null if there was an error
    */
   public static DataGraph getGraphAtMutationNumber(
-      DataGraph original, DataGraph curr, int mutationNum, List<Mutation> mutList) {
+      DataGraph original, DataGraph curr, int mutationNum, List<MultiMutation> multiMutList)
+      throws IllegalArgumentException {
     Preconditions.checkArgument(
         original != curr, "The current graph and the original graph refer to the same object");
 
-    if (mutationNum > mutList.size() || mutationNum < 0) {
+    if (mutationNum > multiMutList.size() || mutationNum < 0) {
       return null;
     }
 
     if (curr.numMutations() <= mutationNum) { // going forward
       for (int i = curr.numMutations(); i < mutationNum; i++) {
         // Mutate graph operates in place
-
-        // Applying the mutation failed
-        if (!curr.mutateGraph(mutList.get(i))) {
-          return null;
+        MultiMutation multiMut = multiMutList.get(i);
+        List<Mutation> mutations = multiMut.getMutationList();
+        for (Mutation mut : mutations) {
+          String error = curr.mutateGraph(mut);
+          if (error.length() != 0) {
+            throw new IllegalArgumentException(error);
+          }
         }
       }
       return DataGraph.create(curr.graph(), curr.graphNodesMap(), curr.roots(), mutationNum);
@@ -102,13 +116,40 @@ public final class Utility {
       // Create a copy of the original graph and start from the original graph
       DataGraph originalCopy = original.getCopy();
       for (int i = 0; i < mutationNum; i++) {
-        // Applying the mutation failed
-        if (!originalCopy.mutateGraph(mutList.get(i))) {
-          return null;
+        MultiMutation multiMut = multiMutList.get(i);
+        List<Mutation> mutations = multiMut.getMutationList();
+        for (Mutation mut : mutations) {
+          String error = originalCopy.mutateGraph(mut);
+          if (error.length() != 0) {
+            throw new IllegalArgumentException(error);
+          }
         }
       }
       return DataGraph.create(
           originalCopy.graph(), originalCopy.graphNodesMap(), originalCopy.roots(), mutationNum);
     }
+  }
+
+  /**
+   * Returns a multi-mutation (list of mutations) that need to be applied to get from the graph at
+   * currIndex to the graph at nextIndex as long as nextIndex = currIndex + 1
+   *
+   * @param multiMutList the list of multi-mutations that are to be applied to the initial graph
+   * @param currIndex the index in the above list the current graph is at
+   * @param nextIndex the next index to generate a graph for
+   * @return a multimutation with all the changes to apply to the current graph to get the next
+   *     graph or null if the provided indices are out of bounds or non-consecutive
+   */
+  public static MultiMutation getDiffBetween(
+      List<MultiMutation> multiMutList, int currIndex, int nextIndex) {
+    if (currIndex < 0 || currIndex >= multiMutList.size()) {
+      // Out of bounds indices
+      return null;
+    }
+    if (nextIndex - currIndex == 1) {
+      // If indices are adjacent, get the corresponding multimutation
+      return multiMutList.get(currIndex);
+    }
+    return null;
   }
 }

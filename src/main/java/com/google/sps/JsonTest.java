@@ -19,6 +19,7 @@ import com.google.common.graph.MutableGraph;
 import com.google.gson.Gson;
 import com.proto.GraphProtos.Node;
 import com.proto.GraphProtos.Node.Builder;
+import com.proto.MutationProtos.MultiMutation;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -89,17 +90,21 @@ public final class JsonTest {
     graph.putEdge(gNodeA, gNodeB);
     graph.putEdge(gNodeA, gNodeC);
 
-    String result = Utility.graphToJson(graph, 0);
+    String result =
+        Utility.graphToJson(graph, 0, MultiMutation.newBuilder().setReason("test").build());
     JSONObject jsonObject = new JSONObject(result);
 
-    Assert.assertEquals(jsonObject.length(), 3);
+    Assert.assertEquals(jsonObject.length(), 5);
 
     JSONArray elements = jsonObject.names();
-    Assert.assertEquals(elements.length(), 3);
+    Assert.assertEquals(elements.length(), 5);
 
     Assert.assertTrue(jsonObject.has("nodes"));
     Assert.assertTrue(jsonObject.has("edges"));
     Assert.assertTrue(jsonObject.has("numMutations"));
     Assert.assertEquals(jsonObject.get("numMutations"), 0);
+    Assert.assertTrue(jsonObject.has("mutationDiff"));
+    Assert.assertTrue(jsonObject.has("reason"));
+    Assert.assertEquals(jsonObject.get("reason"), "test");
   }
 }
