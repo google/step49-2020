@@ -298,7 +298,7 @@ function getGraphDisplay(graphNodes, graphEdges, mutList, reason, queriedNodes) 
   });
 
   // Color the queried nodes (it's fuchsia because I thought it was pretty, but definitely open to change! )
-  if(queriedNodes) {
+  if (queriedNodes) {
     queriedNodes.forEach(nodeName => {
       cy.$(nodeName).style('background-color', colorScheme["filteredNodeColor"]);
       cy.$(nodeName).style('border-width', borderScheme['queriedBorder']);
