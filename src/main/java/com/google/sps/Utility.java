@@ -125,7 +125,6 @@ public final class Utility {
     } else if (mutationNum > multiMutList.size()) {
       mutationNum = multiMutList.size() - 1;
     }
-
     if (curr.numMutations() <= mutationNum) { // going forward
       for (int i = curr.numMutations() + 1; i <= mutationNum; i++) {
         // Mutate graph operates in place
@@ -158,7 +157,7 @@ public final class Utility {
           originalCopy.graphNodesMap(),
           originalCopy.roots(),
           mutationNum,
-          original.tokenMap());
+          originalCopy.tokenMap());
     }
   }
 
@@ -435,7 +434,6 @@ public final class Utility {
         mutationIndicesMap.put(nodeName, getMutationIndicesOfNode(nodeName, multiMutList));
       }
       relevantIndices.addAll(mutationIndicesMap.get(nodeName));
-      // System.out.println(relevantIndices);
     }
     ArrayList<Integer> result = new ArrayList<>(relevantIndices);
     Collections.sort(result);
@@ -457,7 +455,6 @@ public final class Utility {
         mutationIndicesMap.put(nodeName, getMutationIndicesOfNode(nodeName, multiMutList));
       }
       relevantIndices.addAll(mutationIndicesMap.get(nodeName));
-      // System.out.println(relevantIndices);
     }
     return relevantIndices;
   }
