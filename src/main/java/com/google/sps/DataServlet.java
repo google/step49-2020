@@ -208,8 +208,9 @@ public class DataServlet extends HttpServlet {
       }
       // filteredMutationIndices =
       //     Utility.findRelevantMutations(truncatedGraphNodeNames, mutationIndicesMap, mutList);
-      // Create a set for the mutations of the nodes in the graph and a set for the token. Add and sort
-       Set<Integer> nodeIndices = new HashSet<>();
+      // Create a set for the mutations of the nodes in the graph and a set for the token. Add and
+      // sort
+      Set<Integer> nodeIndices = new HashSet<>();
       if (tokenParam.length() == 0) {
         nodeIndices = Utility.findRelevantMutationsSet(truncatedGraphNodeNames, mutationIndicesMap, mutList);
         diff = Utility.filterMultiMutationByNodes(diff, truncatedGraphNodeNames);
