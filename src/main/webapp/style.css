@@ -1,14 +1,26 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,700;1,400&display=swap');
+
+/* Define color scheme of page */
+:root {
+  --error: red;  
+}
+
+h1 {
+  margin: 0 auto;
+}
+
 body {
   margin: 50px;
   font-size: 25px;
+  font-family: 'Roboto', sans-serif;
 }
 
 #graph {
   width: 90%;
-  height: 90vh;
+  height: 65vh;
   margin-left: auto;
   margin-right: auto;
-  margin-top: 40px;
+  margin-top: 0;
   margin-bottom: 40px;
   border: solid 1px black;
   display: flex;
@@ -17,7 +29,7 @@ body {
 }
 
 #errortext {
-  color: red;
+  color: var(--error);
   font-size: 25px;
 }
 
@@ -43,6 +55,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 0;
+  margin: 0;
 }
 
 #show-mutations {
@@ -54,10 +68,46 @@ body {
 }
 
 .nextprev {
-  margin: 20px;
+  margin: 0px 20px;
+  padding: 0;
 }
 
 #search-box {
   display: flex;
   flex-direction: column;
+  padding: 20px;
+}
+
+#graph-content {
+  display: flex;
+  flex-direction: row;
+}
+
+#graph-content-main {
+  flex: 80%;
+}
+
+#graph-content-logs {
+  flex: 20%;
+  background-color: #D3D3D3;
+  border-radius: 10px;
+  max-height: 75vh;
+  overflow-y: scroll;
+}
+
+#log-list {
+  font-size: 15px;
+  list-style: none;
+  padding: 15px;
+}
+
+#log-list > li {
+  margin: 10px;
+  padding: 10px;
+  background-color: white;
+  border-radius: 10px;
+}
+
+.recent-log-text {
+  color: red;
 }

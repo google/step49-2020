@@ -239,4 +239,30 @@ public final class GraphGenerationTest {
       Assert.assertSame(nodeInOrig, nodeInCopy);
     }
   }
+
+  /*
+   * Ensure that the list of node names in a graph is correctly returned
+   */
+  @Test
+  public void getDataGraphNodes() {
+    nodeA.addChildren("B");
+    nodeB.addChildren("C");
+    nodeC.addChildren("D");
+    nodeE.addChildren("D");
+
+    HashMap<String, Node> protoNodesMap = new HashMap<>();
+    protoNodesMap.put("A", nodeA.build());
+    protoNodesMap.put("B", nodeB.build());
+    protoNodesMap.put("C", nodeC.build());
+    protoNodesMap.put("D", nodeD.build());
+    protoNodesMap.put("E", nodeE.build());
+
+    DataGraph dataGraph = DataGraph.create();
+    dataGraph.graphFromProtoNodes(protoNodesMap);
+
+    MutableGraph<GraphNode> graph = dataGraph.graph();
+    Set<String> nodeNamesInGraph = Utility.getNodeNamesInGraph(graph);
+
+    Assert.assertEquals(nodeNamesInGraph, dataGraph.graphNodesMap().keySet());
+  }
 }
