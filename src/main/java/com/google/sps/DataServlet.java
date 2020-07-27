@@ -212,12 +212,17 @@ public class DataServlet extends HttpServlet {
       // sort
       Set<Integer> nodeIndices = new HashSet<>();
       if (tokenParam.length() == 0) {
-        nodeIndices = Utility.findRelevantMutationsSet(truncatedGraphNodeNames, mutationIndicesMap, mutList);
+        nodeIndices =
+            Utility.findRelevantMutationsSet(truncatedGraphNodeNames, mutationIndicesMap, mutList);
         diff = Utility.filterMultiMutationByNodes(diff, truncatedGraphNodeNames);
       } else {
         System.out.println("Queried " + queried);
         System.out.println("Diff " + diff);
-        nodeIndices = Utility.findRelevantMutationsSet(currDataGraph.tokenMap().getOrDefault(tokenParam, new HashSet<String>()), mutationIndicesMap, mutList);
+        nodeIndices =
+            Utility.findRelevantMutationsSet(
+                currDataGraph.tokenMap().getOrDefault(tokenParam, new HashSet<String>()),
+                mutationIndicesMap,
+                mutList);
         nodeIndices.addAll(Utility.getMutationIndicesOfToken(tokenParam, mutList));
         Set<String> newSet = new HashSet<String>();
         newSet.addAll(truncatedGraphNodeNames);
@@ -225,9 +230,9 @@ public class DataServlet extends HttpServlet {
         diff = Utility.filterMultiMutationByNodes(diff, newSet);
         System.out.println("Filtered diff " + diff);
       }
-       
-      //Set<Integer> tokenIndices = Utility.getMutationIndicesOfTokenSet(tokenParam, mutList);
-      //tokenIndices.addAll(nodeIndices);
+
+      // Set<Integer> tokenIndices = Utility.getMutationIndicesOfTokenSet(tokenParam, mutList);
+      // tokenIndices.addAll(nodeIndices);
       filteredMutationIndices = new ArrayList<>(nodeIndices);
       Collections.sort(filteredMutationIndices);
 
