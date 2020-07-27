@@ -708,7 +708,10 @@ function resetElements(cy) {
   });
 
   // reset edge style
-  cy.edges().forEach(edge => edge.style('line-style', 'solid'));
+  cy.edges().forEach(edge => {
+    edge.style('line-style', 'solid');
+    edge.style('z-index', '1');
+  });
   document.getElementById('num-selected').innerText = "Number of nodes selected: 0";
 }
 
