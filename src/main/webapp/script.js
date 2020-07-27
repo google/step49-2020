@@ -311,7 +311,7 @@ function getGraphDisplay(graphNodes, graphEdges, mutList, reason) {
           width: '50px',
           height: '50px',
           'background-color': colorScheme["unmodifiedNodeColor"],
-          'label': 'data(id)',
+          'label': '',
           'color': colorScheme["labelColor"],
           'font-size': '20px',
           'text-halign': 'center',
@@ -729,6 +729,14 @@ function getTooltipContent(node) {
     node.tip.hide();
   }, false);
   content.appendChild(closeButton);
+
+  const nodeName = document.createElement("p");
+  nodeName.innerText = `Node name:\n${node.data().id}`;
+  content.appendChild(nodeName);
+
+  const tokenLabel = document.createElement("p");
+  tokenLabel.innerText = "Tokens:";
+  content.appendChild(tokenLabel);
 
   const nodeTokens = node.data("tokens");
   if (!nodeTokens || nodeTokens.length === 0) {
