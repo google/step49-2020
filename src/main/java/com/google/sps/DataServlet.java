@@ -216,7 +216,7 @@ public class DataServlet extends HttpServlet {
       tokenIndices.addAll(nodeIndices);
       filteredMutationIndices = new ArrayList<>(tokenIndices);
       Collections.sort(filteredMutationIndices);
-     
+
       // Filter the diff to only show mutations relevant to the above nodes
       diff = Utility.filterMultiMutationByNodes(diff, truncatedGraphNodeNames);
     }
