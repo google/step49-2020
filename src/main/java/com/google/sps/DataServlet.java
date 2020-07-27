@@ -163,7 +163,6 @@ public class DataServlet extends HttpServlet {
       queried.add(nodeNameParam);
     }
 
-
     // Find the indices that mutate the searched node, computing and caching them
     // if this has not been done already
     if (!mutationIndicesMap.containsKey(nodeNameParam)) {
@@ -204,14 +203,16 @@ public class DataServlet extends HttpServlet {
       }
       // filteredMutationIndices =
       //     Utility.findRelevantMutations(truncatedGraphNodeNames, mutationIndicesMap, mutList);
-      // Create a set for the mutations of the nodes in the graph and a set for the token. Add and sort
-       Set<Integer> nodeIndices = new HashSet<>();
+      // Create a set for the mutations of the nodes in the graph and a set for the token. Add and
+      // sort
+      Set<Integer> nodeIndices = new HashSet<>();
       if (tokenParam.length() == 0) {
-        nodeIndices = Utility.findRelevantMutationsSet(truncatedGraphNodeNames, mutationIndicesMap, mutList);
+        nodeIndices =
+            Utility.findRelevantMutationsSet(truncatedGraphNodeNames, mutationIndicesMap, mutList);
       } else {
         nodeIndices = Utility.findRelevantMutationsSet(queried, mutationIndicesMap, mutList);
       }
-       
+
       Set<Integer> tokenIndices = Utility.getMutationIndicesOfTokenSet(tokenParam, mutList);
       tokenIndices.addAll(nodeIndices);
       filteredMutationIndices = new ArrayList<>(tokenIndices);
