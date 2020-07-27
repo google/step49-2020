@@ -163,15 +163,7 @@ public class DataServlet extends HttpServlet {
       queried.add(nodeNameParam);
     }
 
-    // Get the graph at the requested mutation number
-    try {
-      currDataGraph =
-          Utility.getGraphAtMutationNumber(
-              originalDataGraph, currDataGraph, mutationNumber, mutList);
-    } catch (IllegalArgumentException e) {
-      response.setHeader("serverError", e.getMessage());
-      return;
-    }
+
     // Find the indices that mutate the searched node, computing and caching them
     // if this has not been done already
     if (!mutationIndicesMap.containsKey(nodeNameParam)) {
@@ -185,6 +177,15 @@ public class DataServlet extends HttpServlet {
       queried.addAll(currDataGraph.tokenMap().get(tokenParam));
     }
 
+    // Get the graph at the requested mutation number
+    try {
+      currDataGraph =
+          Utility.getGraphAtMutationNumber(
+              originalDataGraph, currDataGraph, mutationNumber, mutList);
+    } catch (IllegalArgumentException e) {
+      response.setHeader("serverError", e.getMessage());
+      return;
+    }
     // Truncate the graph from the nodes that the client had searched for
     truncatedGraph = currDataGraph.getReachableNodes(queried, depthNumber);
 
@@ -204,8 +205,13 @@ public class DataServlet extends HttpServlet {
       // filteredMutationIndices =
       //     Utility.findRelevantMutations(truncatedGraphNodeNames, mutationIndicesMap, mutList);
       // Create a set for the mutations of the nodes in the graph and a set for the token. Add and sort
-      Set<Integer> nodeIndices =
-          Utility.findRelevantMutationsSet(truncatedGraphNodeNames, mutationIndicesMap, mutList);
+       Set<Integer> nodeIndices = new HashSet<>();
+      if (tokenParam.length() == 0) {
+        nodeIndices = Utility.findRelevantMutationsSet(truncatedGraphNodeNames, mutationIndicesMap, mutList);
+      } else {
+        nodeIndices = Utility.findRelevantMutationsSet(queried, mutationIndicesMap, mutList);
+      }
+       
       Set<Integer> tokenIndices = Utility.getMutationIndicesOfTokenSet(tokenParam, mutList);
       tokenIndices.addAll(nodeIndices);
       filteredMutationIndices = new ArrayList<>(tokenIndices);
@@ -241,8 +247,6 @@ public class DataServlet extends HttpServlet {
         // searched
         && !(mutationNumber == -1 && nodeNameParam.equals(""))
         && filteredMutationIndices.indexOf(mutationNumber) == -1) {
-      System.out.println(mutationNumber);
-      System.out.println(filteredMutationIndices);
       response.setHeader(
           "serverMessage",
           "The searched node exists in this graph! However, it is not mutated in this graph."
