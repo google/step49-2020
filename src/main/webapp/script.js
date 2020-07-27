@@ -160,6 +160,7 @@ async function generateGraph() {
   const reason = jsonResponse["reason"];
 
   mutationIndexList = JSON.parse(jsonResponse.mutationIndices);
+  console.log(mutationIndexList)
   numMutations = mutationIndexList.length;
   maxNumMutations = jsonResponse.totalMutNumber;
 
@@ -258,6 +259,7 @@ function getUrl() {
       selectedDepth = 20;
     }
   }
+  console.log("url num", currMutationNum)
   const url = `/data?depth=${selectedDepth}&mutationNum=${currMutationNum}&nodeName=${nodeName}&tokenName=${tokenName}`;
   return url;
 }
@@ -773,12 +775,14 @@ function navigateGraph(amount) {
     // In this case, currMutationNum is in mutationIndexList, so update the 
     // index by the given amount (either +1 or -1)
     currMutationIndex += amount;
+    console.log("index 1", currMutationIndex);
   } else {
     // In this case, currMutationNum is the average of two adjacent indices
     // in mutationIndex list, so pressing next should move the index to the 
     // higher index (the ceil of the average) and pressing prev should move
     // the index to the lower index (the floor of the average)
     if (amount === 1) {
+      console.log("index", currMutationIndex);
       currMutationIndex = Math.ceil(currMutationIndex);
     } else {
       currMutationIndex = Math.floor(currMutationIndex);
@@ -792,6 +796,9 @@ function navigateGraph(amount) {
   }
   setMutationSliderValue(currMutationIndex);
   currMutationNum = (currMutationIndex === -1) ? -1 : mutationIndexList[currMutationIndex];
+  console.log(mutationIndexList)
+  console.log("index again", currMutationIndex)
+  console.log("num", currMutationNum);
 }
 
 /**
