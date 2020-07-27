@@ -2,8 +2,8 @@
 import {
   initializeNumMutations, setMutationIndexList, setCurrMutationNum, setCurrMutationIndex, initializeTippy,
   generateGraph, getUrl, navigateGraph, currMutationNum, currMutationIndex, numMutations,
-  updateButtons, searchNode, highlightDiff, initializeReasonTooltip, getGraphDisplay,
-  getClosestIndices
+  updateButtons, searchAndHighlight, highlightDiff, initializeReasonTooltip, getGraphDisplay,
+  getClosestIndices, searchNode, searchToken
 } from "../src/main/webapp/script.js";
 
 import cytoscape from "cytoscape";
@@ -327,42 +327,6 @@ describe("Pressing next and previous buttons associated with a graph", function 
     navigateGraph(-1);
     expect(currMutationIndex).toBe(0);
     expect(currMutationNum).toBe(0);
-  });
-});
-
-describe("Node search", function () {
-  const cy = cytoscape({
-    elements: [
-      { data: { id: "A" } },
-      { data: { id: "B" } },
-      {
-        data: {
-          id: "AB",
-          source: "A",
-          target: "B"
-        }
-      }]
-  });
-
-  it("should be a successful search", function () {
-    const result = searchNode(cy, "A");
-
-    // search should find node
-    expect(result).toBe(true);
-  });
-
-  it("should be an unsuccessful search", function () {
-    let result = searchNode(cy, "C");
-
-    // search should not find node
-    expect(result).toBe(false);
-  });
-
-  it("should not search at all", function () {
-    let result = searchNode(cy, "");
-
-    // search should not find node
-    expect(result).toBe(false);
   });
 });
 
@@ -716,7 +680,10 @@ describe("Showing and hiding tooltips when checkbox is clicked", function () {
     <div id="graph"></div>
     <button id="search-button">Search</button>
     <label id="search-error"></label>
-    <input type="checkbox" id="show-mutations"></input>`;
+    <input type="checkbox" id="show-mutations"></input>
+    <button id="reset"></button>
+    <button id="search-button"></button>
+    <button id="search-token-button"></button>`;
 
     const nodeA = {};
     nodeA["data"] = {};
