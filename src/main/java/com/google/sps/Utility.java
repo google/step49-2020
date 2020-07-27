@@ -281,6 +281,28 @@ public final class Utility {
     return lst;
   }
 
+  public static Set<Integer> getMutationIndicesOfTokenSet(
+    String tokenName, List<MultiMutation> origList) {
+  Set<Integer> lst = new HashSet<>();
+  if (tokenName == null) {
+    return lst;
+  }
+  for (int i = 0; i < origList.size(); i++) {
+    MultiMutation multiMut = origList.get(i);
+    List<Mutation> mutList = multiMut.getMutationList();
+    for (Mutation mut : mutList) {
+      if (mut.getType().equals(Mutation.Type.CHANGE_TOKEN)) {
+        TokenMutation tokenMut = mut.getTokenChange();
+        List<String> tokenNames = tokenMut.getTokenNameList();
+        if (tokenNames.contains(tokenName)) {
+          lst.add(i);
+          break;
+        }
+      }
+    }
+  }
+  return lst;
+}
   /**
    * Converts a Guava graph containing nodes of type GraphNode into a set of names of nodes
    * contained in the graph
