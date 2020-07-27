@@ -249,7 +249,7 @@ abstract class DataGraph {
           if (startNode == null) { // Check node exists before removing
             return "Delete node: Deleting a non-existent node " + startName + "\n";
           }
-          for(String token : startNode.tokenList()) {
+          for (String token : startNode.tokenList()) {
             removeToken(token, startName);
           }
 

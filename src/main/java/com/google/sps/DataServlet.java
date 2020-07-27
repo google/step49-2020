@@ -205,7 +205,8 @@ public class DataServlet extends HttpServlet {
       // A set containing a indices where nodes currently displayed on the graph
       // or queried are mutated
       Set<Integer> mutationIndicesSet = new HashSet<>();
-      mutationIndicesSet.addAll(Utility.findRelevantMutationsSet(truncatedGraphNodeNames, mutationIndicesMap, mutList));
+      mutationIndicesSet.addAll(
+          Utility.findRelevantMutationsSet(truncatedGraphNodeNames, mutationIndicesMap, mutList));
       mutationIndicesSet.addAll(Utility.getMutationIndicesOfTokenSet(tokenParam, mutList));
       filteredMutationIndices = new ArrayList<>(mutationIndicesSet);
       Collections.sort(filteredMutationIndices);
@@ -215,7 +216,8 @@ public class DataServlet extends HttpServlet {
       } else {
         // In this case, also show mutations relevant to nodes that used to have the token but
         // might not exist anymore
-        filteredDiff = Utility.filterMultiMutationByNodes(diff, Sets.union(truncatedGraphNodeNames, queried));
+        filteredDiff =
+            Utility.filterMultiMutationByNodes(diff, Sets.union(truncatedGraphNodeNames, queried));
       }
     }
     // We set the headers in the following 4 scenarios:
@@ -234,28 +236,29 @@ public class DataServlet extends HttpServlet {
         && filteredMutationIndices.indexOf(mutationNumber) == -1) {
       response.setHeader(
           "serverMessage",
-          "The searched node/token does not exist in this graph, so nothing is shown. However, it is"
-              + " mutated at some other step. Please click next or previous to navigate to a graph"
-              + " where this node exists.");
+          "The searched node/token does not exist in this graph, so nothing is shown. However, it"
+              + " is mutated at some other step. Please click next or previous to navigate to a"
+              + " graph where this node exists.");
     }
     // The searched node exists but is not mutated in the current graph
-    if (truncatedGraph.nodes().size() != 0 &&
-          !(mutationNumber == -1 && nodeNameParam.equals("") && tokenParam.equals("")) &&
-          filteredMutationIndices.indexOf(mutationNumber) == -1) {
-          if(diff == null || diff.getMutationList().size() == 0) {
-            response.setHeader(
-                "serverMessage",
-                "The searched node/token exists in this graph. However, it is not mutated in this graph."
-                    + " Please click next or previous if you wish to see where it was mutated!");
-          } else {
-            if(filteredDiff == null || filteredDiff.getMutationList().size() == 0) {
-              response.setHeader(
-                  "serverMessage",
-                  "The searched node/token exists in this graph and is not mutated in this graph."
-                      + " However, some other previously displayed node is mutated. Please clear your"
-                      + " filter to view this mutation");
-            }
-          }
+    if (truncatedGraph.nodes().size() != 0
+        && !(mutationNumber == -1 && nodeNameParam.equals("") && tokenParam.equals(""))
+        && filteredMutationIndices.indexOf(mutationNumber) == -1) {
+      if (diff == null || diff.getMutationList().size() == 0) {
+        response.setHeader(
+            "serverMessage",
+            "The searched node/token exists in this graph. However, it is not mutated in this"
+                + " graph. Please click next or previous if you wish to see where it was"
+                + " mutated!");
+      } else {
+        if (filteredDiff == null || filteredDiff.getMutationList().size() == 0) {
+          response.setHeader(
+              "serverMessage",
+              "The searched node/token exists in this graph and is not mutated in this graph."
+                  + " However, some other previously displayed node is mutated. Please clear your"
+                  + " filter to view this mutation");
+        }
+      }
     }
 
     // There is a diff between the previously-displayed graph and the current graph but
@@ -270,7 +273,8 @@ public class DataServlet extends HttpServlet {
               + " to view the mutation.");
     }
     graphJson =
-        Utility.graphToJson(truncatedGraph, filteredMutationIndices, filteredDiff, mutList.size(), queried);
+        Utility.graphToJson(
+            truncatedGraph, filteredMutationIndices, filteredDiff, mutList.size(), queried);
     response.getWriter().println(graphJson);
   }
 
