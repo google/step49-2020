@@ -163,13 +163,12 @@ public class DataServlet extends HttpServlet {
       queried.add(nodeNameParam);
     }
 
-
-    // Find the indices that mutate the searched node, computing and caching them
-    // if this has not been done already
-    if (!mutationIndicesMap.containsKey(nodeNameParam)) {
-      mutationIndicesMap.put(
-          nodeNameParam, Utility.getMutationIndicesOfNode(nodeNameParam, mutList));
-    }
+    // // Find the indices that mutate the searched node, computing and caching them
+    // // if this has not been done already
+    // if (!mutationIndicesMap.containsKey(nodeNameParam)) {
+    //   mutationIndicesMap.put(
+    //       nodeNameParam, Utility.getMutationIndicesOfNode(nodeNameParam, mutList));
+    // }
     // If any node in this graph contains the token, watch it for mutations
     // If the token is contained, then get the nodes associated with the token and
     // add them to the queried nodes
@@ -186,6 +185,11 @@ public class DataServlet extends HttpServlet {
       response.setHeader("serverError", e.getMessage());
       return;
     }
+
+    if (currDataGraph.tokenMap().containsKey(tokenParam)) {
+      queried.addAll(currDataGraph.tokenMap().get(tokenParam));
+    }
+
     // Truncate the graph from the nodes that the client had searched for
     truncatedGraph = currDataGraph.getReachableNodes(queried, depthNumber);
 
@@ -208,17 +212,25 @@ public class DataServlet extends HttpServlet {
        Set<Integer> nodeIndices = new HashSet<>();
       if (tokenParam.length() == 0) {
         nodeIndices = Utility.findRelevantMutationsSet(truncatedGraphNodeNames, mutationIndicesMap, mutList);
+        diff = Utility.filterMultiMutationByNodes(diff, truncatedGraphNodeNames);
       } else {
-        nodeIndices = Utility.findRelevantMutationsSet(queried, mutationIndicesMap, mutList);
+        System.out.println("Queried " + queried);
+        System.out.println("Diff " + diff);
+        nodeIndices = Utility.findRelevantMutationsSet(currDataGraph.tokenMap().getOrDefault(tokenParam, new HashSet<String>()), mutationIndicesMap, mutList);
+        nodeIndices.addAll(Utility.getMutationIndicesOfToken(tokenParam, mutList));
+        Set<String> newSet = new HashSet<String>();
+        newSet.addAll(truncatedGraphNodeNames);
+        newSet.addAll(queried);
+        diff = Utility.filterMultiMutationByNodes(diff, newSet);
+        System.out.println("Filtered diff " + diff);
       }
        
-      Set<Integer> tokenIndices = Utility.getMutationIndicesOfTokenSet(tokenParam, mutList);
-      tokenIndices.addAll(nodeIndices);
-      filteredMutationIndices = new ArrayList<>(tokenIndices);
+      //Set<Integer> tokenIndices = Utility.getMutationIndicesOfTokenSet(tokenParam, mutList);
+      //tokenIndices.addAll(nodeIndices);
+      filteredMutationIndices = new ArrayList<>(nodeIndices);
       Collections.sort(filteredMutationIndices);
 
       // Filter the diff to only show mutations relevant to the above nodes
-      diff = Utility.filterMultiMutationByNodes(diff, truncatedGraphNodeNames);
     }
 
     // We set the headers in the following 4 scenarios:

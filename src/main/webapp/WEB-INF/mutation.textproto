@@ -58,6 +58,18 @@ mutation {
     token_name: "e.js"
   }
 }
+mutation {
+  type: ADD_NODE
+  start_node: "I"
+}
+mutation {
+  type: CHANGE_TOKEN
+  start_node: "I"
+  token_change {
+    type: ADD_TOKEN
+    token_name: "d.js"
+  }
+}
 reason: "Changing tokens of node B"
 }
 mutation {
@@ -67,5 +79,22 @@ mutation {
   end_node: "C"
 }
 reason: "Removing edge AC"
-
+}
+mutation {
+mutation {
+  type: CHANGE_TOKEN
+  start_node: "B"
+  token_change {
+    type: DELETE_TOKEN
+    token_name: "d.js"
+  }
+}
+reason: "Changing tokens of node B"
+}
+mutation {
+mutation {
+  type: DELETE_NODE
+  start_node: "I"
+}
+reason: "Changing tokens of node B"
 }

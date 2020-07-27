@@ -284,7 +284,7 @@ public final class Utility {
   public static Set<Integer> getMutationIndicesOfTokenSet(
       String tokenName, List<MultiMutation> origList) {
     Set<Integer> lst = new HashSet<>();
-    if (tokenName == null) {
+    if (tokenName == null || tokenName.length() == 0) {
       return lst;
     }
     for (int i = 0; i < origList.size(); i++) {
