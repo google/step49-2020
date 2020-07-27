@@ -189,7 +189,9 @@ public class DataServlet extends HttpServlet {
     truncatedGraph = currDataGraph.getReachableNodes(queried, depthNumber);
 
     // If we are not filtering the graph or limiting its depth, show all mutations of all nodes
-    if (nodeNameParam.length() == 0 && tokenParam.length() == 0 && truncatedGraph.equals(currDataGraph.graph())) {
+    if (nodeNameParam.length() == 0
+        && tokenParam.length() == 0
+        && truncatedGraph.equals(currDataGraph.graph())) {
       filteredMutationIndices = defaultIndices;
     } else {
       // Get the names of all the displayed nodes and find all indices of mutations
@@ -235,11 +237,12 @@ public class DataServlet extends HttpServlet {
     }
     // The searched node exists but is not mutated in the current graph
     if (truncatedGraph.nodes().size() != 0
-    // this message should only appear if we're not at the initial graph and if something was searched
+        // this message should only appear if we're not at the initial graph and if something was
+        // searched
         && !(mutationNumber == -1 && nodeNameParam.equals(""))
         && filteredMutationIndices.indexOf(mutationNumber) == -1) {
-          System.out.println(mutationNumber);
-          System.out.println(filteredMutationIndices);
+      System.out.println(mutationNumber);
+      System.out.println(filteredMutationIndices);
       response.setHeader(
           "serverMessage",
           "The searched node exists in this graph! However, it is not mutated in this graph."
