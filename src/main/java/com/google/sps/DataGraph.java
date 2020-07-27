@@ -326,15 +326,7 @@ abstract class DataGraph {
       tokenList.removeAll(tokenNames);
       // Update the map
       for (String tokenName : tokenNames) {
-        if (this.tokenMap().containsKey(tokenName)) {
-          Set<String> nodesWithToken = this.tokenMap().get(tokenName);
-          nodesWithToken.remove(node.name());
-          if (nodesWithToken.size() == 0) { // No more nodes with token
-            this.tokenMap().remove(tokenName);
-          } else {
-            this.tokenMap().put(tokenName, nodesWithToken);
-          }
-        } // Else removing a token that's not in the map, don't need to update
+        removeToken(tokenName, node.name());
       }
     } else {
       // unrecognized mutation
@@ -353,6 +345,22 @@ abstract class DataGraph {
     Set<String> nodesWithToken = this.tokenMap().getOrDefault(tokenName, new HashSet<>());
     nodesWithToken.add(nodeName);
     this.tokenMap().put(tokenName, nodesWithToken);
+  }
+
+  /**
+   * Removes a node to the tokenMap
+   *
+   * @param tokenName the token name (key in the map)
+   * @param nodeName the node to remove from the tokenName's set
+   */
+  private void removeToken(String tokenName, String nodeName) {
+    if (this.tokenMap().containsKey(tokenName)) {
+      Set<String> nodesWithToken = this.tokenMap().get(tokenName);
+      nodesWithToken.remove(nodeName);
+      if (nodesWithToken.size() == 0) { // No more nodes with token
+        this.tokenMap().remove(tokenName);
+      }
+    } // Else no need to update
   }
 
   /**
@@ -434,13 +442,14 @@ abstract class DataGraph {
       nextLayerChildren.addAll(rootNodes);
     }
 
-    for (String name : names) {
-      if (graphNodesMap.containsKey(name)) {
-        GraphNode tgtNode = graphNodesMap.get(name);
-        nextLayerChildren.add(tgtNode);
-        nextLayerParents.add(tgtNode);
-      }
-    }
+    Set<GraphNode> nodesToAdd =
+        names.stream()
+            .filter(name -> graphNodesMap.containsKey(name))
+            .map(name -> graphNodesMap.get(name))
+            .collect(Collectors.toSet());
+    nextLayerChildren.addAll(nodesToAdd);
+    nextLayerParents.addAll(nodesToAdd);
+
     // None of the other nodes were found, so return empty
     if (nextLayerChildren.isEmpty()) {
       return GraphBuilder.directed().build();

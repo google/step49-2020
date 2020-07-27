@@ -414,54 +414,35 @@ public class ReachableNodesTest {
     Assert.assertEquals(0, graphEdges.size());
   }
 
-  /** Only consider nodes found in the graph */
+  /** Two nodes not connected returns a disjoint graph */
   @Test
-  public void invalidWithValidNodes() {
+  public void disjointGraphReturned() {
     nodeA.addChildren("B");
-    nodeA.addChildren("C");
+    nodeD.addChildren("E");
 
     HashMap<String, Node> protoNodesMap = new HashMap<>();
     protoNodesMap.put("A", nodeA.build());
     protoNodesMap.put("B", nodeB.build());
     protoNodesMap.put("C", nodeC.build());
+    protoNodesMap.put("D", nodeD.build());
+    protoNodesMap.put("E", nodeE.build());
 
     DataGraph dataGraph = DataGraph.create();
     dataGraph.graphFromProtoNodes(protoNodesMap);
-    List<String> lst = new ArrayList<>(Arrays.asList("X", "B"));
+    List<String> lst = new ArrayList<>(Arrays.asList("B", "E"));
 
     MutableGraph<GraphNode> truncatedGraph = dataGraph.getReachableNodes(lst, 1);
     Set<GraphNode> graphNodes = truncatedGraph.nodes();
     Set<EndpointPair<GraphNode>> graphEdges = truncatedGraph.edges();
 
-    Assert.assertEquals(2, graphNodes.size());
+    Assert.assertEquals(4, graphNodes.size());
     Assert.assertTrue(graphNodes.contains(gNodeA));
     Assert.assertTrue(graphNodes.contains(gNodeB));
-    Assert.assertFalse(graphNodes.contains(gNodeC));
+    Assert.assertTrue(graphNodes.contains(gNodeD));
+    Assert.assertTrue(graphNodes.contains(gNodeE));
 
-    Assert.assertEquals(1, graphEdges.size());
-  }
-
-  /** When the node searched doesn't exist, empty graph is returned */
-  @Test
-  public void allNodesSearchedDontExist() {
-    nodeA.addChildren("B");
-    nodeA.addChildren("C");
-
-    HashMap<String, Node> protoNodesMap = new HashMap<>();
-    protoNodesMap.put("A", nodeA.build());
-    protoNodesMap.put("B", nodeB.build());
-    protoNodesMap.put("C", nodeC.build());
-
-    DataGraph dataGraph = DataGraph.create();
-    dataGraph.graphFromProtoNodes(protoNodesMap);
-    List<String> lst = new ArrayList<>(Arrays.asList("X"));
-
-    MutableGraph<GraphNode> truncatedGraph = dataGraph.getReachableNodes(lst, 0);
-    Set<GraphNode> graphNodes = truncatedGraph.nodes();
-    Set<EndpointPair<GraphNode>> graphEdges = truncatedGraph.edges();
-
-    Assert.assertEquals(0, graphNodes.size());
-
-    Assert.assertEquals(0, graphEdges.size());
+    Assert.assertEquals(2, graphEdges.size());
+    Assert.assertTrue(truncatedGraph.hasEdgeConnecting(gNodeA, gNodeB));
+    Assert.assertTrue(truncatedGraph.hasEdgeConnecting(gNodeD, gNodeE));
   }
 }
