@@ -586,7 +586,9 @@ function searchNode(cy, query) {
 function searchToken(cy, query) {
   let target = cy.collection();
   cy.nodes().forEach(node => {
-    if (node.data().tokens.includes(query)) {
+    // check tokens field exists since deleted nodes that are still
+    // shown don't have a tokens field
+    if (node.data().tokens && node.data().tokens.includes(query)) {
       target = target.add(node);
     }
   });
