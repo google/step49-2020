@@ -1,8 +1,9 @@
 
 import {
-  searchNode, initializeNumMutations, setCurrGraphNum, initializeTippy, generateGraph,
-  getUrl, navigateGraph, currGraphNum, numMutations, updateButtons, highlightDiff,
-  initializeReasonTooltip, getGraphDisplay
+  initializeNumMutations, setMutationIndexList, setCurrMutationNum, setCurrMutationIndex, initializeTippy,
+  generateGraph, getUrl, navigateGraph, currMutationNum, currMutationIndex, numMutations,
+  updateButtons, searchNode, highlightDiff, initializeReasonTooltip, getGraphDisplay,
+  getClosestIndices
 } from "../src/main/webapp/script.js";
 
 import cytoscape from "cytoscape";
@@ -200,8 +201,23 @@ describe("Initializing tooltips", function () {
 });
 
 describe("Pressing next and previous buttons associated with a graph", function () {
-  it("correctly updates mutation tracking variables and buttons on click", function () {
+  let numDisplay = {};
+  beforeEach(function () {
+    numDisplay = document.createElement("div");
+    numDisplay.id = "num-mutation-display";
+  }); 
+
+  afterEach(function () {
+    document.body.innerHTML = '';
+  });
+
+  it("correctly updates mutation tracking variables and button properties on click", function () {
+    document.body.appendChild(numDisplay);
     initializeNumMutations(3);
+    setCurrMutationNum(-1);
+    setCurrMutationIndex(-1);
+    // Relevant indices are different from actual indices!
+    setMutationIndexList([0, 1, 3]);
     const prevButton = document.createElement("button");
     prevButton.id = "prevbutton";
     prevButton.onclick = () => { navigateGraph(-1); updateButtons(); };
@@ -211,58 +227,106 @@ describe("Pressing next and previous buttons associated with a graph", function 
     document.body.appendChild(prevButton);
     document.body.appendChild(nextButton);
 
-    expect(currGraphNum).toBe(0);
+
+    expect(currMutationNum).toBe(-1);
+    expect(currMutationIndex).toBe(-1);
     expect(numMutations).toBe(3);
 
+    // Check the button properties and variables with buttons are clicked
     nextButton.click();
-    expect(currGraphNum).toBe(1);
+    expect(currMutationNum).toBe(0);
+    expect(currMutationIndex).toBe(0);
     expect(nextButton.disabled).toBe(false);
     expect(prevButton.disabled).toBe(false);
 
     nextButton.click();
-    expect(currGraphNum).toBe(2);
+    expect(currMutationNum).toBe(1);
+    expect(currMutationIndex).toBe(1);
     expect(nextButton.disabled).toBe(false);
     expect(prevButton.disabled).toBe(false);
 
     nextButton.click();
-    expect(currGraphNum).toBe(3);
+    expect(currMutationNum).toBe(3);
+    expect(currMutationIndex).toBe(2);
+    expect(nextButton.disabled).toBe(true);
+    expect(prevButton.disabled).toBe(false);
+
+    nextButton.click();
+    expect(currMutationNum).toBe(3);
+    expect(currMutationIndex).toBe(2);
     expect(nextButton.disabled).toBe(true);
     expect(prevButton.disabled).toBe(false);
 
     prevButton.click();
-    expect(currGraphNum).toBe(2);
+    expect(currMutationNum).toBe(1);
+    expect(currMutationIndex).toBe(1);
     expect(nextButton.disabled).toBe(false);
     expect(prevButton.disabled).toBe(false);
 
     prevButton.click();
-    expect(currGraphNum).toBe(1);
-    expect(nextButton.disabled).toBe(false);
-    expect(prevButton.disabled).toBe(false);
-
-    nextButton.click();
-    expect(currGraphNum).toBe(2);
+    expect(currMutationNum).toBe(0);
+    expect(currMutationIndex).toBe(0);
     expect(nextButton.disabled).toBe(false);
     expect(prevButton.disabled).toBe(false);
 
     prevButton.click();
-    expect(currGraphNum).toBe(1);
-    expect(nextButton.disabled).toBe(false);
-    expect(prevButton.disabled).toBe(false);
-
-    prevButton.click();
-    expect(currGraphNum).toBe(0);
-    expect(nextButton.disabled).toBe(false);
-    expect(prevButton.disabled).toBe(true);
-
-    prevButton.click();
-    expect(currGraphNum).toBe(0);
+    expect(currMutationNum).toBe(-1);
+    expect(currMutationIndex).toBe(-1);
     expect(nextButton.disabled).toBe(false);
     expect(prevButton.disabled).toBe(true);
 
     nextButton.click();
-    expect(currGraphNum).toBe(1);
+    expect(currMutationNum).toBe(0);
+    expect(currMutationIndex).toBe(0);
     expect(nextButton.disabled).toBe(false);
     expect(prevButton.disabled).toBe(false);
+
+    prevButton.click();
+    expect(currMutationNum).toBe(-1);
+    expect(currMutationIndex).toBe(-1);
+    expect(nextButton.disabled).toBe(false);
+    expect(prevButton.disabled).toBe(true);
+
+    prevButton.click();
+    expect(currMutationNum).toBe(-1);
+    expect(currMutationIndex).toBe(-1);
+    expect(nextButton.disabled).toBe(false);
+    expect(prevButton.disabled).toBe(true);
+  });
+
+  it("correctly doesn't change anything when there aren't any mutations", function() {
+    document.body.appendChild(numDisplay);
+    initializeNumMutations(-1);
+    setCurrMutationNum(10);
+   
+   // Nothing changes with a negative numMutations
+    navigateGraph(-1);
+    expect(currMutationNum).toBe(10);
+
+    navigateGraph(1);
+    expect(currMutationNum).toBe(10);
+  });
+
+  it("correctly navigates forward when index is a decimal", function() {
+    document.body.appendChild(numDisplay);
+    setCurrMutationIndex(.5);
+    setCurrMutationNum(0);
+    setMutationIndexList([0, 1, 3]);
+    initializeNumMutations(3);
+    navigateGraph(1);
+    expect(currMutationIndex).toBe(1);
+    expect(currMutationNum).toBe(1);
+  });
+
+  it("correctly navigates backward when index is a decimal", function() {
+    document.body.appendChild(numDisplay);
+    setCurrMutationIndex(.5);
+    setCurrMutationNum(0);
+    setMutationIndexList([0, 1, 3]);
+    initializeNumMutations(3);
+    navigateGraph(-1);
+    expect(currMutationIndex).toBe(0);
+    expect(currMutationNum).toBe(0);
   });
 });
 
@@ -302,18 +366,18 @@ describe("Node search", function () {
   });
 });
 
+describe("Check correct url params", function () {
+  let nodeName = {};
 
-describe("Check correct url params", function() {
-  let nodeName = {}; 
-  beforeEach(function() {
-    setCurrGraphNum(1);
+  beforeEach(function () {
+    setCurrMutationNum(1);
     nodeName = document.createElement("input");
-    nodeName.id = "node-name";
+    nodeName.id = "node-name-filter";
   });
 
   afterEach(function () {
-    setCurrGraphNum(0);
-     document.body.innerHTML = '';
+    setCurrMutationNum(0);
+    document.body.innerHTML = '';
   });
 
   it("passes correct value of the mutations number in the fetch request", function () {
@@ -331,7 +395,7 @@ describe("Check correct url params", function() {
     expect(constructedUrl.get("nodeName")).toBe("");
   });
 
-  it ("passes correct nodeName when nodeName has a value", function () {
+  it("passes correct nodeName when nodeName has a value", function () {
     nodeName.value = "A";
     document.body.appendChild(nodeName);
 
@@ -340,8 +404,8 @@ describe("Check correct url params", function() {
 
     const constructedUrl = new URLSearchParams(requestParams);
     expect(constructedUrl.has("nodeName")).toBe(true);
-    expect(constructedUrl.get("nodeName")).toBe("A"); 
-  })
+    expect(constructedUrl.get("nodeName")).toBe("A");
+  });
 });
 
 describe("Node search", function() {
@@ -496,7 +560,6 @@ describe("Ensuring correct nodes are highlighted in mutated graph", function () 
   const red = "rgb(255,0,0)";
   const yellow = "rgb(255,255,0)";
   const translucentOpacity = "0.25";
-
 
   beforeEach(function () {
     document.body.innerHTML = `<div id="cy"></div>`;
@@ -699,4 +762,60 @@ describe("Showing and hiding tooltips when checkbox is clicked", function () {
     gNodeA.trigger("mouseout");
     expect(gNodeA.reasonTip.state.isVisible).toBe(false);
   });
-})
+});
+
+describe("Checking binary search functions", function () {
+  it("correctly returns next greater and smaller indices for an element in the list", function () {
+    const arr = [1,5,7,8,11];
+    const prevLower = getClosestIndices(arr, 5).lower;
+    const nextHigher = getClosestIndices(arr, 5).higher;
+
+    expect(prevLower).toBe(0);
+    expect(nextHigher).toBe(2);
+  });
+
+  it("correctly returns next greater and smaller indices for an element not in the list", function () {
+    const arr = [1,5,7,8,11];
+    const prevLower = getClosestIndices(arr, 6).lower;
+    const nextHigher = getClosestIndices(arr, 6).higher;
+
+    expect(prevLower).toBe(1);
+    expect(nextHigher).toBe(2);
+  });
+
+  it("correctly returns next greater and smaller indices for an element at the end of the list", function () {
+    const arr = [1,5,7,8,11];
+    const prevLower = getClosestIndices(arr, 11).lower;
+    const nextHigher = getClosestIndices(arr, 11).higher;
+
+    expect(prevLower).toBe(3);
+    expect(nextHigher).toBe(5);
+  });
+
+  it("correctly returns next greater and smaller indices for an element at the start of the list", function () {
+    const arr = [1,5,7,8,11];
+    const prevLower = getClosestIndices(arr, 1).lower;
+    const nextHigher = getClosestIndices(arr, 1).higher;
+
+    expect(prevLower).toBe(-1);
+    expect(nextHigher).toBe(1);
+  });
+
+  it("correctly returns next greater and smaller indices for an element that is larger than all list elements", function () {
+    const arr = [1,5,7,8,11];
+    const prevLower = getClosestIndices(arr, 12).lower;
+    const nextHigher = getClosestIndices(arr, 12).higher;
+
+    expect(prevLower).toBe(4);
+    expect(nextHigher).toBe(5);
+  });
+
+  it("correctly returns next greater and smaller indices for an element that is smaller than all list elements", function () {
+    const arr = [1,5,7,8,11];
+    const prevLower = getClosestIndices(arr, 0).lower;
+    const nextHigher = getClosestIndices(arr, 0).higher;
+
+    expect(prevLower).toBe(-1);
+    expect(nextHigher).toBe(0);
+  });
+}); 

@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.HashSet;
 import java.util.List;
 
@@ -41,7 +42,7 @@ abstract class DataGraph {
         /* graph = */ GraphBuilder.directed().build(),
         /* graphNodesMap = */ new HashMap<String, GraphNode>(),
         /* roots = */ new HashSet<String>(),
-        /* numMutations = */ 0);
+        /* numMutations = */ -1);
   }
 
   /**
@@ -50,7 +51,8 @@ abstract class DataGraph {
    * @param graph the guava graph
    * @param graphNodesMap the map from node name to node
    * @param roots a set of roots (nodes with no in-edges) of the graph
-   * @param numMutations the number of mutations applied to the initial graph to get this graph
+   * @param numMutations the number of mutations applied to the initial graph to get this graph or
+   *     -1 if no mutations have been applied
    * @return the data graph with these attributes
    */
   static DataGraph create(
@@ -85,7 +87,8 @@ abstract class DataGraph {
   /**
    * Getter for the number of mutations
    *
-   * @return the the number of mutations applied to the initial graph to get this graph
+   * @return the the number of mutations applied to the initial graph to get this graph or -1 if no
+   *     mutations have been applied
    */
   abstract int numMutations();
 
@@ -350,15 +353,15 @@ abstract class DataGraph {
 
   /**
    * Returns a MutableGraph with nodes that are at most a certain radius from a given node. If the
-   * radius is less than 0 or the node specified isn't present, return an empty graph. Since
-   * maxDepth was implemented as DFS, we use BFS for *diversity*.
-   *
-   * <p>Here, we only consider children of children and parents of parents.
+   * specified node name is the empty string, return nodes within 'radius' distance from the roots
+   * of the graph. If the radius is less than 0 or the node specified isn't present, return an empty
+   * graph. Since maxDepth was implemented as DFS, we use BFS for *diversity*. Here, we only
+   * consider children of children and parents of parents.
    *
    * @param name the name of the node to search for
    * @param radius the distance from the node to search for parents and children
    * @return a graph comprised of only nodes and edges within a certain distance from the specified
-   *     node. Empty if radius is less than 0 or if the node isn't found.
+   *     node (or roots if name is ""). Empty if radius is less than 0 or if the node isn't found.
    */
   public MutableGraph<GraphNode> getReachableNodes(String name, int radius) {
     if (radius < 0) {
@@ -366,17 +369,13 @@ abstract class DataGraph {
     }
 
     HashMap<String, GraphNode> graphNodesMap = this.graphNodesMap();
-
-    if (!graphNodesMap.containsKey(name)) {
+    if (name.length() != 0 && !graphNodesMap.containsKey(name)) {
       return GraphBuilder.directed()
           .build(); // If the specified node is not found, return an empty graph
     }
 
-    MutableGraph<GraphNode> graph = this.graph();
-    GraphNode tgtNode = graphNodesMap.get(name);
-
     // HashSet should have expected O(1) lookup, changed from HashMap for space
-    // Two different sets are needed because of cases where a node is both a parents
+    // Two different sets are needed because of cases where a node is both a parent
     // and a child
     HashSet<GraphNode> visitedChildren = new HashSet<>();
     HashSet<GraphNode> visitedParents = new HashSet<>();
@@ -384,8 +383,18 @@ abstract class DataGraph {
     HashSet<GraphNode> nextLayerChildren = new HashSet<GraphNode>();
     HashSet<GraphNode> nextLayerParents = new HashSet<GraphNode>();
 
-    nextLayerChildren.add(tgtNode);
-    nextLayerParents.add(tgtNode);
+    MutableGraph<GraphNode> graph = this.graph();
+    if (name.length() == 0) {
+      List<GraphNode> rootNodes =
+          this.roots().stream()
+              .map(rootName -> this.graphNodesMap().get(rootName))
+              .collect(Collectors.toList());
+      nextLayerChildren.addAll(rootNodes);
+    } else {
+      GraphNode tgtNode = graphNodesMap.get(name);
+      nextLayerChildren.add(tgtNode);
+      nextLayerParents.add(tgtNode);
+    }
 
     for (int i = 0; i <= radius; i++) {
       // Break out early if queue is empty

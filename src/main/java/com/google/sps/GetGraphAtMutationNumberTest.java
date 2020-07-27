@@ -90,13 +90,13 @@ public class GetGraphAtMutationNumberTest {
     multiMutList.add(addABM);
 
     DataGraph mutatedGraph =
-        Utility.getGraphAtMutationNumber(dataGraph, originalCopy, 1, multiMutList);
+        Utility.getGraphAtMutationNumber(dataGraph, originalCopy, 0, multiMutList);
 
     MutableGraph<GraphNode> newGraph = mutatedGraph.graph();
     Set<GraphNode> newNodes = newGraph.nodes();
     int newNum = mutatedGraph.numMutations();
 
-    Assert.assertEquals(newNum, 1);
+    Assert.assertEquals(newNum, 0);
     Assert.assertEquals(newNodes.size(), 3);
     Assert.assertTrue(newNodes.contains(gNodeA));
     Assert.assertTrue(newNodes.contains(gNodeB));
@@ -133,13 +133,13 @@ public class GetGraphAtMutationNumberTest {
     multiMutList.add(removeCM);
 
     DataGraph mutatedGraph =
-        Utility.getGraphAtMutationNumber(dataGraph, originalCopy, 2, multiMutList);
+        Utility.getGraphAtMutationNumber(dataGraph, originalCopy, 1, multiMutList);
 
     MutableGraph<GraphNode> newGraph = mutatedGraph.graph();
     Set<GraphNode> newNodes = newGraph.nodes();
     int newNum = mutatedGraph.numMutations();
 
-    Assert.assertEquals(newNum, 2);
+    Assert.assertEquals(newNum, 1);
     Assert.assertEquals(newNodes.size(), 2);
     Assert.assertTrue(newNodes.contains(gNodeA));
     Assert.assertTrue(newNodes.contains(gNodeB));
@@ -187,7 +187,7 @@ public class GetGraphAtMutationNumberTest {
     multiMutList.add(addToAM);
 
     DataGraph mutatedGraph =
-        Utility.getGraphAtMutationNumber(dataGraph, originalCopy, 2, multiMutList);
+        Utility.getGraphAtMutationNumber(dataGraph, originalCopy, 1, multiMutList);
 
     MutableGraph<GraphNode> newGraph = mutatedGraph.graph();
     HashMap<String, GraphNode> newGraphNodesMap = mutatedGraph.graphNodesMap();
@@ -200,7 +200,7 @@ public class GetGraphAtMutationNumberTest {
     newTokenList.add("2");
     newTokenList.add("4");
 
-    Assert.assertEquals(newNum, 2);
+    Assert.assertEquals(newNum, 1);
     Assert.assertEquals(newNodes.size(), 3);
     Assert.assertTrue(newNodes.contains(newNodeA));
     Assert.assertTrue(newNodes.contains(gNodeB));
@@ -209,7 +209,10 @@ public class GetGraphAtMutationNumberTest {
     Assert.assertEquals(newNodeA.tokenList(), newTokenList);
   }
 
-  /** Mutation Number requested exceeds the length of the mutation list */
+  /**
+   * Mutation Number requested exceeds the length of the mutation list, should return the graph
+   * after applying all the mutations
+   */
   @Test
   public void numberRequestedTooBig() {
     HashMap<String, Node> protoNodesMap = new HashMap<>();
@@ -224,8 +227,16 @@ public class GetGraphAtMutationNumberTest {
     List<MultiMutation> multiMutList = new ArrayList<>();
 
     DataGraph mutatedGraph =
-        Utility.getGraphAtMutationNumber(dataGraph, dataGraphCopy, 2, multiMutList);
-    Assert.assertNull(mutatedGraph);
+        Utility.getGraphAtMutationNumber(dataGraph, dataGraphCopy, 1, multiMutList);
+    MutableGraph<GraphNode> newGraph = mutatedGraph.graph();
+    HashSet<String> newRoots = mutatedGraph.roots();
+    Set<GraphNode> newNodes = newGraph.nodes();
+    int newNum = mutatedGraph.numMutations();
+
+    Assert.assertEquals(
+        -1, newNum); // This would be the original graph since there are no mutations
+    Assert.assertEquals(3, newNodes.size());
+    Assert.assertEquals(3, newRoots.size());
   }
 
   /** The current graph node is at a mutation AFTER the one requested. */
@@ -272,7 +283,7 @@ public class GetGraphAtMutationNumberTest {
     DataGraph dataGraphMutated = DataGraph.create(origGraph, origGraphNodesMap, origRoots, 2);
 
     DataGraph mutatedGraph =
-        Utility.getGraphAtMutationNumber(dataGraph, dataGraphMutated, 1, multiMutList);
+        Utility.getGraphAtMutationNumber(dataGraph, dataGraphMutated, 0, multiMutList);
 
     MutableGraph<GraphNode> newGraph = mutatedGraph.graph();
     HashSet<String> newRoots = mutatedGraph.roots();
@@ -282,7 +293,7 @@ public class GetGraphAtMutationNumberTest {
     Assert.assertFalse(origGraph.hasEdgeConnecting(gNodeA, gNodeB));
     Assert.assertEquals(origNodes.size(), 3);
 
-    Assert.assertEquals(newNum, 1);
+    Assert.assertEquals(newNum, 0);
     Assert.assertEquals(newNodes.size(), 3);
     Assert.assertTrue(newNodes.contains(gNodeA));
     Assert.assertTrue(newNodes.contains(gNodeB));

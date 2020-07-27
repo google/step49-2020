@@ -15,6 +15,7 @@
 package com.google.sps;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import com.proto.GraphProtos.Node;
@@ -49,10 +50,10 @@ public class MutationDiffTest {
   }
 
   /*
-   * Test that nextIndex > currIndex + 1 is rejected
+   * Test that index > multiMutList.size() - 1 is rejected
    */
   @Test
-  public void nonConsecutiveIndicesPos() {
+  public void outOfBoundsLarge() {
     Mutation addAB =
         Mutation.newBuilder()
             .setType(Mutation.Type.ADD_EDGE)
@@ -73,17 +74,17 @@ public class MutationDiffTest {
     multiMutList.add(addABM);
     multiMutList.add(addACM);
 
-    MultiMutation result = Utility.getDiffBetween(multiMutList, 0, 2);
+    MultiMutation result = Utility.getMultiMutationAtIndex(multiMutList, 2);
     Assert.assertNull(result);
-    result = Utility.getDiffBetween(multiMutList, 1, 2);
+    result = Utility.getMultiMutationAtIndex(multiMutList, 1);
     Assert.assertNotNull(result);
   }
 
   /*
-   * Test that nextIndex < currIndex + 1 is rejected
+   * Test that index < 0 is rejected
    */
   @Test
-  public void nonConsecutiveIndicesNeg() {
+  public void outOfBoundsSmall() {
     Mutation addAB =
         Mutation.newBuilder()
             .setType(Mutation.Type.ADD_EDGE)
@@ -104,58 +105,18 @@ public class MutationDiffTest {
     multiMutList.add(addABM);
     multiMutList.add(addACM);
 
-    MultiMutation result = Utility.getDiffBetween(multiMutList, 1, 0);
+    MultiMutation result = Utility.getMultiMutationAtIndex(multiMutList, -1);
     Assert.assertNull(result);
-    result = Utility.getDiffBetween(multiMutList, 1, 1);
-    Assert.assertNull(result);
-    result = Utility.getDiffBetween(multiMutList, 1, 2);
+    result = Utility.getMultiMutationAtIndex(multiMutList, 0);
     Assert.assertNotNull(result);
   }
 
   /*
-   * Test that a negative current index is rejected
+   * Tests that calling the function on a valid index just returns the
+   * multi-mutation entry at index - add node
    */
   @Test
-  public void invalidCurrIndex() {
-    Mutation addAB =
-        Mutation.newBuilder()
-            .setType(Mutation.Type.ADD_EDGE)
-            .setStartNode("A")
-            .setEndNode("B")
-            .build();
-    MultiMutation addABM = MultiMutation.newBuilder().addMutation(addAB).build();
-    List<MultiMutation> multiMutList = new ArrayList<>();
-    multiMutList.add(addABM);
-
-    MultiMutation result = Utility.getDiffBetween(multiMutList, -1, 0);
-    Assert.assertNull(result);
-  }
-
-  /*
-   * Test that a next index larger than the number of mutations is rejected
-   */
-  @Test
-  public void tooLargeNextIndex() {
-    Mutation addAB =
-        Mutation.newBuilder()
-            .setType(Mutation.Type.ADD_EDGE)
-            .setStartNode("A")
-            .setEndNode("B")
-            .build();
-    MultiMutation addABM = MultiMutation.newBuilder().addMutation(addAB).build();
-    List<MultiMutation> multiMutList = new ArrayList<>();
-    multiMutList.add(addABM);
-
-    MultiMutation result = Utility.getDiffBetween(multiMutList, 1, 2);
-    Assert.assertNull(result);
-  }
-
-  /*
-   * Tests that a diff between currIndex and currIndex + 1 just returns the
-   * multi-mutation entry at currIndex - add node
-   */
-  @Test
-  public void forwardMutationAddNode() {
+  public void addNode() {
     Mutation addA = Mutation.newBuilder().setType(Mutation.Type.ADD_NODE).setStartNode("A").build();
     MultiMutation addAM = MultiMutation.newBuilder().addMutation(addA).build();
 
@@ -171,16 +132,16 @@ public class MutationDiffTest {
     multiMutList.add(addAM);
     multiMutList.add(addABM);
 
-    MultiMutation result = Utility.getDiffBetween(multiMutList, 0, 1);
+    MultiMutation result = Utility.getMultiMutationAtIndex(multiMutList, 0);
     Assert.assertEquals(result, addAM);
   }
 
   /*
-   * Tests that a diff between currIndex and currIndex + 1 just returns the
-   * multi-mutation entry at currIndex - add edge
+   * Tests that calling the function on a valid index just returns the
+   * multi-mutation entry at index - add edge
    */
   @Test
-  public void forwardMutationAddEdge() {
+  public void addEdge() {
     Mutation addA = Mutation.newBuilder().setType(Mutation.Type.ADD_NODE).setStartNode("A").build();
     MultiMutation addAM = MultiMutation.newBuilder().addMutation(addA).build();
 
@@ -196,16 +157,16 @@ public class MutationDiffTest {
     multiMutList.add(addAM);
     multiMutList.add(addABM);
 
-    MultiMutation result = Utility.getDiffBetween(multiMutList, 1, 2);
+    MultiMutation result = Utility.getMultiMutationAtIndex(multiMutList, 1);
     Assert.assertEquals(result, addABM);
   }
 
   /*
-   * Tests that a diff between currIndex and currIndex + 1 just returns the
-   * multi-mutation entry at currIndex - change token
+   * Tests that calling the function on a valid index just returns the
+   * multi-mutation entry at index - change token
    */
   @Test
-  public void forwardMutationChangeToken() {
+  public void changeToken() {
     TokenMutation tokenMut =
         TokenMutation.newBuilder()
             .setType(TokenMutation.Type.ADD_TOKEN)
@@ -234,16 +195,16 @@ public class MutationDiffTest {
     multiMutList.add(addTokenToAM);
     multiMutList.add(addABM);
 
-    MultiMutation result = Utility.getDiffBetween(multiMutList, 0, 1);
+    MultiMutation result = Utility.getMultiMutationAtIndex(multiMutList, 0);
     Assert.assertEquals(result, addTokenToAM);
   }
 
   /*
-   * Tests that a diff between currIndex and currIndex + 1 just returns the
-   * multi-mutation entry at currIndex - delete edge
+   * Tests that calling the function on a valid index just returns the
+   * multi-mutation entry at index - delete edge
    */
   @Test
-  public void forwardMutationDeleteEdge() {
+  public void deleteEdge() {
     TokenMutation tokenMut =
         TokenMutation.newBuilder()
             .setType(TokenMutation.Type.ADD_TOKEN)
@@ -272,16 +233,16 @@ public class MutationDiffTest {
     multiMutList.add(addTokenToAM);
     multiMutList.add(removeABM);
 
-    MultiMutation result = Utility.getDiffBetween(multiMutList, 1, 2);
+    MultiMutation result = Utility.getMultiMutationAtIndex(multiMutList, 1);
     Assert.assertEquals(result, removeABM);
   }
 
   /*
-   * Tests that a diff between currIndex and currIndex + 1 just returns the
-   * multi-mutation entry at currIndex - delete node
+   * Tests that calling the function on a valid index just returns the
+   * multi-mutation entry at index - delete node
    */
   @Test
-  public void forwardMutationDeleteNode() {
+  public void deleteNode() {
     TokenMutation tokenMut =
         TokenMutation.newBuilder()
             .setType(TokenMutation.Type.ADD_TOKEN)
@@ -317,7 +278,245 @@ public class MutationDiffTest {
     multiMutList.add(addTokenToAM);
     multiMutList.add(deleteBM);
 
-    MultiMutation result = Utility.getDiffBetween(multiMutList, 1, 2);
+    MultiMutation result = Utility.getMultiMutationAtIndex(multiMutList, 1);
     Assert.assertEquals(result, deleteBM);
+  }
+
+  /** Tests that an empty filter on a multimutation returns the whole multimutation back */
+  @Test
+  public void noFilter() {
+    Mutation removeAB =
+        Mutation.newBuilder()
+            .setType(Mutation.Type.DELETE_EDGE)
+            .setStartNode("A")
+            .setEndNode("B")
+            .build();
+    Mutation removeB =
+        Mutation.newBuilder().setType(Mutation.Type.DELETE_NODE).setStartNode("B").build();
+    MultiMutation deleteBM =
+        MultiMutation.newBuilder()
+            .addMutation(removeAB)
+            .addMutation(removeB)
+            .setReason("deleting node B")
+            .build();
+
+    MultiMutation filteredMultiMut = Utility.filterMultiMutationByNodes(deleteBM, new HashSet<>());
+    Assert.assertEquals(filteredMultiMut, deleteBM);
+  }
+
+  /*
+   * Tests that a filter on a null multimutation returns null
+   */
+  @Test
+  public void filterNullMultiMut() {
+    HashSet<String> nodeNames = new HashSet<>();
+    nodeNames.add("A");
+
+    MultiMutation filteredMultiMut = Utility.filterMultiMutationByNodes(null, nodeNames);
+    Assert.assertNull(filteredMultiMut);
+  }
+
+  /*
+   * Tests that a filter correctly removes irrelevant mutations from a
+   * multimutation
+   */
+  @Test
+  public void filterMultiMut() {
+    TokenMutation tokenMut =
+        TokenMutation.newBuilder()
+            .setType(TokenMutation.Type.ADD_TOKEN)
+            .addTokenName("1")
+            .addTokenName("2")
+            .addTokenName("3")
+            .build();
+
+    Mutation addTokenToA =
+        Mutation.newBuilder()
+            .setStartNode("A")
+            .setType(Mutation.Type.CHANGE_TOKEN)
+            .setTokenChange(tokenMut)
+            .build();
+
+    Mutation removeAB =
+        Mutation.newBuilder()
+            .setType(Mutation.Type.DELETE_EDGE)
+            .setStartNode("A")
+            .setEndNode("B")
+            .build();
+    Mutation removeB =
+        Mutation.newBuilder().setType(Mutation.Type.DELETE_NODE).setStartNode("B").build();
+    MultiMutation originalMultiMut =
+        MultiMutation.newBuilder()
+            .addMutation(addTokenToA)
+            .addMutation(removeAB)
+            .addMutation(removeB)
+            .setReason("adding token to A and deleting node B")
+            .build();
+
+    HashSet<String> nodeNames = new HashSet<>();
+    nodeNames.add("A");
+
+    MultiMutation filteredMultiMut =
+        Utility.filterMultiMutationByNodes(originalMultiMut, nodeNames);
+    Assert.assertNotNull(filteredMultiMut);
+
+    List<Mutation> filteredMutList = filteredMultiMut.getMutationList();
+    Assert.assertEquals(filteredMutList.size(), 1);
+    Assert.assertEquals(filteredMutList.get(0), addTokenToA);
+  }
+
+  /*
+   * Tests that a filter correctly removes irrelevant mutations from a
+   * multimutation when the filtered node has been deleted as one of the
+   * mutations
+   */
+  @Test
+  public void filterMultiMutDeletedNode() {
+    TokenMutation tokenMut =
+        TokenMutation.newBuilder()
+            .setType(TokenMutation.Type.ADD_TOKEN)
+            .addTokenName("1")
+            .addTokenName("2")
+            .addTokenName("3")
+            .build();
+
+    Mutation addTokenToA =
+        Mutation.newBuilder()
+            .setStartNode("A")
+            .setType(Mutation.Type.CHANGE_TOKEN)
+            .setTokenChange(tokenMut)
+            .build();
+
+    Mutation removeAB =
+        Mutation.newBuilder()
+            .setType(Mutation.Type.DELETE_EDGE)
+            .setStartNode("A")
+            .setEndNode("B")
+            .build();
+    Mutation removeB =
+        Mutation.newBuilder().setType(Mutation.Type.DELETE_NODE).setStartNode("B").build();
+    MultiMutation originalMultiMut =
+        MultiMutation.newBuilder()
+            .addMutation(addTokenToA)
+            .addMutation(removeAB)
+            .addMutation(removeB)
+            .setReason("adding token to A and deleting node B")
+            .build();
+
+    HashSet<String> nodeNames = new HashSet<>();
+    nodeNames.add("B");
+
+    MultiMutation filteredMultiMut =
+        Utility.filterMultiMutationByNodes(originalMultiMut, nodeNames);
+    Assert.assertNotNull(filteredMultiMut);
+
+    List<Mutation> filteredMutList = filteredMultiMut.getMutationList();
+    Assert.assertEquals(filteredMutList.size(), 1);
+    Assert.assertEquals(filteredMutList.get(0), removeB);
+  }
+
+  /*
+   * Tests that a filter correctly removes irrelevant mutations from a
+   * multimutation when there are multiple nodes to filter by
+   */
+  @Test
+  public void filterByMultipleNodes() {
+    TokenMutation tokenMut =
+        TokenMutation.newBuilder()
+            .setType(TokenMutation.Type.ADD_TOKEN)
+            .addTokenName("1")
+            .addTokenName("2")
+            .addTokenName("3")
+            .build();
+
+    Mutation addTokenToA =
+        Mutation.newBuilder()
+            .setStartNode("A")
+            .setType(Mutation.Type.CHANGE_TOKEN)
+            .setTokenChange(tokenMut)
+            .build();
+
+    Mutation removeAC =
+        Mutation.newBuilder()
+            .setType(Mutation.Type.DELETE_EDGE)
+            .setStartNode("A")
+            .setEndNode("C")
+            .build();
+    Mutation removeB =
+        Mutation.newBuilder().setType(Mutation.Type.DELETE_NODE).setStartNode("B").build();
+    Mutation removeC =
+        Mutation.newBuilder().setType(Mutation.Type.DELETE_NODE).setStartNode("C").build();
+    MultiMutation originalMultiMut =
+        MultiMutation.newBuilder()
+            .addMutation(addTokenToA)
+            .addMutation(removeAC)
+            .addMutation(removeB)
+            .addMutation(removeC)
+            .setReason("adding token to A and deleting node B")
+            .build();
+
+    HashSet<String> nodeNames = new HashSet<>();
+    nodeNames.add("A");
+    nodeNames.add("C");
+
+    MultiMutation filteredMultiMut =
+        Utility.filterMultiMutationByNodes(originalMultiMut, nodeNames);
+    Assert.assertNotNull(filteredMultiMut);
+
+    List<Mutation> filteredMutList = filteredMultiMut.getMutationList();
+    Assert.assertEquals(filteredMutList.size(), 3);
+    Assert.assertEquals(filteredMutList.get(0), addTokenToA);
+    Assert.assertEquals(filteredMutList.get(1), removeAC);
+    Assert.assertEquals(filteredMutList.get(2), removeC);
+  }
+
+  /*
+   * Tests that a filter correctly removes irrelevant mutations from a
+   * multimutation that occur after, but keep mutations of the node before
+   * its deletiong
+   */
+  @Test
+  public void filterMultiMutDeletedNodePreviousKept() {
+    TokenMutation tokenMut =
+        TokenMutation.newBuilder()
+            .setType(TokenMutation.Type.ADD_TOKEN)
+            .addTokenName("1")
+            .addTokenName("2")
+            .addTokenName("3")
+            .build();
+
+    Mutation addTokenToB =
+        Mutation.newBuilder()
+            .setStartNode("B")
+            .setType(Mutation.Type.CHANGE_TOKEN)
+            .setTokenChange(tokenMut)
+            .build();
+
+    Mutation removeAB =
+        Mutation.newBuilder()
+            .setType(Mutation.Type.DELETE_EDGE)
+            .setStartNode("A")
+            .setEndNode("B")
+            .build();
+    Mutation removeB =
+        Mutation.newBuilder().setType(Mutation.Type.DELETE_NODE).setStartNode("B").build();
+    MultiMutation originalMultiMut =
+        MultiMutation.newBuilder()
+            .addMutation(addTokenToB)
+            .addMutation(removeAB)
+            .addMutation(removeB)
+            .setReason("adding token to A and deleting node B")
+            .build();
+
+    HashSet<String> nodeNames = new HashSet<>();
+    nodeNames.add("B");
+
+    MultiMutation filteredMultiMut =
+        Utility.filterMultiMutationByNodes(originalMultiMut, nodeNames);
+    Assert.assertNotNull(filteredMultiMut);
+
+    List<Mutation> filteredMutList = filteredMultiMut.getMutationList();
+    Assert.assertEquals(filteredMutList.size(), 2);
+    Assert.assertEquals(filteredMutList.get(0), addTokenToB);
   }
 }

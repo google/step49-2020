@@ -25,37 +25,40 @@ import tippy, { sticky } from 'tippy.js';
 import 'tippy.js/dist/tippy.css';
 import 'tippy.js/dist/backdrop.css';
 import 'tippy.js/animations/shift-away.css';
+import { colorScheme, opacityScheme } from './constants.js';
 
 export {
-  searchNode, initializeNumMutations, setCurrGraphNum, initializeTippy,
-  generateGraph, getUrl, navigateGraph, currGraphNum, numMutations, updateButtons,
-  highlightDiff, initializeReasonTooltip, getGraphDisplay
+  initializeNumMutations, setMutationIndexList, setCurrMutationNum, setCurrMutationIndex, initializeTippy,
+  generateGraph, getUrl, navigateGraph, currMutationNum, currMutationIndex, numMutations,
+  updateButtons, searchNode, highlightDiff, initializeReasonTooltip, getGraphDisplay,
+  getClosestIndices
 };
 
 
 cytoscape.use(popper); // register extension
 cytoscape.use(dagre); // register extension
 
-// Stores the index of the graph (in sequence of mutations) currently
-// displayed on the screen. Must be >= 0.
-let currGraphNum = 0;
-// Stores the number of mutations in the list this graph is applying
-// The user cannot click next to a graph beyond this point
+// Stores the index of the most recently-applied mutation in mutationIndexList
+// or -1 if no mutations have been applied. The value could be a decimal, in 
+// which case currMutationNum is not in the list and the variable's value
+// represents the average of the indices between which currMutationNum should be
+let currMutationIndex = -1;
+
+// Stores the actual number of the most recently-applied mutation
+// in the global list of mutations or -1 if no mutations have been applied
+let currMutationNum = -1;
+
+// Stores the number of mutations in mutationIndexList. The user cannot click next
+// to a graph beyond this point
 let numMutations = 0;
-// An object containing key-value pairs of various types of graph
-// objects and their custom colors
-const colorScheme = {
-  "unmodifiedNodeColor": "blue",
-  "addedObjectColor": "green",
-  "deletedObjectColor": "red",
-  "modifiedNodeColor": "yellow",
-  "unmodifiedEdgeColor": "grey",
-  "labelColor": "white"
-};
-// Sets the opacity constants for different types of objects in the graph
-const opacityScheme = {
-  "deletedObjectOpacity": 0.25
-};
+
+// Stores the list of indices at which the currently searched node is mutated
+// (for ex, if a node was searched and the node was modified in the 1st, 4th, and 
+// 5th indices, this would be [1,4,5])
+let mutationIndexList = [];
+
+// Stores total number of mutations, for display
+let totalNum = 0;
 
 /**
  * Initializes the number of mutations
@@ -65,10 +68,24 @@ function initializeNumMutations(num) {
 }
 
 /** 
- * Sets the current graph number
+ * Sets the current mutation number
  */
-function setCurrGraphNum(num) {
-  currGraphNum = num;
+function setCurrMutationNum(num) {
+  currMutationNum = num;
+}
+
+/**
+ * Sets the current mutation index
+ */
+function setCurrMutationIndex(num) {
+  currMutationIndex = num;
+}
+
+/**
+ * Sets the mutation index list
+ */
+function setMutationIndexList(lst) {
+  mutationIndexList = lst;
 }
 
 /**
@@ -87,10 +104,6 @@ async function generateGraph() {
   nextBtn.disabled = true;
 
   const url = getUrl();
-
-  prevBtn.disabled = true;
-  nextBtn.disabled = true;
-
   const response = await fetch(url);
 
   const serverErrorStatus = response.headers.get("serverError");
@@ -105,19 +118,41 @@ async function generateGraph() {
   // Graph nodes and edges received from server
   const nodes = JSON.parse(jsonResponse.nodes);
   const edges = JSON.parse(jsonResponse.edges);
-  initializeNumMutations(JSON.parse(jsonResponse.numMutations));
+  totalNum = jsonResponse.totalMutNumber;
+
+  // Set all logs to be black
+  const allLogs = document.querySelectorAll('.log-msg');
+  for (let i = 0; i < allLogs.length; i++) {
+    allLogs[i].classList.remove('recent-log-text');
+  }
+
   const mutList = jsonResponse["mutationDiff"].length === 0 ? null : JSON.parse(jsonResponse["mutationDiff"]);
   const reason = jsonResponse["reason"];
+
+  mutationIndexList = JSON.parse(jsonResponse.mutationIndices);
+  numMutations = mutationIndexList.length;
 
   if (!nodes || !edges || !Array.isArray(nodes) || !Array.isArray(edges)) {
     displayError("Malformed graph received from server - edges or nodes are empty");
     return;
   }
 
-  if (nodes.length === 0) {
-    displayError("Nothing to display!");
+  // There aren't any nodes in this graph, and there aren't any mutations pertaining to the filtered node
+  if (nodes.length === 0 && numMutations === 0) {
+    displayError("This node does not exist in any stage of the graph!");
     return;
+  } else if (response.headers.get("serverMessage")) {
+    // This happens if the graph doesn't contain the searched node or 
+    // if the graph contains the searched node BUT it isn't mutated in this graph
+    addToLogs(response.headers.get("serverMessage"));
   }
+  // Update the current mutation index to reflect the new position of currMutationNumber
+  // in the updated mutationIndexList between the previous smaller and the next larger
+  // element.
+  const indexOfNextLargerNumber = getClosestIndices(mutationIndexList, currMutationNum).higher;
+  const indexOfClosestSmallerNumber = getClosestIndices(mutationIndexList, currMutationNum).lower;
+  
+  currMutationIndex = ((indexOfNextLargerNumber + indexOfClosestSmallerNumber) / 2);
 
   // Add node to array of cytoscape nodes
   nodes.forEach(node =>
@@ -137,7 +172,7 @@ async function generateGraph() {
         source: start
       }
     });
-  })
+  });
   getGraphDisplay(graphNodes, graphEdges, mutList, reason);
   updateButtons();
   return;
@@ -149,7 +184,7 @@ async function generateGraph() {
  */
 function getUrl() {
   const depthElem = document.getElementById('num-layers');
-  const nodeName = document.getElementById('node-name') ? document.getElementById('node-name').value || "" : ""; 
+  const nodeName = document.getElementById('node-name-filter') ? document.getElementById('node-name-filter').value || "" : "";
 
   let selectedDepth = 0;
   if (depthElem === null) {
@@ -168,8 +203,21 @@ function getUrl() {
       selectedDepth = 20;
     }
   }
-  const url = `/data?depth=${selectedDepth}&mutationNum=${currGraphNum}&nodeName=${nodeName}`;
+  const url = `/data?depth=${selectedDepth}&mutationNum=${currMutationNum}&nodeName=${nodeName}`;
   return url;
+}
+
+/**
+ * Add a list element with the given message to the top of the logs list
+ * @param msg the message to display in the new list element
+ */
+function addToLogs(msg) {
+  const logsList = document.getElementById("log-list");
+  const newMsg = document.createElement("li");
+  newMsg.classList.add("log-msg");
+  newMsg.innerText = msg;
+  logsList.appendChild(newMsg);
+  newMsg.classList.add("recent-log-text");
 }
 /**
  * Takes an error message and creates a text element on the page to display this message
@@ -192,6 +240,10 @@ function displayError(errorMsg) {
  * Takes in graph nodes and edges and creates a cytoscape graph with this
  * data. Assumes that the graph is a DAG to display it in the optimal layout.
  * Returns the cytoscape graph object.
+ * @param graphNodes a list of nodes
+ * @param graphEdges a list of edges
+ * @param mutList a list of mutations
+ * @param reason for mutation, used for highlighting the difference
  */
 function getGraphDisplay(graphNodes, graphEdges, mutList, reason) {
   const cy = cytoscape({
@@ -236,7 +288,8 @@ function getGraphDisplay(graphNodes, graphEdges, mutList, reason) {
     zoom: 0.75,
     pan: { x: 0, y: 0 },
     minZoom: .25,
-    maxZoom: 2.5
+    maxZoom: 2.5,
+    textureOnViewport: true
   });
 
   // Initialize content of node's token list popup
@@ -253,6 +306,15 @@ function getGraphDisplay(graphNodes, graphEdges, mutList, reason) {
   document.getElementById('search-button').onclick = function() { searchAndHighlight(cy, "node", searchNode) };
 
   document.getElementById('search-token-button').onclick = function() { searchAndHighlight(cy, "token", searchToken) };
+  
+  // If a node is searched, color it (it's fuchsia because I thought it was pretty, but definitely open to change! )
+  const nodeFilter = document.getElementById("node-name-filter");
+  if (nodeFilter && nodeFilter.value) {
+    const target = findNodeInGraph(cy, nodeFilter.value);
+    if (target) {
+      target.style('background-color', colorScheme["filteredNodeColor"]);
+    }
+  }
 
   // When a new graph is loaded, mutations are always shown by default
   const showMutButton = document.getElementById("show-mutations");
@@ -343,6 +405,8 @@ function highlightDiff(cy, mutList, reason = "") {
           // color this node green
           modifiedObj.style('background-color', colorScheme["addedObjectColor"]);
           addedNodes = addedNodes.union(modifiedObj);
+        } else {
+          displayError("No node called " + startNode + " in graph");
         }
         break;
       case 2:
@@ -353,6 +417,12 @@ function highlightDiff(cy, mutList, reason = "") {
           modifiedObj.style('line-color', colorScheme["addedObjectColor"]);
           modifiedObj.style('target-arrow-color', colorScheme["addedObjectColor"]);
           addedEdges = addedEdges.union(modifiedObj);
+        } else if (!endNode) {
+          displayError(endNode + " not specified");
+        } else if (cy.getElementById(startNode).length === 0) {
+          displayError("No node called " + startNode + " in graph");
+        } else {
+          displayError("No node called " + endNode + " in graph");
         }
         break;
       case 3:
@@ -417,14 +487,13 @@ function highlightDiff(cy, mutList, reason = "") {
       initializeReasonTooltip(modifiedObj, reason);
     }
   });
-  const returnObject = {
-    "deletedNodes": deletedNodes,
-    "deletedEdges": deletedEdges,
-    "addedNodes": addedNodes,
-    "addedEdges": addedEdges,
-    "modifiedNodes": modifiedNodes
-  }
-  return returnObject;
+  return {
+    deletedNodes,
+    deletedEdges,
+    addedNodes,
+    addedEdges,
+    modifiedNodes
+  };
 }
 
 
@@ -709,15 +778,38 @@ function getTooltipContent(node) {
  * When a next/previous button is clicked, modifies the mutation index of the
  * current graph to represent the new state. Then, the corresponding
  * graph is requested from the server.
+ * If currMutationIndex is decimal, next/prev would set it to the 
+ * next/previous integer index (either a floor or a ceiling)
+ * @param amount the amount to change the currMutationIndex by. 
+ * Either 1 (for next button) or -1 (for previous button)
  */
 function navigateGraph(amount) {
-  currGraphNum += amount;
-  if (currGraphNum <= 0) {
-    currGraphNum = 0;
+  // this function should not be called if there are no mutations
+  if (numMutations <= 0) {
+    return;
   }
-  if (currGraphNum >= numMutations) {
-    currGraphNum = numMutations;
+  if (Number.isInteger(currMutationIndex)) {
+    // In this case, currMutationNum is in mutationIndexList, so update the 
+    // index by the given amount (either +1 or -1)
+    currMutationIndex += amount;
+  } else {
+    // In this case, currMutationNum is the average of two adjacent indices
+    // in mutationIndex list, so pressing next should move the index to the 
+    // higher index (the ceil of the average) and pressing prev should move
+    // the index to the lower index (the floor of the average)
+    if (amount === 1) {
+      currMutationIndex = Math.ceil(currMutationIndex);
+    } else {
+      currMutationIndex = Math.floor(currMutationIndex);
+    }
   }
+  if (currMutationIndex <= -1) {
+    currMutationIndex = -1;
+  }
+  if (currMutationIndex >= numMutations) {
+    currMutationIndex = numMutations - 1;
+  }
+  currMutationNum = (currMutationIndex === -1) ? -1 : mutationIndexList[currMutationIndex];
 }
 
 /**
@@ -727,14 +819,56 @@ function navigateGraph(amount) {
  * Assumes currGraphNum is between 0 and numMutations
  */
 function updateButtons() {
-  if (currGraphNum === 0) {
+  // The use of <= and >= as opposed to === is for safety
+  if (Math.floor(currMutationIndex) <= -1) {
     document.getElementById("prevbutton").disabled = true;
   } else {
     document.getElementById("prevbutton").disabled = false;
   }
-  if (currGraphNum === numMutations) {
+  if (currMutationIndex >= mutationIndexList.length - 1) {
     document.getElementById("nextbutton").disabled = true;
   } else {
     document.getElementById("nextbutton").disabled = false;
   }
+  const numElement = document.getElementById("num-mutation-display");
+  numElement.innerText = `Graph ${currMutationNum + 1} out of ${totalNum} total`;
 }
+ 
+/**
+ * Get an object with the index of the element that's immediately smaller 
+ * and immediately greater than the element
+ * @param indicesList a list of indices, assume it's sorted
+ * @param element the element to find the smaller value than
+ * @return an object with the properties 'lower' and 'higher';
+ * lower contains the index of the last element in indicesList smaller than
+ * element or -1 if element is smaller than all elements in indicesList
+ * higher contains the index of the first element in indicesList larger than
+ * element or indicesList.length if element is larger than all elements
+ * in indicesList
+ */
+function getClosestIndices(indicesList, element) {
+  let start = 0; 
+  let end = indicesList.length - 1;
+
+  let toReturn = {lower: -1, higher: -1};
+  let indexHigher = -1;
+  while (start <= end) {
+    let mid = Math.floor((start + end) / 2);
+    // element is not less (greater or equal to) -> go to the right
+    if (indicesList[mid] <= element) {
+      indexHigher = mid + 1;
+      start = mid + 1;
+    }
+    // go to the left otherwise, set indexHigher to the mid
+    else {
+      indexHigher = mid;
+      end = mid - 1;
+    }
+  }
+  toReturn['higher'] = indexHigher;
+  // if indexHigher is 0, then nothing is less (so lower is -1)
+  // otherwise check the previous element and either go back by 1 or 2
+  toReturn['lower'] = indexHigher === 0 ? -1 : (indicesList[indexHigher - 1] < element ? indexHigher - 1 : Math.max(indexHigher - 2, -1));
+  return toReturn;
+}
+
