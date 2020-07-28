@@ -304,7 +304,7 @@ function getGraphDisplay(graphNodes, graphEdges, mutList, reason) {
           'line-color': colorScheme["unmodifiedEdgeColor"],
           'target-arrow-color': colorScheme["unmodifiedEdgeColor"],
           'target-arrow-shape': 'triangle',
-          'curve-style': 'bezier'
+          'curve-style': 'haystack'
         }
       }],
     layout: {
