@@ -1,9 +1,11 @@
+
 import {
   initializeNumMutations, setMutationIndexList, setCurrMutationNum, setCurrMutationIndex,
   initializeTippy, generateGraph, getUrl, navigateGraph, currMutationNum, currMutationIndex,
-  numMutations, updateButtons, searchNode, highlightDiff, initializeReasonTooltip, getGraphDisplay,
-  getClosestIndices, initializeSlider, resetMutationSlider, mutationNumSlider, setMutationSliderValue, 
-  readGraphNumberInput, updateGraphNumInput, setMaxNumMutations
+  numMutations, updateButtons, searchAndHighlight, highlightDiff, initializeReasonTooltip, 
+  getGraphDisplay, getClosestIndices, initializeSlider, resetMutationSlider, mutationNumSlider, 
+  setMutationSliderValue, readGraphNumberInput, updateGraphNumInput, setMaxNumMutations, 
+  searchNode, searchToken
 }
   from "../src/main/webapp/script.js";
 
@@ -330,49 +332,17 @@ describe("Pressing next and previous buttons associated with a graph", function 
   });
 });
 
-describe("Node search", function () {
-  const cy = cytoscape({
-    elements: [
-      { data: { id: "A" } },
-      { data: { id: "B" } },
-      {
-        data: {
-          id: "AB",
-          source: "A",
-          target: "B"
-        }
-      }]
-  });
-
-  it("should be a successful search", function () {
-    const result = searchNode(cy, "A");
-
-    // search should find node
-    expect(result).toBe(true);
-  });
-
-  it("should be an unsuccessful search", function () {
-    let result = searchNode(cy, "C");
-
-    // search should not find node
-    expect(result).toBe(false);
-  });
-
-  it("should not search at all", function () {
-    let result = searchNode(cy, "");
-
-    // search should not find node
-    expect(result).toBe(false);
-  });
-});
-
 describe("Check correct url params", function () {
   let nodeName = {};
+  let tokenName = {};
 
   beforeEach(function () {
     setCurrMutationNum(1);
     nodeName = document.createElement("input");
     nodeName.id = "node-name-filter";
+
+    tokenName = document.createElement("input");
+    tokenName.id = "token-name-filter";
   });
 
   afterEach(function () {
@@ -393,6 +363,9 @@ describe("Check correct url params", function () {
     // Not on page here, should be empty
     expect(constructedUrl.has("nodeName")).toBe(true);
     expect(constructedUrl.get("nodeName")).toBe("");
+
+    expect(constructedUrl.has("tokenName")).toBe(true);
+    expect(constructedUrl.get("tokenName")).toBe("");
   });
 
   it("passes correct nodeName when nodeName has a value", function () {
@@ -405,6 +378,163 @@ describe("Check correct url params", function () {
     const constructedUrl = new URLSearchParams(requestParams);
     expect(constructedUrl.has("nodeName")).toBe(true);
     expect(constructedUrl.get("nodeName")).toBe("A");
+  });
+
+  it("passes correct tokenName when tokenName has a value", function () {
+    tokenName.value = "1";
+    document.body.appendChild(tokenName);
+
+    const requestString = getUrl();
+    const requestParams = requestString.substring(requestString.indexOf("?"));
+    const constructedUrl = new URLSearchParams(requestParams);
+    expect(constructedUrl.has("tokenName")).toBe(true);
+    expect(constructedUrl.get("tokenName")).toBe("1");
+  })
+});
+
+describe("Node search", function() {
+  let cy;
+  let numSelected;
+  let nodeError;
+  let query;
+  const expectedBorderWidth = "4px";
+  beforeEach(function() {
+    document.body.innerHTML = `<div id="cy"></div>`;
+
+    cy = cytoscape({
+    elements: [
+      { data: { id: "A" } },
+      { data: { id: "B" } },
+      {
+        data: {
+          id: "edgeAB",
+          source: "A",
+          target: "B"
+        }
+      }],
+      container: document.getElementById("cy"),
+    });
+
+    numSelected = document.createElement("label");
+    numSelected.id = "num-selected";
+    document.body.appendChild(numSelected);
+
+    nodeError = document.createElement("label");
+    nodeError.id = "node-error";
+    document.body.appendChild(nodeError);
+
+    query = document.createElement("input");
+    query.id = "node-search";
+    document.body.appendChild(query);
+  });
+
+  it("should be successful finding a node in the graph", function() {
+    query.value = "A";
+    const result = searchAndHighlight(cy, "node", searchNode);
+
+    // should not display error message
+    expect(nodeError.innerText).toBe("");
+    expect(result.id()).toBe("A");
+    expect(result.style("border-width")).toBe(expectedBorderWidth);
+  });
+
+  it("should be unsuccessful because node does not exist", function() {
+    query.value = "C";
+    const result = searchAndHighlight(cy, "node", searchNode);
+
+    // should display error message
+    expect(nodeError.innerText).toBe("node does not exist.");
+    expect(result).toBeUndefined();
+  });
+
+  it("should not execute at all because there is no query", function() {
+    query.value = "";
+    const result = searchAndHighlight(cy, "node", searchNode);
+
+    // should not display error message
+    expect(nodeError.innerText).toBe("");
+    expect(result).toBeUndefined();
+  });
+});
+
+describe("Token search", function() {
+  let numSelected;
+  let tokenError;
+  let query;
+  let cy;
+
+  beforeEach(function() {
+    document.body.innerHTML = `<div id="cy"></div>`;
+    cy = cytoscape({
+      elements: [
+      ],
+      container: document.getElementById("cy"),
+    });
+    const nodeWithToken1 = {};
+    nodeWithToken1["data"] = {};
+    nodeWithToken1["data"]["id"] = "A";
+    nodeWithToken1["data"]["tokens"] = ["a.js", "b.js", "c.js"];
+    cy.add(nodeWithToken1);
+
+    const nodeWithToken2 = {};
+    nodeWithToken2["data"] = {};
+    nodeWithToken2["data"]["id"] = "B";
+    nodeWithToken2["data"]["tokens"] = ["b.js"];
+    cy.add(nodeWithToken2);
+
+    numSelected = document.createElement("label");
+    numSelected.id = "num-selected";
+    document.body.appendChild(numSelected);
+
+    tokenError = document.createElement("label");
+    tokenError.id = "token-error";
+    document.body.appendChild(tokenError);
+
+    query = document.createElement("input");
+    query.id = "token-search";
+    document.body.appendChild(query);
+  });
+
+  it("should be successful because the token exists in one node", function() {
+    query.value = "a.js";
+    const result = searchAndHighlight(cy, "token", searchToken);
+
+    // error message should not be displayed
+    expect(tokenError.innerText).toBe("");
+    expect(result.length).toBe(1);
+    expect(result[0].id()).toBe("A");
+    expect(result[0].style("border-width")).toBe("4px");
+  });
+
+  it("should be successful with finding token in multiples nodes", function() {
+    query.value = "b.js";
+    const result = searchAndHighlight(cy, "token", searchToken);
+
+    // error message should not be displayed
+    expect(tokenError.innerText).toBe("");
+    expect(result.length).toBe(2);
+    expect(result[0].id()).toBe("A");
+    expect(result[1].id()).toBe("B");
+    expect(result[0].style("border-width")).toBe("4px");
+    expect(result[1].style("border-width")).toBe("4px");
+  });
+
+  it("should be unsuccessful because token does not exist", function() {
+    query.value = "fake_file.js";
+    const result = searchAndHighlight(cy, "token", searchToken);
+
+    // error message should be displayed
+    expect(tokenError.innerText).toBe("token does not exist.");
+    expect(result).toBeUndefined();
+  });
+
+  it("should not be executed at all because there is no query", function() {
+    query.value = "";
+    const result = searchAndHighlight(cy, "token", searchToken);
+
+    // error message should not be displayed
+    expect(tokenError.innerText).toBe("");
+    expect(result).toBeUndefined();
   });
 });
 
@@ -570,7 +700,10 @@ describe("Showing and hiding tooltips when checkbox is clicked", function () {
     <div id="graph"></div>
     <button id="search-button">Search</button>
     <label id="search-error"></label>
-    <input type="checkbox" id="show-mutations"></input>`;
+    <input type="checkbox" id="show-mutations"></input>
+    <button id="reset"></button>
+    <button id="search-button"></button>
+    <button id="search-token-button"></button>`;
 
     const nodeA = {};
     nodeA["data"] = {};

@@ -26,16 +26,18 @@ import tippy, { sticky } from 'tippy.js';
 import 'tippy.js/dist/tippy.css';
 import 'tippy.js/dist/backdrop.css';
 import 'tippy.js/animations/shift-away.css';
-import { colorScheme, opacityScheme } from './constants.js';
+import { colorScheme, opacityScheme, borderScheme } from './constants.js';
 import "./style.scss";
 
 export {
   initializeNumMutations, setMutationIndexList, setCurrMutationNum, setCurrMutationIndex,
   initializeTippy, generateGraph, getUrl, navigateGraph, currMutationNum, currMutationIndex,
-  numMutations, updateButtons, searchNode, highlightDiff, initializeReasonTooltip, getGraphDisplay,
-  getClosestIndices, initializeSlider, resetMutationSlider, mutationNumSlider, setMutationSliderValue,
-  readGraphNumberInput, updateGraphNumInput, setMaxNumMutations
+  numMutations, updateButtons, searchAndHighlight, highlightDiff, initializeReasonTooltip, 
+  getGraphDisplay, getClosestIndices, initializeSlider, resetMutationSlider, mutationNumSlider, 
+  setMutationSliderValue, readGraphNumberInput, updateGraphNumInput, setMaxNumMutations, 
+  searchNode, searchToken
 };
+
 
 cytoscape.use(popper); // register extension
 cytoscape.use(dagre); // register extension
@@ -140,6 +142,7 @@ async function generateGraph() {
   mutationIndexList = JSON.parse(jsonResponse.mutationIndices);
   numMutations = mutationIndexList.length;
   maxNumMutations = jsonResponse.totalMutNumber;
+  const queriedNodes = JSON.parse(jsonResponse.queriedNodes);
 
   if (!nodes || !edges || !Array.isArray(nodes) || !Array.isArray(edges)) {
     displayError("Malformed graph received from server - edges or nodes are empty");
@@ -185,8 +188,7 @@ async function generateGraph() {
       }
     });
   });
-
-  getGraphDisplay(graphNodes, graphEdges, mutList, reason);
+  getGraphDisplay(graphNodes, graphEdges, mutList, reason, queriedNodes);
   updateButtons();
   updateGraphNumInput();
   resetMutationSlider();
@@ -216,6 +218,7 @@ function disableInputs() {
 function getUrl() {
   const depthElem = document.getElementById('num-layers');
   const nodeName = document.getElementById('node-name-filter') ? document.getElementById('node-name-filter').value || "" : "";
+  const tokenName = document.getElementById('token-name-filter') ? document.getElementById('token-name-filter').value || "" : "";
 
   let selectedDepth = 0;
   if (depthElem === null) {
@@ -234,7 +237,7 @@ function getUrl() {
       selectedDepth = 20;
     }
   }
-  const url = `/data?depth=${selectedDepth}&mutationNum=${currMutationNum}&nodeName=${nodeName}`;
+  const url = `/data?depth=${selectedDepth}&mutationNum=${currMutationNum}&nodeName=${nodeName}&tokenName=${tokenName}`;
   return url;
 }
 
@@ -275,8 +278,9 @@ function displayError(errorMsg) {
  * @param graphEdges a list of edges
  * @param mutList a list of mutations
  * @param reason for mutation, used for highlighting the difference
+ * @param queriedNodes a list of nodes that the user had searched for
  */
-function getGraphDisplay(graphNodes, graphEdges, mutList, reason) {
+function getGraphDisplay(graphNodes, graphEdges, mutList, reason, queriedNodes) {
   const cy = cytoscape({
     container: document.getElementById("graph"),
     elements: {
@@ -305,6 +309,12 @@ function getGraphDisplay(graphNodes, graphEdges, mutList, reason) {
           'target-arrow-color': colorScheme["unmodifiedEdgeColor"],
           'target-arrow-shape': 'triangle',
           'curve-style': 'bezier'
+        },
+      },
+      {
+        selector: '.non-highlighted',
+        style: {
+          'opacity': opacityScheme["deletedObjectOpacity"]
         }
       }],
     layout: {
@@ -326,23 +336,18 @@ function getGraphDisplay(graphNodes, graphEdges, mutList, reason) {
     node.tip.show();
   });
 
-  // If a node is searched, color it (it's fuchsia because I thought it was pretty, but definitely open to change! )
-  const nodeFilter = document.getElementById("node-name-filter");
-  if (nodeFilter && nodeFilter.value) {
-    const target = findNodeInGraph(cy, nodeFilter.value);
-    if (target) {
-      target.style('background-color', colorScheme["filteredNodeColor"]);
-    }
+  // Color the queried nodes (it's fuchsia because I thought it was pretty, but definitely open to change! )
+  if (queriedNodes) {
+    queriedNodes.forEach(nodeName => {
+      cy.$id(nodeName).style('background-color', colorScheme["filteredNodeColor"]);
+      cy.$id(nodeName).style('border-width', borderScheme['queriedBorder']);
+    })
   }
+  document.getElementById('reset').onclick = function(){ resetElements(cy) };
 
-  const searchElement = document.getElementById('search');
-  document.getElementById('search-button').onclick = function () {
-    if (searchNode(cy, searchElement.value) || searchElement.value == "") {
-      document.getElementById('search-error').innerText = "";
-    } else {
-      document.getElementById('search-error').innerText = "Node does not exist.";
-    }
-  };
+  document.getElementById('search-button').onclick = function() { searchAndHighlight(cy, "node", searchNode) };
+
+  document.getElementById('search-token-button').onclick = function() { searchAndHighlight(cy, "token", searchToken) };
 
   // When a new graph is loaded, mutations are always shown by default
   const showMutButton = document.getElementById("show-mutations");
@@ -387,7 +392,6 @@ function getGraphDisplay(graphNodes, graphEdges, mutList, reason) {
   });
   return cy;
 }
-
 
 /**
  * Highlights modified nodes and edges in the graph according to the list
@@ -523,7 +527,6 @@ function highlightDiff(cy, mutList, reason = "") {
   };
 }
 
-
 /**
  * Initializes a tooltip with reason as its contents that displays when the object
  * is hovered over
@@ -633,39 +636,113 @@ function hideDiffs(cy, elems, deletedNodes, deletedEdges, addedNodes, addedEdges
 }
 
 /**
- * Zooms in on specific node
+ * Calls specified search function and modifies error text if necessary
+ *
+ * @param cy the graph to search through
+ * @param type a string representing the type of search (node or token)
+ * @param searchFunction the function to run the search with
+ * @returns the result of the search.
+ */
+function searchAndHighlight(cy, type, searchFunction) {
+  resetElements(cy);
+  let errorText = "";
+  const query = document.getElementById(type + '-search').value;
+  let result;
+  if (query !== "") {
+    result = searchFunction(cy, query);
+    if (result) {
+      highlightElements(cy, result);
+    } else {
+      errorText = type + " does not exist.";
+    }
+  }
+  document.getElementById(type + '-error').innerText = errorText;
+  return result;
+}
+
+/**
+ * Searches and highlights/zooms a graph for specified node
+ *
+ * @param cy the graph to search through
+ * @param query the name of the node to search for
+ * @returns the result of the search.
  */
 function searchNode(cy, query) {
-  // reset nodes to default color
-  cy.nodes().forEach(node => {
-    node.style('background-color', 'blue');
-    node.style('opacity', '1')
-  });
-  const target = findNodeInGraph(cy, query);
-  if (target) {
-    cy.nodes().forEach(node => node.style('opacity', '0.25'));
-    target.style('background-color', 'olive');
-    target.style('opacity', '1');
+  let target = cy.$id(query);
+  if (target.length != 0) {
     cy.fit(target, 50);
-    return true;
-  } else {
-    // fits all nodes on screen
-    cy.fit(cy.nodes(), 50);
-    return false;
+    return target;
   }
 }
 
 /**
- * Finds element in cy graph by id
+ * Searches and highlights/zooms a graph for specified token
+ *
+ * @param cy the graph to search through
+ * @param query the name of the token to search for
+ * @returns the result of the search.
  */
-function findNodeInGraph(cy, id) {
-  if (id.length != 0) {
-    const target = cy.$('#' + id);
-    if (target.length != 0) {
-      return target;
+function searchToken(cy, query) {
+  let target = cy.collection();
+  cy.nodes().forEach(node => {
+    // check tokens field exists since deleted nodes that are still
+    // shown don't have a tokens field
+    if (node.data().tokens && node.data().tokens.includes(query)) {
+      target = target.add(node);
     }
+  });
+  if (target.length > 0) {
+    return target;
   }
-  return null;
+}
+
+/**
+ * Highlights collection of nodes/edges
+ *
+ * @param cy the graph that contains nodes/edges
+ * @param target collection of nodes to highlight
+ */
+function highlightElements(cy, target) {
+  cy.nodes().forEach(node => node.toggleClass('non-highlighted', true));
+
+  // highlight desired nodes
+  target.forEach(node => {
+    node.style('border-width', '4px');
+    node.toggleClass('non-highlighted', false);
+  });
+  cy.fit(target[0], 50);
+  document.getElementById('num-selected').innerText = "Number of nodes selected: " + target.length;
+
+  // highlight adjacent edges
+  target.connectedEdges().forEach(edge => {
+    edge.style('line-style', 'dashed');
+    edge.style('z-index', '2');
+  });
+}
+
+/**
+ * Resets collection of nodes/edges to default state
+ *
+ * @param cy the graph that contains nodes/edges
+ */
+function resetElements(cy) {
+  // reset node borders and opacity
+  cy.nodes().forEach(node => {
+    node.style('border-width', '0px');
+    // only change opacity of nodes that were changed
+    // because of highlighting (leave nodes changed due to
+    // mutation alone)
+    if (node.hasClass('non-highlighted')) {
+      node.toggleClass('non-highlighted', false);
+    }
+  });
+
+  // reset edge style
+  cy.edges().forEach(edge => {
+    edge.style('line-style', 'solid');
+    edge.style('z-index', '1');
+  });
+  document.getElementById('num-selected').innerText = "Number of nodes selected: 0";
 }
 
 /**

@@ -207,6 +207,20 @@ public class GetGraphAtMutationNumberTest {
     Assert.assertTrue(newNodes.contains(gNodeC));
     Assert.assertTrue(newGraph.hasEdgeConnecting(newNodeA, gNodeB));
     Assert.assertEquals(newNodeA.tokenList(), newTokenList);
+
+    HashMap<String, Set<String>> mutatedTokenMap = mutatedGraph.tokenMap();
+    Assert.assertEquals(2, mutatedTokenMap.keySet().size());
+    Assert.assertTrue(mutatedTokenMap.keySet().contains("2"));
+    Assert.assertTrue(mutatedTokenMap.keySet().contains("4"));
+
+    Assert.assertEquals(1, mutatedTokenMap.get("4").size());
+    Assert.assertTrue(mutatedTokenMap.get("4").contains("A"));
+    Assert.assertEquals(1, mutatedTokenMap.get("2").size());
+    Assert.assertTrue(mutatedTokenMap.get("2").contains("A"));
+
+    // Make sure they're not referentially equal
+    Assert.assertFalse(dataGraph.tokenMap() == originalCopy.tokenMap());
+    Assert.assertFalse(mutatedTokenMap == dataGraph.tokenMap());
   }
 
   /**
@@ -277,10 +291,12 @@ public class GetGraphAtMutationNumberTest {
     multiMutList.add(addABM);
     multiMutList.add(removeABM);
     multiMutList.add(removeCM);
+    HashMap<String, Set<String>> tokenMap = new HashMap<>();
 
     // Build the current graph (same graph and map)
     // This graph is the one after adding and removing AB but before removing C
-    DataGraph dataGraphMutated = DataGraph.create(origGraph, origGraphNodesMap, origRoots, 2);
+    DataGraph dataGraphMutated =
+        DataGraph.create(origGraph, origGraphNodesMap, origRoots, 2, tokenMap);
 
     DataGraph mutatedGraph =
         Utility.getGraphAtMutationNumber(dataGraph, dataGraphMutated, 0, multiMutList);
