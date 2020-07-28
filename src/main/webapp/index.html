@@ -19,8 +19,25 @@
     <label for="search-name">Name of node to search for</label>
     <input type="text" id="node-name-filter" name="search-name" placeholder="Name"></input>
     <button onclick="graph.generateGraph()">Get Graph</button>
+    <div>
+      <label>Zoom on Node in Graph: </label>
+      <input type="text" id="node-search" placeholder="Node Name"></input>
+      <button id="search-button">Find Node</button>
+      <label id="node-error" class="error-text"></label>
+    </div>
+
+    <div>
+      <label>Zoom on Token in Graph: </label>
+      <input type="text" id="token-search" placeholder="Token Name"></input>
+      <button id="search-token-button">Find Token</button>
+      <label id="token-error" class="error-text"></label>
+    </div>
+    <button id="reset" class="reset">Reset Graph</button>
+    <label id="num-selected"></label>
+    <br />
     <div id="num-mutation-display"></div>
   </div>
+
   <div id="graph-content">
   <!-- COLUMN 1: main column -->
     <div class="graph-content-column" id="graph-content-main">
@@ -48,7 +65,6 @@
         <li class="log-msg">Welcome to our application! Here you'll see a log of messages pertaining to the graph on the left. Enjoy! :)</li>
       </ul>
     </div>
-</div>
+  </div>
 </body>
-
 </html>
