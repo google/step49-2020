@@ -249,8 +249,9 @@ abstract class DataGraph {
           if (startNode == null) { // Check node exists before removing
             return "Delete node: Deleting a non-existent node " + startName + "\n";
           }
+          // Remove the node from all of the occurrences in the tokenMap
           for (String token : startNode.tokenList()) {
-            removeToken(token, startName);
+            removeNodeFromToken(token, startName);
           }
 
           Set<GraphNode> successors = graph.successors(startNode);
@@ -266,14 +267,7 @@ abstract class DataGraph {
               roots.add(succ.name());
             }
           }
-          // Remove the node from all of the occurrences in the tokenMap
-          for (String token : this.tokenMap().keySet()) {
-            this.tokenMap().get(token).remove(startName);
-            // Check if it's empty
-            if (this.tokenMap().get(token).isEmpty()) {
-              this.tokenMap().remove(token);
-            }
-          }
+
           break;
         }
       case CHANGE_TOKEN:
