@@ -152,7 +152,7 @@ public final class Utility {
           originalCopy.graphNodesMap(),
           originalCopy.roots(),
           mutationNum,
-          original.tokenMap());
+          originalCopy.tokenMap());
     }
   }
 
