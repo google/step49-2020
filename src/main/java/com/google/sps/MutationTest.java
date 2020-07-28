@@ -529,6 +529,14 @@ public final class MutationTest {
     // The original node should not be modified by the mutation (nodes are
     // immutable)
     Assert.assertTrue(gNodeB.tokenList().size() == 0);
+
+    HashMap<String, Set<String>> tokenMapNew = dataGraph.tokenMap();
+    Assert.assertTrue(tokenMapNew.containsKey("1"));
+    Assert.assertTrue(tokenMapNew.get("1").contains("B"));
+    Assert.assertTrue(tokenMapNew.containsKey("2"));
+    Assert.assertTrue(tokenMapNew.get("2").contains("B"));
+    Assert.assertTrue(tokenMapNew.containsKey("3"));
+    Assert.assertTrue(tokenMapNew.get("3").contains("B"));
   }
 
   /*
@@ -660,6 +668,9 @@ public final class MutationTest {
 
     Assert.assertTrue(graph.hasEdgeConnecting(gNodeA, gNodeB));
     Assert.assertTrue(graph.hasEdgeConnecting(gNodeB, gNodeC));
+
+    HashMap<String, Set<String>> tokenMapNew = dataGraph.tokenMap();
+    Assert.assertTrue(tokenMapNew.isEmpty());
   }
 
   /*
@@ -709,5 +720,63 @@ public final class MutationTest {
 
     Assert.assertTrue(graph.hasEdgeConnecting(gNodeA, gNodeB));
     Assert.assertTrue(graph.hasEdgeConnecting(gNodeB, gNodeC));
+  }
+
+  /** Removing a node with tokens removes it from the token map */
+  @Test
+  public void deleteNodeWithTokens() {
+    MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
+    HashMap<String, GraphNode> graphNodesMap = new HashMap<>();
+    nodeA.addToken("1");
+    nodeA.addToken("2");
+    gNodeA = Utility.protoNodeToGraphNode(nodeA.build());
+
+    nodeB.addToken("1");
+    gNodeB = Utility.protoNodeToGraphNode(nodeB.build());
+
+    graph.addNode(gNodeA);
+    graph.addNode(gNodeB);
+    graph.addNode(gNodeC);
+    graph.putEdge(gNodeA, gNodeB);
+    graph.putEdge(gNodeB, gNodeC);
+    graphNodesMap.put("A", gNodeA);
+    graphNodesMap.put("B", gNodeB);
+    graphNodesMap.put("C", gNodeC);
+
+    Mutation removeA =
+        Mutation.newBuilder().setType(Mutation.Type.DELETE_NODE).setStartNode("A").build();
+
+    HashSet<String> roots = new HashSet<>();
+    HashMap<String, Set<String>> tokenMap = new HashMap<>();
+    HashSet<String> setWithA = new HashSet<>();
+    setWithA.add("A");
+    HashSet<String> setWithAB = new HashSet<>();
+    setWithAB.add("A");
+    setWithAB.add("B");
+
+    tokenMap.put("1", setWithAB);
+    tokenMap.put("2", setWithA);
+
+    DataGraph dataGraph = DataGraph.create(graph, graphNodesMap, roots, 0, tokenMap);
+
+    String error = dataGraph.mutateGraph(removeA);
+    Assert.assertEquals(error.length(), 0);
+
+    Set<GraphNode> graphNodes = graph.nodes();
+    Assert.assertEquals(graphNodes.size(), 2);
+    Assert.assertTrue(graphNodes.contains(gNodeB));
+    Assert.assertEquals(graphNodesMap.get("B"), gNodeB);
+    Assert.assertTrue(graphNodes.contains(gNodeC));
+    Assert.assertEquals(graphNodesMap.get("C"), gNodeC);
+    Assert.assertEquals(graph.inDegree(gNodeB), 0);
+    Assert.assertEquals(graph.outDegree(gNodeB), 1);
+
+    HashMap<String, Set<String>> tokenMapNew = dataGraph.tokenMap();
+    // tokenMap should only have 1 token since A was deleted. The set corresponding
+    // to 1 should only have one node, B.
+    Assert.assertEquals(1, tokenMapNew.keySet().size());
+    Assert.assertTrue(tokenMapNew.keySet().contains("1"));
+    Assert.assertEquals(1, tokenMapNew.get("1").size());
+    Assert.assertTrue(tokenMapNew.get("1").contains("B"));
   }
 }

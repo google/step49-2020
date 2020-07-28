@@ -156,7 +156,7 @@ abstract class DataGraph {
 
       // Store the token map
       for (String tokenName : thisNode.getTokenList()) {
-        addToken(tokenName, nodeName);
+        addNodeToToken(tokenName, nodeName);
       }
 
       // Add dependency edges to the graph
@@ -266,6 +266,14 @@ abstract class DataGraph {
               roots.add(succ.name());
             }
           }
+          // Remove the node from all of the occurrences in the tokenMap
+          for (String token : this.tokenMap().keySet()) {
+            this.tokenMap().get(token).remove(startName);
+            // Check if it's empty
+            if (this.tokenMap().get(token).isEmpty()) {
+              this.tokenMap().remove(token);
+            }
+          }
           break;
         }
       case CHANGE_TOKEN:
@@ -324,13 +332,13 @@ abstract class DataGraph {
 
       // Update the map
       for (String tokenName : tokenNames) {
-        addToken(tokenName, node.name());
+        addNodeToToken(tokenName, node.name());
       }
     } else if (tokenMutType == TokenMutation.Type.DELETE_TOKEN) {
       tokenList.removeAll(tokenNames);
       // Update the map
       for (String tokenName : tokenNames) {
-        removeToken(tokenName, node.name());
+        removeNodeFromToken(tokenName, node.name());
       }
     } else {
       // unrecognized mutation
@@ -340,24 +348,24 @@ abstract class DataGraph {
   }
 
   /**
-   * Adds a node to the tokenMap
+   * Adds a given node to token's set of nodes in the tokenMap
    *
    * @param tokenName the token name (key in the map)
    * @param nodeName the node to add to the tokenName's set
    */
-  private void addToken(String tokenName, String nodeName) {
+  private void addNodeToToken(String tokenName, String nodeName) {
     Set<String> nodesWithToken = this.tokenMap().getOrDefault(tokenName, new HashSet<>());
     nodesWithToken.add(nodeName);
     this.tokenMap().put(tokenName, nodesWithToken);
   }
 
   /**
-   * Removes a node to the tokenMap
+   * Removes a node from the token's set of nodes in the tokenMap
    *
    * @param tokenName the token name (key in the map)
    * @param nodeName the node to remove from the tokenName's set
    */
-  private void removeToken(String tokenName, String nodeName) {
+  private void removeNodeFromToken(String tokenName, String nodeName) {
     if (this.tokenMap().containsKey(tokenName)) {
       Set<String> nodesWithToken = this.tokenMap().get(tokenName);
       nodesWithToken.remove(nodeName);
