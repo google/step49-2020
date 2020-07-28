@@ -207,8 +207,8 @@ public class DataServlet extends HttpServlet {
       // or queried are mutated
       Set<Integer> mutationIndicesSet = new HashSet<>();
       mutationIndicesSet.addAll(
-          Utility.findRelevantMutationsSet(truncatedGraphNodeNames, mutationIndicesMap, mutList));
-      mutationIndicesSet.addAll(Utility.getMutationIndicesOfTokenSet(tokenParam, mutList));
+          Utility.findRelevantMutations(truncatedGraphNodeNames, mutationIndicesMap, mutList));
+      mutationIndicesSet.addAll(Utility.getMutationIndicesOfToken(tokenParam, mutList));
       filteredMutationIndices = new ArrayList<>(mutationIndicesSet);
       Collections.sort(filteredMutationIndices);
 

@@ -139,7 +139,7 @@ public class NodeMutationFilterTest {
     multiMutList.add(mmChange2);
     multiMutList.add(mmChange3);
 
-    List<Integer> truncatedList = Utility.getMutationIndicesOfToken("4", multiMutList);
+    Set<Integer> truncatedList = Utility.getMutationIndicesOfToken("4", multiMutList);
     Assert.assertEquals(2, truncatedList.size());
     Assert.assertTrue(truncatedList.contains(0));
     Assert.assertTrue(truncatedList.contains(2));
@@ -196,7 +196,7 @@ public class NodeMutationFilterTest {
     multiMutList.add(mmChange2);
     multiMutList.add(mmChange3);
 
-    List<Integer> truncatedList = Utility.getMutationIndicesOfToken("10", multiMutList);
+    Set<Integer> truncatedList = Utility.getMutationIndicesOfToken("10", multiMutList);
     Assert.assertEquals(0, truncatedList.size());
     Assert.assertFalse(truncatedList.contains(0));
     Assert.assertFalse(truncatedList.contains(2));
@@ -217,40 +217,11 @@ public class NodeMutationFilterTest {
     List<MultiMutation> multiMutList = new ArrayList<>();
     multiMutList.add(addABM);
 
-    List<Integer> truncatedList = Utility.getMutationIndicesOfToken(null, multiMutList);
+    Set<Integer> truncatedList = Utility.getMutationIndicesOfToken(null, multiMutList);
 
     Assert.assertNotNull(truncatedList); // Should not be null
     Assert.assertEquals(0, truncatedList.size());
     Assert.assertFalse(truncatedList.contains(0));
-  }
-
-  // Tests merging lists together
-  @Test
-  public void mergeLists() {
-    List<Integer> list1 = new ArrayList<>(Arrays.asList(1, 4, 7, 15));
-    List<Integer> list2 = new ArrayList<>(Arrays.asList(4, 7, 12, 13, 15));
-    List<Integer> list3 = new ArrayList<>(Arrays.asList(0, 6, 9));
-    List<List<Integer>> lsts = new ArrayList<>();
-    lsts.add(list1);
-    lsts.add(list2);
-    lsts.add(list3);
-
-    // should be 0, 1, 4, 6, 7, 9, 12, 13, 15
-    List<Integer> result = Utility.mergeSortedLists(lsts);
-    Assert.assertNotNull(result);
-    System.out.println(result);
-    Assert.assertEquals(9, result.size());
-  }
-
-  @Test
-  public void mergeEmpty() {
-    List<Integer> list1 = new ArrayList<>();
-    List<Integer> list2 = new ArrayList<>();
-    List<List<Integer>> lsts = new ArrayList<>();
-    lsts.add(list1);
-    lsts.add(list2);
-    List<Integer> result = Utility.mergeSortedLists(lsts);
-    Assert.assertEquals(0, result.size());
   }
 
   /**
@@ -325,12 +296,12 @@ public class NodeMutationFilterTest {
     nodeNames.add("B");
     nodeNames.add("D");
 
-    List<Integer> truncatedList =
+    Set<Integer> truncatedList =
         Utility.findRelevantMutations(nodeNames, mutationIndicesMap, multiMutList);
 
     Assert.assertEquals(2, truncatedList.size());
-    Assert.assertTrue(truncatedList.get(0) == 3);
-    Assert.assertTrue(truncatedList.get(1) == 4);
+    Assert.assertTrue(truncatedList.contains(3));
+    Assert.assertTrue(truncatedList.contains(4));
   }
 
   /**
@@ -404,14 +375,14 @@ public class NodeMutationFilterTest {
     nodeNames.add("G");
     nodeNames.add("E");
 
-    List<Integer> truncatedList =
+    Set<Integer> truncatedList =
         Utility.findRelevantMutations(nodeNames, mutationIndicesMap, multiMutList);
 
     Assert.assertEquals(4, truncatedList.size());
-    Assert.assertTrue(truncatedList.get(0) == 0);
-    Assert.assertTrue(truncatedList.get(1) == 1);
-    Assert.assertTrue(truncatedList.get(2) == 2);
-    Assert.assertTrue(truncatedList.get(3) == 3);
+    Assert.assertTrue(truncatedList.contains(0));
+    Assert.assertTrue(truncatedList.contains(1));
+    Assert.assertTrue(truncatedList.contains(2));
+    Assert.assertTrue(truncatedList.contains(3));
   }
 
   /**
@@ -486,13 +457,13 @@ public class NodeMutationFilterTest {
     nodeNames.add("E");
     nodeNames.add("");
 
-    List<Integer> truncatedList =
+    Set<Integer> truncatedList =
         Utility.findRelevantMutations(nodeNames, mutationIndicesMap, multiMutList);
 
     Assert.assertEquals(4, truncatedList.size());
-    Assert.assertTrue(truncatedList.get(0) == 0);
-    Assert.assertTrue(truncatedList.get(1) == 1);
-    Assert.assertTrue(truncatedList.get(2) == 2);
-    Assert.assertTrue(truncatedList.get(3) == 3);
+    Assert.assertTrue(truncatedList.contains(0));
+    Assert.assertTrue(truncatedList.contains(1));
+    Assert.assertTrue(truncatedList.contains(2));
+    Assert.assertTrue(truncatedList.contains(3));
   }
 }

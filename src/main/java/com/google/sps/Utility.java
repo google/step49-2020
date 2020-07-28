@@ -16,7 +16,6 @@ package com.google.sps;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -251,36 +250,13 @@ public final class Utility {
   }
 
   /**
-   * Returns a list of indices on the original list that related to a given node
+   * Returns a set of indices on the original list that related to a given node
    *
    * @param tokenName the token name to search for
    * @param origList the original list of mutations
-   * @return a list of indices, empty if tokenName is null or if token is not changed
+   * @return a set of indices, empty if tokenName is null or if token is not changed
    */
-  public static ArrayList<Integer> getMutationIndicesOfToken(
-      String tokenName, List<MultiMutation> origList) {
-    ArrayList<Integer> lst = new ArrayList<>();
-    if (tokenName == null) {
-      return lst;
-    }
-    for (int i = 0; i < origList.size(); i++) {
-      MultiMutation multiMut = origList.get(i);
-      List<Mutation> mutList = multiMut.getMutationList();
-      for (Mutation mut : mutList) {
-        if (mut.getType().equals(Mutation.Type.CHANGE_TOKEN)) {
-          TokenMutation tokenMut = mut.getTokenChange();
-          List<String> tokenNames = tokenMut.getTokenNameList();
-          if (tokenNames.contains(tokenName)) {
-            lst.add(i);
-            break;
-          }
-        }
-      }
-    }
-    return lst;
-  }
-
-  public static Set<Integer> getMutationIndicesOfTokenSet(
+  public static Set<Integer> getMutationIndicesOfToken(
       String tokenName, List<MultiMutation> origList) {
     Set<Integer> lst = new HashSet<>();
     if (tokenName == null || tokenName.length() == 0) {
@@ -302,6 +278,7 @@ public final class Utility {
     }
     return lst;
   }
+
   /**
    * Converts a Guava graph containing nodes of type GraphNode into a set of names of nodes
    * contained in the graph
@@ -311,71 +288,6 @@ public final class Utility {
    */
   public static Set<String> getNodeNamesInGraph(MutableGraph<GraphNode> graph) {
     return graph.nodes().stream().map(node -> node.name()).collect(Collectors.toSet());
-  }
-
-  public static List<Integer> mergeSortedLists(List<List<Integer>> sortedLists) {
-    int numLists = sortedLists.size();
-    if (sortedLists.size() == 0) return new ArrayList<>();
-    else if (sortedLists.size() == 1) {
-      return sortedLists.get(0);
-    } else {
-      int left = numLists / 2;
-      return mergeTwoLists(
-          mergeSortedLists(new ArrayList<>(sortedLists.subList(0, left))),
-          mergeSortedLists(new ArrayList<>(sortedLists.subList(left, sortedLists.size()))));
-    }
-
-    // We merge two lists at a time until we get one list remaining
-    // while (numLists != 1) {
-    // int low = 0;
-    // int high = numLists - 1;
-    // while (low < high) {
-    // // System.out.println(mergeTwoLists(sortedLists.get(low),
-    // sortedLists.get(high)));
-    // System.out.println(sortedLists);
-    // sortedLists.set(low, mergeTwoLists(sortedLists.get(low),
-    // sortedLists.get(high)));
-    // low++;
-    // high--;
-    // }
-    // numLists = high + 1;
-    // }
-    // return sortedLists.get(0);
-  }
-
-  public static List<Integer> mergeTwoLists(List<Integer> l1, List<Integer> l2) {
-    ArrayList<Integer> result = new ArrayList<>();
-    int pointer1 = 0;
-    int pointer2 = 0;
-
-    while (pointer1 < l1.size() && pointer2 < l2.size()) {
-      int smallest;
-      if (l1.get(pointer1) <= l2.get(pointer2)) {
-        smallest = l1.get(pointer1);
-        pointer1++;
-      } else {
-        smallest = l2.get(pointer2);
-        pointer2++;
-      }
-      // no duplicates
-      if (result.size() == 0 || result.get(result.size() - 1) != smallest) {
-        result.add(smallest);
-      }
-    }
-    // Check individual, if the other has reached the bounds
-    while (pointer1 < l1.size()) {
-      if (result.size() == 0 || result.get(result.size() - 1) != l1.get(pointer1)) {
-        result.add(l1.get(pointer1));
-      }
-      pointer1++;
-    }
-    while (pointer2 < l2.size()) {
-      if (result.size() == 0 || result.get(result.size() - 1) != l2.get(pointer2)) {
-        result.add(l2.get(pointer2));
-      }
-      pointer2++;
-    }
-    return result;
   }
 
   /**
@@ -415,32 +327,11 @@ public final class Utility {
    * @param nodeNames the names of nodes to restrict the returned list of mutations to
    * @param mutationIndicesMap a map from node name -> indices of mutations that mutate it
    * @param multiMutList a list of multimutations which mutationIndices map indexes into
-   * @return a list of indices in multiMutList at which any of the nodes in nodeNames are mutated
+   * @return a set of indices in multiMutList at which any of the nodes in nodeNames are mutated
    *     Might modify mutationIndices map by caching information about relevant mutation indices of
    *     some nodes
    */
-  public static List<Integer> findRelevantMutations(
-      Set<String> nodeNames,
-      Map<String, List<Integer>> mutationIndicesMap,
-      List<MultiMutation> multiMutList) {
-    Set<Integer> relevantIndices = new HashSet<>();
-    for (String nodeName : nodeNames) {
-      // No node name should be an empty string
-      if (nodeName.equals("")) {
-        continue;
-      }
-      // Find or compute and cache the relevant mutation indices for each node
-      if (!mutationIndicesMap.containsKey(nodeName)) {
-        mutationIndicesMap.put(nodeName, getMutationIndicesOfNode(nodeName, multiMutList));
-      }
-      relevantIndices.addAll(mutationIndicesMap.get(nodeName));
-    }
-    ArrayList<Integer> result = new ArrayList<>(relevantIndices);
-    Collections.sort(result);
-    return result;
-  }
-
-  public static Set<Integer> findRelevantMutationsSet(
+  public static Set<Integer> findRelevantMutations(
       Set<String> nodeNames,
       Map<String, List<Integer>> mutationIndicesMap,
       List<MultiMutation> multiMutList) {
