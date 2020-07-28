@@ -254,9 +254,7 @@ public class NodeMutationFilterTest {
     Assert.assertTrue(truncatedList.get(3) == 3);
   }
 
-  /**
-   * Getting mutation indices of nodes not present in any mutations returns an empty list
-   */
+  /** Getting mutation indices of nodes not present in any mutations returns an empty list */
   @Test
   public void getMutationsOfAbsentNodes() {
     Mutation removeEF =
@@ -331,8 +329,7 @@ public class NodeMutationFilterTest {
   }
 
   /**
-   * Getting mutation indices of nodes where some don't exist just ignores the 
-   * non-existent nodes
+   * Getting mutation indices of nodes where some don't exist just ignores the non-existent nodes
    */
   @Test
   public void getMutationsOfSomeAbsent() {
@@ -413,8 +410,8 @@ public class NodeMutationFilterTest {
   }
 
   /**
-   * Getting mutation indices of nodes with an empty list of multimutations 
-   * just returns a list of size 0
+   * Getting mutation indices of nodes with an empty list of multimutations just returns a list of
+   * size 0
    */
   @Test
   public void getMutationsOfMultipleIgnoreEmpty() {
