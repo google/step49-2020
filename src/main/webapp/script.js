@@ -250,6 +250,14 @@ function addToLogs(msg) {
   logsList.appendChild(newMsg);
   newMsg.classList.add("recent-log-text");
 }
+
+/**
+ * Clears the logs on the right side of the screen
+ */
+function clearLog() {
+  document.getElementById("log-list").innerText = "";
+}
+
 /**
  * Takes an error message and creates a text element on the page to display this message
  */
@@ -343,6 +351,8 @@ function getGraphDisplay(graphNodes, graphEdges, mutList, reason) {
       document.getElementById('search-error').innerText = "Node does not exist.";
     }
   };
+
+  document.getElementById('clear-log').onclick = function () { clearLog() };
 
   // When a new graph is loaded, mutations are always shown by default
   const showMutButton = document.getElementById("show-mutations");
@@ -708,7 +718,7 @@ function getTooltipContent(node) {
   closeButton.addEventListener('click', function () {
     node.tip.hide();
   }, false);
-  content.appendChild(closeButton);
+  //content.appendChild(closeButton);
 
   const nodeName = document.createElement("p");
   nodeName.innerText = `Node Name: \n${node.data().id}`;
