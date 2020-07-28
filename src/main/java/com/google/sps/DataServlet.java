@@ -187,6 +187,9 @@ public class DataServlet extends HttpServlet {
 
     // Truncate the graph from the nodes that the client had searched for
     truncatedGraph = currDataGraph.getReachableNodes(queried, depthNumber);
+    // OPT: check queried and currDataGraph.tokenMap().get(tokenParam) are the same
+    MutableGraph<GraphNode> truncatedGraphNext =
+        currDataGraph.getReachableNodes(currDataGraph.tokenMap().get(tokenParam), depthNumber);
 
     // If we are not filtering the graph or limiting its depth, show all mutations of all nodes
     if (nodeNameParam.length() == 0
@@ -198,6 +201,7 @@ public class DataServlet extends HttpServlet {
       // Get the names of all the displayed nodes and find all indices of mutations
       // that mutate any of them
       Set<String> truncatedGraphNodeNames = Utility.getNodeNamesInGraph(truncatedGraph);
+      Set<String> truncatedGraphNodeNamesNext = Utility.getNodeNamesInGraph(truncatedGraphNext);
       // Also get mutations relevant to the searched node if it is not an empty string
       if (nodeNameParam.length() != 0) {
         truncatedGraphNodeNames.add(nodeNameParam);
@@ -206,8 +210,9 @@ public class DataServlet extends HttpServlet {
       // A set containing a indices where nodes currently displayed on the graph
       // or queried are mutated
       Set<Integer> mutationIndicesSet = new HashSet<>();
+
       mutationIndicesSet.addAll(
-          Utility.findRelevantMutations(truncatedGraphNodeNames, mutationIndicesMap, mutList));
+          Utility.findRelevantMutations(truncatedGraphNodeNamesNext, mutationIndicesMap, mutList));
       mutationIndicesSet.addAll(Utility.getMutationIndicesOfToken(tokenParam, mutList));
       filteredMutationIndices = new ArrayList<>(mutationIndicesSet);
       Collections.sort(filteredMutationIndices);
@@ -234,7 +239,8 @@ public class DataServlet extends HttpServlet {
     // means that there is some mutation pertaining to the searched node to show
     if (truncatedGraph.nodes().size() == 0
         && filteredMutationIndices.size() != 0
-        && filteredMutationIndices.indexOf(mutationNumber) == -1) {
+        && filteredMutationIndices.indexOf(mutationNumber) == -1
+        && (diff == null || diff.getMutationList().size() == 0)) {
       response.setHeader(
           "serverMessage",
           "The searched node/token does not exist in this graph, so nothing is shown. However, it"
@@ -243,7 +249,7 @@ public class DataServlet extends HttpServlet {
     }
     // The searched node exists but is not mutated in the current graph
     if (truncatedGraph.nodes().size() != 0
-        && !(mutationNumber == -1 && nodeNameParam.equals("") && tokenParam.equals(""))
+        && !(mutationNumber == -1 && nodeNameParam.length() == 0 && tokenParam.length() == 0)
         && filteredMutationIndices.indexOf(mutationNumber) == -1
         && (diff == null || diff.getMutationList().size() == 0)) {
       response.setHeader(

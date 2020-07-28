@@ -228,7 +228,6 @@ describe("Pressing next and previous buttons associated with a graph", function 
     document.body.appendChild(prevButton);
     document.body.appendChild(nextButton);
 
-
     expect(currMutationNum).toBe(-1);
     expect(currMutationIndex).toBe(-1);
     expect(numMutations).toBe(3);
@@ -295,7 +294,7 @@ describe("Pressing next and previous buttons associated with a graph", function 
     expect(prevButton.disabled).toBe(true);
   });
 
-  it("Correctly doesn't change anything when there aren't any mutations", function () {
+  it("correctly doesn't change anything when there aren't any mutations", function () {
     document.body.appendChild(numDisplay);
     initializeNumMutations(-1);
     setCurrMutationNum(10);
@@ -308,7 +307,7 @@ describe("Pressing next and previous buttons associated with a graph", function 
     expect(currMutationNum).toBe(10);
   });
 
-  it("Correctly navigates forward when index is a decimal", function () {
+  it("correctly navigates forward when index is a decimal", function () {
     document.body.appendChild(numDisplay);
     setCurrMutationIndex(.5);
     setCurrMutationNum(0);
