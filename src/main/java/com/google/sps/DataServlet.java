@@ -73,7 +73,7 @@ public class DataServlet extends HttpServlet {
     if (currDataGraph == null && originalDataGraph == null) {
       success =
           initializeGraphVariables(
-              getServletContext().getResourceAsStream("/WEB-INF/graph.textproto"));
+              getServletContext().getResourceAsStream("/WEB-INF/initial_graph.textproto"));
       if (!success) {
         response.setHeader(
             "serverError", "Failed to parse input graph into Guava graph - not a DAG!");
@@ -92,7 +92,7 @@ public class DataServlet extends HttpServlet {
      */
     if (mutList == null) {
       initializeMutationVariables(
-          getServletContext().getResourceAsStream("/WEB-INF/mutation.textproto"));
+          getServletContext().getResourceAsStream("/WEB-INF/mutations.textproto"));
       // Populate the list of all possible mutation indices
       defaultIndices = IntStream.range(0, mutList.size()).boxed().collect(Collectors.toList());
       // and store this as the list of relevant indices for filtering by empty string
@@ -161,7 +161,7 @@ public class DataServlet extends HttpServlet {
     }
     truncatedGraph = currDataGraph.getReachableNodes(nodeNameParam, depthNumber);
 
-    if (nodeNameParam.equals("") && truncatedGraph.equals(currDataGraph.graph())) {
+    if (nodeNameParam.length() == 0 && truncatedGraph.equals(currDataGraph.graph())) {
       // If we are not filtering the graph or limiting its depth, show all mutations of all nodes
       filteredMutationIndices = defaultIndices;
     } else {
@@ -192,7 +192,8 @@ public class DataServlet extends HttpServlet {
     // means that there is some mutation pertaining to the searched node to show
     if (truncatedGraph.nodes().size() == 0
         && filteredMutationIndices.size() != 0
-        && filteredMutationIndices.indexOf(mutationNumber) == -1) {
+        && filteredMutationIndices.indexOf(mutationNumber) == -1
+        && (diff == null || diff.getMutationList().size() == 0)) {
       response.setHeader(
           "serverMessage",
           "The searched node does not exist in this graph, so nothing is shown. However, it is"
@@ -201,7 +202,7 @@ public class DataServlet extends HttpServlet {
     }
     // The searched node exists but is not mutated in the current graph
     if (truncatedGraph.nodes().size() != 0
-        && !(mutationNumber == -1 && nodeNameParam.equals(""))
+        && !(mutationNumber == -1 && nodeNameParam.length() == 0)
         && filteredMutationIndices.indexOf(mutationNumber) == -1) {
       response.setHeader(
           "serverMessage",

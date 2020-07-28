@@ -254,10 +254,6 @@ public final class Utility {
       List<MultiMutation> multiMutList) {
     Set<Integer> relevantIndices = new HashSet<>();
     for (String nodeName : nodeNames) {
-      // No node name should be an empty string
-      if (nodeName.equals("")) {
-        continue;
-      }
       // Find or compute and cache the relevant mutation indices for each node
       if (!mutationIndicesMap.containsKey(nodeName)) {
         mutationIndicesMap.put(nodeName, getMutationIndicesOfNode(nodeName, multiMutList));
