@@ -14,6 +14,9 @@
 
 package com.google.sps;
 
+import com.google.gson.JsonParser;
+import com.google.gson.JsonArray;
+
 import com.google.common.collect.Sets;
 
 import java.io.IOException;
@@ -77,7 +80,7 @@ public class DataServlet extends HttpServlet {
     if (currDataGraph == null && originalDataGraph == null) {
       success =
           initializeGraphVariables(
-              getServletContext().getResourceAsStream("/WEB-INF/initial_graph.textproto"));
+              getServletContext().getResourceAsStream("/WEB-INF/graph.textproto"));
       if (!success) {
         response.setHeader(
             "serverError", "Failed to parse input graph into Guava graph - not a DAG!");
@@ -96,7 +99,7 @@ public class DataServlet extends HttpServlet {
      */
     if (mutList == null) {
       initializeMutationVariables(
-          getServletContext().getResourceAsStream("/WEB-INF/mutations.textproto"));
+          getServletContext().getResourceAsStream("/WEB-INF/mutation.textproto"));
       // Populate the list of all possible mutation indices
       defaultIndices = IntStream.range(0, mutList.size()).boxed().collect(Collectors.toList());
       // and store this as the list of relevant indices for filtering by empty string
@@ -158,12 +161,25 @@ public class DataServlet extends HttpServlet {
     if (mutationNumber > currDataGraph.numMutations()) {
       diff = Utility.getMultiMutationAtIndex(mutList, mutationNumber);
     }
+    List<String> nodeNames = new ArrayList<>();
+    try {
+      JsonParser jsonParser = new JsonParser();
+      JsonArray nodeNameArr = jsonParser.parse(nodeNameParam).getAsJsonArray();
+      for (int i = 0; i < nodeNameArr.size(); i++) {
+        String curr = nodeNameArr.get(i).getAsString().trim();
+        if (curr.length() > 0) {
+          nodeNames.add(curr);
+        }
+      }
+    } catch (IllegalStateException e) {
+    }
+    System.out.println(nodeNames);
 
     // A list of "roots" to return nodes at most depth radius from
     HashSet<String> queried = new HashSet<>();
     // We start by adding the node name if it was searched for
     if (nodeNameParam.length() > 0) {
-      queried.add(nodeNameParam);
+      queried.addAll(nodeNames);
     }
 
     // Show mutations relevant to nodes that contain the token in the current graph
@@ -200,7 +216,7 @@ public class DataServlet extends HttpServlet {
       Set<String> truncatedGraphNodeNames = Utility.getNodeNamesInGraph(truncatedGraph);
       // Also get mutations relevant to the searched node if it is not an empty string
       if (nodeNameParam.length() != 0) {
-        truncatedGraphNodeNames.add(nodeNameParam);
+        truncatedGraphNodeNames.addAll(nodeNames);
       }
 
       // A set containing a indices where nodes currently displayed on the graph

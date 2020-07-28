@@ -240,6 +240,7 @@ function getUrl() {
   const depthElem = document.getElementById('num-layers');
   const nodeName = document.getElementById('node-name-filter') ? document.getElementById('node-name-filter').value || "" : "";
   const tokenName = document.getElementById('token-name-filter') ? document.getElementById('token-name-filter').value || "" : "";
+  const nodeNamesArray = JSON.stringify(nodeNames.split(","));
 
   let selectedDepth = 0;
   if (depthElem === null) {
@@ -258,7 +259,7 @@ function getUrl() {
       selectedDepth = 20;
     }
   }
-  const url = `/data?depth=${selectedDepth}&mutationNum=${currMutationNum}&nodeName=${nodeName}&tokenName=${tokenName}`;
+  const url = `/data?depth=${selectedDepth}&mutationNum=${currMutationNum}&nodeName=${nodeNamesArray}&tokenName=${tokenName}`;
   return url;
 }
 
