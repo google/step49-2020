@@ -176,9 +176,14 @@ public class DataServlet extends HttpServlet {
 
     // A list of "roots" to return nodes at most depth radius from
     HashSet<String> queried = new HashSet<>();
+
+    // roots to calculate the mutations from
+    // OPT: check queried and currDataGraph.tokenMap().get(tokenParam) are the same
+    HashSet<String> queriedNext = new HashSet<>();
     // We start by adding the node name if it was searched for
     if (nodeNames.size() > 0) {
       queried.addAll(nodeNames);
+      queriedNext.addAll(nodeNames);
     }
 
     // Show mutations relevant to nodes that contain the token in the current graph
@@ -195,16 +200,19 @@ public class DataServlet extends HttpServlet {
       response.setHeader("serverError", e.getMessage());
       return;
     }
+    
     // Show mutations relevant to nodes that contain the token in the new graph
     if (currDataGraph.tokenMap().containsKey(tokenParam)) {
       queried.addAll(currDataGraph.tokenMap().get(tokenParam));
+      queriedNext.addAll(currDataGraph.tokenMap().get(tokenParam));
     }
-
+    
     // Truncate the graph from the nodes that the client had searched for
     truncatedGraph = currDataGraph.getReachableNodes(queried, depthNumber);
-    // OPT: check queried and currDataGraph.tokenMap().get(tokenParam) are the same
+
+    // To get the nodes to calculate relevant mutations from
     MutableGraph<GraphNode> truncatedGraphNext =
-        currDataGraph.getReachableNodes(currDataGraph.tokenMap().get(tokenParam), depthNumber);
+        currDataGraph.getReachableNodes(queriedNext, depthNumber);
 
     // If we are not filtering the graph or limiting its depth, show all mutations of all nodes
     if (nodeNames.size() == 0
@@ -217,6 +225,7 @@ public class DataServlet extends HttpServlet {
       // that mutate any of them
       Set<String> truncatedGraphNodeNames = Utility.getNodeNamesInGraph(truncatedGraph);
       Set<String> truncatedGraphNodeNamesNext = Utility.getNodeNamesInGraph(truncatedGraphNext);
+
       // Also get mutations relevant to the searched node if it is not an empty string
       if (nodeNames.size() != 0) {
         truncatedGraphNodeNames.addAll(nodeNames);
