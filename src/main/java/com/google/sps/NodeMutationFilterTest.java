@@ -384,12 +384,85 @@ public class NodeMutationFilterTest {
     Assert.assertTrue(truncatedList.contains(3));
   }
 
+  /** Getting mutation indices of nodes not present in any mutations returns an empty list */
+  @Test
+  public void getMutationsOfAbsentNodes() {
+    Mutation removeEF =
+        Mutation.newBuilder()
+            .setType(Mutation.Type.DELETE_EDGE)
+            .setStartNode("E")
+            .setEndNode("F")
+            .build();
+    Mutation removeF =
+        Mutation.newBuilder().setType(Mutation.Type.DELETE_NODE).setStartNode("F").build();
+
+    Mutation addG = Mutation.newBuilder().setType(Mutation.Type.ADD_NODE).setStartNode("G").build();
+    Mutation addEG =
+        Mutation.newBuilder()
+            .setType(Mutation.Type.ADD_EDGE)
+            .setStartNode("E")
+            .setEndNode("G")
+            .build();
+
+    Mutation addH = Mutation.newBuilder().setType(Mutation.Type.ADD_NODE).setStartNode("H").build();
+    Mutation addHG =
+        Mutation.newBuilder()
+            .setType(Mutation.Type.ADD_EDGE)
+            .setStartNode("H")
+            .setEndNode("G")
+            .build();
+
+    Mutation addDG =
+        Mutation.newBuilder()
+            .setType(Mutation.Type.ADD_EDGE)
+            .setStartNode("D")
+            .setEndNode("G")
+            .build();
+
+    TokenMutation tokenMut =
+        TokenMutation.newBuilder()
+            .setType(TokenMutation.Type.ADD_TOKEN)
+            .addTokenName("1")
+            .addTokenName("2")
+            .addTokenName("3")
+            .build();
+    Mutation addTokenToB =
+        Mutation.newBuilder()
+            .setStartNode("B")
+            .setType(Mutation.Type.CHANGE_TOKEN)
+            .setTokenChange(tokenMut)
+            .build();
+
+    MultiMutation removeFM =
+        MultiMutation.newBuilder().addMutation(removeEF).addMutation(removeF).build();
+    MultiMutation addGM = MultiMutation.newBuilder().addMutation(addG).addMutation(addEG).build();
+    MultiMutation addHM = MultiMutation.newBuilder().addMutation(addH).addMutation(addHG).build();
+    MultiMutation addDGM = MultiMutation.newBuilder().addMutation(addDG).build();
+    MultiMutation addTokenToBM = MultiMutation.newBuilder().addMutation(addTokenToB).build();
+
+    List<MultiMutation> multiMutList = new ArrayList<>();
+    multiMutList.add(removeFM);
+    multiMutList.add(addGM);
+    multiMutList.add(addHM);
+    multiMutList.add(addDGM);
+    multiMutList.add(addTokenToBM);
+
+    HashMap<String, List<Integer>> mutationIndicesMap = new HashMap<>();
+    Set<String> nodeNames = new HashSet<>();
+    nodeNames.add("P");
+    nodeNames.add("Q");
+
+    Set<Integer> truncatedList =
+        Utility.findRelevantMutations(nodeNames, mutationIndicesMap, multiMutList);
+
+    Assert.assertEquals(0, truncatedList.size());
+  }
+
   /**
-   * Getting mutation indices of multiple nodes returns the union of all their individual indices in
-   * sorted order without duplicates, ignoring empty strings
+   * Getting mutation indices of nodes where some don't exist just ignores the non-existent nodes
    */
   @Test
-  public void getMutationsOfMultipleIgnoreEmpty() {
+  public void getMutationsOfSomeAbsent() {
     Mutation removeEF =
         Mutation.newBuilder()
             .setType(Mutation.Type.DELETE_EDGE)
@@ -454,7 +527,7 @@ public class NodeMutationFilterTest {
     Set<String> nodeNames = new HashSet<>();
     nodeNames.add("G");
     nodeNames.add("E");
-    nodeNames.add("");
+    nodeNames.add("L");
 
     Set<Integer> truncatedList =
         Utility.findRelevantMutations(nodeNames, mutationIndicesMap, multiMutList);
@@ -464,5 +537,24 @@ public class NodeMutationFilterTest {
     Assert.assertTrue(truncatedList.contains(1));
     Assert.assertTrue(truncatedList.contains(2));
     Assert.assertTrue(truncatedList.contains(3));
+  }
+
+  /**
+   * Getting mutation indices of nodes with an empty list of multimutations just returns a list of
+   * size 0
+   */
+  @Test
+  public void getMutationsOfMultipleIgnoreEmpty() {
+    List<MultiMutation> multiMutList = new ArrayList<>();
+
+    HashMap<String, List<Integer>> mutationIndicesMap = new HashMap<>();
+    Set<String> nodeNames = new HashSet<>();
+    nodeNames.add("G");
+    nodeNames.add("E");
+
+    Set<Integer> truncatedList =
+        Utility.findRelevantMutations(nodeNames, mutationIndicesMap, multiMutList);
+
+    Assert.assertEquals(0, truncatedList.size());
   }
 }
