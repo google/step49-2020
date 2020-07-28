@@ -19,15 +19,17 @@
     <label for="search-name">Name of node to search for</label>
     <input type="text" id="node-name-filter" name="search-name" placeholder="Name"></input>
     <button onclick="graph.generateGraph()">Get Graph</button>
-    <label>Search by Node: </label>
-    <input type="text" id="search" name="search"></input>
-    <button id="search-button">Search</button>
-    <label id="search-error"></label>
     <div id="num-mutation-display">
       <p id="graph-number-text">Graph </p>
       <input type="number" id="graph-number" min="0" max="0" value="0"
         onchange="graph.readGraphNumberInput(); graph.generateGraph()">
       <p id="total-mutation-number-text">out of 0</p>
+    </div>
+    <div>
+      <label>Search by Node: </label>
+      <input type="text" id="search" name="search"></input>
+      <button id="search-button">Search</button>
+      <label id="search-error"></label>
     </div>
   </div>
   <div id="graph-content">
