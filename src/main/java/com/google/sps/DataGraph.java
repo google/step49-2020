@@ -322,7 +322,6 @@ abstract class DataGraph {
 
     TokenMutation.Type tokenMutType = tokenMut.getType();
     if (tokenMutType == TokenMutation.Type.ADD_TOKEN) {
-      tokenNames.removeAll(tokenList);
       tokenList.addAll(tokenNames);
 
       // Update the map
@@ -330,7 +329,6 @@ abstract class DataGraph {
         addNodeToToken(tokenName, node.name());
       }
     } else if (tokenMutType == TokenMutation.Type.DELETE_TOKEN) {
-      tokenNames.removeIf(elem -> !(tokenList.contains(elem)));
       tokenList.removeAll(tokenNames);
       // Update the map
       for (String tokenName : tokenNames) {
