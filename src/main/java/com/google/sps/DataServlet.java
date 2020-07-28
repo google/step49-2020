@@ -77,7 +77,7 @@ public class DataServlet extends HttpServlet {
     if (currDataGraph == null && originalDataGraph == null) {
       success =
           initializeGraphVariables(
-              getServletContext().getResourceAsStream("/WEB-INF/initial_graph.textproto"));
+              getServletContext().getResourceAsStream("/WEB-INF/graph.textproto"));
       if (!success) {
         response.setHeader(
             "serverError", "Failed to parse input graph into Guava graph - not a DAG!");
@@ -96,7 +96,7 @@ public class DataServlet extends HttpServlet {
      */
     if (mutList == null) {
       initializeMutationVariables(
-          getServletContext().getResourceAsStream("/WEB-INF/mutations.textproto"));
+          getServletContext().getResourceAsStream("/WEB-INF/mutation.textproto"));
       // Populate the list of all possible mutation indices
       defaultIndices = IntStream.range(0, mutList.size()).boxed().collect(Collectors.toList());
       // and store this as the list of relevant indices for filtering by empty string

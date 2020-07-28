@@ -140,23 +140,24 @@ public final class Utility {
           curr.graph(), curr.graphNodesMap(), curr.roots(), mutationNum, curr.tokenMap());
     } else {
       // Create a copy of the original graph and start from the original graph
-      DataGraph originalCopy = original.getCopy();
-      for (int i = 0; i <= mutationNum; i++) {
-        MultiMutation multiMut = multiMutList.get(i);
+      //DataGraph originalCopy = original.getCopy();
+      for (int i = curr.numMutations(); i > mutationNum; i--) {
+        // Mutate graph operates in place
+        MultiMutation multiMut = Utility.revertMultiMutation(multiMutList.get(i));
         List<Mutation> mutations = multiMut.getMutationList();
         for (Mutation mut : mutations) {
-          String error = originalCopy.mutateGraph(mut);
+          String error = curr.mutateGraph(mut);
           if (error.length() != 0) {
             throw new IllegalArgumentException(error);
           }
         }
       }
       return DataGraph.create(
-          originalCopy.graph(),
-          originalCopy.graphNodesMap(),
-          originalCopy.roots(),
+          curr.graph(),
+          curr.graphNodesMap(),
+          curr.roots(),
           mutationNum,
-          originalCopy.tokenMap());
+          curr.tokenMap());
     }
   }
 
@@ -344,5 +345,63 @@ public final class Utility {
       relevantIndices.addAll(mutationIndicesMap.get(nodeName));
     }
     return relevantIndices;
+  }
+
+  public static MultiMutation revertMultiMutation(MultiMutation multiMut) {
+    MultiMutation.Builder result = MultiMutation.newBuilder().setReason(multiMut.getReason());
+    List<Mutation> mutations = multiMut.getMutationList();
+    List<Mutation> revertedMutations = new ArrayList<>();
+    for (int i = mutations.size() - 1; i >= 0; i--) {
+      revertedMutations.add(revertMutation(mutations.get(i)));
+    }
+    return result.addAllMutation(revertedMutations).build();
+  }
+
+  private static Mutation revertMutation(Mutation mut) {
+    Mutation.Builder result = Mutation.newBuilder(mut);
+    switch (mut.getType()) {
+      case ADD_NODE: {
+        result.setType(Mutation.Type.DELETE_NODE);
+        break;
+      }
+      case DELETE_NODE: {
+        result.setType(Mutation.Type.ADD_NODE);
+        break;
+      }
+      case ADD_EDGE: {
+        result.setType(Mutation.Type.DELETE_EDGE);
+        break;
+      }
+      case DELETE_EDGE: {
+        result.setType(Mutation.Type.ADD_EDGE);
+        break;
+      }
+      case CHANGE_TOKEN: {
+        result.setTokenChange(revertTokenChangeMutation(result.getTokenChange()));
+        break;
+      }
+      default: {
+        break;
+      }
+    }
+    return result.build();
+  }
+
+  public static TokenMutation revertTokenChangeMutation(TokenMutation tokenMut) {
+    TokenMutation.Builder result = TokenMutation.newBuilder(tokenMut);
+    switch (tokenMut.getType()) {
+      case ADD_TOKEN: {
+        result.setType(TokenMutation.Type.DELETE_TOKEN);
+        break;
+      }
+      case DELETE_TOKEN: {
+        result.setType(TokenMutation.Type.ADD_TOKEN);
+        break;
+      }
+      default: {
+        break;
+      }
+    }
+    return result.build();
   }
 }

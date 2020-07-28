@@ -69,6 +69,7 @@ mutation {
     type: ADD_TOKEN
     token_name: "d.js"
     token_name: "f.js"
+    token_name: "a.js"
   }
 }
 reason: "Changing tokens of node B"
@@ -88,6 +89,7 @@ mutation {
   token_change {
     type: DELETE_TOKEN
     token_name: "d.js"
+    token_name: "x.js"
   }
 }
 reason: "Changing tokens of node B"

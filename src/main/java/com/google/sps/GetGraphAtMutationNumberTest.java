@@ -296,7 +296,7 @@ public class GetGraphAtMutationNumberTest {
     // Build the current graph (same graph and map)
     // This graph is the one after adding and removing AB but before removing C
     DataGraph dataGraphMutated =
-        DataGraph.create(origGraph, origGraphNodesMap, origRoots, 2, tokenMap);
+        DataGraph.create(origGraph, origGraphNodesMap, origRoots, 1, tokenMap);
 
     DataGraph mutatedGraph =
         Utility.getGraphAtMutationNumber(dataGraph, dataGraphMutated, 0, multiMutList);
@@ -306,8 +306,8 @@ public class GetGraphAtMutationNumberTest {
     Set<GraphNode> newNodes = newGraph.nodes();
     int newNum = mutatedGraph.numMutations();
 
-    Assert.assertFalse(origGraph.hasEdgeConnecting(gNodeA, gNodeB));
-    Assert.assertEquals(origNodes.size(), 3);
+    // Assert.assertFalse(origGraph.hasEdgeConnecting(gNodeA, gNodeB));
+    // Assert.assertEquals(origNodes.size(), 3);
 
     Assert.assertEquals(newNum, 0);
     Assert.assertEquals(newNodes.size(), 3);
