@@ -139,9 +139,16 @@ describe("Initializing tooltips", function () {
     expect(content.classList.contains("metadata")).toBe(true);
 
     const children = content.childNodes;
-    expect(children.length).toBe(2);
+    console.log(children);
+    expect(children.length).toBe(4);
     const closeButton = children[0];
     expect(closeButton.nodeName).toBe("BUTTON");
+
+    const nameText = children[1];
+    expect(nameText.textContent).toBe("Node Name: A");
+
+    const tokenHeader = children[2];
+    expect(tokenHeader.textContent).toBe("Tokens:")
 
     // Click on node and make sure tippy shows
     myNode.tip.show();
@@ -152,7 +159,7 @@ describe("Initializing tooltips", function () {
     expect(myNode.tip.state.isVisible).toBe(false);
 
     // Make assertions about tooltip content
-    const tokenList = children[1];
+    const tokenList = children[3];
     expect(tokenList.nodeName).toBe("UL");
     const tokens = tokenList.childNodes;
     expect(tokens.length).toBe(3);
@@ -182,9 +189,15 @@ describe("Initializing tooltips", function () {
     expect(content.classList.contains("metadata")).toBe(true);
 
     const children = content.childNodes;
-    expect(children.length).toBe(2);
+    expect(children.length).toBe(4);
     const closeButton = children[0];
     expect(closeButton.nodeName).toBe("BUTTON");
+
+    const nameText = children[1];
+    expect(nameText.textContent).toBe("Node Name: B");
+
+    const tokenHeader = children[2];
+    expect(tokenHeader.textContent).toBe("Tokens:")
 
     // Click on node and make sure tippy shows
     myNode.tip.show();
@@ -195,7 +208,7 @@ describe("Initializing tooltips", function () {
     expect(myNode.tip.state.isVisible).toBe(false);
 
     // Make assertions about tooltip content
-    const tokenMsg = children[1];
+    const tokenMsg = children[3];
     expect(tokenMsg.nodeName).toBe("P");
     expect(tokenMsg.textContent).toBe("No tokens");
   });
@@ -227,7 +240,6 @@ describe("Pressing next and previous buttons associated with a graph", function 
     nextButton.onclick = () => { navigateGraph(1); updateButtons(); };
     document.body.appendChild(prevButton);
     document.body.appendChild(nextButton);
-
 
     expect(currMutationNum).toBe(-1);
     expect(currMutationIndex).toBe(-1);
@@ -295,7 +307,7 @@ describe("Pressing next and previous buttons associated with a graph", function 
     expect(prevButton.disabled).toBe(true);
   });
 
-  it("Correctly doesn't change anything when there aren't any mutations", function () {
+  it("correctly doesn't change anything when there aren't any mutations", function () {
     document.body.appendChild(numDisplay);
     initializeNumMutations(-1);
     setCurrMutationNum(10);
@@ -308,7 +320,7 @@ describe("Pressing next and previous buttons associated with a graph", function 
     expect(currMutationNum).toBe(10);
   });
 
-  it("Correctly navigates forward when index is a decimal", function () {
+  it("correctly navigates forward when index is a decimal", function () {
     document.body.appendChild(numDisplay);
     setCurrMutationIndex(.5);
     setCurrMutationNum(0);
