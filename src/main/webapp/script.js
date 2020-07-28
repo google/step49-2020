@@ -506,6 +506,7 @@ function initializeReasonTooltip(obj, reason) {
   const dummyDomEle = document.createElement('div');
 
   obj.reasonTip = tippy(dummyDomEle, {
+    theme: 'tomato',
     trigger: 'manual',
     lazy: false,
     onCreate: instance => { instance.popperInstance.reference = tipPosition; },
@@ -678,7 +679,7 @@ function getTooltipContent(node) {
   content.appendChild(closeButton);
 
   const nodeName = document.createElement("p");
-  nodeName.innerText = `Node name:\n${node.data().id}`;
+  nodeName.innerText = `Node Name: \n${node.data().id}`;
   content.appendChild(nodeName);
 
   const tokenLabel = document.createElement("p");

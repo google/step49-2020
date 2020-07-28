@@ -37,9 +37,9 @@ body {
   overflow-y: auto;
   overflow-x: auto;
   white-space: nowrap;
-  width: 400px;
   height: 200px;
   font-size: 30px;
+  padding: 20px;
 }
 
 .tokenlist {
@@ -48,7 +48,8 @@ body {
 }
 
 .close-button {
-  float: right;
+  position: fixed;
+  left: 110%;
 }
 
 #buttondiv, #buttontext, #show-mutations, #show-mutation-text {
