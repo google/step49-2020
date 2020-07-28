@@ -94,7 +94,7 @@ public class DataServlet extends HttpServlet {
       initializeMutationVariables(
           getServletContext().getResourceAsStream("/WEB-INF/mutations.textproto"));
       // Populate the list of all possible mutation indices
-      defaultIndices = IntStream.range(0, mutList.size() - 1).boxed().collect(Collectors.toList());
+      defaultIndices = IntStream.range(0, mutList.size()).boxed().collect(Collectors.toList());
       // and store this as the list of relevant indices for filtering by empty string
       // (= not
       // filtering)
