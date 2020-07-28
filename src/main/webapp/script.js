@@ -67,19 +67,6 @@ let mutationNumSlider;
 let maxNumMutations = 0;
 
 /**
- * Initializes the mutation index slider upon document load and sets it up to
- * regenerate the graph when its value is changed
- */
-function initializeSlider() {
-  mutationNumSlider = new MDCSlider(document.querySelector('.mdc-slider'));
-  mutationNumSlider.listen('MDCSlider:change', () => {
-    currMutationIndex = mutationNumSlider.value;
-    currMutationNum = (currMutationIndex === -1) ? -1 : mutationIndexList[currMutationIndex];
-    generateGraph();
-  });
-}
-
-/**
  * Initializes the number of mutations
  */
 function initializeNumMutations(num) {
@@ -124,13 +111,7 @@ async function generateGraph() {
   let graphEdges = [];
 
   // disable all possible input fields
-  const prevBtn = document.getElementById("prevbutton");
-  const nextBtn = document.getElementById("nextbutton");
-  prevBtn.disabled = true;
-  nextBtn.disabled = true;
-  mutationNumSlider.disabled = true;
-  const graphNumInput = document.getElementById("graph-number");
-  graphNumInput.disabled = true;
+  disableInputs();
 
   const url = getUrl();
   const response = await fetch(url);
@@ -213,23 +194,21 @@ async function generateGraph() {
   resetMutationSlider();
 
   mutationNumSlider.disabled = false;
-  graphNumInput.disabled = false;
+  document.getElementById("graph-number").disabled = false;
 }
 
 /**
- * Resets the mutation index slider's current, maximum and minimum values based on 
- * currMutationIndex and numMutations. Also modifies the step value to reflect the length of 
- * mutationIndicesList (fewer steps for a large number of mutations). 
+ * Disables all ways a user can change the graph number while the graph
+ * is being generated
  */
-function resetMutationSlider() {
-  if (!mutationNumSlider) {
-    return;
-  }
-  mutationNumSlider.min = -1;
-  mutationNumSlider.max = numMutations - 1;
-  mutationNumSlider.value = currMutationIndex;
-  // When numMutations < 10^(k+1), step is k
-  mutationNumSlider.step = Math.max(1, Math.floor(Math.log10(numMutations)));
+function disableInputs() {
+  const prevBtn = document.getElementById("prevbutton");
+  const nextBtn = document.getElementById("nextbutton");
+  prevBtn.disabled = true;
+  nextBtn.disabled = true;
+  mutationNumSlider.disabled = true;
+  const graphNumInput = document.getElementById("graph-number");
+  graphNumInput.disabled = true;
 }
 
 /**
@@ -389,7 +368,6 @@ function getGraphDisplay(graphNodes, graphEdges, mutList, reason, queriedNodes) 
 
   // Zoom in on them and activate their reason tooltips
   makeInteractiveAndFocus(cy, elems);
-
 
   // Break the list down into individual constituents
   const deletedNodes = result["deletedNodes"] || cy.collection();
@@ -854,8 +832,38 @@ function getClosestIndices(indicesList, element) {
 }
 
 /**
+ * Initializes the mutation index slider upon document load and sets it up to
+ * regenerate the graph when its value is changed
+ */
+function initializeSlider() {
+  mutationNumSlider = new MDCSlider(document.querySelector('.mdc-slider'));
+  mutationNumSlider.listen('MDCSlider:change', () => {
+    currMutationIndex = Math.max(-1, mutationNumSlider.value);
+    currMutationIndex = Math.min(currMutationIndex, mutationIndexList.length - 1);
+    currMutationNum = (currMutationIndex === -1) ? -1 : mutationIndexList[currMutationIndex];
+    generateGraph();
+  });
+}
+
+/**
+ * Resets the mutation index slider's current, maximum and minimum values based on 
+ * currMutationIndex and numMutations. Also modifies the step value to reflect the length of 
+ * mutationIndicesList (fewer steps for a large number of mutations). 
+ */
+function resetMutationSlider() {
+  if (!mutationNumSlider) {
+    return;
+  }
+  mutationNumSlider.min = -1;
+  mutationNumSlider.max = numMutations - 1;
+  mutationNumSlider.value = currMutationIndex;
+  // When numMutations < 10^(k+1), step is k
+  mutationNumSlider.step = Math.max(1, Math.floor(Math.log10(numMutations)));
+}
+
+/**
  * Sets the value of the mutation slider to the passed amount if it exists
- * @param {any} amount the desired value of the mutation slider
+ * @param amount the desired value of the mutation slider
  */
 function setMutationSliderValue(amount) {
   if (!mutationNumSlider) {
@@ -891,7 +899,7 @@ function readGraphNumberInput() {
   if (graphNumberInput.value >= maxNumMutations) {
     graphNumberInput.value = maxNumMutations;
   }
-  if (graphNumberInput.value <= 0) {
+  else if (graphNumberInput.value <= 0) {
     graphNumberInput.value = 0;
   }
   currMutationNum = graphNumberInput.value - 1;
