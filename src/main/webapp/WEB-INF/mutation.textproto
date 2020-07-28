@@ -68,6 +68,7 @@ mutation {
   token_change {
     type: ADD_TOKEN
     token_name: "d.js"
+    token_name: "f.js"
   }
 }
 reason: "Changing tokens of node B"

@@ -244,22 +244,13 @@ public class DataServlet extends HttpServlet {
     // The searched node exists but is not mutated in the current graph
     if (truncatedGraph.nodes().size() != 0
         && !(mutationNumber == -1 && nodeNameParam.equals("") && tokenParam.equals(""))
-        && filteredMutationIndices.indexOf(mutationNumber) == -1) {
-      if (diff == null || diff.getMutationList().size() == 0) {
+        && filteredMutationIndices.indexOf(mutationNumber) == -1 &&
+        (diff == null || diff.getMutationList().size() == 0)) {
         response.setHeader(
             "serverMessage",
             "The searched node/token exists in this graph. However, it is not mutated in this"
                 + " graph. Please click next or previous if you wish to see where it was"
                 + " mutated!");
-      } else {
-        if (filteredDiff == null || filteredDiff.getMutationList().size() == 0) {
-          response.setHeader(
-              "serverMessage",
-              "The searched node/token exists in this graph and is not mutated in this graph."
-                  + " However, some other previously displayed node is mutated. Please clear your"
-                  + " filter to view this mutation");
-        }
-      }
     }
 
     // There is a diff between the previously-displayed graph and the current graph but
@@ -270,8 +261,8 @@ public class DataServlet extends HttpServlet {
       response.setHeader(
           "serverMessage",
           "The desired set of nodes is mutated in this graph but your other parameters (for"
-              + " eg.depth), limit the display of the mutations. Please try increasing your radius"
-              + " to view the mutation.");
+              + " eg.depth or filter), limit the display of the mutations. Please try increasing "
+              + " your radius or clearing your filter to view the mutation.");
     }
     graphJson =
         Utility.graphToJson(
