@@ -244,13 +244,13 @@ public class DataServlet extends HttpServlet {
     // The searched node exists but is not mutated in the current graph
     if (truncatedGraph.nodes().size() != 0
         && !(mutationNumber == -1 && nodeNameParam.equals("") && tokenParam.equals(""))
-        && filteredMutationIndices.indexOf(mutationNumber) == -1 &&
-        (diff == null || diff.getMutationList().size() == 0)) {
-        response.setHeader(
-            "serverMessage",
-            "The searched node/token exists in this graph. However, it is not mutated in this"
-                + " graph. Please click next or previous if you wish to see where it was"
-                + " mutated!");
+        && filteredMutationIndices.indexOf(mutationNumber) == -1
+        && (diff == null || diff.getMutationList().size() == 0)) {
+      response.setHeader(
+          "serverMessage",
+          "The searched node/token exists in this graph. However, it is not mutated in this"
+              + " graph. Please click next or previous if you wish to see where it was"
+              + " mutated!");
     }
 
     // There is a diff between the previously-displayed graph and the current graph but
