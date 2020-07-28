@@ -1,4 +1,6 @@
+@use "@material/slider";
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,700;1,400&display=swap');
+@include slider.core-styles;
 
 /* Define color scheme of page */
 :root {
@@ -52,7 +54,7 @@ body {
   left: 110%;
 }
 
-#buttondiv, #buttontext, #show-mutations, #show-mutation-text {
+#buttondiv, #buttontext, #show-mutations, #show-mutation-text, #slider, #slider-text {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -107,6 +109,11 @@ body {
   padding: 10px;
   background-color: white;
   border-radius: 10px;
+}
+
+#graph-number-text, #graph-number, #total-mutation-number-text {
+  margin: 5px;
+  display: inline;
 }
 
 .recent-log-text {
