@@ -12,7 +12,12 @@ const opacityScheme = {
   "deletedObjectOpacity": 0.25
 };
 
+const tippySize = {
+  "width": 450
+};
+
 module.exports = {
   colorScheme, 
-  opacityScheme
+  opacityScheme,
+  tippySize,
 }

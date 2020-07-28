@@ -26,7 +26,7 @@ import tippy, { sticky } from 'tippy.js';
 import 'tippy.js/dist/tippy.css';
 import 'tippy.js/dist/backdrop.css';
 import 'tippy.js/animations/shift-away.css';
-import { colorScheme, opacityScheme } from './constants.js';
+import { colorScheme, opacityScheme, tippySize } from './constants.js';
 import "./style.scss";
 
 export {
@@ -688,7 +688,8 @@ function initializeTippy(node) {
     appendTo: document.body,
     // the tooltip  adheres to the node if the graph is zoomed in on
     sticky: true,
-    plugins: [sticky]
+    plugins: [sticky],
+    maxWidth: tippySize["width"],
   });
 }
 
