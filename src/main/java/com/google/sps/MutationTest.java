@@ -753,7 +753,7 @@ public final class MutationTest {
     HashSet<String> setWithAB = new HashSet<>();
     setWithAB.add("A");
     setWithAB.add("B");
-    
+
     tokenMap.put("1", setWithAB);
     tokenMap.put("2", setWithA);
 
@@ -774,7 +774,7 @@ public final class MutationTest {
     HashMap<String, Set<String>> tokenMapNew = dataGraph.tokenMap();
     // tokenMap should only have 1 token since A was deleted. The set corresponding
     // to 1 should only have one node, B.
-    Assert.assertEquals(1, tokenMapNew.keySet().size()); 
+    Assert.assertEquals(1, tokenMapNew.keySet().size());
     Assert.assertTrue(tokenMapNew.keySet().contains("1"));
     Assert.assertEquals(1, tokenMapNew.get("1").size());
     Assert.assertTrue(tokenMapNew.get("1").contains("B"));
