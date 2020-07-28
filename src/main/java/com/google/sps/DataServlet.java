@@ -188,7 +188,8 @@ public class DataServlet extends HttpServlet {
     // Truncate the graph from the nodes that the client had searched for
     truncatedGraph = currDataGraph.getReachableNodes(queried, depthNumber);
     // OPT: check queried and currDataGraph.tokenMap().get(tokenParam) are the same
-    MutableGraph<GraphNode> truncatedGraphNext = currDataGraph.getReachableNodes(currDataGraph.tokenMap().get(tokenParam), depthNumber);
+    MutableGraph<GraphNode> truncatedGraphNext =
+        currDataGraph.getReachableNodes(currDataGraph.tokenMap().get(tokenParam), depthNumber);
 
     // If we are not filtering the graph or limiting its depth, show all mutations of all nodes
     if (nodeNameParam.length() == 0
