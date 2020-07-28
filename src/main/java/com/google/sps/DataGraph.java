@@ -20,7 +20,6 @@ import com.google.protobuf.Struct;
 import com.proto.GraphProtos.Node;
 import com.proto.MutationProtos.Mutation;
 import com.proto.MutationProtos.TokenMutation;
-import com.google.common.collect.Sets;
 
 import java.util.ArrayList;
 import java.util.Collection;
