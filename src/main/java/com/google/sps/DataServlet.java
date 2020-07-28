@@ -200,13 +200,13 @@ public class DataServlet extends HttpServlet {
       response.setHeader("serverError", e.getMessage());
       return;
     }
-    
+
     // Show mutations relevant to nodes that contain the token in the new graph
     if (currDataGraph.tokenMap().containsKey(tokenParam)) {
       queried.addAll(currDataGraph.tokenMap().get(tokenParam));
       queriedNext.addAll(currDataGraph.tokenMap().get(tokenParam));
     }
-    
+
     // Truncate the graph from the nodes that the client had searched for
     truncatedGraph = currDataGraph.getReachableNodes(queried, depthNumber);
 
