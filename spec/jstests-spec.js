@@ -395,8 +395,8 @@ describe("Check correct url params", function () {
     expect(constructedUrl.get("mutationNum")).toBe("1");
 
     // Not on page here, should be empty
-    expect(constructedUrl.has("nodeName")).toBe(true);
-    expect(constructedUrl.get("nodeName")).toBe("");
+    expect(constructedUrl.has("nodeNames")).toBe(true);
+    expect(constructedUrl.get("nodeNames")).toEqual('[""]');
 
     expect(constructedUrl.has("tokenName")).toBe(true);
     expect(constructedUrl.get("tokenName")).toBe("");
@@ -404,20 +404,44 @@ describe("Check correct url params", function () {
 
   it("passes correct nodeName when nodeName has a value", function () {
     nodeName.value = "A";
-    document.body.appendChild(nodeName);
+    document.body.appendChild(nodeName); 
 
-    const requestString = getUrl();
+    const requestString = getUrl(); 
     const requestParams = requestString.substring(requestString.indexOf("?"));
 
     const constructedUrl = new URLSearchParams(requestParams);
-    expect(constructedUrl.has("nodeName")).toBe(true);
-    expect(constructedUrl.get("nodeName")).toBe("A");
+    expect(constructedUrl.has("nodeNames")).toBe(true); 
+    expect(constructedUrl.get("nodeNames")).toEqual('["A"]');
+  });
+
+  it("passes correct nodeName when nodeName has a comma separated value", function () {
+    nodeName.value = "A,B";
+    document.body.appendChild(nodeName); 
+
+    const requestString = getUrl(); 
+    const requestParams = requestString.substring(requestString.indexOf("?"));
+
+    const constructedUrl = new URLSearchParams(requestParams);
+    expect(constructedUrl.has("nodeNames")).toBe(true); 
+    expect(constructedUrl.get("nodeNames")).toEqual('["A","B"]');
+  });
+
+    it("passes correct nodeName when nodeName has a comma separated value and spaces", function () {
+    nodeName.value = "  Annie boo  , B";
+    document.body.appendChild(nodeName);  
+
+    const requestString = getUrl(); 
+    const requestParams = requestString.substring(requestString.indexOf("?"));
+
+    const constructedUrl = new URLSearchParams(requestParams);
+    expect(constructedUrl.has("nodeNames")).toBe(true); 
+    expect(constructedUrl.get("nodeNames")).toEqual('["Annie boo","B"]');
   });
 
   it("passes correct tokenName when tokenName has a value", function () {
     tokenName.value = "1";
     document.body.appendChild(tokenName);
-
+ 
     const requestString = getUrl();
     const requestParams = requestString.substring(requestString.indexOf("?"));
     const constructedUrl = new URLSearchParams(requestParams);
