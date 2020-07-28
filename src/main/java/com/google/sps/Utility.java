@@ -60,6 +60,7 @@ public final class Utility {
    * @param mutationIndices the list of indices of relevant mutations
    * @param mutDiff the difference between the current graph and the requested graph
    * @param maxNumber the total number of mutations, without filtering
+   * @param queried a list of node names the client had requested
    * @return a JSON object containing as entries the nodes and edges of this graph as well as the
    *     length of the list of mutations this graph is an intermediate result of applying
    */
@@ -67,13 +68,16 @@ public final class Utility {
       MutableGraph<GraphNode> graph,
       List<Integer> mutationIndices,
       MultiMutation mutDiff,
-      int maxNumber) {
+      int maxNumber,
+      List<String> queried) {
     Type typeOfNode = new TypeToken<Set<GraphNode>>() {}.getType();
     Type typeOfEdge = new TypeToken<Set<EndpointPair<GraphNode>>>() {}.getType();
     Type typeOfIndices = new TypeToken<List<Integer>>() {}.getType();
+    Type typeOfQueried = new TypeToken<List<String>>() {}.getType();
     Gson gson = new Gson();
     String nodeJson = gson.toJson(graph.nodes(), typeOfNode);
     String edgeJson = gson.toJson(graph.edges(), typeOfEdge);
+    String queriedJson = gson.toJson(queried, typeOfQueried);
     String mutDiffJson =
         (mutDiff == null || !mutDiff.isInitialized()) ? "" : gson.toJson(mutDiff.getMutationList());
     String reason = (mutDiff == null || !mutDiff.isInitialized()) ? "" : mutDiff.getReason();
@@ -86,6 +90,7 @@ public final class Utility {
             .put("reason", reason)
             .put("mutationIndices", mutationIndicesJson)
             .put("totalMutNumber", maxNumber)
+            .put("queriedNodes", queriedJson)
             .toString();
     return resultJson;
   }
@@ -127,7 +132,8 @@ public final class Utility {
           }
         }
       }
-      return DataGraph.create(curr.graph(), curr.graphNodesMap(), curr.roots(), mutationNum);
+      return DataGraph.create(
+          curr.graph(), curr.graphNodesMap(), curr.roots(), mutationNum, curr.tokenMap());
     } else {
       // Create a copy of the original graph and start from the original graph
       DataGraph originalCopy = original.getCopy();
@@ -142,7 +148,11 @@ public final class Utility {
         }
       }
       return DataGraph.create(
-          originalCopy.graph(), originalCopy.graphNodesMap(), originalCopy.roots(), mutationNum);
+          originalCopy.graph(),
+          originalCopy.graphNodesMap(),
+          originalCopy.roots(),
+          mutationNum,
+          originalCopy.tokenMap());
     }
   }
 

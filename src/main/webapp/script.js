@@ -25,7 +25,7 @@ import tippy, { sticky } from 'tippy.js';
 import 'tippy.js/dist/tippy.css';
 import 'tippy.js/dist/backdrop.css';
 import 'tippy.js/animations/shift-away.css';
-import { colorScheme, opacityScheme } from './constants.js';
+import { colorScheme, opacityScheme, borderScheme } from './constants.js';
 
 export {
   initializeNumMutations, setMutationIndexList, setCurrMutationNum, setCurrMutationIndex, initializeTippy,
@@ -119,6 +119,7 @@ async function generateGraph() {
   const nodes = JSON.parse(jsonResponse.nodes);
   const edges = JSON.parse(jsonResponse.edges);
   totalNum = jsonResponse.totalMutNumber;
+  const queriedNodes = JSON.parse(jsonResponse.queriedNodes);
 
   // Set all logs to be black
   const allLogs = document.querySelectorAll('.log-msg');
@@ -173,7 +174,7 @@ async function generateGraph() {
       }
     });
   });
-  getGraphDisplay(graphNodes, graphEdges, mutList, reason);
+  getGraphDisplay(graphNodes, graphEdges, mutList, reason, queriedNodes);
   updateButtons();
   return;
 }
@@ -185,6 +186,7 @@ async function generateGraph() {
 function getUrl() {
   const depthElem = document.getElementById('num-layers');
   const nodeName = document.getElementById('node-name-filter') ? document.getElementById('node-name-filter').value || "" : "";
+  const tokenName = document.getElementById('token-name-filter') ? document.getElementById('token-name-filter').value || "" : "";
 
   let selectedDepth = 0;
   if (depthElem === null) {
@@ -203,7 +205,7 @@ function getUrl() {
       selectedDepth = 20;
     }
   }
-  const url = `/data?depth=${selectedDepth}&mutationNum=${currMutationNum}&nodeName=${nodeName}`;
+  const url = `/data?depth=${selectedDepth}&mutationNum=${currMutationNum}&nodeName=${nodeName}&tokenName=${tokenName}`;
   return url;
 }
 
@@ -244,8 +246,9 @@ function displayError(errorMsg) {
  * @param graphEdges a list of edges
  * @param mutList a list of mutations
  * @param reason for mutation, used for highlighting the difference
+ * @param queriedNodes a list of nodes that the user had searched for
  */
-function getGraphDisplay(graphNodes, graphEdges, mutList, reason) {
+function getGraphDisplay(graphNodes, graphEdges, mutList, reason, queriedNodes) {
   const cy = cytoscape({
     container: document.getElementById("graph"),
     elements: {
@@ -301,20 +304,18 @@ function getGraphDisplay(graphNodes, graphEdges, mutList, reason) {
     node.tip.show();
   });
 
+  // Color the queried nodes (it's fuchsia because I thought it was pretty, but definitely open to change! )
+  if (queriedNodes) {
+    queriedNodes.forEach(nodeName => {
+      cy.$id(nodeName).style('background-color', colorScheme["filteredNodeColor"]);
+      cy.$id(nodeName).style('border-width', borderScheme['queriedBorder']);
+    })
+  }
   document.getElementById('reset').onclick = function(){ resetElements(cy) };
 
   document.getElementById('search-button').onclick = function() { searchAndHighlight(cy, "node", searchNode) };
 
   document.getElementById('search-token-button').onclick = function() { searchAndHighlight(cy, "token", searchToken) };
-  
-  // If a node is searched, color it (it's fuchsia because I thought it was pretty, but definitely open to change! )
-  const nodeFilter = document.getElementById("node-name-filter");
-  if (nodeFilter && nodeFilter.value) {
-    const target = findNodeInGraph(cy, nodeFilter.value);
-    if (target) {
-      target.style('background-color', colorScheme["filteredNodeColor"]);
-    }
-  }
 
   // When a new graph is loaded, mutations are always shown by default
   const showMutButton = document.getElementById("show-mutations");
@@ -360,7 +361,6 @@ function getGraphDisplay(graphNodes, graphEdges, mutList, reason) {
   });
   return cy;
 }
-
 
 /**
  * Highlights modified nodes and edges in the graph according to the list
@@ -495,7 +495,6 @@ function highlightDiff(cy, mutList, reason = "") {
     modifiedNodes
   };
 }
-
 
 /**
  * Initializes a tooltip with reason as its contents that displays when the object

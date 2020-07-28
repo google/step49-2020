@@ -332,11 +332,15 @@ describe("Pressing next and previous buttons associated with a graph", function 
 
 describe("Check correct url params", function () {
   let nodeName = {};
+  let tokenName = {};
 
   beforeEach(function () {
     setCurrMutationNum(1);
     nodeName = document.createElement("input");
     nodeName.id = "node-name-filter";
+
+    tokenName = document.createElement("input");
+    tokenName.id = "token-name-filter";
   });
 
   afterEach(function () {
@@ -357,6 +361,9 @@ describe("Check correct url params", function () {
     // Not on page here, should be empty
     expect(constructedUrl.has("nodeName")).toBe(true);
     expect(constructedUrl.get("nodeName")).toBe("");
+
+    expect(constructedUrl.has("tokenName")).toBe(true);
+    expect(constructedUrl.get("tokenName")).toBe("");
   });
 
   it("passes correct nodeName when nodeName has a value", function () {
@@ -370,6 +377,17 @@ describe("Check correct url params", function () {
     expect(constructedUrl.has("nodeName")).toBe(true);
     expect(constructedUrl.get("nodeName")).toBe("A");
   });
+
+  it("passes correct tokenName when tokenName has a value", function () {
+    tokenName.value = "1";
+    document.body.appendChild(tokenName);
+
+    const requestString = getUrl();
+    const requestParams = requestString.substring(requestString.indexOf("?"));
+    const constructedUrl = new URLSearchParams(requestParams);
+    expect(constructedUrl.has("tokenName")).toBe(true);
+    expect(constructedUrl.get("tokenName")).toBe("1");
+  })
 });
 
 describe("Node search", function() {
