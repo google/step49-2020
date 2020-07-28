@@ -728,6 +728,14 @@ function getTooltipContent(node) {
   tokenLabel.innerText = "Tokens:";
   content.appendChild(tokenLabel);
 
+  const nodeName = document.createElement("p");
+  nodeName.innerText = `Node name:\n${node.data().id}`;
+  content.appendChild(nodeName);
+
+  const tokenLabel = document.createElement("p");
+  tokenLabel.innerText = "Tokens:";
+  content.appendChild(tokenLabel);
+
   const nodeTokens = node.data("tokens");
   if (!nodeTokens || nodeTokens.length === 0) {
     // The node has an empty token list
