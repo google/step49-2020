@@ -187,7 +187,7 @@ public class DataServlet extends HttpServlet {
 
     // Truncate the graph from the nodes that the client had searched for
     truncatedGraph = currDataGraph.getReachableNodes(queried, depthNumber);
-   
+
     MutableGraph<GraphNode> truncatedGraphNext =
         currDataGraph.getReachableNodes(currDataGraph.tokenMap().get(tokenParam), depthNumber);
 
