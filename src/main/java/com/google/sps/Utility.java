@@ -251,7 +251,7 @@ public final class Utility {
   }
 
   /**
-   * Returns a set of indices on the original list that related to a given node
+   * Returns a set of indices on the original list that related to a given token
    *
    * @param tokenName the token name to search for
    * @param origList the original list of mutations
@@ -268,8 +268,7 @@ public final class Utility {
       List<Mutation> mutList = multiMut.getMutationList();
       for (Mutation mut : mutList) {
         if (mut.getType().equals(Mutation.Type.CHANGE_TOKEN)) {
-          TokenMutation tokenMut = mut.getTokenChange();
-          List<String> tokenNames = tokenMut.getTokenNameList();
+          List<String> tokenNames = mut.getTokenChange().getTokenNameList();
           if (tokenNames.contains(tokenName)) {
             lst.add(i);
             break;
@@ -322,8 +321,8 @@ public final class Utility {
 
   /**
    * Given a list of node names, a map from node name to mutation indices of that node and a list of
-   * multimutations applied to all nodes, returns a list of indices of multimutations in which any
-   * of the nodes in nodeNames get mutated (returned in sorted order)
+   * multimutations applied to all nodes, returns a set of indices of multimutations in which any
+   * of the nodes in nodeNames get mutated
    *
    * @param nodeNames the names of nodes to restrict the returned list of mutations to
    * @param mutationIndicesMap a map from node name -> indices of mutations that mutate it

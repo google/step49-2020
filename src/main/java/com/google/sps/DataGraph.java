@@ -253,7 +253,7 @@ abstract class DataGraph {
           for (String token : startNode.tokenList()) {
             removeNodeFromToken(token, startName);
           }
-
+          
           Set<GraphNode> successors = graph.successors(startNode);
 
           roots.remove(startName);
