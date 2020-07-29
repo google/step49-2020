@@ -38,6 +38,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.common.graph.Graphs;
 import com.google.common.graph.MutableGraph;
 import com.google.protobuf.TextFormat;
 import com.proto.GraphProtos.Graph;
@@ -178,7 +179,6 @@ public class DataServlet extends HttpServlet {
     HashSet<String> queried = new HashSet<>();
 
     // roots to calculate the mutations from
-    // OPT: check queried and currDataGraph.tokenMap().get(tokenParam) are the same
     HashSet<String> queriedNext = new HashSet<>();
     // We start by adding the node name if it was searched for
     if (nodeNames.size() > 0) {
@@ -210,8 +210,10 @@ public class DataServlet extends HttpServlet {
     // Truncate the graph from the nodes that the client had searched for
     truncatedGraph = currDataGraph.getReachableNodes(queried, depthNumber);
 
-    // To get the nodes to calculate relevant mutations from
-    MutableGraph<GraphNode> truncatedGraphNext =
+    
+    // To get the nodes to calculate relevant mutations from. If queried and queried next contain the same
+    // nodes, then no reason to regenerate the graph
+    MutableGraph<GraphNode> truncatedGraphNext = queried.equals(queriedNext) ? Graphs.copyOf(truncatedGraph) : 
         currDataGraph.getReachableNodes(queriedNext, depthNumber);
 
     // If we are not filtering the graph or limiting its depth, show all mutations of all nodes
