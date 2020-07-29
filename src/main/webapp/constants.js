@@ -12,7 +12,12 @@ const opacityScheme = {
   "deletedObjectOpacity": 0.25
 };
 
+const borderScheme = {
+  "queriedBorder": "5px"
+}
+
 module.exports = {
   colorScheme, 
-  opacityScheme
+  opacityScheme,
+  borderScheme
 }

@@ -214,8 +214,9 @@ public final class GraphGenerationTest {
     HashSet<String> roots = new HashSet<>();
     roots.add("A");
     roots.add("B");
+    HashMap<String, Set<String>> tokenMap = new HashMap<>();
 
-    DataGraph dataGraph = DataGraph.create(graph, graphNodesMap, roots, 0);
+    DataGraph dataGraph = DataGraph.create(graph, graphNodesMap, roots, 0, tokenMap);
     DataGraph dataGraphCopy = dataGraph.getCopy();
 
     Assert.assertEquals(dataGraph, dataGraphCopy);

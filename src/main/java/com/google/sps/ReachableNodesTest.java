@@ -1,6 +1,9 @@
 package com.google.sps;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 import com.google.common.graph.EndpointPair;
@@ -60,8 +63,9 @@ public class ReachableNodesTest {
 
     DataGraph dataGraph = DataGraph.create();
     dataGraph.graphFromProtoNodes(protoNodesMap);
+    List<String> lst = new ArrayList<>(Arrays.asList("A"));
 
-    MutableGraph<GraphNode> truncatedGraph = dataGraph.getReachableNodes("A", 0);
+    MutableGraph<GraphNode> truncatedGraph = dataGraph.getReachableNodes(lst, 0);
     Set<GraphNode> graphNodes = truncatedGraph.nodes();
     Set<EndpointPair<GraphNode>> graphEdges = truncatedGraph.edges();
 
@@ -86,8 +90,9 @@ public class ReachableNodesTest {
 
     DataGraph dataGraph = DataGraph.create();
     dataGraph.graphFromProtoNodes(protoNodesMap);
+    List<String> lst = new ArrayList<>(Arrays.asList("A"));
 
-    MutableGraph<GraphNode> truncatedGraph = dataGraph.getReachableNodes("A", 1);
+    MutableGraph<GraphNode> truncatedGraph = dataGraph.getReachableNodes(lst, 1);
     Set<GraphNode> graphNodes = truncatedGraph.nodes();
     Set<EndpointPair<GraphNode>> graphEdges = truncatedGraph.edges();
 
@@ -112,8 +117,9 @@ public class ReachableNodesTest {
 
     DataGraph dataGraph = DataGraph.create();
     dataGraph.graphFromProtoNodes(protoNodesMap);
+    List<String> lst = new ArrayList<>(Arrays.asList("C"));
 
-    MutableGraph<GraphNode> truncatedGraph = dataGraph.getReachableNodes("C", 2);
+    MutableGraph<GraphNode> truncatedGraph = dataGraph.getReachableNodes(lst, 2);
 
     Set<GraphNode> graphNodes = truncatedGraph.nodes();
     Set<EndpointPair<GraphNode>> graphEdges = truncatedGraph.edges();
@@ -143,8 +149,9 @@ public class ReachableNodesTest {
 
     DataGraph dataGraph = DataGraph.create();
     dataGraph.graphFromProtoNodes(protoNodesMap);
+    List<String> lst = new ArrayList<>(Arrays.asList("C"));
 
-    MutableGraph<GraphNode> truncatedGraph = dataGraph.getReachableNodes("C", 1);
+    MutableGraph<GraphNode> truncatedGraph = dataGraph.getReachableNodes(lst, 1);
 
     Set<GraphNode> graphNodes = truncatedGraph.nodes();
     Set<EndpointPair<GraphNode>> graphEdges = truncatedGraph.edges();
@@ -172,8 +179,9 @@ public class ReachableNodesTest {
 
     DataGraph dataGraph = DataGraph.create();
     dataGraph.graphFromProtoNodes(protoNodesMap);
+    List<String> lst = new ArrayList<>(Arrays.asList("A"));
 
-    MutableGraph<GraphNode> truncatedGraph = dataGraph.getReachableNodes("A", 5);
+    MutableGraph<GraphNode> truncatedGraph = dataGraph.getReachableNodes(lst, 5);
     Set<GraphNode> graphNodes = truncatedGraph.nodes();
     Set<EndpointPair<GraphNode>> graphEdges = truncatedGraph.edges();
 
@@ -197,8 +205,9 @@ public class ReachableNodesTest {
 
     DataGraph dataGraph = DataGraph.create();
     dataGraph.graphFromProtoNodes(protoNodesMap);
+    List<String> lst = new ArrayList<>(Arrays.asList("B"));
 
-    MutableGraph<GraphNode> truncatedGraph = dataGraph.getReachableNodes("B", 5);
+    MutableGraph<GraphNode> truncatedGraph = dataGraph.getReachableNodes(lst, 5);
     Set<GraphNode> graphNodes = truncatedGraph.nodes();
     Set<EndpointPair<GraphNode>> graphEdges = truncatedGraph.edges();
 
@@ -235,8 +244,9 @@ public class ReachableNodesTest {
     DataGraph dataGraph = DataGraph.create();
     dataGraph.graphFromProtoNodes(protoNodesMap);
     MutableGraph<GraphNode> graph = dataGraph.graph();
+    List<String> lst = new ArrayList<>(Arrays.asList("B"));
 
-    MutableGraph<GraphNode> truncatedGraph = dataGraph.getReachableNodes("B", 2);
+    MutableGraph<GraphNode> truncatedGraph = dataGraph.getReachableNodes(lst, 2);
     Set<GraphNode> graphNodes = truncatedGraph.nodes();
     Set<EndpointPair<GraphNode>> graphEdges = truncatedGraph.edges();
 
@@ -279,8 +289,9 @@ public class ReachableNodesTest {
     DataGraph dataGraph = DataGraph.create();
     dataGraph.graphFromProtoNodes(protoNodesMap);
     MutableGraph<GraphNode> graph = dataGraph.graph();
+    List<String> lst = new ArrayList<>(Arrays.asList("F"));
 
-    MutableGraph<GraphNode> truncatedGraph = dataGraph.getReachableNodes("F", 2);
+    MutableGraph<GraphNode> truncatedGraph = dataGraph.getReachableNodes(lst, 2);
     Set<GraphNode> graphNodes = truncatedGraph.nodes();
     Set<EndpointPair<GraphNode>> graphEdges = truncatedGraph.edges();
 
@@ -296,5 +307,142 @@ public class ReachableNodesTest {
 
     // Encapsulation
     Assert.assertEquals(6, graph.edges().size());
+  }
+
+  /** Multiple nodes that are valid are all in the graph, edges preserved */
+  @Test
+  public void multipleValidNodesAccountedFor() {
+    nodeA.addChildren("B");
+    nodeA.addChildren("C");
+
+    HashMap<String, Node> protoNodesMap = new HashMap<>();
+    protoNodesMap.put("A", nodeA.build());
+    protoNodesMap.put("B", nodeB.build());
+    protoNodesMap.put("C", nodeC.build());
+
+    DataGraph dataGraph = DataGraph.create();
+    dataGraph.graphFromProtoNodes(protoNodesMap);
+    List<String> lst = new ArrayList<>(Arrays.asList("A", "B"));
+
+    MutableGraph<GraphNode> truncatedGraph = dataGraph.getReachableNodes(lst, 0);
+    Set<GraphNode> graphNodes = truncatedGraph.nodes();
+    Set<EndpointPair<GraphNode>> graphEdges = truncatedGraph.edges();
+
+    Assert.assertEquals(2, graphNodes.size());
+    Assert.assertTrue(graphNodes.contains(gNodeA));
+    Assert.assertTrue(graphNodes.contains(gNodeB));
+    Assert.assertFalse(graphNodes.contains(gNodeC));
+
+    Assert.assertEquals(1, graphEdges.size());
+  }
+
+  /** Invalid nodes are ignored */
+  @Test
+  public void invalidNodesIgnored() {
+    nodeA.addChildren("B");
+    nodeA.addChildren("C");
+
+    HashMap<String, Node> protoNodesMap = new HashMap<>();
+    protoNodesMap.put("A", nodeA.build());
+    protoNodesMap.put("B", nodeB.build());
+    protoNodesMap.put("C", nodeC.build());
+
+    DataGraph dataGraph = DataGraph.create();
+    dataGraph.graphFromProtoNodes(protoNodesMap);
+    List<String> lst = new ArrayList<>(Arrays.asList("A", "B", "D"));
+
+    MutableGraph<GraphNode> truncatedGraph = dataGraph.getReachableNodes(lst, 0);
+    Set<GraphNode> graphNodes = truncatedGraph.nodes();
+    Set<EndpointPair<GraphNode>> graphEdges = truncatedGraph.edges();
+
+    Assert.assertEquals(2, graphNodes.size());
+    Assert.assertTrue(graphNodes.contains(gNodeA));
+    Assert.assertTrue(graphNodes.contains(gNodeB));
+    Assert.assertFalse(graphNodes.contains(gNodeC));
+
+    Assert.assertEquals(1, graphEdges.size());
+  }
+
+  /** empty names gives a graph from the roots */
+  @Test
+  public void emptyNodesGivesEntireGraph() {
+    nodeA.addChildren("B");
+    nodeA.addChildren("C");
+
+    HashMap<String, Node> protoNodesMap = new HashMap<>();
+    protoNodesMap.put("A", nodeA.build());
+    protoNodesMap.put("B", nodeB.build());
+    protoNodesMap.put("C", nodeC.build());
+
+    DataGraph dataGraph = DataGraph.create();
+    dataGraph.graphFromProtoNodes(protoNodesMap);
+    List<String> lst = new ArrayList<>();
+
+    MutableGraph<GraphNode> truncatedGraph = dataGraph.getReachableNodes(lst, 2);
+    Set<GraphNode> graphNodes = truncatedGraph.nodes();
+    Set<EndpointPair<GraphNode>> graphEdges = truncatedGraph.edges();
+
+    Assert.assertEquals(3, graphNodes.size());
+    Assert.assertTrue(graphNodes.contains(gNodeA));
+    Assert.assertTrue(graphNodes.contains(gNodeB));
+    Assert.assertTrue(graphNodes.contains(gNodeC));
+
+    Assert.assertEquals(2, graphEdges.size());
+  }
+
+  /** All nodes searched for don't exist in the graph */
+  @Test
+  public void nonExistentNodesOnly() {
+    nodeA.addChildren("B");
+    nodeA.addChildren("C");
+
+    HashMap<String, Node> protoNodesMap = new HashMap<>();
+    protoNodesMap.put("A", nodeA.build());
+    protoNodesMap.put("B", nodeB.build());
+    protoNodesMap.put("C", nodeC.build());
+
+    DataGraph dataGraph = DataGraph.create();
+    dataGraph.graphFromProtoNodes(protoNodesMap);
+    List<String> lst = new ArrayList<>(Arrays.asList("X", "D"));
+
+    MutableGraph<GraphNode> truncatedGraph = dataGraph.getReachableNodes(lst, 2);
+    Set<GraphNode> graphNodes = truncatedGraph.nodes();
+    Set<EndpointPair<GraphNode>> graphEdges = truncatedGraph.edges();
+
+    Assert.assertEquals(0, graphNodes.size());
+
+    Assert.assertEquals(0, graphEdges.size());
+  }
+
+  /** Two nodes not connected returns a disjoint graph */
+  @Test
+  public void disjointGraphReturned() {
+    nodeA.addChildren("B");
+    nodeD.addChildren("E");
+
+    HashMap<String, Node> protoNodesMap = new HashMap<>();
+    protoNodesMap.put("A", nodeA.build());
+    protoNodesMap.put("B", nodeB.build());
+    protoNodesMap.put("C", nodeC.build());
+    protoNodesMap.put("D", nodeD.build());
+    protoNodesMap.put("E", nodeE.build());
+
+    DataGraph dataGraph = DataGraph.create();
+    dataGraph.graphFromProtoNodes(protoNodesMap);
+    List<String> lst = new ArrayList<>(Arrays.asList("B", "E"));
+
+    MutableGraph<GraphNode> truncatedGraph = dataGraph.getReachableNodes(lst, 1);
+    Set<GraphNode> graphNodes = truncatedGraph.nodes();
+    Set<EndpointPair<GraphNode>> graphEdges = truncatedGraph.edges();
+
+    Assert.assertEquals(4, graphNodes.size());
+    Assert.assertTrue(graphNodes.contains(gNodeA));
+    Assert.assertTrue(graphNodes.contains(gNodeB));
+    Assert.assertTrue(graphNodes.contains(gNodeD));
+    Assert.assertTrue(graphNodes.contains(gNodeE));
+
+    Assert.assertEquals(2, graphEdges.size());
+    Assert.assertTrue(truncatedGraph.hasEdgeConnecting(gNodeA, gNodeB));
+    Assert.assertTrue(truncatedGraph.hasEdgeConnecting(gNodeD, gNodeE));
   }
 }

@@ -109,6 +109,7 @@ public class DataServlet extends HttpServlet {
     String depthParam = request.getParameter("depth");
     String mutationParam = request.getParameter("mutationNum");
     String nodeNameParam = request.getParameter("nodeName");
+    String tokenParam = request.getParameter("tokenName");
 
     if (depthParam == null) {
       String error = "Improper depth parameter, cannot generate graph";
@@ -118,12 +119,15 @@ public class DataServlet extends HttpServlet {
       String error = "Improper mutation number parameter, cannot generate graph";
       response.setHeader("serverError", error);
       return;
-    } else if (nodeNameParam == null) {
-      // We should not error out and should proceed as if not filtering in this
-      // case
+    }
+    // If nodeNameParam or tokenParam are null, we should just set them to empty and
+    // not error out
+    if (nodeNameParam == null) {
       nodeNameParam = "";
     }
-
+    if (tokenParam == null) {
+      tokenParam = "";
+    }
     int depthNumber = Integer.parseInt(depthParam);
     int mutationNumber = Integer.parseInt(mutationParam);
 
@@ -159,7 +163,17 @@ public class DataServlet extends HttpServlet {
       response.setHeader("serverError", e.getMessage());
       return;
     }
-    truncatedGraph = currDataGraph.getReachableNodes(nodeNameParam, depthNumber);
+
+    List<String> queried = new ArrayList<>();
+    if (nodeNameParam.length() > 0) {
+      queried.add(nodeNameParam);
+    }
+    // If the token is contained, then get the nodes associated with the token and
+    // add them to the queried nodes
+    if (currDataGraph.tokenMap().containsKey(tokenParam)) {
+      queried.addAll(currDataGraph.tokenMap().get(tokenParam));
+    }
+    truncatedGraph = currDataGraph.getReachableNodes(queried, depthNumber);
 
     if (nodeNameParam.length() == 0 && truncatedGraph.equals(currDataGraph.graph())) {
       // If we are not filtering the graph or limiting its depth, show all mutations of all nodes
@@ -222,7 +236,9 @@ public class DataServlet extends HttpServlet {
               + " eg. radius), limit the display of the mutations. Please try increasing your radius"
               + " to view the mutation.");
     }
-    graphJson = Utility.graphToJson(truncatedGraph, filteredMutationIndices, diff, mutList.size());
+
+    graphJson =
+        Utility.graphToJson(truncatedGraph, filteredMutationIndices, diff, mutList.size(), queried);
     response.getWriter().println(graphJson);
   }
 
