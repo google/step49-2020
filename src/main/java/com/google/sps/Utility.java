@@ -17,7 +17,10 @@ package com.google.sps;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.HashSet;
+import java.util.stream.IntStream;
 import java.util.stream.Collectors;
 
 import com.google.common.base.Preconditions;
@@ -29,6 +32,7 @@ import com.google.protobuf.Struct;
 import com.proto.GraphProtos.Node;
 import com.proto.MutationProtos.MultiMutation;
 import com.proto.MutationProtos.Mutation;
+import com.proto.MutationProtos.TokenMutation;
 
 import org.json.JSONObject;
 
@@ -60,6 +64,7 @@ public final class Utility {
    * @param mutationIndices the indices in the entire mutation list that mutate the relevant nodes
    * @param mutDiff the difference between the current graph and the requested graph
    * @param maxNumber the total number of mutations, without filtering
+   * @param queried a set of node names the client had requested
    * @return a JSON object containing as entries the nodes and edges of this graph as well as the
    *     length of the list of mutations this graph is an intermediate result of applying, the
    *     indices at which relevant nodes are mutated and the change made to relevant nodes to obtain
@@ -69,13 +74,16 @@ public final class Utility {
       MutableGraph<GraphNode> graph,
       List<Integer> mutationIndices,
       MultiMutation mutDiff,
-      int maxNumber) {
+      int maxNumber,
+      HashSet<String> queried) {
     Type typeOfNode = new TypeToken<Set<GraphNode>>() {}.getType();
     Type typeOfEdge = new TypeToken<Set<EndpointPair<GraphNode>>>() {}.getType();
     Type typeOfIndices = new TypeToken<List<Integer>>() {}.getType();
+    Type typeOfQueried = new TypeToken<Set<String>>() {}.getType();
     Gson gson = new Gson();
     String nodeJson = gson.toJson(graph.nodes(), typeOfNode);
     String edgeJson = gson.toJson(graph.edges(), typeOfEdge);
+    String queriedJson = gson.toJson(queried, typeOfQueried);
     String mutDiffJson =
         (mutDiff == null || !mutDiff.isInitialized()) ? "" : gson.toJson(mutDiff.getMutationList());
     String reason = (mutDiff == null || !mutDiff.isInitialized()) ? "" : mutDiff.getReason();
@@ -88,6 +96,7 @@ public final class Utility {
             .put("reason", reason)
             .put("mutationIndices", mutationIndicesJson)
             .put("totalMutNumber", maxNumber)
+            .put("queriedNodes", queriedJson)
             .toString();
     return resultJson;
   }
@@ -116,7 +125,6 @@ public final class Utility {
     } else if (mutationNum > multiMutList.size()) {
       mutationNum = multiMutList.size() - 1;
     }
-
     if (curr.numMutations() <= mutationNum) { // going forward
       for (int i = curr.numMutations() + 1; i <= mutationNum; i++) {
         // Mutate graph operates in place
@@ -129,7 +137,8 @@ public final class Utility {
           }
         }
       }
-      return DataGraph.create(curr.graph(), curr.graphNodesMap(), curr.roots(), mutationNum);
+      return DataGraph.create(
+          curr.graph(), curr.graphNodesMap(), curr.roots(), mutationNum, curr.tokenMap());
     } else {
       // Create a copy of the original graph and start from the original graph
       DataGraph originalCopy = original.getCopy();
@@ -144,7 +153,11 @@ public final class Utility {
         }
       }
       return DataGraph.create(
-          originalCopy.graph(), originalCopy.graphNodesMap(), originalCopy.roots(), mutationNum);
+          originalCopy.graph(),
+          originalCopy.graphNodesMap(),
+          originalCopy.roots(),
+          mutationNum,
+          originalCopy.tokenMap());
     }
   }
 
@@ -194,6 +207,79 @@ public final class Utility {
   }
 
   /**
+   * Returns a list of the indices of the mutations in origList that mutate
+   *
+   * @param nodeName the name of the node to filter
+   * @param origList the original list of mutations
+   * @param tokenName paramter for token name. list ends when that token is deleted
+   * @return a list of indices that are relevant to the node, truncated at the point a given token
+   *     is deleted
+   */
+  public static ArrayList<Integer> getMutationIndicesOfNode(
+      String nodeName, List<MultiMutation> origList, String tokenNameSearched) {
+    ArrayList<Integer> lst = new ArrayList<>();
+    // Shouldn't happen, but in case the nodeName is null an empty list is returned
+    if (nodeName == null) {
+      return lst;
+    }
+    for (int i = 0; i < origList.size(); i++) {
+      MultiMutation multiMut = origList.get(i);
+      List<Mutation> mutList = multiMut.getMutationList();
+      for (Mutation mut : mutList) {
+        String startName = mut.getStartNode();
+        String endName = mut.getEndNode();
+        if (nodeName.equals(startName) || nodeName.equals(endName)) {
+          lst.add(i);
+          // If the mutation is a delete token AND the token passed in as param is
+          // deleted, then we want no more
+          if (tokenNameSearched.length() != 0 && mut.getType().equals(Mutation.Type.CHANGE_TOKEN)) {
+            TokenMutation tokenMut = mut.getTokenChange();
+            TokenMutation.Type tokenMutType = tokenMut.getType();
+            if (tokenMutType == TokenMutation.Type.DELETE_TOKEN) {
+              List<String> tokenNames = tokenMut.getTokenNameList();
+              if (tokenNames.contains(tokenNameSearched)) {
+                return lst;
+              }
+            }
+          }
+
+          break;
+        }
+      }
+    }
+    return lst;
+  }
+
+  /**
+   * Returns a set of indices on the original list that related to a given token
+   *
+   * @param tokenName the token name to search for
+   * @param origList the original list of mutations
+   * @return a set of indices, empty if tokenName is null or if token is not changed
+   */
+  public static Set<Integer> getMutationIndicesOfToken(
+      String tokenName, List<MultiMutation> origList) {
+    Set<Integer> lst = new HashSet<>();
+    if (tokenName == null || tokenName.length() == 0) {
+      return lst;
+    }
+    for (int i = 0; i < origList.size(); i++) {
+      MultiMutation multiMut = origList.get(i);
+      List<Mutation> mutList = multiMut.getMutationList();
+      for (Mutation mut : mutList) {
+        if (mut.getType().equals(Mutation.Type.CHANGE_TOKEN)) {
+          List<String> tokenNames = mut.getTokenChange().getTokenNameList();
+          if (tokenNames.contains(tokenName)) {
+            lst.add(i);
+            break;
+          }
+        }
+      }
+    }
+    return lst;
+  }
+
+  /**
    * Converts a Guava graph containing nodes of type GraphNode into a set of names of nodes
    * contained in the graph
    *
@@ -231,5 +317,35 @@ public final class Utility {
         .addAllMutation(filteredMutationList)
         .setReason(mm.getReason())
         .build();
+  }
+
+  /**
+   * Given a list of node names, a map from node name to mutation indices of that node and a list of
+   * multimutations applied to all nodes, returns a set of indices of multimutations in which any of
+   * the nodes in nodeNames get mutated
+   *
+   * @param nodeNames the names of nodes to restrict the returned list of mutations to
+   * @param mutationIndicesMap a map from node name -> indices of mutations that mutate it
+   * @param multiMutList a list of multimutations which mutationIndices map indexes into
+   * @return a set of indices in multiMutList at which any of the nodes in nodeNames are mutated
+   *     Might modify mutationIndices map by caching information about relevant mutation indices of
+   *     some nodes
+   */
+  public static Set<Integer> findRelevantMutations(
+      Set<String> nodeNames,
+      Map<String, List<Integer>> mutationIndicesMap,
+      List<MultiMutation> multiMutList) {
+    if (nodeNames.size() == 0) {
+      return IntStream.range(0, multiMutList.size()).boxed().collect(Collectors.toSet());
+    }
+    Set<Integer> relevantIndices = new HashSet<>();
+    for (String nodeName : nodeNames) {
+      // Find or compute and cache the relevant mutation indices for each node
+      if (!mutationIndicesMap.containsKey(nodeName)) {
+        mutationIndicesMap.put(nodeName, getMutationIndicesOfNode(nodeName, multiMutList));
+      }
+      relevantIndices.addAll(mutationIndicesMap.get(nodeName));
+    }
+    return relevantIndices;
   }
 }

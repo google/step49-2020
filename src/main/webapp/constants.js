@@ -16,8 +16,13 @@ const tippySize = {
   "width": 450
 };
 
+const borderScheme = {
+  "queriedBorder": "5px"
+}
+
 module.exports = {
   colorScheme, 
   opacityScheme,
   tippySize,
+  borderScheme,
 }

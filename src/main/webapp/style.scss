@@ -4,16 +4,35 @@
 
 /* Define color scheme of page */
 :root {
-  --error: red;  
+  --error: red; 
+  --gray: #D3D3D3; 
+  --btn-color: #B590CA;
+  --box-bg: #DDF3F5;
+  --dark-gray: #5d5b6a;
 }
 
-h1 {
+h2, h4 {
   margin: 0 auto;
+}
+
+button {
+  background-color: var(--gray);
+  color: black;
+    font-size: 16px;
+    border-radius: 10px;
+    margin: 5px;
+    padding: 5px;
+}
+
+button:hover {
+  font-weight: bold;
+  color: white;
+  background-color: var(--dark-gray);
 }
 
 body {
   margin: 50px;
-  font-size: 25px;
+  font-size: 20px;
   font-family: 'Roboto', sans-serif;
 }
 
@@ -24,10 +43,11 @@ body {
   margin-right: auto;
   margin-top: 0;
   margin-bottom: 40px;
-  border: solid 1px black;
+  border: solid 5px black;
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 30px;
 }
 
 #errortext {
@@ -92,10 +112,11 @@ body {
 
 #graph-content-logs {
   flex: 20%;
-  background-color: #D3D3D3;
+  background-color: var(--gray);
   border-radius: 10px;
   max-height: 75vh;
   overflow-y: scroll;
+  margin-right: 20px;
 }
 
 #log-list {
@@ -117,5 +138,27 @@ body {
 }
 
 .recent-log-text {
-  color: red;
+  color: var(--error);
+}
+
+.error-text {
+  color: var(--error);
+}
+
+.reset {
+  width: 150px;
+}
+
+#input-boxes {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+}
+
+.input-child {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--box-bg);
+  border-radius: 15px;
+  margin: 15px;
 }
