@@ -10,38 +10,41 @@
 </head>
 
 <body id="content" onload="graph.initializeSlider(); graph.generateGraph()">
-  <h1>
+  <h2>
     Graph Visualization Tool
-  </h1>
-  <div id="search-box">
-    <label for="layers">Radius from filtered node(s) (0-20, default is 3):</label>
-    <input type="number" id="num-layers" name="layers" min="0" max="20" value="3">
-    <label for="search-name">Name of node(s) to filter for (If you enter multiple, please separate with commas!) </label>
-    <input type="text" id="node-name-filter" name="search-name" placeholder="nodeName1,nodeName2"></input>
-    <label for="token-name">Name of token to filter for</label>
-    <input type="text" id="token-name-filter" name="token-name" placeholder="Token Name"></input>
-    <button onclick="graph.generateGraph()">Get Graph</button>
-    <div>
-      <label>Zoom on Node in Graph: </label>
-      <input type="text" id="node-search" placeholder="Node Name"></input>
-      <button id="search-button">Find Node</button>
-      <label id="node-error" class="error-text"></label>
+  </h2>
+  <div id="input-boxes">
+    <div id="search-box" class="input-child">
+      <label for="layers">Radius from filtered node(s) (0-20, default is 3):</label>
+      <input type="number" id="num-layers" name="layers" min="0" max="20" value="3">
+      <label for="search-name">Name of node(s) to filter for (If you enter multiple, please separate with commas!) </label>
+      <input type="text" id="node-name-filter" name="search-name" placeholder="nodeName1,nodeName2"></input>
+      <label for="token-name">Name of token to filter for</label>
+      <input type="text" id="token-name-filter" name="token-name" placeholder="Token Name"></input>
+      <button onclick="graph.generateGraph()">Get Graph</button>
+      
+      <div id="num-mutation-display">
+        <p id="graph-number-text">Graph </p>
+        <input type="number" id="graph-number" min="0" max="0" value="0"
+          onchange="graph.readGraphNumberInput(); graph.generateGraph()">
+        <p id="total-mutation-number-text">out of 0</p>
+      </div>
     </div>
-
-    <div>
-      <label>Zoom on Token in Graph: </label>
-      <input type="text" id="token-search" placeholder="Token Name"></input>
-      <button id="search-token-button">Find Token</button>
-      <label id="token-error" class="error-text"></label>
-    </div>
-    <button id="reset" class="reset">Reset Graph</button>
-    <label id="num-selected"></label>
-    <br />
-    <div id="num-mutation-display">
-      <p id="graph-number-text">Graph </p>
-      <input type="number" id="graph-number" min="0" max="0" value="0"
-        onchange="graph.readGraphNumberInput(); graph.generateGraph()">
-      <p id="total-mutation-number-text">out of 0</p>
+    <div id="zoom-box" class="input-child">
+      <!-- <div> -->
+        <label>Zoom on Node in Graph: </label>
+        <input type="text" id="node-search" placeholder="Node Name"></input>
+        <button id="search-button">Find Node</button>
+        <label id="node-error" class="error-text"></label>
+      <!-- </div> -->
+      <!-- <div> -->
+        <label>Zoom on Token in Graph: </label>
+        <input type="text" id="token-search" placeholder="Token Name"></input>
+        <button id="search-token-button">Find Token</button>
+        <label id="token-error" class="error-text"></label>
+      <!-- </div> -->
+      <button id="reset" class="reset">Reset Graph</button>
+      <label id="num-selected"></label>
     </div>
   </div>
 
