@@ -207,50 +207,6 @@ public final class Utility {
   }
 
   /**
-   * Returns a list of the indices of the mutations in origList that mutate
-   *
-   * @param nodeName the name of the node to filter
-   * @param origList the original list of mutations
-   * @param tokenName paramter for token name. list ends when that token is deleted
-   * @return a list of indices that are relevant to the node, truncated at the point a given token
-   *     is deleted
-   */
-  public static ArrayList<Integer> getMutationIndicesOfNode(
-      String nodeName, List<MultiMutation> origList, String tokenNameSearched) {
-    ArrayList<Integer> lst = new ArrayList<>();
-    // Shouldn't happen, but in case the nodeName is null an empty list is returned
-    if (nodeName == null) {
-      return lst;
-    }
-    for (int i = 0; i < origList.size(); i++) {
-      MultiMutation multiMut = origList.get(i);
-      List<Mutation> mutList = multiMut.getMutationList();
-      for (Mutation mut : mutList) {
-        String startName = mut.getStartNode();
-        String endName = mut.getEndNode();
-        if (nodeName.equals(startName) || nodeName.equals(endName)) {
-          lst.add(i);
-          // If the mutation is a delete token AND the token passed in as param is
-          // deleted, then we want no more
-          if (tokenNameSearched.length() != 0 && mut.getType().equals(Mutation.Type.CHANGE_TOKEN)) {
-            TokenMutation tokenMut = mut.getTokenChange();
-            TokenMutation.Type tokenMutType = tokenMut.getType();
-            if (tokenMutType == TokenMutation.Type.DELETE_TOKEN) {
-              List<String> tokenNames = tokenMut.getTokenNameList();
-              if (tokenNames.contains(tokenNameSearched)) {
-                return lst;
-              }
-            }
-          }
-
-          break;
-        }
-      }
-    }
-    return lst;
-  }
-
-  /**
    * Returns a set of indices on the original list that related to a given token
    *
    * @param tokenName the token name to search for
