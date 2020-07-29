@@ -210,11 +210,13 @@ public class DataServlet extends HttpServlet {
     // Truncate the graph from the nodes that the client had searched for
     truncatedGraph = currDataGraph.getReachableNodes(queried, depthNumber);
 
-    
-    // To get the nodes to calculate relevant mutations from. If queried and queried next contain the same
+    // To get the nodes to calculate relevant mutations from. If queried and queried next contain
+    // the same
     // nodes, then no reason to regenerate the graph
-    MutableGraph<GraphNode> truncatedGraphNext = queried.equals(queriedNext) ? Graphs.copyOf(truncatedGraph) : 
-        currDataGraph.getReachableNodes(queriedNext, depthNumber);
+    MutableGraph<GraphNode> truncatedGraphNext =
+        queried.equals(queriedNext)
+            ? Graphs.copyOf(truncatedGraph)
+            : currDataGraph.getReachableNodes(queriedNext, depthNumber);
 
     // If we are not filtering the graph or limiting its depth, show all mutations of all nodes
     if (nodeNames.size() == 0
