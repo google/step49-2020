@@ -48,6 +48,7 @@ public class DataServlet extends HttpServlet {
   private DataGraph currDataGraph = null;
   private DataGraph originalDataGraph = null;
   private List<MultiMutation> mutList = null;
+  private MutationList.Builder mutListObj = null;
 
   // A list containing the indices of mutations that mutate the node we are
   // currently filtering by. It is initialized to all indices since we start
@@ -77,7 +78,7 @@ public class DataServlet extends HttpServlet {
     if (currDataGraph == null && originalDataGraph == null) {
       success =
           initializeGraphVariables(
-              getServletContext().getResourceAsStream("/WEB-INF/graph.textproto"));
+              getServletContext().getResourceAsStream("/WEB-INF/initial_graph.textproto"));
       if (!success) {
         response.setHeader(
             "serverError", "Failed to parse input graph into Guava graph - not a DAG!");
@@ -94,9 +95,9 @@ public class DataServlet extends HttpServlet {
      * Initialize Mutation List Variables
      *************************************
      */
-    if (mutList == null) {
+    if (mutListObj == null) {
       initializeMutationVariables(
-          getServletContext().getResourceAsStream("/WEB-INF/mutation.textproto"));
+          getServletContext().getResourceAsStream("/WEB-INF/mutations.textproto"));
       // Populate the list of all possible mutation indices
       defaultIndices = IntStream.range(0, mutList.size()).boxed().collect(Collectors.toList());
       // and store this as the list of relevant indices for filtering by empty string
@@ -175,7 +176,7 @@ public class DataServlet extends HttpServlet {
     try {
       currDataGraph =
           Utility.getGraphAtMutationNumber(
-              originalDataGraph, currDataGraph, mutationNumber, mutList);
+              originalDataGraph, currDataGraph, mutationNumber, mutListObj);
     } catch (IllegalArgumentException e) {
       response.setHeader("serverError", e.getMessage());
       return;
@@ -298,8 +299,8 @@ public class DataServlet extends HttpServlet {
    */
   private void initializeMutationVariables(InputStream mutationInput) throws IOException {
     InputStreamReader mutReader = new InputStreamReader(mutationInput);
-    MutationList.Builder mutBuilder = MutationList.newBuilder();
-    TextFormat.merge(mutReader, mutBuilder);
-    mutList = mutBuilder.build().getMutationList();
+    mutListObj = MutationList.newBuilder();
+    TextFormat.merge(mutReader, mutListObj);
+    mutList = mutListObj.getMutationList();
   }
 }

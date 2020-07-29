@@ -19,6 +19,7 @@ import com.google.common.graph.*;
 import com.google.protobuf.Struct;
 import com.proto.GraphProtos.Node;
 import com.proto.MutationProtos.Mutation;
+import com.proto.MutationProtos.MutationOrBuilder;
 import com.proto.MutationProtos.TokenMutation;
 
 import java.util.ArrayList;
@@ -184,7 +185,7 @@ abstract class DataGraph {
    * @param mut the mutation to apply to the graph
    * @return an empty string if there was no error, otherwise an error message
    */
-  public String mutateGraph(Mutation mut) {
+  public String mutateGraph(Mutation.Builder mut) {
     MutableGraph<GraphNode> graph = this.graph();
     HashMap<String, GraphNode> graphNodesMap = this.graphNodesMap();
     HashSet<String> roots = this.roots();
@@ -275,7 +276,9 @@ abstract class DataGraph {
           if (startNode == null) {
             return "Change node: Changing a non-existent node " + startName + "\n";
           }
-          GraphNode newNode = changeNodeToken(startNode, mut.getTokenChange());
+          TokenMutation.Builder tokenMut = mut.getTokenChange().toBuilder();
+          GraphNode newNode = changeNodeToken(startNode, tokenMut);
+          mut.setTokenChange(tokenMut);
 
           if (newNode == null) {
             return "Change node: Unrecognized token mutation "
@@ -312,28 +315,40 @@ abstract class DataGraph {
    * @param tokenMut the mutation that should be applied to the token list
    * @return the new GraphNode object, or null if it's an unrecognized mutation
    */
-  private GraphNode changeNodeToken(GraphNode node, TokenMutation tokenMut) {
+  private GraphNode changeNodeToken(GraphNode node, TokenMutation.Builder tokenMut) {
 
     // List of tokens to add/remove from the existing list
     List<String> tokenNames = tokenMut.getTokenNameList();
     // The existing list of tokens in the node
-    List<String> tokenList = new ArrayList<>();
+    Set<String> tokenList = new HashSet<>();
     tokenList.addAll(node.tokenList());
 
     TokenMutation.Type tokenMutType = tokenMut.getType();
     if (tokenMutType == TokenMutation.Type.ADD_TOKEN) {
-      tokenNames.removeAll(tokenList);
       tokenList.addAll(tokenNames);
+
+      if(tokenList.size() != node.tokenList().size() + tokenNames.size()) {
+        tokenNames = new ArrayList<>(tokenNames);
+        tokenNames.removeAll(node.tokenList());
+        tokenMut.clearTokenName();
+        tokenMut.addAllTokenName(tokenNames);
+      }
 
       // Update the map
       for (String tokenName : tokenNames) {
         addNodeToToken(tokenName, node.name());
       }
     } else if (tokenMutType == TokenMutation.Type.DELETE_TOKEN) {
-      tokenMut.r
-      tokenNames.removeIf(elem -> !(tokenList.contains(elem)));
       tokenList.removeAll(tokenNames);
       // Update the map
+
+      if(tokenList.size() != node.tokenList().size() - tokenNames.size()) {
+        tokenNames = new ArrayList<>(tokenNames);
+        tokenNames.removeIf(elem -> !(node.tokenList().contains(elem)));
+        tokenMut.clearTokenName();
+        tokenMut.addAllTokenName(tokenNames);
+      }
+
       for (String tokenName : tokenNames) {
         removeNodeFromToken(tokenName, node.name());
       }
@@ -341,7 +356,7 @@ abstract class DataGraph {
       // unrecognized mutation
       return null;
     }
-    return GraphNode.create(node.name(), tokenList, node.metadata());
+    return GraphNode.create(node.name(), new ArrayList<>(tokenList), node.metadata());
   }
 
   /**

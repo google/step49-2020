@@ -31,6 +31,8 @@ import com.google.protobuf.Struct;
 import com.proto.GraphProtos.Node;
 import com.proto.MutationProtos.MultiMutation;
 import com.proto.MutationProtos.Mutation;
+import com.proto.MutationProtos.MutationList;
+import com.proto.MutationProtos.MutationListOrBuilder;
 import com.proto.MutationProtos.TokenMutation;
 
 import org.json.JSONObject;
@@ -108,45 +110,50 @@ public final class Utility {
    * @param original the original graph
    * @param curr the current (most recently-requested) graph (requires that original != curr)
    * @param mutationNum number of mutations to apply
-   * @param multiMutList multi-mutation list
+   * @param multiMutList multi-mutation list builder
    * @throws IllegalArgumentException if original and current graph refer to the same object
    * @return the resulting data graph, null if the mutation number was too small, and the final
    *     graph if the mutation number was too big
    */
   public static DataGraph getGraphAtMutationNumber(
-      DataGraph original, DataGraph curr, int mutationNum, List<MultiMutation> multiMutList)
+      DataGraph original, DataGraph curr, int mutationNum, MutationList.Builder multiMutList)
       throws IllegalArgumentException {
     Preconditions.checkArgument(
         original != curr, "The current graph and the original graph refer to the same object");
 
     if (mutationNum < -1) {
       return null;
-    } else if (mutationNum > multiMutList.size()) {
-      mutationNum = multiMutList.size() - 1;
+    } else if (mutationNum > multiMutList.getMutationList().size()) {
+      mutationNum = multiMutList.getMutationList().size() - 1;
+    }
+    if (curr.numMutations() > mutationNum && (curr.numMutations() - mutationNum) > mutationNum) {
+      curr = original.getCopy();
     }
     if (curr.numMutations() <= mutationNum) { // going forward
       for (int i = curr.numMutations() + 1; i <= mutationNum; i++) {
         // Mutate graph operates in place
-        MultiMutation multiMut = multiMutList.get(i);
+        MultiMutation multiMut = multiMutList.getMutationList().get(i);
         List<Mutation> mutations = multiMut.getMutationList();
+        MultiMutation.Builder trimmedMultiMut = MultiMutation.newBuilder();
         for (Mutation mut : mutations) {
-          String error = curr.mutateGraph(mut);
+          Mutation.Builder currMut = mut.toBuilder();
+          String error = curr.mutateGraph(currMut);
           if (error.length() != 0) {
             throw new IllegalArgumentException(error);
           }
+          trimmedMultiMut.addMutation(currMut.build());
         }
+        multiMutList.setMutation(i, trimmedMultiMut);
       }
       return DataGraph.create(
           curr.graph(), curr.graphNodesMap(), curr.roots(), mutationNum, curr.tokenMap());
     } else {
-      // Create a copy of the original graph and start from the original graph
-      //DataGraph originalCopy = original.getCopy();
       for (int i = curr.numMutations(); i > mutationNum; i--) {
         // Mutate graph operates in place
-        MultiMutation multiMut = Utility.revertMultiMutation(multiMutList.get(i));
+        MultiMutation multiMut = Utility.revertMultiMutation(multiMutList.getMutationList().get(i));
         List<Mutation> mutations = multiMut.getMutationList();
         for (Mutation mut : mutations) {
-          String error = curr.mutateGraph(mut);
+          String error = curr.mutateGraph(mut.toBuilder());
           if (error.length() != 0) {
             throw new IllegalArgumentException(error);
           }
