@@ -130,7 +130,7 @@ async function generateGraph() {
   // Graph nodes and edges received from server
   const nodes = JSON.parse(jsonResponse.nodes);
   const edges = JSON.parse(jsonResponse.edges);
-  // totalNum = jsonResponse.totalMutNumber;
+
   const queriedNodes = JSON.parse(jsonResponse.queriedNodes);
 
   // Set all logs to be black
@@ -145,7 +145,6 @@ async function generateGraph() {
   mutationIndexList = JSON.parse(jsonResponse.mutationIndices);
   numMutations = mutationIndexList.length;
   maxNumMutations = jsonResponse.totalMutNumber;
-  const queriedNodes = JSON.parse(jsonResponse.queriedNodes);
 
   if (!nodes || !edges || !Array.isArray(nodes) || !Array.isArray(edges)) {
     displayError("Malformed graph received from server - edges or nodes are empty");
@@ -153,7 +152,7 @@ async function generateGraph() {
   }
 
   // There aren't any nodes in this graph, and there aren't any mutations pertaining to the filtered node
-  if (nodes.length === 0 && numMutations === 0) {
+  if (nodes.length === 0 && numMutations === 0 && mutList.length == 0) {
     displayError("This node does not exist in any stage of the graph!");
     return;
   } else if (response.headers.get("serverMessage")) {

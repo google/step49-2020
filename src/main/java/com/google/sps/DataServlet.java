@@ -81,7 +81,7 @@ public class DataServlet extends HttpServlet {
     if (currDataGraph == null && originalDataGraph == null) {
       success =
           initializeGraphVariables(
-              getServletContext().getResourceAsStream("/WEB-INF/graph.textproto"));
+              getServletContext().getResourceAsStream("/WEB-INF/initial_graph.textproto"));
       if (!success) {
         response.setHeader(
             "serverError", "Failed to parse input graph into Guava graph - not a DAG!");
@@ -100,7 +100,7 @@ public class DataServlet extends HttpServlet {
      */
     if (mutList == null) {
       initializeMutationVariables(
-          getServletContext().getResourceAsStream("/WEB-INF/mutation.textproto"));
+          getServletContext().getResourceAsStream("/WEB-INF/mutations.textproto"));
       // Populate the list of all possible mutation indices
       defaultIndices = IntStream.range(0, mutList.size()).boxed().collect(Collectors.toList());
       // and store this as the list of relevant indices for filtering by empty string
@@ -294,9 +294,9 @@ public class DataServlet extends HttpServlet {
         && filteredDiff.getMutationList().size() == 0) {
       response.setHeader(
           "serverMessage",
-          "The desired set of nodes is mutated in this graph but your other parameters (for"
-              + " eg.depth or filter), limit the display of the mutations. Please try increasing "
-              + " your radius or clearing your filter to view the mutation.");
+          "The desired set of nodes is mutated in this graph but your other parameters (for eg."
+              + " radius), limit the display of the mutations. Please try increasing your radius"
+              + " to view the mutation.");
     }
     graphJson =
         Utility.graphToJson(
