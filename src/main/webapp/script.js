@@ -219,8 +219,11 @@ function disableInputs() {
  */
 function getUrl() {
   const depthElem = document.getElementById('num-layers');
-  const nodeName = document.getElementById('node-name-filter') ? document.getElementById('node-name-filter').value || "" : "";
+  const nodeNames = document.getElementById('node-name-filter') ? document.getElementById('node-name-filter').value || "" : "";
   const tokenName = document.getElementById('token-name-filter') ? document.getElementById('token-name-filter').value || "" : "";
+  // Takes care of "all the whitespace characters (space, tab, no-break space, etc.) 
+  // and all the line terminator characters (LF, CR, etc.)" acc to documentation
+  const nodeNamesArray = JSON.stringify(nodeNames.split(",").map(item => item.trim()));
 
   let selectedDepth = 0;
   if (depthElem === null) {
@@ -239,7 +242,7 @@ function getUrl() {
       selectedDepth = 20;
     }
   }
-  const url = `/data?depth=${selectedDepth}&mutationNum=${currMutationNum}&nodeName=${nodeName}&tokenName=${tokenName}`;
+  const url = `/data?depth=${selectedDepth}&mutationNum=${currMutationNum}&nodeNames=${nodeNamesArray}&tokenName=${tokenName}`;
   return url;
 }
 
