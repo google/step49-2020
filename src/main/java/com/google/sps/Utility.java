@@ -263,7 +263,7 @@ public final class Utility {
       Set<String> nodeNames,
       Map<String, List<Integer>> mutationIndicesMap,
       List<MultiMutation> multiMutList) {
-    if(nodeNames.size() == 0) {
+    if (nodeNames.size() == 0) {
       return IntStream.range(0, multiMutList.size()).boxed().collect(Collectors.toList());
     }
     Set<Integer> relevantIndices = new HashSet<>();
