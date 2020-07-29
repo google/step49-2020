@@ -91,8 +91,7 @@ public class GetGraphAtMutationNumberTest {
     multiMutList.add(addABM);
     MutationList.Builder mutList = MutationList.newBuilder().addAllMutation(multiMutList);
 
-    DataGraph mutatedGraph =
-        Utility.getGraphAtMutationNumber(dataGraph, originalCopy, 0, mutList);
+    DataGraph mutatedGraph = Utility.getGraphAtMutationNumber(dataGraph, originalCopy, 0, mutList);
 
     MutableGraph<GraphNode> newGraph = mutatedGraph.graph();
     Set<GraphNode> newNodes = newGraph.nodes();
@@ -135,8 +134,7 @@ public class GetGraphAtMutationNumberTest {
     multiMutList.add(removeCM);
     MutationList.Builder mutList = MutationList.newBuilder().addAllMutation(multiMutList);
 
-    DataGraph mutatedGraph =
-        Utility.getGraphAtMutationNumber(dataGraph, originalCopy, 1, mutList);
+    DataGraph mutatedGraph = Utility.getGraphAtMutationNumber(dataGraph, originalCopy, 1, mutList);
 
     MutableGraph<GraphNode> newGraph = mutatedGraph.graph();
     Set<GraphNode> newNodes = newGraph.nodes();
@@ -190,8 +188,7 @@ public class GetGraphAtMutationNumberTest {
     multiMutList.add(addToAM);
     MutationList.Builder mutList = MutationList.newBuilder().addAllMutation(multiMutList);
 
-    DataGraph mutatedGraph =
-        Utility.getGraphAtMutationNumber(dataGraph, originalCopy, 1, mutList);
+    DataGraph mutatedGraph = Utility.getGraphAtMutationNumber(dataGraph, originalCopy, 1, mutList);
 
     MutableGraph<GraphNode> newGraph = mutatedGraph.graph();
     HashMap<String, GraphNode> newGraphNodesMap = mutatedGraph.graphNodesMap();
@@ -242,11 +239,10 @@ public class GetGraphAtMutationNumberTest {
     dataGraph.graphFromProtoNodes(protoNodesMap);
     DataGraph dataGraphCopy = dataGraph.getCopy();
 
-    List<MultiMutation> multiMutList = new ArrayList<>();    
+    List<MultiMutation> multiMutList = new ArrayList<>();
     MutationList.Builder mutList = MutationList.newBuilder().addAllMutation(multiMutList);
 
-    DataGraph mutatedGraph =
-        Utility.getGraphAtMutationNumber(dataGraph, dataGraphCopy, 1, mutList);
+    DataGraph mutatedGraph = Utility.getGraphAtMutationNumber(dataGraph, dataGraphCopy, 1, mutList);
     MutableGraph<GraphNode> newGraph = mutatedGraph.graph();
     HashSet<String> newRoots = mutatedGraph.roots();
     Set<GraphNode> newNodes = newGraph.nodes();
@@ -296,7 +292,7 @@ public class GetGraphAtMutationNumberTest {
     multiMutList.add(addABM);
     multiMutList.add(removeABM);
     multiMutList.add(removeCM);
-    
+
     HashMap<String, Set<String>> tokenMap = new HashMap<>();
 
     // Build the current graph (same graph and map)

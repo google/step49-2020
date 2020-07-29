@@ -19,7 +19,6 @@ import com.google.common.graph.*;
 import com.google.protobuf.Struct;
 import com.proto.GraphProtos.Node;
 import com.proto.MutationProtos.Mutation;
-import com.proto.MutationProtos.MutationOrBuilder;
 import com.proto.MutationProtos.TokenMutation;
 
 import java.util.ArrayList;
@@ -327,7 +326,7 @@ abstract class DataGraph {
     if (tokenMutType == TokenMutation.Type.ADD_TOKEN) {
       tokenList.addAll(tokenNames);
 
-      if(tokenList.size() != node.tokenList().size() + tokenNames.size()) {
+      if (tokenList.size() != node.tokenList().size() + tokenNames.size()) {
         tokenNames = new ArrayList<>(tokenNames);
         tokenNames.removeAll(node.tokenList());
         tokenMut.clearTokenName();
@@ -342,7 +341,7 @@ abstract class DataGraph {
       tokenList.removeAll(tokenNames);
       // Update the map
 
-      if(tokenList.size() != node.tokenList().size() - tokenNames.size()) {
+      if (tokenList.size() != node.tokenList().size() - tokenNames.size()) {
         tokenNames = new ArrayList<>(tokenNames);
         tokenNames.removeIf(elem -> !(node.tokenList().contains(elem)));
         tokenMut.clearTokenName();

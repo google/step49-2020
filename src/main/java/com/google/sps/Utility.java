@@ -32,7 +32,6 @@ import com.proto.GraphProtos.Node;
 import com.proto.MutationProtos.MultiMutation;
 import com.proto.MutationProtos.Mutation;
 import com.proto.MutationProtos.MutationList;
-import com.proto.MutationProtos.MutationListOrBuilder;
 import com.proto.MutationProtos.TokenMutation;
 
 import org.json.JSONObject;
@@ -160,11 +159,7 @@ public final class Utility {
         }
       }
       return DataGraph.create(
-          curr.graph(),
-          curr.graphNodesMap(),
-          curr.roots(),
-          mutationNum,
-          curr.tokenMap());
+          curr.graph(), curr.graphNodesMap(), curr.roots(), mutationNum, curr.tokenMap());
     }
   }
 
@@ -367,29 +362,35 @@ public final class Utility {
   private static Mutation revertMutation(Mutation mut) {
     Mutation.Builder result = Mutation.newBuilder(mut);
     switch (mut.getType()) {
-      case ADD_NODE: {
-        result.setType(Mutation.Type.DELETE_NODE);
-        break;
-      }
-      case DELETE_NODE: {
-        result.setType(Mutation.Type.ADD_NODE);
-        break;
-      }
-      case ADD_EDGE: {
-        result.setType(Mutation.Type.DELETE_EDGE);
-        break;
-      }
-      case DELETE_EDGE: {
-        result.setType(Mutation.Type.ADD_EDGE);
-        break;
-      }
-      case CHANGE_TOKEN: {
-        result.setTokenChange(revertTokenChangeMutation(result.getTokenChange()));
-        break;
-      }
-      default: {
-        break;
-      }
+      case ADD_NODE:
+        {
+          result.setType(Mutation.Type.DELETE_NODE);
+          break;
+        }
+      case DELETE_NODE:
+        {
+          result.setType(Mutation.Type.ADD_NODE);
+          break;
+        }
+      case ADD_EDGE:
+        {
+          result.setType(Mutation.Type.DELETE_EDGE);
+          break;
+        }
+      case DELETE_EDGE:
+        {
+          result.setType(Mutation.Type.ADD_EDGE);
+          break;
+        }
+      case CHANGE_TOKEN:
+        {
+          result.setTokenChange(revertTokenChangeMutation(result.getTokenChange()));
+          break;
+        }
+      default:
+        {
+          break;
+        }
     }
     return result.build();
   }
@@ -397,17 +398,20 @@ public final class Utility {
   public static TokenMutation revertTokenChangeMutation(TokenMutation tokenMut) {
     TokenMutation.Builder result = TokenMutation.newBuilder(tokenMut);
     switch (tokenMut.getType()) {
-      case ADD_TOKEN: {
-        result.setType(TokenMutation.Type.DELETE_TOKEN);
-        break;
-      }
-      case DELETE_TOKEN: {
-        result.setType(TokenMutation.Type.ADD_TOKEN);
-        break;
-      }
-      default: {
-        break;
-      }
+      case ADD_TOKEN:
+        {
+          result.setType(TokenMutation.Type.DELETE_TOKEN);
+          break;
+        }
+      case DELETE_TOKEN:
+        {
+          result.setType(TokenMutation.Type.ADD_TOKEN);
+          break;
+        }
+      default:
+        {
+          break;
+        }
     }
     return result.build();
   }

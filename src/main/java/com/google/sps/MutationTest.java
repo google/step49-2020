@@ -15,7 +15,6 @@
 package com.google.sps;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -126,11 +125,7 @@ public final class MutationTest {
     graphNodesMap.put("B", gNodeB);
 
     Mutation.Builder addAB =
-        Mutation.newBuilder()
-            .setType(Mutation.Type.ADD_EDGE)
-            .setStartNode("A")
-            .setEndNode("B")
-            ;
+        Mutation.newBuilder().setType(Mutation.Type.ADD_EDGE).setStartNode("A").setEndNode("B");
 
     HashSet<String> roots = new HashSet<>();
     HashMap<String, Set<String>> tokenMap = new HashMap<>();
@@ -164,11 +159,7 @@ public final class MutationTest {
     graphNodesMap.put("B", gNodeB);
 
     Mutation.Builder addAB =
-        Mutation.newBuilder()
-            .setType(Mutation.Type.ADD_EDGE)
-            .setStartNode("A")
-            .setEndNode("C")
-            ;
+        Mutation.newBuilder().setType(Mutation.Type.ADD_EDGE).setStartNode("A").setEndNode("C");
 
     HashSet<String> roots = new HashSet<>();
     HashMap<String, Set<String>> tokenMap = new HashMap<>();
@@ -274,11 +265,7 @@ public final class MutationTest {
     graphNodesMap.put("C", gNodeC);
 
     Mutation.Builder removeAB =
-        Mutation.newBuilder()
-            .setType(Mutation.Type.DELETE_EDGE)
-            .setStartNode("A")
-            .setEndNode("B")
-            ;
+        Mutation.newBuilder().setType(Mutation.Type.DELETE_EDGE).setStartNode("A").setEndNode("B");
 
     HashSet<String> roots = new HashSet<>();
     HashMap<String, Set<String>> tokenMap = new HashMap<>();
@@ -352,11 +339,7 @@ public final class MutationTest {
     graphNodesMap.put("C", gNodeC);
 
     Mutation.Builder removeAC =
-        Mutation.newBuilder()
-            .setType(Mutation.Type.DELETE_EDGE)
-            .setStartNode("A")
-            .setEndNode("C")
-            ;
+        Mutation.newBuilder().setType(Mutation.Type.DELETE_EDGE).setStartNode("A").setEndNode("C");
 
     HashSet<String> roots = new HashSet<>();
     HashMap<String, Set<String>> tokenMap = new HashMap<>();
@@ -410,8 +393,7 @@ public final class MutationTest {
         Mutation.newBuilder()
             .setStartNode("A")
             .setType(Mutation.Type.CHANGE_TOKEN)
-            .setTokenChange(tokenMut)
-            ;
+            .setTokenChange(tokenMut);
 
     HashSet<String> roots = new HashSet<>();
     HashMap<String, Set<String>> tokenMap = new HashMap<>();
@@ -504,8 +486,7 @@ public final class MutationTest {
         Mutation.newBuilder()
             .setStartNode("B")
             .setType(Mutation.Type.CHANGE_TOKEN)
-            .setTokenChange(tokenMut)
-            ;
+            .setTokenChange(tokenMut);
 
     String error = dataGraph.mutateGraph(addTokenToB);
     Assert.assertEquals(error.length(), 0);
@@ -577,8 +558,7 @@ public final class MutationTest {
         Mutation.newBuilder()
             .setStartNode("A")
             .setType(Mutation.Type.CHANGE_TOKEN)
-            .setTokenChange(tokenMut)
-            ;
+            .setTokenChange(tokenMut);
 
     HashSet<String> roots = new HashSet<>();
 
@@ -648,8 +628,7 @@ public final class MutationTest {
         Mutation.newBuilder()
             .setStartNode("A")
             .setType(Mutation.Type.CHANGE_TOKEN)
-            .setTokenChange(tokenMut)
-            ;
+            .setTokenChange(tokenMut);
 
     HashSet<String> roots = new HashSet<>();
     HashMap<String, Set<String>> tokenMap = new HashMap<>();
@@ -781,8 +760,8 @@ public final class MutationTest {
     Assert.assertTrue(tokenMapNew.get("1").contains("B"));
   }
 
-  /** Removing non-existent tokens from a node modifies the mutation
-   *  by removing the spurious tokens
+  /**
+   * Removing non-existent tokens from a node modifies the mutation by removing the spurious tokens
    */
   @Test
   public void deleteNonexistentTokensFromNode() {
@@ -791,7 +770,6 @@ public final class MutationTest {
     nodeA.addToken("1");
     nodeA.addToken("2");
     gNodeA = Utility.protoNodeToGraphNode(nodeA.build());
-
 
     graph.addNode(gNodeA);
     graph.addNode(gNodeB);
@@ -836,9 +814,7 @@ public final class MutationTest {
     Assert.assertEquals(tokenChangeList.get(0), "1");
   }
 
-  /** Adding already-present tokens to a node modifies the mutation
-   *  by removing the extra tokens
-   */
+  /** Adding already-present tokens to a node modifies the mutation by removing the extra tokens */
   @Test
   public void addExistingTokensToNode() {
     MutableGraph<GraphNode> graph = GraphBuilder.directed().build();
@@ -846,7 +822,6 @@ public final class MutationTest {
     nodeA.addToken("1");
     nodeA.addToken("2");
     gNodeA = Utility.protoNodeToGraphNode(nodeA.build());
-
 
     graph.addNode(gNodeA);
     graph.addNode(gNodeB);
