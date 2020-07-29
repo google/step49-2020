@@ -97,5 +97,5 @@ mutation {
   type: DELETE_NODE
   start_node: "I"
 }
-reason: "Changing tokens of node B"
+reason: "Add node I"
 }
