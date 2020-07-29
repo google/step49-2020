@@ -32,6 +32,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import static com.google.sps.Utility.getGraphAtMutationNumber;
+import static com.google.sps.Utility.protoNodeToGraphNode;
+
 @RunWith(JUnit4.class)
 public class GetGraphAtMutationNumberTest {
 
@@ -56,14 +59,14 @@ public class GetGraphAtMutationNumberTest {
 
   @Before
   public void setUp() {
-    gNodeA = Utility.protoNodeToGraphNode(nodeA.build());
-    gNodeB = Utility.protoNodeToGraphNode(nodeB.build());
-    gNodeC = Utility.protoNodeToGraphNode(nodeC.build());
-    gNodeD = Utility.protoNodeToGraphNode(nodeD.build());
-    gNodeE = Utility.protoNodeToGraphNode(nodeE.build());
-    gNodeF = Utility.protoNodeToGraphNode(nodeF.build());
-    gNodeG = Utility.protoNodeToGraphNode(nodeG.build());
-    gNodeH = Utility.protoNodeToGraphNode(nodeH.build());
+    gNodeA = protoNodeToGraphNode(nodeA.build());
+    gNodeB = protoNodeToGraphNode(nodeB.build());
+    gNodeC = protoNodeToGraphNode(nodeC.build());
+    gNodeD = protoNodeToGraphNode(nodeD.build());
+    gNodeE = protoNodeToGraphNode(nodeE.build());
+    gNodeF = protoNodeToGraphNode(nodeF.build());
+    gNodeG = protoNodeToGraphNode(nodeG.build());
+    gNodeH = protoNodeToGraphNode(nodeH.build());
   }
 
   /** Only a single mutation is applied */
@@ -90,7 +93,7 @@ public class GetGraphAtMutationNumberTest {
     multiMutList.add(addABM);
 
     DataGraph mutatedGraph =
-        Utility.getGraphAtMutationNumber(dataGraph, originalCopy, 0, multiMutList);
+        getGraphAtMutationNumber(dataGraph, originalCopy, 0, multiMutList);
 
     MutableGraph<GraphNode> newGraph = mutatedGraph.graph();
     Set<GraphNode> newNodes = newGraph.nodes();
@@ -133,7 +136,7 @@ public class GetGraphAtMutationNumberTest {
     multiMutList.add(removeCM);
 
     DataGraph mutatedGraph =
-        Utility.getGraphAtMutationNumber(dataGraph, originalCopy, 1, multiMutList);
+        getGraphAtMutationNumber(dataGraph, originalCopy, 1, multiMutList);
 
     MutableGraph<GraphNode> newGraph = mutatedGraph.graph();
     Set<GraphNode> newNodes = newGraph.nodes();
@@ -187,7 +190,7 @@ public class GetGraphAtMutationNumberTest {
     multiMutList.add(addToAM);
 
     DataGraph mutatedGraph =
-        Utility.getGraphAtMutationNumber(dataGraph, originalCopy, 1, multiMutList);
+        getGraphAtMutationNumber(dataGraph, originalCopy, 1, multiMutList);
 
     MutableGraph<GraphNode> newGraph = mutatedGraph.graph();
     HashMap<String, GraphNode> newGraphNodesMap = mutatedGraph.graphNodesMap();
@@ -241,7 +244,7 @@ public class GetGraphAtMutationNumberTest {
     List<MultiMutation> multiMutList = new ArrayList<>();
 
     DataGraph mutatedGraph =
-        Utility.getGraphAtMutationNumber(dataGraph, dataGraphCopy, 1, multiMutList);
+        getGraphAtMutationNumber(dataGraph, dataGraphCopy, 1, multiMutList);
     MutableGraph<GraphNode> newGraph = mutatedGraph.graph();
     HashSet<String> newRoots = mutatedGraph.roots();
     Set<GraphNode> newNodes = newGraph.nodes();
@@ -299,7 +302,7 @@ public class GetGraphAtMutationNumberTest {
         DataGraph.create(origGraph, origGraphNodesMap, origRoots, 2, tokenMap);
 
     DataGraph mutatedGraph =
-        Utility.getGraphAtMutationNumber(dataGraph, dataGraphMutated, 0, multiMutList);
+        getGraphAtMutationNumber(dataGraph, dataGraphMutated, 0, multiMutList);
 
     MutableGraph<GraphNode> newGraph = mutatedGraph.graph();
     HashSet<String> newRoots = mutatedGraph.roots();
@@ -337,7 +340,7 @@ public class GetGraphAtMutationNumberTest {
     List<MultiMutation> mutList = new ArrayList<>();
 
     DataGraph mutatedGraph =
-        Utility.getGraphAtMutationNumber(dataGraph, dataGraphCopy, -2, mutList);
+        getGraphAtMutationNumber(dataGraph, dataGraphCopy, -2, mutList);
     Assert.assertNull(mutatedGraph);
   }
 
@@ -356,6 +359,6 @@ public class GetGraphAtMutationNumberTest {
 
     Assert.assertThrows(
         IllegalArgumentException.class,
-        () -> Utility.getGraphAtMutationNumber(dataGraph, dataGraph, 0, mutList));
+        () -> getGraphAtMutationNumber(dataGraph, dataGraph, 0, mutList));
   }
 }
