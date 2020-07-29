@@ -14,11 +14,7 @@
 
 package com.google.sps;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import com.proto.MutationProtos.MultiMutation;
 import com.proto.MutationProtos.Mutation;
@@ -33,14 +29,16 @@ import org.junit.runners.JUnit4;
 @RunWith(JUnit4.class)
 public class RevertMutationTest {
 
-  /**
-   * Tests whether undoing an add token mutation results in a delete token
-   * mutation
-   */
+  /** Tests whether undoing an add token mutation results in a delete token mutation */
   @Test
   public void revertAddToken() {
-    TokenMutation tokenMut = TokenMutation.newBuilder().setType(TokenMutation.Type.ADD_TOKEN).addTokenName("1")
-        .addTokenName("2").addTokenName("3").build();
+    TokenMutation tokenMut =
+        TokenMutation.newBuilder()
+            .setType(TokenMutation.Type.ADD_TOKEN)
+            .addTokenName("1")
+            .addTokenName("2")
+            .addTokenName("3")
+            .build();
     TokenMutation revertedMut = Utility.revertTokenChangeMutation(tokenMut);
     Assert.assertEquals(revertedMut.getType(), TokenMutation.Type.DELETE_TOKEN);
 
@@ -51,14 +49,16 @@ public class RevertMutationTest {
     Assert.assertEquals(revertedTokenList.get(2), "3");
   }
 
-  /**
-   * Tests whether undoing an delete token mutation results in an add token
-   * mutation
-   */
+  /** Tests whether undoing an delete token mutation results in an add token mutation */
   @Test
   public void revertDeleteToken() {
-    TokenMutation tokenMut = TokenMutation.newBuilder().setType(TokenMutation.Type.DELETE_TOKEN).addTokenName("1")
-        .addTokenName("2").addTokenName("3").build();
+    TokenMutation tokenMut =
+        TokenMutation.newBuilder()
+            .setType(TokenMutation.Type.DELETE_TOKEN)
+            .addTokenName("1")
+            .addTokenName("2")
+            .addTokenName("3")
+            .build();
     TokenMutation revertedMut = Utility.revertTokenChangeMutation(tokenMut);
     Assert.assertEquals(revertedMut.getType(), TokenMutation.Type.ADD_TOKEN);
 
@@ -69,9 +69,7 @@ public class RevertMutationTest {
     Assert.assertEquals(revertedTokenList.get(2), "3");
   }
 
-  /**
-   * Tests whether undoing an add node mutation results in a delete node mutation
-   */
+  /** Tests whether undoing an add node mutation results in a delete node mutation */
   @Test
   public void revertAddNode() {
     Mutation addA = Mutation.newBuilder().setType(Mutation.Type.ADD_NODE).setStartNode("A").build();
@@ -81,24 +79,26 @@ public class RevertMutationTest {
     Assert.assertEquals(revertedMut.getStartNode(), "A");
   }
 
-  /**
-   * Tests whether undoing a delete node mutation results in an add node mutation
-   */
+  /** Tests whether undoing a delete node mutation results in an add node mutation */
   @Test
   public void revertDeleteNode() {
-    Mutation deleteA = Mutation.newBuilder().setType(Mutation.Type.DELETE_NODE).setStartNode("A").build();
+    Mutation deleteA =
+        Mutation.newBuilder().setType(Mutation.Type.DELETE_NODE).setStartNode("A").build();
 
     Mutation revertedMut = Utility.revertMutation(deleteA);
     Assert.assertEquals(revertedMut.getType(), Mutation.Type.ADD_NODE);
     Assert.assertEquals(revertedMut.getStartNode(), "A");
   }
 
-  /**
-   * Tests whether undoing an add edge mutation results in a delete edge mutation
-   */
+  /** Tests whether undoing an add edge mutation results in a delete edge mutation */
   @Test
   public void revertAddEdge() {
-    Mutation addAB = Mutation.newBuilder().setType(Mutation.Type.ADD_EDGE).setStartNode("A").setEndNode("B").build();
+    Mutation addAB =
+        Mutation.newBuilder()
+            .setType(Mutation.Type.ADD_EDGE)
+            .setStartNode("A")
+            .setEndNode("B")
+            .build();
 
     Mutation revertedMut = Utility.revertMutation(addAB);
     Assert.assertEquals(revertedMut.getType(), Mutation.Type.DELETE_EDGE);
@@ -111,8 +111,12 @@ public class RevertMutationTest {
    */
   @Test
   public void revertDeleteEdge() {
-    Mutation deleteAB = Mutation.newBuilder().setType(Mutation.Type.DELETE_EDGE).setStartNode("A").setEndNode("B")
-        .build();
+    Mutation deleteAB =
+        Mutation.newBuilder()
+            .setType(Mutation.Type.DELETE_EDGE)
+            .setStartNode("A")
+            .setEndNode("B")
+            .build();
 
     Mutation revertedMut = Utility.revertMutation(deleteAB);
     Assert.assertEquals(revertedMut.getType(), Mutation.Type.ADD_EDGE);
@@ -126,11 +130,20 @@ public class RevertMutationTest {
    */
   @Test
   public void revertChangeToken() {
-    TokenMutation tokenMut = TokenMutation.newBuilder().setType(TokenMutation.Type.ADD_TOKEN).addTokenName("1")
-        .addTokenName("2").addTokenName("3").build();
-    Mutation addTokenToA = Mutation.newBuilder().setStartNode("A").setType(Mutation.Type.CHANGE_TOKEN)
-        .setTokenChange(tokenMut).build();
-    
+    TokenMutation tokenMut =
+        TokenMutation.newBuilder()
+            .setType(TokenMutation.Type.ADD_TOKEN)
+            .addTokenName("1")
+            .addTokenName("2")
+            .addTokenName("3")
+            .build();
+    Mutation addTokenToA =
+        Mutation.newBuilder()
+            .setStartNode("A")
+            .setType(Mutation.Type.CHANGE_TOKEN)
+            .setTokenChange(tokenMut)
+            .build();
+
     Mutation revertedMut = Utility.revertMutation(addTokenToA);
 
     Assert.assertEquals(revertedMut.getType(), Mutation.Type.CHANGE_TOKEN);
@@ -142,10 +155,19 @@ public class RevertMutationTest {
    */
   @Test
   public void revertMultiMutation() {
-    TokenMutation tokenMut = TokenMutation.newBuilder().setType(TokenMutation.Type.DELETE_TOKEN).addTokenName("1")
-        .addTokenName("2").addTokenName("3").build();
-    Mutation deleteFromF = Mutation.newBuilder().setStartNode("F").setType(Mutation.Type.CHANGE_TOKEN)
-        .setTokenChange(tokenMut).build();
+    TokenMutation tokenMut =
+        TokenMutation.newBuilder()
+            .setType(TokenMutation.Type.DELETE_TOKEN)
+            .addTokenName("1")
+            .addTokenName("2")
+            .addTokenName("3")
+            .build();
+    Mutation deleteFromF =
+        Mutation.newBuilder()
+            .setStartNode("F")
+            .setType(Mutation.Type.CHANGE_TOKEN)
+            .setTokenChange(tokenMut)
+            .build();
     Mutation removeEF =
         Mutation.newBuilder()
             .setType(Mutation.Type.DELETE_EDGE)
@@ -153,15 +175,21 @@ public class RevertMutationTest {
             .setEndNode("F")
             .build();
     Mutation removeGF =
-          Mutation.newBuilder()
-                .setType(Mutation.Type.DELETE_EDGE)
-                .setStartNode("G")
-                .setEndNode("F")
-                .build();
+        Mutation.newBuilder()
+            .setType(Mutation.Type.DELETE_EDGE)
+            .setStartNode("G")
+            .setEndNode("F")
+            .build();
     Mutation removeF =
         Mutation.newBuilder().setType(Mutation.Type.DELETE_NODE).setStartNode("F").build();
     MultiMutation removeFM =
-        MultiMutation.newBuilder().addMutation(deleteFromF).addMutation(removeEF).addMutation(removeGF).addMutation(removeF).setReason("removing F").build();
+        MultiMutation.newBuilder()
+            .addMutation(deleteFromF)
+            .addMutation(removeEF)
+            .addMutation(removeGF)
+            .addMutation(removeF)
+            .setReason("removing F")
+            .build();
 
     MultiMutation revertedMultiMut = Utility.revertMultiMutation(removeFM);
     List<Mutation> mutList = revertedMultiMut.getMutationList();
