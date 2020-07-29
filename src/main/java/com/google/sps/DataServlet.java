@@ -199,8 +199,7 @@ public class DataServlet extends HttpServlet {
     // Get the graph at the requested mutation number
     try {
       currDataGraph =
-          getGraphAtMutationNumber(
-              originalDataGraph, currDataGraph, mutationNumber, mutList);
+          getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
     } catch (IllegalArgumentException e) {
       response.setHeader("serverError", e.getMessage());
       return;
@@ -215,11 +214,13 @@ public class DataServlet extends HttpServlet {
     // Truncate the graph from the nodes that the client had searched for
     truncatedGraph = currDataGraph.getReachableNodes(queried, depthNumber);
 
-    
-    // To get the nodes to calculate relevant mutations from. If queried and queried next contain the same
+    // To get the nodes to calculate relevant mutations from. If queried and queried next contain
+    // the same
     // nodes, then no reason to regenerate the graph
-    MutableGraph<GraphNode> truncatedGraphNext = queried.equals(queriedNext) ? Graphs.copyOf(truncatedGraph) : 
-        currDataGraph.getReachableNodes(queriedNext, depthNumber);
+    MutableGraph<GraphNode> truncatedGraphNext =
+        queried.equals(queriedNext)
+            ? Graphs.copyOf(truncatedGraph)
+            : currDataGraph.getReachableNodes(queriedNext, depthNumber);
 
     // If we are not filtering the graph or limiting its depth, show all mutations of all nodes
     if (nodeNames.size() == 0
@@ -302,8 +303,7 @@ public class DataServlet extends HttpServlet {
               + " your radius or clearing your filter to view the mutation.");
     }
     graphJson =
-        graphToJson(
-            truncatedGraph, filteredMutationIndices, filteredDiff, mutList.size(), queried);
+        graphToJson(truncatedGraph, filteredMutationIndices, filteredDiff, mutList.size(), queried);
     response.getWriter().println(graphJson);
   }
 

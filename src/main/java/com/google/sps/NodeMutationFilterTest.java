@@ -33,7 +33,6 @@ import static com.google.sps.Utility.getMutationIndicesOfNode;
 import static com.google.sps.Utility.getMutationIndicesOfToken;
 import static com.google.sps.Utility.findRelevantMutations;
 
-
 /** Test for functions within Utility that are used to filter graphs across nodes */
 @RunWith(JUnit4.class)
 public class NodeMutationFilterTest {
@@ -300,8 +299,7 @@ public class NodeMutationFilterTest {
     nodeNames.add("B");
     nodeNames.add("D");
 
-    Set<Integer> truncatedList =
-        findRelevantMutations(nodeNames, mutationIndicesMap, multiMutList);
+    Set<Integer> truncatedList = findRelevantMutations(nodeNames, mutationIndicesMap, multiMutList);
 
     Assert.assertEquals(2, truncatedList.size());
     Assert.assertTrue(truncatedList.contains(3));
@@ -379,8 +377,7 @@ public class NodeMutationFilterTest {
     nodeNames.add("G");
     nodeNames.add("E");
 
-    Set<Integer> truncatedList =
-        findRelevantMutations(nodeNames, mutationIndicesMap, multiMutList);
+    Set<Integer> truncatedList = findRelevantMutations(nodeNames, mutationIndicesMap, multiMutList);
 
     Assert.assertEquals(4, truncatedList.size());
     Assert.assertTrue(truncatedList.contains(0));
@@ -457,8 +454,7 @@ public class NodeMutationFilterTest {
     nodeNames.add("P");
     nodeNames.add("Q");
 
-    Set<Integer> truncatedList =
-        findRelevantMutations(nodeNames, mutationIndicesMap, multiMutList);
+    Set<Integer> truncatedList = findRelevantMutations(nodeNames, mutationIndicesMap, multiMutList);
 
     Assert.assertEquals(0, truncatedList.size());
   }
@@ -534,8 +530,7 @@ public class NodeMutationFilterTest {
     nodeNames.add("E");
     nodeNames.add("L");
 
-    Set<Integer> truncatedList =
-        findRelevantMutations(nodeNames, mutationIndicesMap, multiMutList);
+    Set<Integer> truncatedList = findRelevantMutations(nodeNames, mutationIndicesMap, multiMutList);
 
     Assert.assertEquals(4, truncatedList.size());
     Assert.assertTrue(truncatedList.contains(0));
@@ -557,8 +552,7 @@ public class NodeMutationFilterTest {
     nodeNames.add("G");
     nodeNames.add("E");
 
-    Set<Integer> truncatedList =
-        findRelevantMutations(nodeNames, mutationIndicesMap, multiMutList);
+    Set<Integer> truncatedList = findRelevantMutations(nodeNames, mutationIndicesMap, multiMutList);
 
     Assert.assertEquals(0, truncatedList.size());
   }
