@@ -168,10 +168,12 @@ public class DataServlet extends HttpServlet {
       // Get the names of all the displayed nodes and find all indices of mutations
       // that mutate any of them
       Set<String> truncatedGraphNodeNames = Utility.getNodeNamesInGraph(truncatedGraph);
+
       // Also get mutations relevant to the searched node if it is not an empty string
       if (nodeNameParam.length() != 0) {
         truncatedGraphNodeNames.add(nodeNameParam);
       }
+
       filteredMutationIndices =
           Utility.findRelevantMutations(truncatedGraphNodeNames, mutationIndicesMap, mutList);
 
@@ -217,10 +219,9 @@ public class DataServlet extends HttpServlet {
       response.setHeader(
           "serverMessage",
           "The desired set of nodes is mutated in this graph but your other parameters (for"
-              + " eg.depth), limit the display of the mutations. Please try increasing your radius"
+              + " eg. radius), limit the display of the mutations. Please try increasing your radius"
               + " to view the mutation.");
     }
-
     graphJson = Utility.graphToJson(truncatedGraph, filteredMutationIndices, diff, mutList.size());
     response.getWriter().println(graphJson);
   }
