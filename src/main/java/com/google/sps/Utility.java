@@ -16,8 +16,12 @@ package com.google.sps;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.HashSet;
+import java.util.stream.IntStream;
 import java.util.stream.Collectors;
 
 import com.google.common.base.Preconditions;
@@ -241,5 +245,37 @@ public final class Utility {
         .addAllMutation(filteredMutationList)
         .setReason(mm.getReason())
         .build();
+  }
+
+  /**
+   * Given a list of node names, a map from node name to mutation indices of that node and a list of
+   * multimutations applied to all nodes, returns a list of indices of multimutations in which any
+   * of the nodes in nodeNames get mutated (returned in sorted order)
+   *
+   * @param nodeNames the names of nodes to restrict the returned list of mutations to
+   * @param mutationIndicesMap a map from node name -> indices of mutations that mutate it
+   * @param multiMutList a list of multimutations which mutationIndices map indexes into
+   * @return a list of indices in multiMutList at which any of the nodes in nodeNames are mutated
+   *     Might modify mutationIndices map by caching information about relevant mutation indices of
+   *     some nodes
+   */
+  public static List<Integer> findRelevantMutations(
+      Set<String> nodeNames,
+      Map<String, List<Integer>> mutationIndicesMap,
+      List<MultiMutation> multiMutList) {
+    if (nodeNames.size() == 0) {
+      return IntStream.range(0, multiMutList.size()).boxed().collect(Collectors.toList());
+    }
+    Set<Integer> relevantIndices = new HashSet<>();
+    for (String nodeName : nodeNames) {
+      // Find or compute and cache the relevant mutation indices for each node
+      if (!mutationIndicesMap.containsKey(nodeName)) {
+        mutationIndicesMap.put(nodeName, getMutationIndicesOfNode(nodeName, multiMutList));
+      }
+      relevantIndices.addAll(mutationIndicesMap.get(nodeName));
+    }
+    ArrayList<Integer> result = new ArrayList<>(relevantIndices);
+    Collections.sort(result);
+    return result;
   }
 }

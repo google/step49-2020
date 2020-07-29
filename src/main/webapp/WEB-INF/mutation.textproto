@@ -60,3 +60,12 @@ mutation {
 }
 reason: "Changing tokens of node B"
 }
+mutation {
+mutation {
+  type: DELETE_EDGE
+  start_node: "A"
+  end_node: "C"
+}
+reason: "Removing edge AC"
+
+}

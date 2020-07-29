@@ -518,5 +518,6 @@ public class MutationDiffTest {
     List<Mutation> filteredMutList = filteredMultiMut.getMutationList();
     Assert.assertEquals(filteredMutList.size(), 2);
     Assert.assertEquals(filteredMutList.get(0), addTokenToB);
+    Assert.assertEquals(filteredMutList.get(1), removeB);
   }
 }
