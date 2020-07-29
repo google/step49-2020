@@ -21,10 +21,22 @@
     <label for="token-name">Name of token to filter for</label>
     <input type="text" id="token-name-filter" name="token-name" placeholder="Token Name"></input>
     <button onclick="graph.generateGraph()">Get Graph</button>
-    <label>Search by Node: </label>
-    <input type="text" id="search" name="search"></input>
-    <button id="search-button">Search</button>
-    <label id="search-error"></label>
+    <div>
+      <label>Zoom on Node in Graph: </label>
+      <input type="text" id="node-search" placeholder="Node Name"></input>
+      <button id="search-button">Find Node</button>
+      <label id="node-error" class="error-text"></label>
+    </div>
+
+    <div>
+      <label>Zoom on Token in Graph: </label>
+      <input type="text" id="token-search" placeholder="Token Name"></input>
+      <button id="search-token-button">Find Token</button>
+      <label id="token-error" class="error-text"></label>
+    </div>
+    <button id="reset" class="reset">Reset Graph</button>
+    <label id="num-selected"></label>
+    <br />
     <div id="num-mutation-display">
       <p id="graph-number-text">Graph </p>
       <input type="number" id="graph-number" min="0" max="0" value="0"
@@ -32,6 +44,7 @@
       <p id="total-mutation-number-text">out of 0</p>
     </div>
   </div>
+
   <div id="graph-content">
     <!-- COLUMN 1: main column -->
     <div class="graph-content-column" id="graph-content-main">
