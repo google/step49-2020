@@ -2,9 +2,10 @@
 import {
   initializeNumMutations, setMutationIndexList, setCurrMutationNum, setCurrMutationIndex,
   initializeTippy, generateGraph, getUrl, navigateGraph, currMutationNum, currMutationIndex,
-  numMutations, updateButtons, searchNode, highlightDiff, initializeReasonTooltip, getGraphDisplay,
-  getClosestIndices, initializeSlider, resetMutationSlider, mutationNumSlider, setMutationSliderValue, 
-  readGraphNumberInput, updateGraphNumInput, setMaxNumMutations, searchToken
+  numMutations, updateButtons, searchAndHighlight, highlightDiff, initializeReasonTooltip, 
+  getGraphDisplay, getClosestIndices, initializeSlider, resetMutationSlider, mutationNumSlider, 
+  setMutationSliderValue, readGraphNumberInput, updateGraphNumInput, setMaxNumMutations, 
+  searchNode, searchToken
 }
   from "../src/main/webapp/script.js";
 

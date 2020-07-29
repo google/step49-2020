@@ -33,9 +33,10 @@ import "./style.scss";
 export {
   initializeNumMutations, setMutationIndexList, setCurrMutationNum, setCurrMutationIndex,
   initializeTippy, generateGraph, getUrl, navigateGraph, currMutationNum, currMutationIndex,
-  numMutations, updateButtons, searchNode, highlightDiff, initializeReasonTooltip, getGraphDisplay,
-  getClosestIndices, initializeSlider, resetMutationSlider, mutationNumSlider, setMutationSliderValue,
-  readGraphNumberInput, updateGraphNumInput, setMaxNumMutations, searchToken
+  numMutations, updateButtons, searchAndHighlight, highlightDiff, initializeReasonTooltip, 
+  getGraphDisplay, getClosestIndices, initializeSlider, resetMutationSlider, mutationNumSlider, 
+  setMutationSliderValue, readGraphNumberInput, updateGraphNumInput, setMaxNumMutations, 
+  searchNode, searchToken
 };
 
 
@@ -144,6 +145,7 @@ async function generateGraph() {
   mutationIndexList = JSON.parse(jsonResponse.mutationIndices);
   numMutations = mutationIndexList.length;
   maxNumMutations = jsonResponse.totalMutNumber;
+  const queriedNodes = JSON.parse(jsonResponse.queriedNodes);
 
   if (!nodes || !edges || !Array.isArray(nodes) || !Array.isArray(edges)) {
     displayError("Malformed graph received from server - edges or nodes are empty");
