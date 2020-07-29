@@ -153,7 +153,7 @@ async function generateGraph() {
   }
 
   // There aren't any nodes in this graph, and there aren't any mutations pertaining to the filtered node
-  if (nodes.length === 0 && numMutations === 0) {
+  if (nodes.length === 0 && numMutations === 0 && mutList.length == 0) {
     displayError("This node does not exist in any stage of the graph!");
     return;
   } else if (response.headers.get("serverMessage")) {

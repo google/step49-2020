@@ -266,9 +266,9 @@ public class DataServlet extends HttpServlet {
         && filteredDiff.getMutationList().size() == 0) {
       response.setHeader(
           "serverMessage",
-          "The desired set of nodes is mutated in this graph but your other parameters (for"
-              + " eg.depth or filter), limit the display of the mutations. Please try increasing "
-              + " your radius or clearing your filter to view the mutation.");
+          "The desired set of nodes is mutated in this graph but your other parameters (for eg."
+              + " radius), limit the display of the mutations. Please try increasing your radius"
+              + " to view the mutation.");
     }
     graphJson =
         Utility.graphToJson(
