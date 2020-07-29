@@ -319,20 +319,22 @@ abstract class DataGraph {
     // List of tokens to add/remove from the existing list
     List<String> tokenNames = tokenMut.getTokenNameList();
     // The existing list of tokens in the node
+    List<String> existingTokens = node.tokenList();
+    // The modified list of tokens of the node
     Set<String> tokenList = new HashSet<>();
-    tokenList.addAll(node.tokenList());
+    tokenList.addAll(existingTokens);
 
     TokenMutation.Type tokenMutType = tokenMut.getType();
     if (tokenMutType == TokenMutation.Type.ADD_TOKEN) {
       tokenList.addAll(tokenNames);
 
-      if (tokenList.size() != node.tokenList().size() + tokenNames.size()) {
+      if (tokenList.size() != existingTokens.size() + tokenNames.size()) {
+        // Remove tokens that this mutation adds that already exist in the node
         tokenNames = new ArrayList<>(tokenNames);
-        tokenNames.removeAll(node.tokenList());
+        tokenNames.removeAll(existingTokens);
         tokenMut.clearTokenName();
         tokenMut.addAllTokenName(tokenNames);
       }
-
       // Update the map
       for (String tokenName : tokenNames) {
         addNodeToToken(tokenName, node.name());
@@ -341,13 +343,13 @@ abstract class DataGraph {
       tokenList.removeAll(tokenNames);
       // Update the map
 
-      if (tokenList.size() != node.tokenList().size() - tokenNames.size()) {
+      if (tokenList.size() != existingTokens.size() - tokenNames.size()) {
+        // Remove tokens that this mutation deletes that don't exist in the node
         tokenNames = new ArrayList<>(tokenNames);
-        tokenNames.removeIf(elem -> !(node.tokenList().contains(elem)));
+        tokenNames.removeIf(elem -> !(existingTokens.contains(elem)));
         tokenMut.clearTokenName();
         tokenMut.addAllTokenName(tokenNames);
       }
-
       for (String tokenName : tokenNames) {
         removeNodeFromToken(tokenName, node.name());
       }

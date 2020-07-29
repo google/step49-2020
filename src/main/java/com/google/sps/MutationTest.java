@@ -804,7 +804,6 @@ public final class MutationTest {
     GraphNode newNodeA = graphNodesMap.get("A");
     Assert.assertEquals(graphNodes.size(), 2);
     Assert.assertTrue(graphNodes.contains(newNodeA));
-    Assert.assertEquals(graphNodesMap.get("A"), newNodeA);
     Assert.assertTrue(graphNodes.contains(gNodeB));
     Assert.assertEquals(graphNodesMap.get("B"), gNodeB);
     Assert.assertEquals(newNodeA.tokenList(), newTokens);
@@ -858,7 +857,6 @@ public final class MutationTest {
     GraphNode newNodeA = graphNodesMap.get("A");
     Assert.assertEquals(graphNodes.size(), 2);
     Assert.assertTrue(graphNodes.contains(newNodeA));
-    Assert.assertEquals(graphNodesMap.get("A"), newNodeA);
     Assert.assertTrue(graphNodes.contains(gNodeB));
     Assert.assertEquals(graphNodesMap.get("B"), gNodeB);
     Assert.assertEquals(newNodeA.tokenList(), newTokens);

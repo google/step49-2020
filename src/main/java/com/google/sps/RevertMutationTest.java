@@ -107,7 +107,7 @@ public class RevertMutationTest {
   }
 
   /**
-   * Tests whether undoing a delete node mutation results in an add node mutation
+   * Tests whether undoing a delete edge mutation results in an add edge mutation
    */
   @Test
   public void revertDeleteEdge() {
@@ -138,7 +138,7 @@ public class RevertMutationTest {
   }
 
   /**
-   * Tests whether undoing a multimutation undoes each containing mutation in the opposite order
+   * Tests whether undoing a multimutation undoes each contained mutation in the opposite order
    */
   @Test
   public void revertMultiMutation() {

@@ -116,24 +116,31 @@ public final class Utility {
    *     graph if the mutation number was too big
    */
   public static DataGraph getGraphAtMutationNumber(
-      DataGraph original, DataGraph curr, int mutationNum, MutationList.Builder multiMutList)
+      DataGraph original, DataGraph curr, int mutationNum, MutationList.Builder mutationsList)
       throws IllegalArgumentException {
     Preconditions.checkArgument(
         original != curr, "The current graph and the original graph refer to the same object");
 
+    List<MultiMutation> multiMutList = mutationsList.getMutationList();
+
     if (mutationNum < -1) {
       return null;
-    } else if (mutationNum > multiMutList.getMutationList().size()) {
-      mutationNum = multiMutList.getMutationList().size() - 1;
+    } else if (mutationNum > multiMutList.size()) {
+      mutationNum = multiMutList.size() - 1;
     }
+    // If the requested graph is sequentially before the current graph but is closer to 
+    // the initial graph than to the current graph, go forward from the initial graph rather
+    // than going back from the current graph
     if (curr.numMutations() > mutationNum && (curr.numMutations() - mutationNum) > mutationNum) {
       curr = original.getCopy();
     }
     if (curr.numMutations() <= mutationNum) { // going forward
       for (int i = curr.numMutations() + 1; i <= mutationNum; i++) {
         // Mutate graph operates in place
-        MultiMutation multiMut = multiMutList.getMutationList().get(i);
+        MultiMutation multiMut = multiMutList.get(i);
         List<Mutation> mutations = multiMut.getMutationList();
+        // Use this to store the multi mutation without any redundant mutation
+        // information (for eg. duplicate tokens to add)
         MultiMutation.Builder trimmedMultiMut = MultiMutation.newBuilder();
         for (Mutation mut : mutations) {
           Mutation.Builder currMut = mut.toBuilder();
@@ -143,14 +150,15 @@ public final class Utility {
           }
           trimmedMultiMut.addMutation(currMut.build());
         }
-        multiMutList.setMutation(i, trimmedMultiMut);
+        mutationsList.setMutation(i, trimmedMultiMut.setReason(multiMut.getReason()));
       }
       return DataGraph.create(
           curr.graph(), curr.graphNodesMap(), curr.roots(), mutationNum, curr.tokenMap());
     } else {
+      // The last mutation to revert is the one after the last one to apply
       for (int i = curr.numMutations(); i > mutationNum; i--) {
         // Mutate graph operates in place
-        MultiMutation multiMut = Utility.revertMultiMutation(multiMutList.getMutationList().get(i));
+        MultiMutation multiMut = Utility.revertMultiMutation(multiMutList.get(i));
         List<Mutation> mutations = multiMut.getMutationList();
         for (Mutation mut : mutations) {
           String error = curr.mutateGraph(mut.toBuilder());
@@ -352,6 +360,12 @@ public final class Utility {
     return relevantIndices;
   }
 
+  /**
+   * Returns a multi-mutation which undoes the changes caused by the passed multi-
+   * mutation in the opposite order to which they are made
+   * @param multiMut the multi-mutation to reverse
+   * @return the reverted multi-mutation
+   */
   public static MultiMutation revertMultiMutation(MultiMutation multiMut) {
     MultiMutation.Builder result = MultiMutation.newBuilder().setReason(multiMut.getReason());
     List<Mutation> mutations = multiMut.getMutationList();
@@ -362,6 +376,12 @@ public final class Utility {
     return result.addAllMutation(revertedMutations).build();
   }
 
+  /**
+   * Returns a mutation which undoes the changes caused by the passed mutation
+   * For example, reverting an add edge deletes the edge.
+   * @param mut the mutation to reverse
+   * @return the reverted mutation
+   */
   public static Mutation revertMutation(Mutation mut) {
     Mutation.Builder result = Mutation.newBuilder(mut);
     switch (mut.getType()) {
@@ -398,6 +418,12 @@ public final class Utility {
     return result.build();
   }
 
+  /**
+   * Returns a token mutation which undoes the changes caused by the passed token mutation
+   * For example, reverting an add token deletes the token.
+   * @param tokenMut the token mutation to reverse
+   * @return the reverted token mutation
+   */
   public static TokenMutation revertTokenChangeMutation(TokenMutation tokenMut) {
     TokenMutation.Builder result = TokenMutation.newBuilder(tokenMut);
     switch (tokenMut.getType()) {

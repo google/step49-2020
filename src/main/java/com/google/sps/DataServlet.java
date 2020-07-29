@@ -48,6 +48,10 @@ public class DataServlet extends HttpServlet {
   private DataGraph currDataGraph = null;
   private DataGraph originalDataGraph = null;
   private List<MultiMutation> mutList = null;
+  // We store a builder so that we can modify the contained mutation objects
+  // to be non-redundant. For example if we find that a mutation adds duplicate
+  // tokens to a node we replace it with a trimmed version that doesn't add
+  // duplicates in this object.
   private MutationList.Builder mutListObj = null;
 
   // A list containing the indices of mutations that mutate the node we are
@@ -78,7 +82,7 @@ public class DataServlet extends HttpServlet {
     if (currDataGraph == null && originalDataGraph == null) {
       success =
           initializeGraphVariables(
-              getServletContext().getResourceAsStream("/WEB-INF/initial_graph.textproto"));
+              getServletContext().getResourceAsStream("/WEB-INF/graph.textproto"));
       if (!success) {
         response.setHeader(
             "serverError", "Failed to parse input graph into Guava graph - not a DAG!");
@@ -97,7 +101,7 @@ public class DataServlet extends HttpServlet {
      */
     if (mutListObj == null) {
       initializeMutationVariables(
-          getServletContext().getResourceAsStream("/WEB-INF/mutations.textproto"));
+          getServletContext().getResourceAsStream("/WEB-INF/mutation.textproto"));
       // Populate the list of all possible mutation indices
       defaultIndices = IntStream.range(0, mutList.size()).boxed().collect(Collectors.toList());
       // and store this as the list of relevant indices for filtering by empty string
