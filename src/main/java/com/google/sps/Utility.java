@@ -362,7 +362,7 @@ public final class Utility {
     return result.addAllMutation(revertedMutations).build();
   }
 
-  private static Mutation revertMutation(Mutation mut) {
+  public static Mutation revertMutation(Mutation mut) {
     Mutation.Builder result = Mutation.newBuilder(mut);
     switch (mut.getType()) {
       case ADD_NODE:
