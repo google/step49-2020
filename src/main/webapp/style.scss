@@ -5,18 +5,19 @@
 /* Define color scheme of page */
 :root {
   --error: red; 
-  --log-color: #D3D3D3; 
+  --gray: #D3D3D3; 
   --btn-color: #B590CA;
   --box-bg: #DDF3F5;
+  --dark-gray: #5d5b6a;
 }
 
-h2 {
+h2, h4 {
   margin: 0 auto;
 }
 
 button {
-  background-color: var(--btn-color);
-  color: white;
+  background-color: var(--gray);
+  color: black;
     font-size: 16px;
     border-radius: 10px;
     margin: 5px;
@@ -25,6 +26,8 @@ button {
 
 button:hover {
   font-weight: bold;
+  color: white;
+  background-color: var(--dark-gray);
 }
 
 body {
@@ -108,7 +111,7 @@ body {
 
 #graph-content-logs {
   flex: 20%;
-  background-color: var(--box-bg);
+  background-color: var(--gray);
   border-radius: 10px;
   max-height: 75vh;
   overflow-y: scroll;
