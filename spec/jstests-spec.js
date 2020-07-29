@@ -3,7 +3,7 @@ import {
   initializeTippy, generateGraph, getUrl, navigateGraph, currMutationNum, currMutationIndex,
   numMutations, updateButtons, searchNode, highlightDiff, initializeReasonTooltip, getGraphDisplay,
   getClosestIndices, initializeSlider, resetMutationSlider, mutationNumSlider, setMutationSliderValue, 
-  readGraphNumberInput, updateGraphNumInput, setMaxNumMutations
+  readGraphNumberInput, updateGraphNumInput, setMaxNumMutations, clearLog
 }
   from "../src/main/webapp/script.js";
 
@@ -583,7 +583,8 @@ describe("Showing and hiding tooltips when checkbox is clicked", function () {
     <div id="graph"></div>
     <button id="search-button">Search</button>
     <label id="search-error"></label>
-    <input type="checkbox" id="show-mutations"></input>`;
+    <input type="checkbox" id="show-mutations"></input>
+    <button id="clear-log">Clear Log</button>`;
 
     const nodeA = {};
     nodeA["data"] = {};
@@ -870,4 +871,42 @@ describe("Testing graph input functionality", function () {
     document.getElementById("graph-number").onchange();
     expect(graphNumberInput.value).toBe("0");
   });
+});
+
+describe("Testing clear log functionality", function () {
+  let logList;
+  let clearLogButton;
+
+  beforeEach(function () {
+    document.body.innerHTML =
+      `<div class="graph-content-column" id="graph-content-logs">
+          <button id="clear-log" onclick="clearLog()">Clear Log</button>
+          <ul id="log-list">
+            <li class="log-msg"></li>
+        </ul>
+      </div>`;
+    logList = document.getElementById("log-list");
+    clearLogButton = document.getElementById("clear-log");
+    clearLogButton.onclick = function () { clearLog() };
+  });
+
+  it("clears the logs when they contain messages", function () {
+    const newMsg1 = document.createElement("li");
+    newMsg1.innerText = "Sample log text 1";
+    logList.appendChild(newMsg1);
+
+    const newMsg2 = document.createElement("li");
+    newMsg2.innerText = "Sample log text 2";
+    logList.appendChild(newMsg2);
+
+    clearLogButton.click();
+    expect(logList.innerText).toBe("");
+  });
+
+  it("clears the logs when they are empty", function () {
+    expect(logList.innerText).toBe("");
+    clearLogButton.click();
+    expect(logList.innerText).toBe("");
+  });
+
 });

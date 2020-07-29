@@ -34,7 +34,7 @@ export {
   initializeTippy, generateGraph, getUrl, navigateGraph, currMutationNum, currMutationIndex,
   numMutations, updateButtons, searchNode, highlightDiff, initializeReasonTooltip, getGraphDisplay,
   getClosestIndices, initializeSlider, resetMutationSlider, mutationNumSlider, setMutationSliderValue,
-  readGraphNumberInput, updateGraphNumInput, setMaxNumMutations
+  readGraphNumberInput, updateGraphNumInput, setMaxNumMutations, clearLog
 };
 
 cytoscape.use(popper); // register extension
@@ -718,19 +718,11 @@ function getTooltipContent(node) {
   closeButton.addEventListener('click', function () {
     node.tip.hide();
   }, false);
-  //content.appendChild(closeButton);
+  content.appendChild(closeButton);
 
-  const nodeName = document.createElement("p");
-  nodeName.innerText = `Node Name: \n${node.data().id}`;
-  content.appendChild(nodeName);
-
-  const tokenLabel = document.createElement("p");
-  tokenLabel.innerText = "Tokens:";
-  content.appendChild(tokenLabel);
-
-  const nodeName = document.createElement("p");
-  nodeName.innerText = `Node name:\n${node.data().id}`;
-  content.appendChild(nodeName);
+  const nodeId = document.createElement("p");
+  nodeId.innerText = `Node Name: \n${node.data().id}`;
+  content.appendChild(nodeId);
 
   const tokenLabel = document.createElement("p");
   tokenLabel.innerText = "Tokens:";
