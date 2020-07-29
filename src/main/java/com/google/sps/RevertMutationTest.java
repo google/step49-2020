@@ -106,9 +106,7 @@ public class RevertMutationTest {
     Assert.assertEquals(revertedMut.getEndNode(), "B");
   }
 
-  /**
-   * Tests whether undoing a delete edge mutation results in an add edge mutation
-   */
+  /** Tests whether undoing a delete edge mutation results in an add edge mutation */
   @Test
   public void revertDeleteEdge() {
     Mutation deleteAB =
@@ -150,9 +148,7 @@ public class RevertMutationTest {
     Assert.assertEquals(revertedMut.getTokenChange(), Utility.revertTokenChangeMutation(tokenMut));
   }
 
-  /**
-   * Tests whether undoing a multimutation undoes each contained mutation in the opposite order
-   */
+  /** Tests whether undoing a multimutation undoes each contained mutation in the opposite order */
   @Test
   public void revertMultiMutation() {
     TokenMutation tokenMut =

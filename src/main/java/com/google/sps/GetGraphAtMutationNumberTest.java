@@ -91,7 +91,8 @@ public class GetGraphAtMutationNumberTest {
     multiMutList.add(addABM);
     MutationList.Builder mutationsList = MutationList.newBuilder().addAllMutation(multiMutList);
 
-    DataGraph mutatedGraph = Utility.getGraphAtMutationNumber(dataGraph, originalCopy, 0, mutationsList);
+    DataGraph mutatedGraph =
+        Utility.getGraphAtMutationNumber(dataGraph, originalCopy, 0, mutationsList);
 
     MutableGraph<GraphNode> newGraph = mutatedGraph.graph();
     Set<GraphNode> newNodes = newGraph.nodes();
@@ -134,7 +135,8 @@ public class GetGraphAtMutationNumberTest {
     multiMutList.add(removeCM);
     MutationList.Builder mutationsList = MutationList.newBuilder().addAllMutation(multiMutList);
 
-    DataGraph mutatedGraph = Utility.getGraphAtMutationNumber(dataGraph, originalCopy, 1, mutationsList);
+    DataGraph mutatedGraph =
+        Utility.getGraphAtMutationNumber(dataGraph, originalCopy, 1, mutationsList);
 
     MutableGraph<GraphNode> newGraph = mutatedGraph.graph();
     Set<GraphNode> newNodes = newGraph.nodes();
@@ -188,7 +190,8 @@ public class GetGraphAtMutationNumberTest {
     multiMutList.add(addToAM);
     MutationList.Builder mutationsList = MutationList.newBuilder().addAllMutation(multiMutList);
 
-    DataGraph mutatedGraph = Utility.getGraphAtMutationNumber(dataGraph, originalCopy, 1, mutationsList);
+    DataGraph mutatedGraph =
+        Utility.getGraphAtMutationNumber(dataGraph, originalCopy, 1, mutationsList);
 
     MutableGraph<GraphNode> newGraph = mutatedGraph.graph();
     HashMap<String, GraphNode> newGraphNodesMap = mutatedGraph.graphNodesMap();
@@ -242,7 +245,8 @@ public class GetGraphAtMutationNumberTest {
     List<MultiMutation> multiMutList = new ArrayList<>();
     MutationList.Builder mutationsList = MutationList.newBuilder().addAllMutation(multiMutList);
 
-    DataGraph mutatedGraph = Utility.getGraphAtMutationNumber(dataGraph, dataGraphCopy, 1, mutationsList);
+    DataGraph mutatedGraph =
+        Utility.getGraphAtMutationNumber(dataGraph, dataGraphCopy, 1, mutationsList);
     MutableGraph<GraphNode> newGraph = mutatedGraph.graph();
     HashSet<String> newRoots = mutatedGraph.roots();
     Set<GraphNode> newNodes = newGraph.nodes();
@@ -308,7 +312,7 @@ public class GetGraphAtMutationNumberTest {
     HashSet<String> newRoots = mutatedGraph.roots();
     Set<GraphNode> newNodes = newGraph.nodes();
     int newNum = mutatedGraph.numMutations();
-    
+
     Assert.assertEquals(newNum, 0);
     Assert.assertEquals(newNodes.size(), 3);
     Assert.assertTrue(newNodes.contains(gNodeA));

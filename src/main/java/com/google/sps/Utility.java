@@ -128,7 +128,7 @@ public final class Utility {
     } else if (mutationNum > multiMutList.size()) {
       mutationNum = multiMutList.size() - 1;
     }
-    // If the requested graph is sequentially before the current graph but is closer to 
+    // If the requested graph is sequentially before the current graph but is closer to
     // the initial graph than to the current graph, go forward from the initial graph rather
     // than going back from the current graph
     if (curr.numMutations() > mutationNum && (curr.numMutations() - mutationNum) > mutationNum) {
@@ -361,8 +361,9 @@ public final class Utility {
   }
 
   /**
-   * Returns a multi-mutation which undoes the changes caused by the passed multi-
-   * mutation in the opposite order to which they are made
+   * Returns a multi-mutation which undoes the changes caused by the passed multi- mutation in the
+   * opposite order to which they are made
+   *
    * @param multiMut the multi-mutation to reverse
    * @return the reverted multi-mutation
    */
@@ -377,8 +378,9 @@ public final class Utility {
   }
 
   /**
-   * Returns a mutation which undoes the changes caused by the passed mutation
-   * For example, reverting an add edge deletes the edge.
+   * Returns a mutation which undoes the changes caused by the passed mutation For example,
+   * reverting an add edge deletes the edge.
+   *
    * @param mut the mutation to reverse
    * @return the reverted mutation
    */
@@ -419,8 +421,9 @@ public final class Utility {
   }
 
   /**
-   * Returns a token mutation which undoes the changes caused by the passed token mutation
-   * For example, reverting an add token deletes the token.
+   * Returns a token mutation which undoes the changes caused by the passed token mutation For
+   * example, reverting an add token deletes the token.
+   *
    * @param tokenMut the token mutation to reverse
    * @return the reverted token mutation
    */
