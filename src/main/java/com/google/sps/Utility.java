@@ -293,7 +293,6 @@ public final class Utility {
       List<MultiMutation> multiMutList) {
     if (nodeNames.size() == 0) {
       return new HashSet<>();
-      // return IntStream.range(0, multiMutList.size()).boxed().collect(Collectors.toSet());
     }
     Set<Integer> relevantIndices = new HashSet<>();
     for (String nodeName : nodeNames) {
