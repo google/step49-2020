@@ -22,12 +22,15 @@ button {
     border-radius: 10px;
     margin: 5px;
     padding: 5px;
+    border-style: solid;
+    border-width: 0;
 }
 
-button:hover {
+button:hover:enabled {
   font-weight: bold;
   color: white;
   background-color: var(--dark-gray);
+  cursor: pointer;
 }
 
 body {
@@ -160,4 +163,8 @@ body {
   background-color: var(--box-bg);
   border-radius: 15px;
   margin: 15px;
+}
+
+input {
+  padding: 5px;
 }

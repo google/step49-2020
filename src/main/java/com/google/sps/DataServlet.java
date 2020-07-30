@@ -16,8 +16,9 @@ package com.google.sps;
 
 import com.google.gson.JsonParser;
 import com.google.gson.JsonArray;
-
+import com.google.appengine.repackaged.com.google.gson.JsonSyntaxException;
 import com.google.common.collect.Sets;
+import com.google.common.graph.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,7 +39,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.common.graph.Graphs;
 import com.google.common.graph.MutableGraph;
 import com.google.protobuf.TextFormat;
 import com.proto.GraphProtos.Graph;
@@ -181,15 +181,14 @@ public class DataServlet extends HttpServlet {
     }
     List<String> nodeNames = new ArrayList<>();
     try {
-      JsonParser jsonParser = new JsonParser();
-      JsonArray nodeNameArr = jsonParser.parse(nodeNamesParam).getAsJsonArray();
+      JsonArray nodeNameArr = JsonParser.parseString(nodeNamesParam).getAsJsonArray();
       for (int i = 0; i < nodeNameArr.size(); i++) {
         String curr = nodeNameArr.get(i).getAsString().trim();
         if (curr.length() > 0) {
           nodeNames.add(curr);
         }
       }
-    } catch (IllegalStateException e) {
+    } catch (JsonSyntaxException e) {
     }
     end = System.currentTimeMillis();
     System.out.println("Loading node names took " + (end - start) + " milliseconds");
@@ -234,13 +233,18 @@ public class DataServlet extends HttpServlet {
     // Truncate the graph from the nodes that the client had searched for
     truncatedGraph = currDataGraph.getReachableNodes(queried, depthNumber);
 
+    MutableGraph<GraphNode> truncatedGraphNext;
     // To get the nodes to calculate relevant mutations from. If queried and queried next contain
     // the same
     // nodes, then no reason to regenerate the graph
-    MutableGraph<GraphNode> truncatedGraphNext =
-        queried.equals(queriedNext)
-            ? Graphs.copyOf(truncatedGraph)
-            : currDataGraph.getReachableNodes(queriedNext, depthNumber);
+    if (queriedNext.isEmpty()) {
+      truncatedGraphNext = GraphBuilder.undirected().build();
+    } else {
+      truncatedGraphNext =
+          queried.equals(queriedNext)
+              ? truncatedGraph
+              : currDataGraph.getReachableNodes(queriedNext, depthNumber);
+    }
 
     // If we are not filtering the graph or limiting its depth, show all mutations of all nodes
     if (nodeNames.size() == 0
@@ -254,11 +258,6 @@ public class DataServlet extends HttpServlet {
       Set<String> truncatedGraphNodeNames = Utility.getNodeNamesInGraph(truncatedGraph);
       Set<String> truncatedGraphNodeNamesNext = Utility.getNodeNamesInGraph(truncatedGraphNext);
 
-      // Also get mutations relevant to the searched node if it is not an empty string
-      if (nodeNames.size() != 0) {
-        truncatedGraphNodeNames.addAll(nodeNames);
-      }
-
       // A set containing a indices where nodes currently displayed on the graph
       // or queried are mutated
       Set<Integer> mutationIndicesSet = new HashSet<>();
@@ -266,17 +265,15 @@ public class DataServlet extends HttpServlet {
       mutationIndicesSet.addAll(
           Utility.findRelevantMutations(truncatedGraphNodeNamesNext, mutationIndicesMap, mutList));
       mutationIndicesSet.addAll(Utility.getMutationIndicesOfToken(tokenParam, mutList));
+      mutationIndicesSet.addAll(
+          Utility.findRelevantMutations(nodeNames, mutationIndicesMap, mutList));
       filteredMutationIndices = new ArrayList<>(mutationIndicesSet);
       Collections.sort(filteredMutationIndices);
 
-      if (tokenParam.length() == 0) {
-        filteredDiff = Utility.filterMultiMutationByNodes(diff, truncatedGraphNodeNames);
-      } else {
-        // In this case, also show mutations relevant to nodes that used to have the token but
-        // might not exist anymore
-        filteredDiff =
-            Utility.filterMultiMutationByNodes(diff, Sets.union(truncatedGraphNodeNames, queried));
-      }
+      // Show mutations relevant to nodes that used to have the token but
+      // might not exist anymore and the queried nodes
+      filteredDiff =
+          Utility.filterMultiMutationByNodes(diff, Sets.union(truncatedGraphNodeNames, queried));
     }
     end = System.currentTimeMillis();
     System.out.println("Truncating graph took " + (end - start) + " milliseconds");
@@ -327,7 +324,7 @@ public class DataServlet extends HttpServlet {
     }
     graphJson =
         Utility.graphToJson(
-            truncatedGraph, filteredMutationIndices, filteredDiff, mutList.size(), queried);
+            truncatedGraph, filteredMutationIndices, filteredDiff, mutList.size(), queriedNext);
     response.getWriter().println(graphJson);
     end = System.currentTimeMillis();
     System.out.println("Other stuff took " + (end - start) + " milliseconds");
