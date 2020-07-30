@@ -170,7 +170,7 @@ public class DataServlet extends HttpServlet {
           nodeNames.add(curr);
         }
       }
-    } catch (JsonSyntaxException e) {
+    } catch (JsonSyntaxException | IllegalStateException e) {
     }
 
     // A list of "roots" to return nodes at most depth radius from
