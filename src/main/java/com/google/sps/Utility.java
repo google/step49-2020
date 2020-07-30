@@ -113,8 +113,8 @@ public final class Utility {
    * @param multiMutList multi-mutation list builder
    * @throws IllegalArgumentException if original and current graph refer to the same object
    * @return the resulting data graph, null if the mutation number was too small, and the final
-   *     graph if the mutation number was too big. May also modify multiMutList, replacing
-   * some mutations with their deduplicated versions.
+   *     graph if the mutation number was too big. May also modify multiMutList, replacing some
+   *     mutations with their deduplicated versions.
    */
   public static DataGraph getGraphAtMutationNumber(
       DataGraph original, DataGraph curr, int mutationNum, MutationList.Builder mutationsList)
