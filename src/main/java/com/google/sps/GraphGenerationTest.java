@@ -33,6 +33,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import static com.google.sps.Utility.getNodeNamesInGraph;
+import static com.google.sps.Utility.protoNodeToGraphNode;
 /** */
 @RunWith(JUnit4.class)
 public final class GraphGenerationTest {
@@ -53,12 +55,12 @@ public final class GraphGenerationTest {
 
   @Before
   public void setUp() {
-    gNodeA = Utility.protoNodeToGraphNode(nodeA.build());
-    gNodeB = Utility.protoNodeToGraphNode(nodeB.build());
-    gNodeC = Utility.protoNodeToGraphNode(nodeC.build());
-    gNodeD = Utility.protoNodeToGraphNode(nodeD.build());
-    gNodeE = Utility.protoNodeToGraphNode(nodeE.build());
-    gNodeF = Utility.protoNodeToGraphNode(nodeF.build());
+    gNodeA = protoNodeToGraphNode(nodeA.build());
+    gNodeB = protoNodeToGraphNode(nodeB.build());
+    gNodeC = protoNodeToGraphNode(nodeC.build());
+    gNodeD = protoNodeToGraphNode(nodeD.build());
+    gNodeE = protoNodeToGraphNode(nodeE.build());
+    gNodeF = protoNodeToGraphNode(nodeF.build());
   }
 
   /*
@@ -67,7 +69,7 @@ public final class GraphGenerationTest {
    */
   @Test
   public void correctProtoToGraphNoData() {
-    GraphNode graphNode = Utility.protoNodeToGraphNode(nodeA.build());
+    GraphNode graphNode = protoNodeToGraphNode(nodeA.build());
     Assert.assertEquals(graphNode.name(), "A");
     Assert.assertEquals(graphNode.tokenList().size(), 0);
     Assert.assertEquals(graphNode.metadata().getFieldsCount(), 0);
@@ -83,7 +85,7 @@ public final class GraphGenerationTest {
     nodeA.addToken("2");
     nodeA.addToken("3");
 
-    GraphNode graphNode = Utility.protoNodeToGraphNode(nodeA.build());
+    GraphNode graphNode = protoNodeToGraphNode(nodeA.build());
     List<String> tokenList = graphNode.tokenList();
 
     Assert.assertEquals(graphNode.name(), "A");
@@ -111,7 +113,7 @@ public final class GraphGenerationTest {
         Struct.newBuilder().putFields("row", rowValue).putFields("column", colValue).build();
     nodeA.setMetadata(metadata);
 
-    GraphNode graphNode = Utility.protoNodeToGraphNode(nodeA.build());
+    GraphNode graphNode = protoNodeToGraphNode(nodeA.build());
     List<String> tokenList = graphNode.tokenList();
     Struct generatedMetadata = graphNode.metadata();
 
@@ -151,9 +153,9 @@ public final class GraphGenerationTest {
     protoNodesMap.put("B", pNodeB);
     protoNodesMap.put("C", pNodeC);
 
-    gNodeA = Utility.protoNodeToGraphNode(pNodeA);
-    gNodeB = Utility.protoNodeToGraphNode(pNodeB);
-    gNodeC = Utility.protoNodeToGraphNode(pNodeC);
+    gNodeA = protoNodeToGraphNode(pNodeA);
+    gNodeB = protoNodeToGraphNode(pNodeB);
+    gNodeC = protoNodeToGraphNode(pNodeC);
 
     DataGraph dataGraph = DataGraph.create();
     boolean success = dataGraph.graphFromProtoNodes(protoNodesMap);
@@ -262,7 +264,7 @@ public final class GraphGenerationTest {
     dataGraph.graphFromProtoNodes(protoNodesMap);
 
     MutableGraph<GraphNode> graph = dataGraph.graph();
-    Set<String> nodeNamesInGraph = Utility.getNodeNamesInGraph(graph);
+    Set<String> nodeNamesInGraph = getNodeNamesInGraph(graph);
 
     Assert.assertEquals(nodeNamesInGraph, dataGraph.graphNodesMap().keySet());
   }

@@ -16,11 +16,11 @@ package com.google.sps;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
-import java.util.stream.IntStream;
 import java.util.stream.Collectors;
 
 import com.google.common.base.Preconditions;
@@ -32,7 +32,6 @@ import com.google.protobuf.Struct;
 import com.proto.GraphProtos.Node;
 import com.proto.MutationProtos.MultiMutation;
 import com.proto.MutationProtos.Mutation;
-import com.proto.MutationProtos.TokenMutation;
 
 import org.json.JSONObject;
 
@@ -65,10 +64,10 @@ public final class Utility {
    * @param mutDiff the difference between the current graph and the requested graph
    * @param maxNumber the total number of mutations, without filtering
    * @param queried a set of node names the client had requested
-   * @return a JSON object containing as entries the nodes and edges of this graph as well as the
-   *     length of the list of mutations this graph is an intermediate result of applying, the
-   *     indices at which relevant nodes are mutated and the change made to relevant nodes to obtain
-   *     the new graph
+   * @return a JSON object containing the nodes and edges of this graph, the relevant mutation
+   *     indices of the node(s) the user filtered for, the difference between the current graph and
+   *     requested graph, the reason for the mutation, the total number of mutations (for ALL
+   *     nodes), and the nodes the user filtered for
    */
   public static String graphToJson(
       MutableGraph<GraphNode> graph,
@@ -207,50 +206,6 @@ public final class Utility {
   }
 
   /**
-   * Returns a list of the indices of the mutations in origList that mutate
-   *
-   * @param nodeName the name of the node to filter
-   * @param origList the original list of mutations
-   * @param tokenName paramter for token name. list ends when that token is deleted
-   * @return a list of indices that are relevant to the node, truncated at the point a given token
-   *     is deleted
-   */
-  public static ArrayList<Integer> getMutationIndicesOfNode(
-      String nodeName, List<MultiMutation> origList, String tokenNameSearched) {
-    ArrayList<Integer> lst = new ArrayList<>();
-    // Shouldn't happen, but in case the nodeName is null an empty list is returned
-    if (nodeName == null) {
-      return lst;
-    }
-    for (int i = 0; i < origList.size(); i++) {
-      MultiMutation multiMut = origList.get(i);
-      List<Mutation> mutList = multiMut.getMutationList();
-      for (Mutation mut : mutList) {
-        String startName = mut.getStartNode();
-        String endName = mut.getEndNode();
-        if (nodeName.equals(startName) || nodeName.equals(endName)) {
-          lst.add(i);
-          // If the mutation is a delete token AND the token passed in as param is
-          // deleted, then we want no more
-          if (tokenNameSearched.length() != 0 && mut.getType().equals(Mutation.Type.CHANGE_TOKEN)) {
-            TokenMutation tokenMut = mut.getTokenChange();
-            TokenMutation.Type tokenMutType = tokenMut.getType();
-            if (tokenMutType == TokenMutation.Type.DELETE_TOKEN) {
-              List<String> tokenNames = tokenMut.getTokenNameList();
-              if (tokenNames.contains(tokenNameSearched)) {
-                return lst;
-              }
-            }
-          }
-
-          break;
-        }
-      }
-    }
-    return lst;
-  }
-
-  /**
    * Returns a set of indices on the original list that related to a given token
    *
    * @param tokenName the token name to search for
@@ -322,7 +277,7 @@ public final class Utility {
   /**
    * Given a list of node names, a map from node name to mutation indices of that node and a list of
    * multimutations applied to all nodes, returns a set of indices of multimutations in which any of
-   * the nodes in nodeNames get mutated
+   * the nodes in nodeNames get mutated. If nodeNames is empty, an empty set is returned
    *
    * @param nodeNames the names of nodes to restrict the returned list of mutations to
    * @param mutationIndicesMap a map from node name -> indices of mutations that mutate it
@@ -332,11 +287,11 @@ public final class Utility {
    *     some nodes
    */
   public static Set<Integer> findRelevantMutations(
-      Set<String> nodeNames,
+      Collection<String> nodeNames,
       Map<String, List<Integer>> mutationIndicesMap,
       List<MultiMutation> multiMutList) {
     if (nodeNames.size() == 0) {
-      return IntStream.range(0, multiMutList.size()).boxed().collect(Collectors.toSet());
+      return new HashSet<>();
     }
     Set<Integer> relevantIndices = new HashSet<>();
     for (String nodeName : nodeNames) {

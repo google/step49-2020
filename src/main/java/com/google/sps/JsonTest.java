@@ -31,6 +31,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import static com.google.sps.Utility.graphToJson;
+import static com.google.sps.Utility.protoNodeToGraphNode;
+
 /**
  * Since we don't manually build the JSON, we can just check all of the fields in the JSON are
  * present.
@@ -57,9 +60,9 @@ public final class JsonTest {
   public void setUp() {
     gson = new Gson();
 
-    gNodeA = Utility.protoNodeToGraphNode(nodeA.build());
-    gNodeB = Utility.protoNodeToGraphNode(nodeB.build());
-    gNodeC = Utility.protoNodeToGraphNode(nodeC.build());
+    gNodeA = protoNodeToGraphNode(nodeA.build());
+    gNodeB = protoNodeToGraphNode(nodeB.build());
+    gNodeC = protoNodeToGraphNode(nodeC.build());
 
     jNodeA = gson.toJson(gNodeA);
     jNodeB = gson.toJson(gNodeB);
@@ -79,8 +82,8 @@ public final class JsonTest {
 
     nodeC.addToken("3");
 
-    gNodeA = Utility.protoNodeToGraphNode(nodeA.build());
-    gNodeC = Utility.protoNodeToGraphNode(nodeC.build());
+    gNodeA = protoNodeToGraphNode(nodeA.build());
+    gNodeC = protoNodeToGraphNode(nodeC.build());
 
     jNodeA = gson.toJson(gNodeA);
     jNodeC = gson.toJson(gNodeC);
@@ -93,7 +96,7 @@ public final class JsonTest {
     graph.putEdge(gNodeA, gNodeC);
 
     String result =
-        Utility.graphToJson(
+        graphToJson(
             graph,
             new ArrayList<Integer>(),
             MultiMutation.newBuilder().setReason("test").build(),
