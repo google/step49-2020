@@ -660,7 +660,6 @@ function hideDiffs(cy, elems, deletedNodes, deletedEdges, addedNodes, addedEdges
  */
 function searchAndHighlight(cy, type, searchFunction) {
   resetElements(cy);
-  let errorText = "";
   const query = document.getElementById(type + '-search').value;
   let result;
   if (query !== "") {
@@ -668,10 +667,9 @@ function searchAndHighlight(cy, type, searchFunction) {
     if (result) {
       highlightElements(cy, result);
     } else {
-      errorText = type + " does not exist.";
+      addToLogs(type + " does not exist.");
     }
   }
-  document.getElementById(type + '-error').innerText = errorText;
   return result;
 }
 
