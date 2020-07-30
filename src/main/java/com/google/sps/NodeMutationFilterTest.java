@@ -152,6 +152,7 @@ public class NodeMutationFilterTest {
     return multiMutList;
   }
 
+  // TESTING findRelevantMutations
   /**
    * Getting mutation indices of multiple nodes returns the union of all their individual indices in
    * sorted order
@@ -255,7 +256,7 @@ public class NodeMutationFilterTest {
     Assert.assertEquals(0, truncatedList.size());
   }
 
-  /** Getting mutation indices of an empty list of nodes just returns all indices */
+  /** Getting mutation indices of an empty list of nodes just returns an empty set */
   @Test
   public void getMutationsOfEmpty() {
     List<MultiMutation> multiMutList = getTestMutationList();
@@ -266,11 +267,6 @@ public class NodeMutationFilterTest {
     Set<Integer> truncatedList =
         Utility.findRelevantMutations(nodeNames, mutationIndicesMap, multiMutList);
 
-    Assert.assertEquals(5, truncatedList.size());
-    Assert.assertTrue(truncatedList.contains(0));
-    Assert.assertTrue(truncatedList.contains(1));
-    Assert.assertTrue(truncatedList.contains(2));
-    Assert.assertTrue(truncatedList.contains(3));
-    Assert.assertTrue(truncatedList.contains(4));
+    Assert.assertEquals(0, truncatedList.size());
   }
 }

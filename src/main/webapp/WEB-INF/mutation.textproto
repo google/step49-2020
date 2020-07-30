@@ -71,7 +71,7 @@ mutation {
     token_name: "f.js"
   }
 }
-reason: "Add d and f to node B"
+reason: "Add d and f to node I"
 }
 mutation {
 mutation {
@@ -97,5 +97,5 @@ mutation {
   type: DELETE_NODE
   start_node: "I"
 }
-reason: "Add node I"
+reason: "Delete node I"
 }

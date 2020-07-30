@@ -8,11 +8,16 @@
   --gray: #D3D3D3; 
   --btn-color: #B590CA;
   --box-bg: #DDF3F5;
-  --dark-gray: #5d5b6a;
+  --dark-gray: #5D5B6A;
+  --disabled-txt: #999;
 }
 
 h2, h4 {
   margin: 0 auto;
+}
+
+.search-title {
+  margin-bottom: 20px;
 }
 
 button {
@@ -22,12 +27,19 @@ button {
     border-radius: 10px;
     margin: 5px;
     padding: 5px;
+    border-style: solid;
+    border-width: 0;
 }
 
-button:hover {
+button:hover:enabled {
   font-weight: bold;
   color: white;
   background-color: var(--dark-gray);
+  cursor: pointer;
+}
+
+button:disabled, button[disabled] {
+  color: var(--disabled-txt);
 }
 
 body {
@@ -93,12 +105,6 @@ body {
 .nextprev {
   margin: 0px 20px;
   padding: 0;
-}
-
-#search-box {
-  display: flex;
-  flex-direction: column;
-  padding: 20px;
 }
 
 #graph-content {
@@ -167,4 +173,8 @@ body {
 .clear-log {
   position: absolute;
   bottom: 0;
+}
+
+input {
+  padding: 5px;
 }
