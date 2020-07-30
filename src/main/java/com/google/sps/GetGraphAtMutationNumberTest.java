@@ -313,6 +313,9 @@ public class GetGraphAtMutationNumberTest {
     Set<GraphNode> newNodes = newGraph.nodes();
     int newNum = mutatedGraph.numMutations();
 
+    Assert.assertFalse(origGraph.hasEdgeConnecting(gNodeA, gNodeB));
+    Assert.assertEquals(origNodes.size(), 3);
+
     Assert.assertEquals(newNum, 0);
     Assert.assertEquals(newNodes.size(), 3);
     Assert.assertTrue(newNodes.contains(gNodeA));

@@ -113,7 +113,8 @@ public final class Utility {
    * @param multiMutList multi-mutation list builder
    * @throws IllegalArgumentException if original and current graph refer to the same object
    * @return the resulting data graph, null if the mutation number was too small, and the final
-   *     graph if the mutation number was too big
+   *     graph if the mutation number was too big. May also modify multiMutList, replacing
+   * some mutations with their deduplicated versions.
    */
   public static DataGraph getGraphAtMutationNumber(
       DataGraph original, DataGraph curr, int mutationNum, MutationList.Builder mutationsList)
@@ -334,7 +335,7 @@ public final class Utility {
   }
 
   /**
-   * Returns a mutation which undoes the changes caused by the passed mutation For example,
+   * Returns a mutation which undoes the changes caused by the passed mutation. For example,
    * reverting an add edge deletes the edge.
    *
    * @param mut the mutation to reverse
@@ -377,7 +378,7 @@ public final class Utility {
   }
 
   /**
-   * Returns a token mutation which undoes the changes caused by the passed token mutation For
+   * Returns a token mutation which undoes the changes caused by the passed token mutation. For
    * example, reverting an add token deletes the token.
    *
    * @param tokenMut the token mutation to reverse
