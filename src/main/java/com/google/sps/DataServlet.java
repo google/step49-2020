@@ -83,16 +83,23 @@ public class DataServlet extends HttpServlet {
      * Initialize Graph Variables
      *********************************
      */
+
+    long start = 0;
+    long end = 0;
+
     if (currDataGraph == null && originalDataGraph == null) {
+      start = System.currentTimeMillis();
       success =
           initializeGraphVariables(
-              getServletContext().getResourceAsStream("/WEB-INF/graph.textproto"));
+              getServletContext().getResourceAsStream("/WEB-INF/initial_graph.textproto"));
       if (!success) {
         response.setHeader(
             "serverError", "Failed to parse input graph into Guava graph - not a DAG!");
         return;
       }
       currDataGraph = originalDataGraph.getCopy();
+      end = System.currentTimeMillis();
+      System.out.println("Loading graph took " + (end - start) + " milliseconds");
     } else if (currDataGraph == null || originalDataGraph == null) {
       response.setHeader("serverError", "Invalid input");
       return;
@@ -104,13 +111,16 @@ public class DataServlet extends HttpServlet {
      *************************************
      */
     if (mutListObj == null) {
+      start = System.currentTimeMillis();
       initializeMutationVariables(
-          getServletContext().getResourceAsStream("/WEB-INF/mutation.textproto"));
+          getServletContext().getResourceAsStream("/WEB-INF/mutations.textproto"));
       // Populate the list of all possible mutation indices
       defaultIndices = IntStream.range(0, mutList.size()).boxed().collect(Collectors.toList());
       // and store this as the list of relevant indices for filtering by empty string
       // (= not filtering)
       mutationIndicesMap.put("", defaultIndices);
+      end = System.currentTimeMillis();
+      System.out.println("Loading mutations took " + (end - start) + " milliseconds");
     }
 
     /*
@@ -163,6 +173,8 @@ public class DataServlet extends HttpServlet {
      *************************************************
      */
 
+    start = System.currentTimeMillis();
+
     // Get the diff if we are going forward in the list of mutations
     if (mutationNumber > currDataGraph.numMutations()) {
       diff = Utility.getMultiMutationAtIndex(mutList, mutationNumber);
@@ -179,7 +191,10 @@ public class DataServlet extends HttpServlet {
       }
     } catch (IllegalStateException e) {
     }
+    end = System.currentTimeMillis();
+    System.out.println("Loading node names took " + (end - start) + " milliseconds");
 
+    start = System.currentTimeMillis();
     // A list of "roots" to return nodes at most depth radius from
     HashSet<String> queried = new HashSet<>();
 
@@ -211,6 +226,10 @@ public class DataServlet extends HttpServlet {
       queried.addAll(currDataGraph.tokenMap().get(tokenParam));
       queriedNext.addAll(currDataGraph.tokenMap().get(tokenParam));
     }
+    end = System.currentTimeMillis();
+    System.out.println("Getting graph took " + (end - start) + " milliseconds");
+
+    start = System.currentTimeMillis();
 
     // Truncate the graph from the nodes that the client had searched for
     truncatedGraph = currDataGraph.getReachableNodes(queried, depthNumber);
@@ -259,6 +278,9 @@ public class DataServlet extends HttpServlet {
             Utility.filterMultiMutationByNodes(diff, Sets.union(truncatedGraphNodeNames, queried));
       }
     }
+    end = System.currentTimeMillis();
+    System.out.println("Truncating graph took " + (end - start) + " milliseconds");
+    start = System.currentTimeMillis();
     // We set the headers in the following 4 scenarios:
     // The searched node is not in the graph and is never mutated
     if (truncatedGraph.nodes().size() == 0 && filteredMutationIndices.size() == 0) {
@@ -307,6 +329,8 @@ public class DataServlet extends HttpServlet {
         Utility.graphToJson(
             truncatedGraph, filteredMutationIndices, filteredDiff, mutList.size(), queried);
     response.getWriter().println(graphJson);
+    end = System.currentTimeMillis();
+    System.out.println("Other stuff took " + (end - start) + " milliseconds");
   }
 
   /**
