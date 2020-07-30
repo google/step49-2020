@@ -8,11 +8,16 @@
   --gray: #D3D3D3; 
   --btn-color: #B590CA;
   --box-bg: #DDF3F5;
-  --dark-gray: #5d5b6a;
+  --dark-gray: #5D5B6A;
+  --disabled-txt: #999;
 }
 
 h2, h4 {
   margin: 0 auto;
+}
+
+.search-title {
+  margin-bottom: 20px;
 }
 
 button {
@@ -31,6 +36,10 @@ button:hover:enabled {
   color: white;
   background-color: var(--dark-gray);
   cursor: pointer;
+}
+
+button:disabled, button[disabled] {
+  color: var(--disabled-txt);
 }
 
 body {
@@ -62,9 +71,9 @@ body {
   overflow-y: auto;
   overflow-x: auto;
   white-space: nowrap;
-  width: 400px;
   height: 200px;
   font-size: 30px;
+  padding: 20px;
 }
 
 .tokenlist {
@@ -73,7 +82,8 @@ body {
 }
 
 .close-button {
-  float: right;
+  position: fixed;
+  left: 110%;
 }
 
 #buttondiv, #buttontext, #show-mutations, #show-mutation-text, #slider, #slider-text {
@@ -97,12 +107,6 @@ body {
   padding: 0;
 }
 
-#search-box {
-  display: flex;
-  flex-direction: column;
-  padding: 20px;
-}
-
 #graph-content {
   display: flex;
   flex-direction: row;
@@ -119,6 +123,7 @@ body {
   max-height: 75vh;
   overflow-y: scroll;
   margin-right: 20px;
+  position: relative;
 }
 
 #log-list {
@@ -163,6 +168,11 @@ body {
   background-color: var(--box-bg);
   border-radius: 15px;
   margin: 15px;
+}
+
+.clear-log {
+  position: absolute;
+  bottom: 0;
 }
 
 input {

@@ -12,6 +12,10 @@ const opacityScheme = {
   "deletedObjectOpacity": 0.25
 };
 
+const tippySize = {
+  "width": 450
+};
+
 const borderScheme = {
   "queriedBorder": "5px"
 }
@@ -19,5 +23,6 @@ const borderScheme = {
 module.exports = {
   colorScheme, 
   opacityScheme,
-  borderScheme
+  tippySize,
+  borderScheme,
 }
