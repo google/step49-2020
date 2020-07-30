@@ -16,6 +16,7 @@ package com.google.sps;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -287,11 +288,11 @@ public final class Utility {
    *     some nodes
    */
   public static Set<Integer> findRelevantMutations(
-      Set<String> nodeNames,
+      Collection<String> nodeNames,
       Map<String, List<Integer>> mutationIndicesMap,
       List<MultiMutation> multiMutList) {
     if (nodeNames.size() == 0) {
-      return IntStream.range(0, multiMutList.size()).boxed().collect(Collectors.toSet());
+      return new HashSet<>();
     }
     Set<Integer> relevantIndices = new HashSet<>();
     for (String nodeName : nodeNames) {

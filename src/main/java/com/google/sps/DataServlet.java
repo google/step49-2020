@@ -18,6 +18,7 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonArray;
 import com.google.appengine.repackaged.com.google.gson.JsonSyntaxException;
 import com.google.common.collect.Sets;
+import com.google.common.graph.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -208,13 +209,18 @@ public class DataServlet extends HttpServlet {
     // Truncate the graph from the nodes that the client had searched for
     truncatedGraph = currDataGraph.getReachableNodes(queried, depthNumber);
 
+    MutableGraph<GraphNode> truncatedGraphNext;
     // To get the nodes to calculate relevant mutations from. If queried and queried next contain
     // the same
     // nodes, then no reason to regenerate the graph
-    MutableGraph<GraphNode> truncatedGraphNext =
+    if (queriedNext.isEmpty()) {
+      truncatedGraphNext = GraphBuilder.undirected().build();
+    } else {
+      truncatedGraphNext =
         queried.equals(queriedNext)
             ? truncatedGraph
             : currDataGraph.getReachableNodes(queriedNext, depthNumber);
+    }
 
     // If we are not filtering the graph or limiting its depth, show all mutations of all nodes
     if (nodeNames.size() == 0
@@ -235,6 +241,8 @@ public class DataServlet extends HttpServlet {
       mutationIndicesSet.addAll(
           Utility.findRelevantMutations(truncatedGraphNodeNamesNext, mutationIndicesMap, mutList));
       mutationIndicesSet.addAll(Utility.getMutationIndicesOfToken(tokenParam, mutList));
+      mutationIndicesSet.addAll(
+          Utility.findRelevantMutations(nodeNames, mutationIndicesMap, mutList));
       filteredMutationIndices = new ArrayList<>(mutationIndicesSet);
       Collections.sort(filteredMutationIndices);
 
