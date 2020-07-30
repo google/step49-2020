@@ -171,7 +171,7 @@ public class DataServlet extends HttpServlet {
           nodeNames.add(curr);
         }
       }
-    } catch (JsonSyntaxException e) {
+    } catch (JsonSyntaxException | IllegalStateException e) {
     }
 
     // A list of "roots" to return nodes at most depth radius from
@@ -209,17 +209,17 @@ public class DataServlet extends HttpServlet {
     // Truncate the graph from the nodes that the client had searched for
     truncatedGraph = currDataGraph.getReachableNodes(queried, depthNumber);
 
+    // The nodes to calculate relevant mutations from
     MutableGraph<GraphNode> truncatedGraphNext;
-    // To get the nodes to calculate relevant mutations from. If queried and queried next contain
-    // the same
-    // nodes, then no reason to regenerate the graph
+    // Empty queriedNext just gives an empty graph
     if (queriedNext.isEmpty()) {
       truncatedGraphNext = GraphBuilder.undirected().build();
     } else {
+      // If queried and queried next contain the same nodes, then no reason to regenerate the graph
       truncatedGraphNext =
-        queried.equals(queriedNext)
-            ? truncatedGraph
-            : currDataGraph.getReachableNodes(queriedNext, depthNumber);
+          queried.equals(queriedNext)
+              ? truncatedGraph
+              : currDataGraph.getReachableNodes(queriedNext, depthNumber);
     }
 
     // If we are not filtering the graph or limiting its depth, show all mutations of all nodes

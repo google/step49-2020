@@ -256,7 +256,7 @@ public class NodeMutationFilterTest {
     Assert.assertEquals(0, truncatedList.size());
   }
 
-  /** Getting mutation indices of an empty list of nodes just returns all indices */
+  /** Getting mutation indices of an empty list of nodes just returns an empty set */
   @Test
   public void getMutationsOfEmpty() {
     List<MultiMutation> multiMutList = getTestMutationList();

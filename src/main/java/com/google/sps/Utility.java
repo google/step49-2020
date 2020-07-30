@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
-import java.util.stream.IntStream;
 import java.util.stream.Collectors;
 
 import com.google.common.base.Preconditions;
@@ -278,7 +277,7 @@ public final class Utility {
   /**
    * Given a list of node names, a map from node name to mutation indices of that node and a list of
    * multimutations applied to all nodes, returns a set of indices of multimutations in which any of
-   * the nodes in nodeNames get mutated
+   * the nodes in nodeNames get mutated. if nodeNames is empty, an empty set is returned
    *
    * @param nodeNames the names of nodes to restrict the returned list of mutations to
    * @param mutationIndicesMap a map from node name -> indices of mutations that mutate it
