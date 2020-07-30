@@ -238,12 +238,10 @@ public class DataServlet extends HttpServlet {
       filteredMutationIndices = new ArrayList<>(mutationIndicesSet);
       Collections.sort(filteredMutationIndices);
 
-
-        // Show mutations relevant to nodes that used to have the token but
-        // might not exist anymore and the queried nodes
-        filteredDiff =
-            Utility.filterMultiMutationByNodes(diff, Sets.union(truncatedGraphNodeNames, queried));
-      
+      // Show mutations relevant to nodes that used to have the token but
+      // might not exist anymore and the queried nodes
+      filteredDiff =
+          Utility.filterMultiMutationByNodes(diff, Sets.union(truncatedGraphNodeNames, queried));
     }
     // We set the headers in the following 4 scenarios:
     // The searched node is not in the graph and is never mutated
