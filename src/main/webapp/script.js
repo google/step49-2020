@@ -354,8 +354,6 @@ function getGraphDisplay(graphNodes, graphEdges, mutList, reason, queriedNodes) 
 
   document.getElementById('search-token-button').onclick = function() { searchAndHighlight(cy, "token", searchToken) };
 
-  document.getElementById('clear-log-btn').onclick = function () { clearLogs() };
-
   // When a new graph is loaded, mutations are always shown by default
   const showMutButton = document.getElementById("show-mutations");
   showMutButton.checked = true;
