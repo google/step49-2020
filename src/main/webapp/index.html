@@ -16,7 +16,7 @@
   <div id="input-boxes">
     <!-- Box for filtering the graph -->
     <div id="search-box" class="input-child">
-      <h4>Filter the graph</h4>
+      <h4 class="search-title">Filter the Graph</h4>
       <label for="layers">Radius from filtered node(s) (0-20, default is 3):</label>
       <input type="number" id="num-layers" name="layers" min="0" max="20" value="3">
       <label for="search-name">Name of node(s) to filter for (If you enter multiple, please separate with commas!) </label>
@@ -34,7 +34,7 @@
     </div>
     <!-- Box for zooming in -->
     <div id="zoom-box" class="input-child">
-      <h4>Zoom in</h4>
+      <h4 class="search-title">Zoom In</h4>
         <label>Zoom on Node in Graph: </label>
         <input type="text" id="node-search" placeholder="Node Name"></input>
         <button id="search-button">Find Node</button>
@@ -89,12 +89,15 @@
       </div>
     </div>
     <!-- COLUMN 2: includes messages -->
+    
     <div class="graph-content-column" id="graph-content-logs">
       <ul id="log-list">
         <li class="log-msg">Welcome to our application! Here you'll see a log of messages pertaining to the graph on the left. Enjoy! :)
         </li>
       </ul>
+      <button id="clear-log" class="clear-log">Clear Log</button>
     </div>
+    
   </div>
 </body>
 </html>

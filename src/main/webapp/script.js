@@ -27,16 +27,15 @@ import 'tippy.js/dist/tippy.css';
 import 'tippy.js/dist/backdrop.css';
 import 'tippy.js/animations/shift-away.css';
 
-import { colorScheme, opacityScheme, borderScheme } from './constants.js';
+import { colorScheme, opacityScheme, tippySize, borderScheme } from './constants.js';
 import "./style.scss";
 
 export {
   initializeNumMutations, setMutationIndexList, setCurrMutationNum, setCurrMutationIndex,
   initializeTippy, generateGraph, getUrl, navigateGraph, currMutationNum, currMutationIndex,
-  numMutations, updateButtons, searchAndHighlight, highlightDiff, initializeReasonTooltip, 
-  getGraphDisplay, getClosestIndices, initializeSlider, resetMutationSlider, mutationNumSlider, 
-  setMutationSliderValue, readGraphNumberInput, updateGraphNumInput, setMaxNumMutations, 
-  searchNode, searchToken
+  numMutations, updateButtons, searchAndHighlight, highlightDiff, initializeReasonTooltip, getGraphDisplay,
+  getClosestIndices, initializeSlider, resetMutationSlider, mutationNumSlider, setMutationSliderValue,
+  readGraphNumberInput, updateGraphNumInput, setMaxNumMutations, searchNode, searchToken, clearLog
 };
 
 
@@ -258,6 +257,14 @@ function addToLogs(msg) {
   logsList.appendChild(newMsg);
   newMsg.classList.add("recent-log-text");
 }
+
+/**
+ * Clears the logs on the right side of the screen
+ */
+function clearLog() {
+  document.getElementById("log-list").innerText = "";
+}
+
 /**
  * Takes an error message and creates a text element on the page to display this message
  */
@@ -299,7 +306,7 @@ function getGraphDisplay(graphNodes, graphEdges, mutList, reason, queriedNodes) 
           width: '50px',
           height: '50px',
           'background-color': colorScheme["unmodifiedNodeColor"],
-          'label': 'data(id)',
+          'label': '',
           'color': colorScheme["labelColor"],
           'font-size': '20px',
           'text-halign': 'center',
@@ -353,6 +360,8 @@ function getGraphDisplay(graphNodes, graphEdges, mutList, reason, queriedNodes) 
   document.getElementById('search-button').onclick = function() { searchAndHighlight(cy, "node", searchNode) };
 
   document.getElementById('search-token-button').onclick = function() { searchAndHighlight(cy, "token", searchToken) };
+
+  document.getElementById('clear-log').onclick = function () { clearLog() };
 
   // When a new graph is loaded, mutations are always shown by default
   const showMutButton = document.getElementById("show-mutations");
@@ -545,6 +554,7 @@ function initializeReasonTooltip(obj, reason) {
   const dummyDomEle = document.createElement('div');
 
   obj.reasonTip = tippy(dummyDomEle, {
+    theme: 'tomato',
     trigger: 'manual',
     lazy: false,
     onCreate: instance => { instance.popperInstance.reference = tipPosition; },
@@ -769,7 +779,8 @@ function initializeTippy(node) {
     appendTo: document.body,
     // the tooltip  adheres to the node if the graph is zoomed in on
     sticky: true,
-    plugins: [sticky]
+    plugins: [sticky],
+    maxWidth: tippySize["width"],
   });
 }
 
@@ -789,6 +800,14 @@ function getTooltipContent(node) {
     node.tip.hide();
   }, false);
   content.appendChild(closeButton);
+
+  const nodeId = document.createElement("p");
+  nodeId.innerText = `Node Name: \n${node.data().id}`;
+  content.appendChild(nodeId);
+
+  const tokenLabel = document.createElement("p");
+  tokenLabel.innerText = "Tokens:";
+  content.appendChild(tokenLabel);
 
   const nodeTokens = node.data("tokens");
   if (!nodeTokens || nodeTokens.length === 0) {

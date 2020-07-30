@@ -2,10 +2,9 @@
 import {
   initializeNumMutations, setMutationIndexList, setCurrMutationNum, setCurrMutationIndex,
   initializeTippy, generateGraph, getUrl, navigateGraph, currMutationNum, currMutationIndex,
-  numMutations, updateButtons, searchAndHighlight, highlightDiff, initializeReasonTooltip, 
-  getGraphDisplay, getClosestIndices, initializeSlider, resetMutationSlider, mutationNumSlider, 
-  setMutationSliderValue, readGraphNumberInput, updateGraphNumInput, setMaxNumMutations, 
-  searchNode, searchToken
+  numMutations, updateButtons, searchAndHighlight, highlightDiff, initializeReasonTooltip, getGraphDisplay,
+  getClosestIndices, initializeSlider, resetMutationSlider, mutationNumSlider, setMutationSliderValue, 
+  readGraphNumberInput, updateGraphNumInput, setMaxNumMutations, searchNode, searchToken, clearLog
 }
   from "../src/main/webapp/script.js";
 
@@ -141,9 +140,16 @@ describe("Initializing tooltips", function () {
     expect(content.classList.contains("metadata")).toBe(true);
 
     const children = content.childNodes;
-    expect(children.length).toBe(2);
+    console.log(children);
+    expect(children.length).toBe(4);
     const closeButton = children[0];
     expect(closeButton.nodeName).toBe("BUTTON");
+
+    const nameText = children[1];
+    expect(nameText.textContent).toBe("Node Name: A");
+
+    const tokenHeader = children[2];
+    expect(tokenHeader.textContent).toBe("Tokens:")
 
     // Click on node and make sure tippy shows
     myNode.tip.show();
@@ -154,7 +160,7 @@ describe("Initializing tooltips", function () {
     expect(myNode.tip.state.isVisible).toBe(false);
 
     // Make assertions about tooltip content
-    const tokenList = children[1];
+    const tokenList = children[3];
     expect(tokenList.nodeName).toBe("UL");
     const tokens = tokenList.childNodes;
     expect(tokens.length).toBe(3);
@@ -184,9 +190,15 @@ describe("Initializing tooltips", function () {
     expect(content.classList.contains("metadata")).toBe(true);
 
     const children = content.childNodes;
-    expect(children.length).toBe(2);
+    expect(children.length).toBe(4);
     const closeButton = children[0];
     expect(closeButton.nodeName).toBe("BUTTON");
+
+    const nameText = children[1];
+    expect(nameText.textContent).toBe("Node Name: B");
+
+    const tokenHeader = children[2];
+    expect(tokenHeader.textContent).toBe("Tokens:")
 
     // Click on node and make sure tippy shows
     myNode.tip.show();
@@ -197,7 +209,7 @@ describe("Initializing tooltips", function () {
     expect(myNode.tip.state.isVisible).toBe(false);
 
     // Make assertions about tooltip content
-    const tokenMsg = children[1];
+    const tokenMsg = children[3];
     expect(tokenMsg.nodeName).toBe("P");
     expect(tokenMsg.textContent).toBe("No tokens");
   });
@@ -725,9 +737,11 @@ describe("Showing and hiding tooltips when checkbox is clicked", function () {
     <button id="search-button">Search</button>
     <label id="search-error"></label>
     <input type="checkbox" id="show-mutations"></input>
+    <button id="clear-log">Clear Log</button>
     <button id="reset"></button>
     <button id="search-button"></button>
     <button id="search-token-button"></button>`;
+    
 
     const nodeA = {};
     nodeA["data"] = {};
@@ -1014,4 +1028,42 @@ describe("Testing graph input functionality", function () {
     document.getElementById("graph-number").onchange();
     expect(graphNumberInput.value).toBe("0");
   });
+});
+
+describe("Testing clear log functionality", function () {
+  let logList;
+  let clearLogButton;
+
+  beforeEach(function () {
+    document.body.innerHTML =
+      `<div class="graph-content-column" id="graph-content-logs">
+          <button id="clear-log">Clear Log</button>
+          <ul id="log-list">
+            <li class="log-msg"></li>
+        </ul>
+      </div>`;
+    logList = document.getElementById("log-list");
+    clearLogButton = document.getElementById("clear-log");
+    clearLogButton.onclick = function () { clearLog() };
+  });
+
+  it("clears the logs when they contain messages", function () {
+    const newMsg1 = document.createElement("li");
+    newMsg1.innerText = "Sample log text 1";
+    logList.appendChild(newMsg1);
+
+    const newMsg2 = document.createElement("li");
+    newMsg2.innerText = "Sample log text 2";
+    logList.appendChild(newMsg2);
+
+    clearLogButton.click();
+    expect(logList.innerText).toBe("");
+  });
+
+  it("clears the logs when they are empty", function () {
+    expect(logList.innerText).toBe("");
+    clearLogButton.click();
+    expect(logList.innerText).toBe("");
+  });
+
 });
