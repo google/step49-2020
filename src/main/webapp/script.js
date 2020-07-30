@@ -36,7 +36,7 @@ export {
   numMutations, updateButtons, searchAndHighlight, highlightDiff, initializeReasonTooltip, 
   getGraphDisplay, getClosestIndices, initializeSlider, resetMutationSlider, mutationNumSlider, 
   setMutationSliderValue, readGraphNumberInput, updateGraphNumInput, setMaxNumMutations, 
-  searchNode, searchToken
+  searchNode, searchToken, clearLogs
 };
 
 
@@ -353,6 +353,8 @@ function getGraphDisplay(graphNodes, graphEdges, mutList, reason, queriedNodes) 
   document.getElementById('search-button').onclick = function() { searchAndHighlight(cy, "node", searchNode) };
 
   document.getElementById('search-token-button').onclick = function() { searchAndHighlight(cy, "token", searchToken) };
+
+  document.getElementById('clear-log-btn').onclick = function () { clearLogs() };
 
   // When a new graph is loaded, mutations are always shown by default
   const showMutButton = document.getElementById("show-mutations");
@@ -981,4 +983,14 @@ function readGraphNumberInput() {
     graphNumberInput.value = 0;
   }
   currMutationNum = graphNumberInput.value - 1;
+}
+
+/**
+ * Clear the log panel on the right side
+ */
+function clearLogs() {
+  const ul = document.getElementById("log-list");
+  while(ul.firstChild) {
+    ul.removeChild(ul.firstChild);
+  }
 }
