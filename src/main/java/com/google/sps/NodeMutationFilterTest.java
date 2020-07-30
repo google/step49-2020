@@ -170,8 +170,7 @@ public class NodeMutationFilterTest {
     nodeNames.add("B");
     nodeNames.add("D");
 
-    Set<Integer> truncatedList =
-        findRelevantMutations(nodeNames, mutationIndicesMap, multiMutList);
+    Set<Integer> truncatedList = findRelevantMutations(nodeNames, mutationIndicesMap, multiMutList);
 
     Assert.assertEquals(2, truncatedList.size());
     Assert.assertTrue(truncatedList.contains(3));
@@ -191,8 +190,7 @@ public class NodeMutationFilterTest {
     nodeNames.add("G");
     nodeNames.add("E");
 
-    Set<Integer> truncatedList =
-        findRelevantMutations(nodeNames, mutationIndicesMap, multiMutList);
+    Set<Integer> truncatedList = findRelevantMutations(nodeNames, mutationIndicesMap, multiMutList);
 
     Assert.assertEquals(4, truncatedList.size());
     Assert.assertTrue(truncatedList.contains(0));
@@ -211,8 +209,7 @@ public class NodeMutationFilterTest {
     nodeNames.add("P");
     nodeNames.add("Q");
 
-    Set<Integer> truncatedList =
-        findRelevantMutations(nodeNames, mutationIndicesMap, multiMutList);
+    Set<Integer> truncatedList = findRelevantMutations(nodeNames, mutationIndicesMap, multiMutList);
 
     Assert.assertEquals(0, truncatedList.size());
   }
@@ -230,8 +227,7 @@ public class NodeMutationFilterTest {
     nodeNames.add("E");
     nodeNames.add("L");
 
-    Set<Integer> truncatedList =
-        findRelevantMutations(nodeNames, mutationIndicesMap, multiMutList);
+    Set<Integer> truncatedList = findRelevantMutations(nodeNames, mutationIndicesMap, multiMutList);
 
     Assert.assertEquals(4, truncatedList.size());
     Assert.assertTrue(truncatedList.contains(0));
@@ -253,13 +249,12 @@ public class NodeMutationFilterTest {
     nodeNames.add("G");
     nodeNames.add("E");
 
-    Set<Integer> truncatedList =
-        findRelevantMutations(nodeNames, mutationIndicesMap, multiMutList);
+    Set<Integer> truncatedList = findRelevantMutations(nodeNames, mutationIndicesMap, multiMutList);
 
     Assert.assertEquals(0, truncatedList.size());
   }
 
-  /** Getting mutation indices of an empty list of nodes just returns an emtpy set*/
+  /** Getting mutation indices of an empty list of nodes just returns an emtpy set */
   @Test
   public void getMutationsOfEmpty() {
     List<MultiMutation> multiMutList = getTestMutationList();
@@ -267,8 +262,7 @@ public class NodeMutationFilterTest {
     HashMap<String, List<Integer>> mutationIndicesMap = new HashMap<>();
     Set<String> nodeNames = new HashSet<>();
 
-    Set<Integer> truncatedList =
-        findRelevantMutations(nodeNames, mutationIndicesMap, multiMutList);
+    Set<Integer> truncatedList = findRelevantMutations(nodeNames, mutationIndicesMap, multiMutList);
 
     Assert.assertEquals(0, truncatedList.size());
   }

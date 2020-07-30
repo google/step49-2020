@@ -38,7 +38,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.common.graph.Graphs;
 import com.google.common.graph.MutableGraph;
 
 import com.google.protobuf.TextFormat;
@@ -249,15 +248,13 @@ public class DataServlet extends HttpServlet {
       mutationIndicesSet.addAll(
           findRelevantMutations(truncatedGraphNodeNamesNext, mutationIndicesMap, mutList));
       mutationIndicesSet.addAll(getMutationIndicesOfToken(tokenParam, mutList));
-      mutationIndicesSet.addAll(
-          findRelevantMutations(nodeNames, mutationIndicesMap, mutList));
+      mutationIndicesSet.addAll(findRelevantMutations(nodeNames, mutationIndicesMap, mutList));
       filteredMutationIndices = new ArrayList<>(mutationIndicesSet);
       Collections.sort(filteredMutationIndices);
 
       // Show mutations relevant to nodes that used to have the token but
       // might not exist anymore and the queried nodes
-      filteredDiff =
-          filterMultiMutationByNodes(diff, Sets.union(truncatedGraphNodeNames, queried));
+      filteredDiff = filterMultiMutationByNodes(diff, Sets.union(truncatedGraphNodeNames, queried));
     }
     // We set the headers in the following 4 scenarios:
     // The searched node is not in the graph and is never mutated
