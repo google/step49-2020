@@ -8,11 +8,16 @@
   --gray: #D3D3D3; 
   --btn-color: #B590CA;
   --box-bg: #DDF3F5;
-  --dark-gray: #5d5b6a;
+  --dark-gray: #5D5B6A;
+  --disabled-txt: #999;
 }
 
 h2, h4 {
   margin: 0 auto;
+}
+
+.search-title {
+  margin-bottom: 20px;
 }
 
 button {
@@ -31,6 +36,10 @@ button:hover:enabled {
   color: white;
   background-color: var(--dark-gray);
   cursor: pointer;
+}
+
+button:disabled, button[disabled] {
+  color: var(--disabled-txt);
 }
 
 body {
@@ -95,12 +104,6 @@ body {
 .nextprev {
   margin: 0px 20px;
   padding: 0;
-}
-
-#search-box {
-  display: flex;
-  flex-direction: column;
-  padding: 20px;
 }
 
 #graph-content {
