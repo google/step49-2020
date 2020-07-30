@@ -16,11 +16,11 @@ package com.google.sps;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
-import java.util.stream.IntStream;
 import java.util.stream.Collectors;
 
 import com.google.common.base.Preconditions;
@@ -64,10 +64,10 @@ public final class Utility {
    * @param mutDiff the difference between the current graph and the requested graph
    * @param maxNumber the total number of mutations, without filtering
    * @param queried a set of node names the client had requested
-   * @return a JSON object containing the nodes and edges of this graph, the relevant mutation indices
-   *  of the node(s) the user filtered for, the difference between the current graph and requested graph, 
-   * the reason for the mutation, the total number of mutations (for ALL nodes), and the nodes the user
-   * filtered for
+   * @return a JSON object containing the nodes and edges of this graph, the relevant mutation
+   *     indices of the node(s) the user filtered for, the difference between the current graph and
+   *     requested graph, the reason for the mutation, the total number of mutations (for ALL
+   *     nodes), and the nodes the user filtered for
    */
   public static String graphToJson(
       MutableGraph<GraphNode> graph,
@@ -287,11 +287,11 @@ public final class Utility {
    *     some nodes
    */
   public static Set<Integer> findRelevantMutations(
-      Set<String> nodeNames,
+      Collection<String> nodeNames,
       Map<String, List<Integer>> mutationIndicesMap,
       List<MultiMutation> multiMutList) {
     if (nodeNames.size() == 0) {
-      return IntStream.range(0, multiMutList.size()).boxed().collect(Collectors.toSet());
+      return new HashSet<>();
     }
     Set<Integer> relevantIndices = new HashSet<>();
     for (String nodeName : nodeNames) {

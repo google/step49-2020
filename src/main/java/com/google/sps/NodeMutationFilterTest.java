@@ -267,11 +267,6 @@ public class NodeMutationFilterTest {
     Set<Integer> truncatedList =
         Utility.findRelevantMutations(nodeNames, mutationIndicesMap, multiMutList);
 
-    Assert.assertEquals(5, truncatedList.size());
-    Assert.assertTrue(truncatedList.contains(0));
-    Assert.assertTrue(truncatedList.contains(1));
-    Assert.assertTrue(truncatedList.contains(2));
-    Assert.assertTrue(truncatedList.contains(3));
-    Assert.assertTrue(truncatedList.contains(4));
+    Assert.assertEquals(0, truncatedList.size());
   }
 }
