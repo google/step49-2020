@@ -260,13 +260,6 @@ function addToLogs(msg) {
 }
 
 /**
- * Clears the logs on the right side of the screen
- */
-function clearLog() {
-  document.getElementById("log-list").innerText = "";
-}
-
-/**
  * Takes an error message and creates a text element on the page to display this message
  */
 function displayError(errorMsg) {
@@ -361,8 +354,6 @@ function getGraphDisplay(graphNodes, graphEdges, mutList, reason, queriedNodes) 
   document.getElementById('search-button').onclick = function() { searchAndHighlight(cy, "node", searchNode) };
 
   document.getElementById('search-token-button').onclick = function() { searchAndHighlight(cy, "token", searchToken) };
-
-  document.getElementById('clear-log').onclick = function () { clearLog() };
 
   // When a new graph is loaded, mutations are always shown by default
   const showMutButton = document.getElementById("show-mutations");
@@ -661,7 +652,6 @@ function hideDiffs(cy, elems, deletedNodes, deletedEdges, addedNodes, addedEdges
  */
 function searchAndHighlight(cy, type, searchFunction) {
   resetElements(cy);
-  let errorText = "";
   const query = document.getElementById(type + '-search').value;
   let result;
   if (query !== "") {
@@ -669,10 +659,9 @@ function searchAndHighlight(cy, type, searchFunction) {
     if (result) {
       highlightElements(cy, result);
     } else {
-      errorText = type + " does not exist.";
+      addToLogs(type + " does not exist.");
     }
   }
-  document.getElementById(type + '-error').innerText = errorText;
   return result;
 }
 

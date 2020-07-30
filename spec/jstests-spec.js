@@ -431,11 +431,17 @@ describe("Check correct url params", function () {
 describe("Node search", function() {
   let cy;
   let numSelected;
-  let nodeError;
+  let logList;
   let query;
   const expectedBorderWidth = "4px";
+
   beforeEach(function() {
-    document.body.innerHTML = `<div id="cy"></div>`;
+    document.body.innerHTML = `<div id="cy"></div>
+    <label id="num-selected"></label>
+    <input id="node-search"></input>
+    <ul id="log-list">
+      <li class="log-msg"></li>
+    </ul>`;
 
     cy = cytoscape({
     elements: [
@@ -451,17 +457,8 @@ describe("Node search", function() {
       container: document.getElementById("cy"),
     });
 
-    numSelected = document.createElement("label");
-    numSelected.id = "num-selected";
-    document.body.appendChild(numSelected);
-
-    nodeError = document.createElement("label");
-    nodeError.id = "node-error";
-    document.body.appendChild(nodeError);
-
-    query = document.createElement("input");
-    query.id = "node-search";
-    document.body.appendChild(query);
+    logList = document.getElementById("log-list");
+    query = document.getElementById("node-search");
   });
 
   it("should be successful finding a node in the graph", function() {
@@ -469,7 +466,7 @@ describe("Node search", function() {
     const result = searchAndHighlight(cy, "node", searchNode);
 
     // should not display error message
-    expect(nodeError.innerText).toBe("");
+    expect(logList.innerHTML).not.toContain("node does not exist.");
     expect(result.id()).toBe("A");
     expect(result.style("border-width")).toBe(expectedBorderWidth);
   });
@@ -479,7 +476,7 @@ describe("Node search", function() {
     const result = searchAndHighlight(cy, "node", searchNode);
 
     // should display error message
-    expect(nodeError.innerText).toBe("node does not exist.");
+    expect(logList.innerHTML).toContain("node does not exist.");
     expect(result).toBeUndefined();
   });
 
@@ -488,19 +485,23 @@ describe("Node search", function() {
     const result = searchAndHighlight(cy, "node", searchNode);
 
     // should not display error message
-    expect(nodeError.innerText).toBe("");
+    expect(logList.innerHTML).not.toContain("node does not exist.");
     expect(result).toBeUndefined();
   });
 });
 
 describe("Token search", function() {
-  let numSelected;
-  let tokenError;
+  let logList;
   let query;
   let cy;
 
   beforeEach(function() {
-    document.body.innerHTML = `<div id="cy"></div>`;
+    document.body.innerHTML = `<div id="cy"></div>
+    <label id="num-selected"></label>
+    <input id="token-search"></input>
+    <ul id="log-list">
+      <li class="log-msg"></li>
+    </ul>`;
     cy = cytoscape({
       elements: [
       ],
@@ -518,25 +519,15 @@ describe("Token search", function() {
     nodeWithToken2["data"]["tokens"] = ["b.js"];
     cy.add(nodeWithToken2);
 
-    numSelected = document.createElement("label");
-    numSelected.id = "num-selected";
-    document.body.appendChild(numSelected);
-
-    tokenError = document.createElement("label");
-    tokenError.id = "token-error";
-    document.body.appendChild(tokenError);
-
-    query = document.createElement("input");
-    query.id = "token-search";
-    document.body.appendChild(query);
+    logList = document.getElementById("log-list");
+    query = document.getElementById("token-search");
   });
 
   it("should be successful because the token exists in one node", function() {
     query.value = "a.js";
     const result = searchAndHighlight(cy, "token", searchToken);
-
     // error message should not be displayed
-    expect(tokenError.innerText).toBe("");
+    //expect(tokenError.innerText).toBe("");
     expect(result.length).toBe(1);
     expect(result[0].id()).toBe("A");
     expect(result[0].style("border-width")).toBe("4px");
@@ -547,7 +538,7 @@ describe("Token search", function() {
     const result = searchAndHighlight(cy, "token", searchToken);
 
     // error message should not be displayed
-    expect(tokenError.innerText).toBe("");
+    expect(logList.innerHTML).not.toContain("token does not exist.");
     expect(result.length).toBe(2);
     expect(result[0].id()).toBe("A");
     expect(result[1].id()).toBe("B");
@@ -558,9 +549,9 @@ describe("Token search", function() {
   it("should be unsuccessful because token does not exist", function() {
     query.value = "fake_file.js";
     const result = searchAndHighlight(cy, "token", searchToken);
-
+    
     // error message should be displayed
-    expect(tokenError.innerText).toBe("token does not exist.");
+    expect(logList.innerHTML).toContain("token does not exist.");
     expect(result).toBeUndefined();
   });
 
@@ -569,7 +560,7 @@ describe("Token search", function() {
     const result = searchAndHighlight(cy, "token", searchToken);
 
     // error message should not be displayed
-    expect(tokenError.innerText).toBe("");
+    expect(logList.innerHTML).not.toContain("token does not exist.");
     expect(result).toBeUndefined();
   });
 });

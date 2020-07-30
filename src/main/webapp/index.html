@@ -38,12 +38,10 @@
         <label>Zoom on Node in Graph: </label>
         <input type="text" id="node-search" placeholder="Node Name"></input>
         <button id="search-button">Find Node</button>
-        <label id="node-error" class="error-text"></label>
 
         <label>Zoom on Token in Graph: </label>
         <input type="text" id="token-search" placeholder="Token Name"></input>
         <button id="search-token-button">Find Token</button>
-        <label id="token-error" class="error-text"></label>
   
       <button id="reset" class="reset">Reset Graph</button>
       <label id="num-selected"></label>
@@ -89,6 +87,7 @@
       </div>
     </div>
     <!-- COLUMN 2: includes messages -->
+    
     <div class="graph-content-column" id="graph-content-logs">
       <button id="clear-log-btn" onclick="graph.clearLogs()">Clear Logs</button>
       <div id="graph-content-logs-inner">
@@ -98,6 +97,7 @@
       </ul>
       </div>
     </div>
+    
   </div>
 </body>
 </html>
