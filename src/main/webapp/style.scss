@@ -117,6 +117,7 @@ body {
   max-height: 75vh;
   overflow-y: scroll;
   margin-right: 20px;
+  position: relative;
 }
 
 #log-list {
@@ -161,4 +162,9 @@ body {
   background-color: var(--box-bg);
   border-radius: 15px;
   margin: 15px;
+}
+
+.clear-log {
+  position: absolute;
+  bottom: 0;
 }
