@@ -69,7 +69,7 @@ public final class GraphGenerationTest {
    */
   @Test
   public void correctProtoToGraphNoData() {
-    GraphNode graphNode = Utility.protoNodeToGraphNode(nodeA.build());
+    GraphNode graphNode = protoNodeToGraphNode(nodeA.build());
     Assert.assertEquals(graphNode.name(), "A");
     Assert.assertEquals(graphNode.tokenList().size(), 0);
     Assert.assertEquals(graphNode.metadata().getFieldsCount(), 0);
