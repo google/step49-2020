@@ -30,6 +30,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import static com.google.sps.Utility.protoNodeToGraphNode;
+import static com.google.sps.Utility.getMultiMutationAtIndex;
+import static com.google.sps.Utility.filterMultiMutationByNodes;
+
 @RunWith(JUnit4.class)
 public class MutationDiffTest {
 
@@ -44,9 +48,9 @@ public class MutationDiffTest {
 
   @Before
   public void setUp() {
-    gNodeA = Utility.protoNodeToGraphNode(nodeA.build());
-    gNodeB = Utility.protoNodeToGraphNode(nodeB.build());
-    gNodeC = Utility.protoNodeToGraphNode(nodeC.build());
+    gNodeA = protoNodeToGraphNode(nodeA.build());
+    gNodeB = protoNodeToGraphNode(nodeB.build());
+    gNodeC = protoNodeToGraphNode(nodeC.build());
   }
 
   /*
@@ -74,9 +78,9 @@ public class MutationDiffTest {
     multiMutList.add(addABM);
     multiMutList.add(addACM);
 
-    MultiMutation result = Utility.getMultiMutationAtIndex(multiMutList, 2);
+    MultiMutation result = getMultiMutationAtIndex(multiMutList, 2);
     Assert.assertNull(result);
-    result = Utility.getMultiMutationAtIndex(multiMutList, 1);
+    result = getMultiMutationAtIndex(multiMutList, 1);
     Assert.assertNotNull(result);
   }
 
@@ -105,9 +109,9 @@ public class MutationDiffTest {
     multiMutList.add(addABM);
     multiMutList.add(addACM);
 
-    MultiMutation result = Utility.getMultiMutationAtIndex(multiMutList, -1);
+    MultiMutation result = getMultiMutationAtIndex(multiMutList, -1);
     Assert.assertNull(result);
-    result = Utility.getMultiMutationAtIndex(multiMutList, 0);
+    result = getMultiMutationAtIndex(multiMutList, 0);
     Assert.assertNotNull(result);
   }
 
@@ -132,7 +136,7 @@ public class MutationDiffTest {
     multiMutList.add(addAM);
     multiMutList.add(addABM);
 
-    MultiMutation result = Utility.getMultiMutationAtIndex(multiMutList, 0);
+    MultiMutation result = getMultiMutationAtIndex(multiMutList, 0);
     Assert.assertEquals(result, addAM);
   }
 
@@ -157,7 +161,7 @@ public class MutationDiffTest {
     multiMutList.add(addAM);
     multiMutList.add(addABM);
 
-    MultiMutation result = Utility.getMultiMutationAtIndex(multiMutList, 1);
+    MultiMutation result = getMultiMutationAtIndex(multiMutList, 1);
     Assert.assertEquals(result, addABM);
   }
 
@@ -195,7 +199,7 @@ public class MutationDiffTest {
     multiMutList.add(addTokenToAM);
     multiMutList.add(addABM);
 
-    MultiMutation result = Utility.getMultiMutationAtIndex(multiMutList, 0);
+    MultiMutation result = getMultiMutationAtIndex(multiMutList, 0);
     Assert.assertEquals(result, addTokenToAM);
   }
 
@@ -233,7 +237,7 @@ public class MutationDiffTest {
     multiMutList.add(addTokenToAM);
     multiMutList.add(removeABM);
 
-    MultiMutation result = Utility.getMultiMutationAtIndex(multiMutList, 1);
+    MultiMutation result = getMultiMutationAtIndex(multiMutList, 1);
     Assert.assertEquals(result, removeABM);
   }
 
@@ -278,7 +282,7 @@ public class MutationDiffTest {
     multiMutList.add(addTokenToAM);
     multiMutList.add(deleteBM);
 
-    MultiMutation result = Utility.getMultiMutationAtIndex(multiMutList, 1);
+    MultiMutation result = getMultiMutationAtIndex(multiMutList, 1);
     Assert.assertEquals(result, deleteBM);
   }
 
@@ -300,7 +304,7 @@ public class MutationDiffTest {
             .setReason("deleting node B")
             .build();
 
-    MultiMutation filteredMultiMut = Utility.filterMultiMutationByNodes(deleteBM, new HashSet<>());
+    MultiMutation filteredMultiMut = filterMultiMutationByNodes(deleteBM, new HashSet<>());
     Assert.assertEquals(filteredMultiMut, deleteBM);
   }
 
@@ -312,7 +316,7 @@ public class MutationDiffTest {
     HashSet<String> nodeNames = new HashSet<>();
     nodeNames.add("A");
 
-    MultiMutation filteredMultiMut = Utility.filterMultiMutationByNodes(null, nodeNames);
+    MultiMutation filteredMultiMut = filterMultiMutationByNodes(null, nodeNames);
     Assert.assertNull(filteredMultiMut);
   }
 
@@ -356,8 +360,7 @@ public class MutationDiffTest {
     HashSet<String> nodeNames = new HashSet<>();
     nodeNames.add("A");
 
-    MultiMutation filteredMultiMut =
-        Utility.filterMultiMutationByNodes(originalMultiMut, nodeNames);
+    MultiMutation filteredMultiMut = filterMultiMutationByNodes(originalMultiMut, nodeNames);
     Assert.assertNotNull(filteredMultiMut);
 
     List<Mutation> filteredMutList = filteredMultiMut.getMutationList();
@@ -406,8 +409,7 @@ public class MutationDiffTest {
     HashSet<String> nodeNames = new HashSet<>();
     nodeNames.add("B");
 
-    MultiMutation filteredMultiMut =
-        Utility.filterMultiMutationByNodes(originalMultiMut, nodeNames);
+    MultiMutation filteredMultiMut = filterMultiMutationByNodes(originalMultiMut, nodeNames);
     Assert.assertNotNull(filteredMultiMut);
 
     List<Mutation> filteredMutList = filteredMultiMut.getMutationList();
@@ -459,8 +461,7 @@ public class MutationDiffTest {
     nodeNames.add("A");
     nodeNames.add("C");
 
-    MultiMutation filteredMultiMut =
-        Utility.filterMultiMutationByNodes(originalMultiMut, nodeNames);
+    MultiMutation filteredMultiMut = filterMultiMutationByNodes(originalMultiMut, nodeNames);
     Assert.assertNotNull(filteredMultiMut);
 
     List<Mutation> filteredMutList = filteredMultiMut.getMutationList();
@@ -511,8 +512,7 @@ public class MutationDiffTest {
     HashSet<String> nodeNames = new HashSet<>();
     nodeNames.add("B");
 
-    MultiMutation filteredMultiMut =
-        Utility.filterMultiMutationByNodes(originalMultiMut, nodeNames);
+    MultiMutation filteredMultiMut = filterMultiMutationByNodes(originalMultiMut, nodeNames);
     Assert.assertNotNull(filteredMultiMut);
 
     List<Mutation> filteredMutList = filteredMultiMut.getMutationList();

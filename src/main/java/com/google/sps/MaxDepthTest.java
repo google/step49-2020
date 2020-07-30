@@ -28,6 +28,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import static com.google.sps.Utility.protoNodeToGraphNode;
+
 @RunWith(JUnit4.class)
 public class MaxDepthTest {
 
@@ -52,14 +54,14 @@ public class MaxDepthTest {
 
   @Before
   public void setUp() {
-    gNodeA = Utility.protoNodeToGraphNode(nodeA.build());
-    gNodeB = Utility.protoNodeToGraphNode(nodeB.build());
-    gNodeC = Utility.protoNodeToGraphNode(nodeC.build());
-    gNodeD = Utility.protoNodeToGraphNode(nodeD.build());
-    gNodeE = Utility.protoNodeToGraphNode(nodeE.build());
-    gNodeF = Utility.protoNodeToGraphNode(nodeF.build());
-    gNodeG = Utility.protoNodeToGraphNode(nodeG.build());
-    gNodeH = Utility.protoNodeToGraphNode(nodeH.build());
+    gNodeA = protoNodeToGraphNode(nodeA.build());
+    gNodeB = protoNodeToGraphNode(nodeB.build());
+    gNodeC = protoNodeToGraphNode(nodeC.build());
+    gNodeD = protoNodeToGraphNode(nodeD.build());
+    gNodeE = protoNodeToGraphNode(nodeE.build());
+    gNodeF = protoNodeToGraphNode(nodeF.build());
+    gNodeG = protoNodeToGraphNode(nodeG.build());
+    gNodeH = protoNodeToGraphNode(nodeH.build());
   }
 
   /** Max depth 0 should only return the roots */
