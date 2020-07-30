@@ -24,10 +24,11 @@ button {
     padding: 5px;
 }
 
-button:hover {
+button:hover:enabled {
   font-weight: bold;
   color: white;
   background-color: var(--dark-gray);
+  cursor: pointer;
 }
 
 body {
