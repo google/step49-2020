@@ -217,9 +217,9 @@ public class DataServlet extends HttpServlet {
       truncatedGraphNext = GraphBuilder.undirected().build();
     } else {
       truncatedGraphNext =
-        queried.equals(queriedNext)
-            ? truncatedGraph
-            : currDataGraph.getReachableNodes(queriedNext, depthNumber);
+          queried.equals(queriedNext)
+              ? truncatedGraph
+              : currDataGraph.getReachableNodes(queriedNext, depthNumber);
     }
 
     // If we are not filtering the graph or limiting its depth, show all mutations of all nodes
