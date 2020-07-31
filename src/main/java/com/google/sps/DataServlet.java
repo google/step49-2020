@@ -207,8 +207,7 @@ public class DataServlet extends HttpServlet {
     // Get the graph at the requested mutation number
     try {
       currDataGraph =
-          getGraphAtMutationNumber(
-              originalDataGraph, currDataGraph, mutationNumber, mutListObj);
+          getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutListObj);
     } catch (IllegalArgumentException e) {
       response.setHeader("serverError", e.getMessage());
       return;
@@ -220,7 +219,7 @@ public class DataServlet extends HttpServlet {
       queriedNext.addAll(currDataGraph.tokenMap().get(tokenParam));
     }
 
-    if(!(tokenParam.length() != 0 && queried.size() == 0)) {
+    if (!(tokenParam.length() != 0 && queried.size() == 0)) {
       // Truncate the graph from the nodes that the client had searched for
       truncatedGraph = currDataGraph.getReachableNodes(queried, depthNumber);
     }
@@ -269,7 +268,8 @@ public class DataServlet extends HttpServlet {
     // The searched node is not in the graph and is never mutated
     if (truncatedGraph.nodes().size() == 0 && filteredMutationIndices.size() == 0) {
       response.setHeader(
-          "serverError", "The searched node/token does not exist anywhere in this graph or in mutations");
+          "serverError",
+          "The searched node/token does not exist anywhere in this graph or in mutations");
       return;
     }
     // The searched node is not in the graph but is mutated at some past/future
