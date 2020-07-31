@@ -173,9 +173,12 @@ public class DataServlet extends HttpServlet {
           nodeNames.add(curr);
         }
       }
-    } catch (JsonSyntaxException | IllegalStateException e) {
+    } catch (JsonSyntaxException e) {
       response.setHeader(
-          "serverError", "Something is wrong with what you searched, sorry! Please try again.");
+          "serverError", "The node names received do not form a valid JSON string");
+    } catch (IllegalStateException e) {
+      response.setHeader(
+        "serverError", "The node names received do not form a valid JSON string");
     }
 
     // A list of "roots" to return nodes at most depth radius from
