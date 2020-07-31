@@ -257,8 +257,7 @@ public class DataServlet extends HttpServlet {
         tokenIndicesMap.put(tokenParam, getMutationIndicesOfToken(tokenParam, mutList));
       }
       mutationIndicesSet.addAll(tokenIndicesMap.get(tokenParam));
-      mutationIndicesSet.addAll(
-          findRelevantMutations(nodeNames, mutationIndicesMap, mutList));
+      mutationIndicesSet.addAll(findRelevantMutations(nodeNames, mutationIndicesMap, mutList));
       filteredMutationIndices = new ArrayList<>(mutationIndicesSet);
       Collections.sort(filteredMutationIndices);
 
