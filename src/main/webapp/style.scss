@@ -16,6 +16,10 @@ h2, h4 {
   margin: 0 auto;
 }
 
+.center-txt {
+  text-align: center;
+}
+
 .search-title {
   margin-bottom: 20px;
 }
@@ -52,7 +56,7 @@ body {
 #graph {
   width: 90%;
   height: 65vh;
-  margin-left: auto;
+  margin-left: 15px;
   margin-right: auto;
   margin-top: 0;
   margin-bottom: 40px;
