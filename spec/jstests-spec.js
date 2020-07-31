@@ -345,7 +345,7 @@ describe("Check correct url params", function () {
     tokenName.id = "token-name-filter";
   });
 
-  afterEach(function () {
+  afterEach(function () { 
     setCurrMutationNum(0);
     document.body.innerHTML = '';
   });
@@ -362,7 +362,7 @@ describe("Check correct url params", function () {
 
     // Not on page here, should be empty
     expect(constructedUrl.has("nodeNames")).toBe(true);
-    expect(constructedUrl.get("nodeNames")).toEqual('[""]');
+    expect(constructedUrl.get("nodeNames")).toEqual('[]');
 
     expect(constructedUrl.has("tokenName")).toBe(true);
     expect(constructedUrl.get("tokenName")).toBe("");
@@ -392,7 +392,7 @@ describe("Check correct url params", function () {
     expect(constructedUrl.get("nodeNames")).toEqual('["A","B"]');
   });
 
-    it("passes correct nodeName when nodeName has a comma separated value and spaces", function () {
+  it("passes correct nodeName when nodeName has a comma separated value and spaces", function () {
     nodeName.value = "  Annie boo  , B";
     document.body.appendChild(nodeName);  
 
@@ -573,7 +573,7 @@ describe("Token search", function() {
   });
 });
 
-describe("Ensuring correct nodes are highlighted in mutated graph", function () {
+describe("Ensuring correct nodes are highlighted in mutated graph", function () { 
   let cy;
   const green = "rgb(0,128,0)";
   const red = "rgb(255,0,0)";
