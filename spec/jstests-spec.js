@@ -841,7 +841,8 @@ describe("Showing and hiding tooltips when checkbox is clicked", function () {
     <button id="clear-log">Clear Log</button>
     <button id="reset"></button>
     <button id="search-button"></button>
-    <button id="search-token-button"></button>`;
+    <button id="search-token-button"></button>
+    <input type="number" id="highlight-number">`;
 
 
     const nodeA = {};
