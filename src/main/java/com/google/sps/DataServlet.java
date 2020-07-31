@@ -172,6 +172,8 @@ public class DataServlet extends HttpServlet {
         }
       }
     } catch (JsonSyntaxException | IllegalStateException e) {
+      response.setHeader(
+          "serverError", "Something is wrong with what you searched, sorry! Please try again.");
     }
 
     // A list of "roots" to return nodes at most depth radius from
@@ -206,10 +208,10 @@ public class DataServlet extends HttpServlet {
       queriedNext.addAll(currDataGraph.tokenMap().get(tokenParam));
     }
 
-    // Truncate the graph from the nodes that the client had searched for
+    // Truncate the graph from the nodes & tokens that the client had searched for
     truncatedGraph = currDataGraph.getReachableNodes(queried, depthNumber);
 
-    // The nodes to calculate relevant mutations from
+    // The next graph to display to the client
     MutableGraph<GraphNode> truncatedGraphNext;
     // Empty queriedNext just gives an empty graph
     if (queriedNext.isEmpty()) {
