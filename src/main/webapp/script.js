@@ -223,7 +223,7 @@ function getUrl() {
   const tokenName = document.getElementById('token-name-filter') ? document.getElementById('token-name-filter').value || "" : "";
   // Takes care of "all the whitespace characters (space, tab, no-break space, etc.) 
   // and all the line terminator characters (LF, CR, etc.)" acc to documentation
-  const nodeNamesArray = JSON.stringify(nodeNames.split(",").map(item => item.trim()));
+  const nodeNamesArray = JSON.stringify(nodeNames.split(",").map(item => item.trim()).filter(item => item.length > 0));
 
   let selectedDepth = 0;
   if (depthElem === null) {
