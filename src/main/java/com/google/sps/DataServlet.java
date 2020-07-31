@@ -273,7 +273,7 @@ public class DataServlet extends HttpServlet {
     if (truncatedGraph.nodes().size() == 0
         && filteredMutationIndices.size() != 0
         && filteredMutationIndices.indexOf(mutationNumber) == -1
-        && (diff == null || diff.getMutationList().size() == 0)) {
+        && (filteredDiff == null || filteredDiff.getMutationList().size() == 0)) {
       response.setHeader(
           "serverMessage",
           "The searched node/token does not exist in this graph, so nothing is shown. However, it"
@@ -284,7 +284,7 @@ public class DataServlet extends HttpServlet {
     if (truncatedGraph.nodes().size() != 0
         && !(mutationNumber == -1 && nodeNames.size() == 0 && tokenParam.length() == 0)
         && filteredMutationIndices.indexOf(mutationNumber) == -1
-        && (diff == null || diff.getMutationList().size() == 0)) {
+        && (filteredDiff == null || filteredDiff.getMutationList().size() == 0)) {
       response.setHeader(
           "serverMessage",
           "The searched node/token exists in this graph. However, it is not mutated in this"
