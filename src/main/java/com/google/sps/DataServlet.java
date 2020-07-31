@@ -174,11 +174,9 @@ public class DataServlet extends HttpServlet {
         }
       }
     } catch (JsonSyntaxException e) {
-      response.setHeader(
-          "serverError", "The node names received do not form a valid JSON string");
+      response.setHeader("serverError", "The node names received do not form a valid JSON string");
     } catch (IllegalStateException e) {
-      response.setHeader(
-        "serverError", "The node names received do not form a valid JSON string");
+      response.setHeader("serverError", "The node names received do not form a valid JSON string");
     }
 
     // A list of "roots" to return nodes at most depth radius from
