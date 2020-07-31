@@ -110,11 +110,11 @@ public final class Utility {
    * @param original the original graph
    * @param curr the current (most recently-requested) graph (requires that original != curr)
    * @param mutationNum number of mutations to apply
-   * @param multiMutList multi-mutation list builder. This parameter may be modified by 
-   * replacing some mutations with their deduplicated versions.
+   * @param multiMutList multi-mutation list builder. This parameter may be modified by replacing
+   *     some mutations with their deduplicated versions.
    * @throws IllegalArgumentException if original and current graph refer to the same object
    * @return the resulting data graph, null if the mutation number was too small, and the final
-   *     graph if the mutation number was too big. 
+   *     graph if the mutation number was too big.
    */
   public static DataGraph getGraphAtMutationNumber(
       DataGraph original, DataGraph curr, int mutationNum, MutationList.Builder mutationsList)
