@@ -66,6 +66,8 @@ public class DataServlet extends HttpServlet {
   // to the list [0, mutList.size() - 1].
   HashMap<String, List<Integer>> mutationIndicesMap = new HashMap<>();
 
+  HashMap<String, Set<Integer>> tokenIndicesMap = new HashMap<>();
+
   /*
    * Called when a client submits a GET request to the /data URL
    */
@@ -242,7 +244,11 @@ public class DataServlet extends HttpServlet {
 
       mutationIndicesSet.addAll(
           Utility.findRelevantMutations(truncatedGraphNodeNamesNext, mutationIndicesMap, mutList));
-      mutationIndicesSet.addAll(Utility.getMutationIndicesOfToken(tokenParam, mutList));
+      // Place in the map if needed
+      if (!tokenIndicesMap.containsKey(tokenParam)) {
+        tokenIndicesMap.put(tokenParam, Utility.getMutationIndicesOfToken(tokenParam, mutList));
+      }
+      mutationIndicesSet.addAll(tokenIndicesMap.get(tokenParam));
       mutationIndicesSet.addAll(
           Utility.findRelevantMutations(nodeNames, mutationIndicesMap, mutList));
       filteredMutationIndices = new ArrayList<>(mutationIndicesSet);
