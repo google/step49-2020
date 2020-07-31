@@ -227,24 +227,23 @@ public final class Utility {
    */
   public static Set<Integer> getMutationIndicesOfToken(
       String tokenName, List<MultiMutation> origList) {
-    Set<Integer> lst = new HashSet<>();
+    Set<Integer> indices = new HashSet<>();
     if (tokenName == null || tokenName.length() == 0) {
-      return lst;
+      return indices;
     }
     for (int i = 0; i < origList.size(); i++) {
-      MultiMutation multiMut = origList.get(i);
-      List<Mutation> mutList = multiMut.getMutationList();
+      List<Mutation> mutList = origList.get(i).getMutationList();
       for (Mutation mut : mutList) {
         if (mut.getType().equals(Mutation.Type.CHANGE_TOKEN)) {
           List<String> tokenNames = mut.getTokenChange().getTokenNameList();
           if (tokenNames.contains(tokenName)) {
-            lst.add(i);
+            indices.add(i);
             break;
           }
         }
       }
     }
-    return lst;
+    return indices;
   }
 
   /**

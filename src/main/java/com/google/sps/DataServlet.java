@@ -79,6 +79,8 @@ public class DataServlet extends HttpServlet {
   // to the list [0, mutList.size() - 1].
   HashMap<String, List<Integer>> mutationIndicesMap = new HashMap<>();
 
+  HashMap<String, Set<Integer>> tokenIndicesMap = new HashMap<>();
+
   /*
    * Called when a client submits a GET request to the /data URL
    */
@@ -185,7 +187,10 @@ public class DataServlet extends HttpServlet {
           nodeNames.add(curr);
         }
       }
-    } catch (JsonSyntaxException | IllegalStateException e) {
+    } catch (JsonSyntaxException e) {
+      response.setHeader("serverError", "The node names received do not form a valid JSON string");
+    } catch (IllegalStateException e) {
+      response.setHeader("serverError", "The node names received do not form a valid JSON string");
     }
 
     // A list of "roots" to return nodes at most depth radius from
@@ -224,7 +229,7 @@ public class DataServlet extends HttpServlet {
       truncatedGraph = currDataGraph.getReachableNodes(queried, depthNumber);
     }
 
-    // The nodes to calculate relevant mutations from
+    // The next graph to display to the client
     MutableGraph<GraphNode> truncatedGraphNext;
     // Empty queriedNext just gives an empty graph
     if (queriedNext.isEmpty()) {
@@ -255,7 +260,11 @@ public class DataServlet extends HttpServlet {
 
       mutationIndicesSet.addAll(
           findRelevantMutations(truncatedGraphNodeNamesNext, mutationIndicesMap, mutList));
-      mutationIndicesSet.addAll(getMutationIndicesOfToken(tokenParam, mutList));
+      // Place in the map if needed
+      if (!tokenIndicesMap.containsKey(tokenParam)) {
+        tokenIndicesMap.put(tokenParam, getMutationIndicesOfToken(tokenParam, mutList));
+      }
+      mutationIndicesSet.addAll(tokenIndicesMap.get(tokenParam));
       mutationIndicesSet.addAll(findRelevantMutations(nodeNames, mutationIndicesMap, mutList));
       filteredMutationIndices = new ArrayList<>(mutationIndicesSet);
       Collections.sort(filteredMutationIndices);
@@ -279,7 +288,7 @@ public class DataServlet extends HttpServlet {
     if (truncatedGraph.nodes().size() == 0
         && filteredMutationIndices.size() != 0
         && filteredMutationIndices.indexOf(mutationNumber) == -1
-        && (diff == null || diff.getMutationList().size() == 0)) {
+        && (filteredDiff == null || filteredDiff.getMutationList().size() == 0)) {
       response.setHeader(
           "serverMessage",
           "The searched node/token does not exist in this graph, so nothing is shown. However, it"
@@ -290,7 +299,7 @@ public class DataServlet extends HttpServlet {
     if (truncatedGraph.nodes().size() != 0
         && !(mutationNumber == -1 && nodeNames.size() == 0 && tokenParam.length() == 0)
         && filteredMutationIndices.indexOf(mutationNumber) == -1
-        && (diff == null || diff.getMutationList().size() == 0)) {
+        && (filteredDiff == null || filteredDiff.getMutationList().size() == 0)) {
       response.setHeader(
           "serverMessage",
           "The searched node/token exists in this graph. However, it is not mutated in this"

@@ -33,9 +33,9 @@ import "./style.scss";
 export {
   initializeNumMutations, setMutationIndexList, setCurrMutationNum, setCurrMutationIndex,
   initializeTippy, generateGraph, getUrl, navigateGraph, currMutationNum, currMutationIndex,
-  numMutations, updateButtons, searchAndHighlight, highlightDiff, initializeReasonTooltip, 
-  getGraphDisplay, getClosestIndices, initializeSlider, resetMutationSlider, mutationNumSlider, 
-  setMutationSliderValue, readGraphNumberInput, updateGraphNumInput, setMaxNumMutations, 
+  numMutations, updateButtons, searchAndHighlight, highlightDiff, initializeReasonTooltip,
+  getGraphDisplay, getClosestIndices, initializeSlider, resetMutationSlider, mutationNumSlider,
+  setMutationSliderValue, readGraphNumberInput, updateGraphNumInput, setMaxNumMutations,
   searchNode, searchToken, clearLogs
 };
 
@@ -223,7 +223,7 @@ function getUrl() {
   const tokenName = document.getElementById('token-name-filter') ? document.getElementById('token-name-filter').value || "" : "";
   // Takes care of "all the whitespace characters (space, tab, no-break space, etc.) 
   // and all the line terminator characters (LF, CR, etc.)" acc to documentation
-  const nodeNamesArray = JSON.stringify(nodeNames.split(",").map(item => item.trim()));
+  const nodeNamesArray = JSON.stringify(nodeNames.split(",").map(item => item.trim()).filter(item => item.length > 0));
 
   let selectedDepth = 0;
   if (depthElem === null) {
@@ -318,9 +318,22 @@ function getGraphDisplay(graphNodes, graphEdges, mutList, reason, queriedNodes) 
         },
       },
       {
-        selector: '.non-highlighted',
+        selector: '.highlighted-node',
+        style: {
+          'border-width': 4,
+        }
+      },
+      {
+        selector: '.non-highlighted-node',
         style: {
           'opacity': opacityScheme["deletedObjectOpacity"]
+        }
+      },
+      {
+        selector: '.highlighted-edge',
+        style: {
+          'line-style': 'dashed',
+          'z-index': '2'
         }
       }],
     layout: {
@@ -349,11 +362,11 @@ function getGraphDisplay(graphNodes, graphEdges, mutList, reason, queriedNodes) 
       cy.$id(nodeName).style('border-width', borderScheme['queriedBorder']);
     })
   }
-  document.getElementById('reset').onclick = function(){ resetElements(cy) };
+  document.getElementById('reset').onclick = function () { resetElements(cy, true) };
 
-  document.getElementById('search-button').onclick = function() { searchAndHighlight(cy, "node", searchNode) };
+  document.getElementById('search-button').onclick = function () { searchAndHighlight(cy, "node", searchNode) };
 
-  document.getElementById('search-token-button').onclick = function() { searchAndHighlight(cy, "token", searchToken) };
+  document.getElementById('search-token-button').onclick = function () { searchAndHighlight(cy, "token", searchToken) };
 
   // When a new graph is loaded, mutations are always shown by default
   const showMutButton = document.getElementById("show-mutations");
@@ -651,8 +664,8 @@ function hideDiffs(cy, elems, deletedNodes, deletedEdges, addedNodes, addedEdges
  * @returns the result of the search.
  */
 function searchAndHighlight(cy, type, searchFunction) {
-  resetElements(cy);
   const query = document.getElementById(type + '-search').value;
+  resetElements(cy, query === "");
   let result;
   if (query !== "") {
     result = searchFunction(cy, query);
@@ -696,9 +709,31 @@ function searchToken(cy, query) {
       target = target.add(node);
     }
   });
+
   if (target.length > 0) {
-    return target;
+    document.getElementById('num-selected').innerText = "out of " + target.length;
+    document.getElementById('highlight-number').min = 1;
+    document.getElementById('highlight-number').value = 1;
+    document.getElementById('highlight-number').max = target.length;
+    document.getElementById('highlight-number').disabled = false;
+    document.getElementById('highlight-number').onchange = function () {
+      console.log("Here");
+      updateHighlightedToken(cy, target, document.getElementById('highlight-number').value - 1);
+    };
+    return target[0];
   }
+}
+
+function updateHighlightedToken(cy, nodesWithToken, num) {
+  if (num < 0) {
+    num = 0;
+  }
+  if (num > nodesWithToken.length - 1) {
+    num = nodesWithToken.length - 1;
+  }
+  nodesWithToken.toggleClass('highlighted-node', false);
+  highlightElements(cy, nodesWithToken[num]);
+  document.getElementById('highlight-number').value = num + 1;
 }
 
 /**
@@ -708,21 +743,21 @@ function searchToken(cy, query) {
  * @param target collection of nodes to highlight
  */
 function highlightElements(cy, target) {
-  cy.nodes().forEach(node => node.toggleClass('non-highlighted', true));
+  cy.batch(() => {
+    cy.nodes().forEach(node => node.toggleClass('non-highlighted-node', true));
 
-  // highlight desired nodes
-  target.forEach(node => {
-    node.style('border-width', '4px');
-    node.toggleClass('non-highlighted', false);
+    // highlight desired nodes
+    target.forEach(node => {
+      node.toggleClass('non-highlighted-node', false);
+      node.toggleClass('highlighted-node', true);
+    });
+
+    // highlight adjacent edges
+    target.connectedEdges().forEach(edge => {
+      edge.toggleClass('highlighted-edge', 'true');
+    });
   });
   cy.fit(target[0], 50);
-  document.getElementById('num-selected').innerText = "Number of nodes selected: " + target.length;
-
-  // highlight adjacent edges
-  target.connectedEdges().forEach(edge => {
-    edge.style('line-style', 'dashed');
-    edge.style('z-index', '2');
-  });
 }
 
 /**
@@ -730,24 +765,28 @@ function highlightElements(cy, target) {
  *
  * @param cy the graph that contains nodes/edges
  */
-function resetElements(cy) {
-  // reset node borders and opacity
-  cy.nodes().forEach(node => {
-    node.style('border-width', '0px');
-    // only change opacity of nodes that were changed
-    // because of highlighting (leave nodes changed due to
-    // mutation alone)
-    if (node.hasClass('non-highlighted')) {
-      node.toggleClass('non-highlighted', false);
-    }
+function resetElements(cy, resetInputs) {
+  cy.batch(() => {
+    // reset node borders and opacity
+    cy.nodes().forEach(node => {
+      node.toggleClass('highlighted-node', false);
+      node.toggleClass('non-highlighted-node', false);
+    });
+
+    cy.edges().forEach(edge => {
+      edge.toggleClass('highlighted-edge', false);
+    });
   });
 
-  // reset edge style
-  cy.edges().forEach(edge => {
-    edge.style('line-style', 'solid');
-    edge.style('z-index', '1');
-  });
-  document.getElementById('num-selected').innerText = "Number of nodes selected: 0";
+  if(resetInputs === true) {
+    document.getElementById("node-search").value = '';
+    document.getElementById("token-search").value = '';
+    document.getElementById('num-selected').innerText = "out of 0";
+    document.getElementById('highlight-number').value = 0;
+    document.getElementById('highlight-number').max = 0;
+    document.getElementById('highlight-number').disabled = true;
+  }
+  cy.fit();
 }
 
 /**
@@ -879,7 +918,7 @@ function updateButtons() {
     document.getElementById("nextbutton").disabled = false;
   }
 }
- 
+
 /**
  * Get an object with the index of the element that's immediately smaller 
  * and immediately greater than the element
@@ -893,10 +932,10 @@ function updateButtons() {
  * in indicesList
  */
 function getClosestIndices(indicesList, element) {
-  let start = 0; 
+  let start = 0;
   let end = indicesList.length - 1;
 
-  let toReturn = {lower: -1, higher: -1};
+  let toReturn = { lower: -1, higher: -1 };
   let indexHigher = -1;
   while (start <= end) {
     let mid = Math.floor((start + end) / 2);
@@ -997,7 +1036,7 @@ function readGraphNumberInput() {
  */
 function clearLogs() {
   const ul = document.getElementById("log-list");
-  while(ul.firstChild) {
+  while (ul.firstChild) {
     ul.removeChild(ul.firstChild);
   }
 }
