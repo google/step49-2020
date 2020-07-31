@@ -118,12 +118,16 @@ body {
 
 #graph-content-logs {
   flex: 20%;
+  max-height: 60vh;
+}
+
+#graph-content-logs-inner {
   background-color: var(--gray);
   border-radius: 10px;
   max-height: 75vh;
   overflow-y: scroll;
   margin-right: 20px;
-  position: relative;
+  height: 100%;
 }
 
 #log-list {

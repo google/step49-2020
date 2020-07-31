@@ -30,6 +30,8 @@ import java.util.stream.Collectors;
 import java.util.HashSet;
 import java.util.List;
 
+import static com.google.sps.Utility.protoNodeToGraphNode;
+
 @AutoValue
 abstract class DataGraph {
 
@@ -144,7 +146,7 @@ abstract class DataGraph {
     for (String nodeName : protoNodesMap.keySet()) {
       Node thisNode = protoNodesMap.get(nodeName);
       // Convert thisNode into a graph node that may store additional information
-      GraphNode graphNode = Utility.protoNodeToGraphNode(thisNode);
+      GraphNode graphNode = protoNodeToGraphNode(thisNode);
 
       // Update graph data structures to include the node as long as it doesn't
       // already exist
@@ -163,7 +165,7 @@ abstract class DataGraph {
       for (String child : thisNode.getChildrenList()) {
         // This child can no longer be a root since it has an in-edge
         roots.remove(child);
-        GraphNode childNode = Utility.protoNodeToGraphNode(protoNodesMap.get(child));
+        GraphNode childNode = protoNodeToGraphNode(protoNodesMap.get(child));
         if (!graphNodesMap.containsKey(child)) {
           // If child node is not already in the graph, add it
           graph.addNode(childNode);

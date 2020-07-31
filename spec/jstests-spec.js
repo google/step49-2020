@@ -2,9 +2,10 @@
 import {
   initializeNumMutations, setMutationIndexList, setCurrMutationNum, setCurrMutationIndex,
   initializeTippy, generateGraph, getUrl, navigateGraph, currMutationNum, currMutationIndex,
-  numMutations, updateButtons, searchAndHighlight, highlightDiff, initializeReasonTooltip, getGraphDisplay,
-  getClosestIndices, initializeSlider, resetMutationSlider, mutationNumSlider, setMutationSliderValue, 
-  readGraphNumberInput, updateGraphNumInput, setMaxNumMutations, searchNode, searchToken, clearLog
+  numMutations, updateButtons, searchAndHighlight, highlightDiff, initializeReasonTooltip, 
+  getGraphDisplay, getClosestIndices, initializeSlider, resetMutationSlider, mutationNumSlider, 
+  setMutationSliderValue, readGraphNumberInput, updateGraphNumInput, setMaxNumMutations, 
+  searchNode, searchToken, clearLogs
 }
   from "../src/main/webapp/script.js";
 
@@ -720,6 +721,19 @@ describe("Initializing mutation reason tooltips", function () {
   });
 });
 
+/** Clearing the logs works properly */
+describe("Clearing the logs", function () {
+  it("correctly clears the log list", function () {
+    document.body.innerHTML = `
+    <ul id="log-list">
+        <li class="log-msg">hi </li>
+      </ul>`;
+      const lst = document.getElementById('log-list');
+      clearLogs();
+      expect(lst.firstChild).toBe(null); 
+  })
+})
+
 describe("Showing and hiding tooltips when checkbox is clicked", function () {
   it("correctly shows/hides tooltips when checkbox is checked/unchecked", function () {
     document.body.innerHTML = `
@@ -1034,7 +1048,7 @@ describe("Testing clear log functionality", function () {
       </div>`;
     logList = document.getElementById("log-list");
     clearLogButton = document.getElementById("clear-log");
-    clearLogButton.onclick = function () { clearLog() };
+    clearLogButton.onclick = function () { clearLogs() };
   });
 
   it("clears the logs when they contain messages", function () {
