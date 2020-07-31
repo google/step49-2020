@@ -34,6 +34,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import static com.google.sps.Utility.protoNodeToGraphNode;
+
 /** */
 @RunWith(JUnit4.class)
 public final class MutationTest {
@@ -55,12 +57,12 @@ public final class MutationTest {
 
   @Before
   public void setUp() {
-    gNodeA = Utility.protoNodeToGraphNode(nodeA.build());
-    gNodeB = Utility.protoNodeToGraphNode(nodeB.build());
-    gNodeC = Utility.protoNodeToGraphNode(nodeC.build());
-    gNodeD = Utility.protoNodeToGraphNode(nodeD.build());
-    gNodeE = Utility.protoNodeToGraphNode(nodeE.build());
-    gNodeF = Utility.protoNodeToGraphNode(nodeF.build());
+    gNodeA = protoNodeToGraphNode(nodeA.build());
+    gNodeB = protoNodeToGraphNode(nodeB.build());
+    gNodeC = protoNodeToGraphNode(nodeC.build());
+    gNodeD = protoNodeToGraphNode(nodeD.build());
+    gNodeE = protoNodeToGraphNode(nodeE.build());
+    gNodeF = protoNodeToGraphNode(nodeF.build());
   }
 
   /*
@@ -458,9 +460,9 @@ public final class MutationTest {
     protoNodesMap.put("B", pNodeB);
     protoNodesMap.put("C", pNodeC);
 
-    gNodeA = Utility.protoNodeToGraphNode(pNodeA);
-    gNodeB = Utility.protoNodeToGraphNode(pNodeB);
-    gNodeC = Utility.protoNodeToGraphNode(pNodeC);
+    gNodeA = protoNodeToGraphNode(pNodeA);
+    gNodeB = protoNodeToGraphNode(pNodeB);
+    gNodeC = protoNodeToGraphNode(pNodeC);
 
     DataGraph dataGraph = DataGraph.create();
     boolean success = dataGraph.graphFromProtoNodes(protoNodesMap);
@@ -532,7 +534,7 @@ public final class MutationTest {
     nodeA.addToken("2");
     nodeA.addToken("3");
     nodeA.addToken("4");
-    gNodeA = Utility.protoNodeToGraphNode(nodeA.build());
+    gNodeA = protoNodeToGraphNode(nodeA.build());
 
     graph.addNode(gNodeA);
     graph.addNode(gNodeB);
@@ -709,10 +711,10 @@ public final class MutationTest {
     HashMap<String, GraphNode> graphNodesMap = new HashMap<>();
     nodeA.addToken("1");
     nodeA.addToken("2");
-    gNodeA = Utility.protoNodeToGraphNode(nodeA.build());
+    gNodeA = protoNodeToGraphNode(nodeA.build());
 
     nodeB.addToken("1");
-    gNodeB = Utility.protoNodeToGraphNode(nodeB.build());
+    gNodeB = protoNodeToGraphNode(nodeB.build());
 
     graph.addNode(gNodeA);
     graph.addNode(gNodeB);
