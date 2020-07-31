@@ -404,6 +404,17 @@ describe("Check correct url params", function () {
     expect(constructedUrl.get("nodeNames")).toEqual('["Annie boo","B"]');
   });
 
+  it ("does not pass empty names", function () {
+    nodeName.value = "A, , ,,";
+    document.body.appendChild(nodeName); 
+    const requestString = getUrl(); 
+    const requestParams = requestString.substring(requestString.indexOf("?"));
+
+    const constructedUrl = new URLSearchParams(requestParams);
+    expect(constructedUrl.has("nodeNames")).toBe(true); 
+    expect(constructedUrl.get("nodeNames")).toEqual('["A"]');
+  })
+
   it("passes correct tokenName when tokenName has a value", function () {
     tokenName.value = "1";
     document.body.appendChild(tokenName);
