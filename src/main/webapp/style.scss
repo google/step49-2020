@@ -1,18 +1,19 @@
 @use "@material/slider";
-@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,700;1,400&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,700;1,400&display=swap");
 @include slider.core-styles;
 
 /* Define color scheme of page */
 :root {
-  --error: red; 
-  --gray: #D3D3D3; 
-  --btn-color: #B590CA;
-  --box-bg: #DDF3F5;
-  --dark-gray: #5D5B6A;
+  --error: red;
+  --gray: #d3d3d3;
+  --btn-color: #b590ca;
+  --box-bg: #ddf3f5;
+  --dark-gray: #5d5b6a;
   --disabled-txt: #999;
 }
 
-h2, h4 {
+h2,
+h4 {
   margin: 0 auto;
 }
 
@@ -23,12 +24,13 @@ h2, h4 {
 button {
   background-color: var(--gray);
   color: black;
-    font-size: 16px;
-    border-radius: 10px;
-    margin: 5px;
-    padding: 5px;
-    border-style: solid;
-    border-width: 0;
+  font-size: 16px;
+  border-radius: 10px;
+  margin: 5px;
+  padding: 5px;
+  border-style: solid;
+  border-width: 0;
+  outline: none;
 }
 
 button:hover:enabled {
@@ -38,14 +40,15 @@ button:hover:enabled {
   cursor: pointer;
 }
 
-button:disabled, button[disabled] {
+button:disabled,
+button[disabled] {
   color: var(--disabled-txt);
 }
 
 body {
   margin: 50px;
   font-size: 20px;
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
 }
 
 #graph {
@@ -86,7 +89,12 @@ body {
   left: 110%;
 }
 
-#buttondiv, #buttontext, #show-mutations, #show-mutation-text, #slider, #slider-text {
+#buttondiv,
+#buttontext,
+#show-mutations,
+#show-mutation-text,
+#slider,
+#slider-text {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -143,7 +151,9 @@ body {
   border-radius: 10px;
 }
 
-#graph-number-text, #graph-number, #total-mutation-number-text {
+#graph-number-text,
+#graph-number,
+#total-mutation-number-text {
   margin: 5px;
   display: inline;
 }
