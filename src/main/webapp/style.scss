@@ -23,12 +23,13 @@ h2, h4 {
 button {
   background-color: var(--gray);
   color: black;
-    font-size: 16px;
-    border-radius: 10px;
-    margin: 5px;
-    padding: 5px;
-    border-style: solid;
-    border-width: 0;
+  font-size: 16px;
+  border-radius: 10px;
+  margin: 5px;
+  padding: 5px;
+  border-style: solid;
+  border-width: 0;
+  outline: none;
 }
 
 button:hover:enabled {

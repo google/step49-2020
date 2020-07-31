@@ -733,7 +733,7 @@ describe("Initializing mutation reason tooltips", function () {
 describe("Clearing the logs", function () {
   it("correctly clears the log list", function () {
     document.body.innerHTML = `
-    <ul id="log-list">
+      <ul id="log-list">
         <li class="log-msg">hi </li>
       </ul>`;
       const lst = document.getElementById('log-list');
