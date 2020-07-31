@@ -355,8 +355,6 @@ function getGraphDisplay(graphNodes, graphEdges, mutList, reason, queriedNodes) 
 
   document.getElementById('search-token-button').onclick = function() { searchAndHighlight(cy, "token", searchToken) };
 
-  document.getElementById('clear-log').onclick = function () { clearLog() };
-
   document.getElementById('highlight-number').onchange = function() { 
     updateHighlightedToken(cy, document.getElementById('highlight-number').value); 
   };
@@ -707,6 +705,13 @@ function searchToken(cy, query) {
   }
 }
 
+/**
+ * Searches and highlights/zooms a graph for specified token
+ *
+ * @param cy the graph to search through
+ * @param num the target index of the list of nodes that contain token
+ * @returns the result of the search.
+ */
 function updateHighlightedToken(cy, num) {
   const query = document.getElementById('token-search').value;
   if (query) {
