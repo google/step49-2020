@@ -154,7 +154,7 @@ public class DataServlet extends HttpServlet {
     int mutationNumber = Integer.parseInt(mutationParam);
 
     // Truncated version of graph to return to the client
-    MutableGraph<GraphNode> truncatedGraph;
+    MutableGraph<GraphNode> truncatedGraph = GraphBuilder.directed().build();
 
     // The list of mutations that need to be applied to the nodes in currDataGraph
     // to get the requested graph, filtered to only contain changes pertaining
@@ -220,8 +220,10 @@ public class DataServlet extends HttpServlet {
       queriedNext.addAll(currDataGraph.tokenMap().get(tokenParam));
     }
 
-    // Truncate the graph from the nodes that the client had searched for
-    truncatedGraph = currDataGraph.getReachableNodes(queried, depthNumber);
+    if(!(tokenParam.length() != 0 && queried.size() == 0)) {
+      // Truncate the graph from the nodes that the client had searched for
+      truncatedGraph = currDataGraph.getReachableNodes(queried, depthNumber);
+    }
 
     // The nodes to calculate relevant mutations from
     MutableGraph<GraphNode> truncatedGraphNext;
@@ -267,7 +269,7 @@ public class DataServlet extends HttpServlet {
     // The searched node is not in the graph and is never mutated
     if (truncatedGraph.nodes().size() == 0 && filteredMutationIndices.size() == 0) {
       response.setHeader(
-          "serverError", "The searched node does not exist anywhere in this graph or in mutations");
+          "serverError", "The searched node/token does not exist anywhere in this graph or in mutations");
       return;
     }
     // The searched node is not in the graph but is mutated at some past/future
