@@ -717,6 +717,7 @@ function searchToken(cy, query) {
     document.getElementById('highlight-number').max = target.length;
     document.getElementById('highlight-number').disabled = false;
     document.getElementById('highlight-number').onchange = function () {
+      console.log("Here");
       updateHighlightedToken(cy, target, document.getElementById('highlight-number').value - 1);
     };
     return target[0];

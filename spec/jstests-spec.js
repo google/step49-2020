@@ -1,10 +1,10 @@
-
+import { colorScheme, opacityScheme, tippySize, borderScheme } from '../src/main/webapp/constants.js';
 import {
   initializeNumMutations, setMutationIndexList, setCurrMutationNum, setCurrMutationIndex,
   initializeTippy, generateGraph, getUrl, navigateGraph, currMutationNum, currMutationIndex,
-  numMutations, updateButtons, searchAndHighlight, highlightDiff, initializeReasonTooltip, 
-  getGraphDisplay, getClosestIndices, initializeSlider, resetMutationSlider, mutationNumSlider, 
-  setMutationSliderValue, readGraphNumberInput, updateGraphNumInput, setMaxNumMutations, 
+  numMutations, updateButtons, searchAndHighlight, highlightDiff, initializeReasonTooltip,
+  getGraphDisplay, getClosestIndices, initializeSlider, resetMutationSlider, mutationNumSlider,
+  setMutationSliderValue, readGraphNumberInput, updateGraphNumInput, setMaxNumMutations,
   searchNode, searchToken, clearLogs
 }
   from "../src/main/webapp/script.js";
@@ -220,7 +220,7 @@ describe("Pressing next and previous buttons associated with a graph", function 
   beforeEach(function () {
     numDisplay = document.createElement("div");
     numDisplay.id = "num-mutation-display";
-  }); 
+  });
 
   afterEach(function () {
     document.body.innerHTML = '';
@@ -357,7 +357,7 @@ describe("Check correct url params", function () {
     tokenName.id = "token-name-filter";
   });
 
-  afterEach(function () { 
+  afterEach(function () {
     setCurrMutationNum(0);
     document.body.innerHTML = '';
   });
@@ -382,55 +382,55 @@ describe("Check correct url params", function () {
 
   it("passes correct nodeName when nodeName has a value", function () {
     nodeName.value = "A";
-    document.body.appendChild(nodeName); 
+    document.body.appendChild(nodeName);
 
-    const requestString = getUrl(); 
+    const requestString = getUrl();
     const requestParams = requestString.substring(requestString.indexOf("?"));
 
     const constructedUrl = new URLSearchParams(requestParams);
-    expect(constructedUrl.has("nodeNames")).toBe(true); 
+    expect(constructedUrl.has("nodeNames")).toBe(true);
     expect(constructedUrl.get("nodeNames")).toEqual('["A"]');
   });
 
   it("passes correct nodeName when nodeName has a comma separated value", function () {
     nodeName.value = "A,B";
-    document.body.appendChild(nodeName); 
+    document.body.appendChild(nodeName);
 
-    const requestString = getUrl(); 
+    const requestString = getUrl();
     const requestParams = requestString.substring(requestString.indexOf("?"));
 
     const constructedUrl = new URLSearchParams(requestParams);
-    expect(constructedUrl.has("nodeNames")).toBe(true); 
+    expect(constructedUrl.has("nodeNames")).toBe(true);
     expect(constructedUrl.get("nodeNames")).toEqual('["A","B"]');
   });
 
   it("passes correct nodeName when nodeName has a comma separated value and spaces", function () {
     nodeName.value = "  Annie boo  , B";
-    document.body.appendChild(nodeName);  
+    document.body.appendChild(nodeName);
 
-    const requestString = getUrl(); 
+    const requestString = getUrl();
     const requestParams = requestString.substring(requestString.indexOf("?"));
 
     const constructedUrl = new URLSearchParams(requestParams);
-    expect(constructedUrl.has("nodeNames")).toBe(true); 
+    expect(constructedUrl.has("nodeNames")).toBe(true);
     expect(constructedUrl.get("nodeNames")).toEqual('["Annie boo","B"]');
   });
 
-  it ("does not pass empty names", function () {
+  it("does not pass empty names", function () {
     nodeName.value = "A, , ,,";
-    document.body.appendChild(nodeName); 
-    const requestString = getUrl(); 
+    document.body.appendChild(nodeName);
+    const requestString = getUrl();
     const requestParams = requestString.substring(requestString.indexOf("?"));
 
     const constructedUrl = new URLSearchParams(requestParams);
-    expect(constructedUrl.has("nodeNames")).toBe(true); 
+    expect(constructedUrl.has("nodeNames")).toBe(true);
     expect(constructedUrl.get("nodeNames")).toEqual('["A"]');
   })
 
   it("passes correct tokenName when tokenName has a value", function () {
     tokenName.value = "1";
     document.body.appendChild(tokenName);
- 
+
     const requestString = getUrl();
     const requestParams = requestString.substring(requestString.indexOf("?"));
     const constructedUrl = new URLSearchParams(requestParams);
@@ -439,32 +439,87 @@ describe("Check correct url params", function () {
   })
 });
 
-describe("Node search", function() {
+describe("Node search", function () {
   let cy;
-  let numSelected;
   let logList;
   let query;
-  const expectedBorderWidth = "4px";
 
-  beforeEach(function() {
+  beforeEach(function () {
     document.body.innerHTML = `<div id="cy"></div>
-    <label id="num-selected"></label>
-    <input id="node-search"></input>
+    <div id="zoom-box" class="input-child">
+      <h4 class="search-title">Zoom In</h4>
+        <label>Zoom on Node in Graph: </label>
+        <input type="text" id="node-search" placeholder="Node Name"></input>
+        <button id="search-button">Find Node</button>
+
+        <label>Zoom on Token in Graph: </label>
+        <input type="text" id="token-search" placeholder="Token Name"></input>
+        <button id="search-token-button">Find Token</button>
+      <div>
+        <label for="highlight-number">Highlighted Token: </label>
+        <input type="number" id="highlight-number" min="0" value="0" max="0" disabled=true>
+        <label id="num-selected">out of 0</label>
+        <button id="reset" class="reset">Reset Zoom</button>
+      </div>
+    </div>
     <ul id="log-list">
       <li class="log-msg"></li>
     </ul>`;
 
     cy = cytoscape({
-    elements: [
-      { data: { id: "A" } },
-      { data: { id: "B" } },
-      {
-        data: {
-          id: "edgeAB",
-          source: "A",
-          target: "B"
-        }
-      }],
+      elements: [
+        { data: { id: "A" } },
+        { data: { id: "B" } },
+        {
+          data: {
+            id: "edgeAB",
+            source: "A",
+            target: "B"
+          }
+        }],
+      style: [
+        {
+          selector: 'node',
+          style: {
+            width: '50px',
+            height: '50px',
+            'background-color': colorScheme["unmodifiedNodeColor"],
+            'label': '',
+            'color': colorScheme["labelColor"],
+            'font-size': '20px',
+            'text-halign': 'center',
+            'text-valign': 'center',
+          }
+        },
+        {
+          selector: 'edge',
+          style: {
+            'width': 3,
+            'line-color': colorScheme["unmodifiedEdgeColor"],
+            'target-arrow-color': colorScheme["unmodifiedEdgeColor"],
+            'target-arrow-shape': 'triangle',
+            'curve-style': 'bezier'
+          },
+        },
+        {
+          selector: '.highlighted-node',
+          style: {
+            'border-width': 4,
+          }
+        },
+        {
+          selector: '.non-highlighted-node',
+          style: {
+            'opacity': opacityScheme["deletedObjectOpacity"]
+          }
+        },
+        {
+          selector: '.highlighted-edge',
+          style: {
+            'line-style': 'dashed',
+            'z-index': '2'
+          }
+        }],
       container: document.getElementById("cy"),
     });
 
@@ -472,44 +527,59 @@ describe("Node search", function() {
     query = document.getElementById("node-search");
   });
 
-  it("should be successful finding a node in the graph", function() {
+  it("should be successful finding a node in the graph", function () {
     query.value = "A";
     const result = searchAndHighlight(cy, "node", searchNode);
-
     // should not display error message
-    expect(logList.innerHTML).not.toContain("node does not exist.");
+    expect(logList.textContent.trim()).toBe("");
     expect(result.id()).toBe("A");
-    expect(result.style("border-width")).toBe(expectedBorderWidth);
+    expect(result.hasClass("highlighted-node")).toBe(true);
+    expect(result.hasClass("non-highlighted-node")).toBe(false);
   });
 
-  it("should be unsuccessful because node does not exist", function() {
+  it("should be unsuccessful because node does not exist", function () {
     query.value = "C";
     const result = searchAndHighlight(cy, "node", searchNode);
 
     // should display error message
-    expect(logList.innerHTML).toContain("node does not exist.");
+    expect(logList.textContent.trim()).toBe("node does not exist.");
     expect(result).toBeUndefined();
   });
 
-  it("should not execute at all because there is no query", function() {
+  it("should not execute at all because there is no query", function () {
     query.value = "";
     const result = searchAndHighlight(cy, "node", searchNode);
 
     // should not display error message
-    expect(logList.innerHTML).not.toContain("node does not exist.");
+    expect(logList.textContent.trim()).toBe("");
     expect(result).toBeUndefined();
   });
 });
 
-describe("Token search", function() {
+describe("Token search", function () {
   let logList;
   let query;
   let cy;
 
-  beforeEach(function() {
-    document.body.innerHTML = `<div id="cy"></div>
-    <label id="num-selected"></label>
-    <input id="token-search"></input>
+  beforeEach(function () {
+    document.body.innerHTML =
+      `<div id="cy"></div>
+    <div id="zoom-box" class="input-child">
+      <h4 class="search-title">Zoom In</h4>
+        <label>Zoom on Node in Graph: </label>
+        <input type="text" id="node-search" placeholder="Node Name"></input>
+        <button id="search-button">Find Node</button>
+
+        <label>Zoom on Token in Graph: </label>
+        <input type="text" id="token-search" placeholder="Token Name"></input>
+        <button id="search-token-button">Find Token</button>
+      <div>
+        <label for="highlight-number">Highlighted Token: </label>
+        <input type="number" id="highlight-number" min="0" value="0" max="0" disabled=true>
+        <label id="num-selected">out of 0</label>
+        <button id="reset" class="reset">Reset Zoom</button>
+      </div>
+    </div>
     <ul id="log-list">
       <li class="log-msg"></li>
     </ul>`;
@@ -534,49 +604,65 @@ describe("Token search", function() {
     query = document.getElementById("token-search");
   });
 
-  it("should be successful because the token exists in one node", function() {
+  it("should be successful because the token exists in one node", function () {
     query.value = "a.js";
     const result = searchAndHighlight(cy, "token", searchToken);
     // error message should not be displayed
-    //expect(tokenError.innerText).toBe("");
-    expect(result.length).toBe(1);
-    expect(result[0].id()).toBe("A");
-    expect(result[0].style("border-width")).toBe("4px");
+    expect(result.id()).toBe("A");
+    expect(result.hasClass("highlighted-node")).toBe(true);
+    expect(result.hasClass("non-highlighted-node")).toBe(false);
   });
 
-  it("should be successful with finding token in multiples nodes", function() {
+  it("should be successful with finding token in multiples nodes", function () {
     query.value = "b.js";
     const result = searchAndHighlight(cy, "token", searchToken);
 
     // error message should not be displayed
-    expect(logList.innerHTML).not.toContain("token does not exist.");
-    expect(result.length).toBe(2);
-    expect(result[0].id()).toBe("A");
-    expect(result[1].id()).toBe("B");
-    expect(result[0].style("border-width")).toBe("4px");
-    expect(result[1].style("border-width")).toBe("4px");
+    expect(logList.textContent.trim()).toBe("");
+    expect(result.id()).toBe("A");
+    expect(result.hasClass("highlighted-node")).toBe(true);
+    expect(result.hasClass("non-highlighted-node")).toBe(false);
+
+    const otherNode = cy.$id("B");
+    expect(otherNode.hasClass("highlighted-node")).toBe(false);
+    expect(otherNode.hasClass("non-highlighted-node")).toBe(true);
+
+    const highlightNumber = document.getElementById("highlight-number");
+    expect(highlightNumber.min).toBe("1");
+    expect(highlightNumber.max).toBe("2");
+    expect(highlightNumber.value).toBe("1");
+
+    highlightNumber.value = "4";
+    highlightNumber.dispatchEvent(new Event("change"));
+    expect(highlightNumber.value).toBe("2");
+
+    expect(otherNode.hasClass("highlighted-node")).toBe(true);
+    expect(otherNode.hasClass("non-highlighted-node")).toBe(false);
+
+    expect(result.hasClass("highlighted-node")).toBe(false);
+    expect(result.hasClass("non-highlighted-node")).toBe(true);
   });
 
-  it("should be unsuccessful because token does not exist", function() {
+  it("should be unsuccessful because token does not exist", function () {
     query.value = "fake_file.js";
     const result = searchAndHighlight(cy, "token", searchToken);
-    
+
     // error message should be displayed
-    expect(logList.innerHTML).toContain("token does not exist.");
+    expect(logList.textContent.trim()).toBe("token does not exist.");
     expect(result).toBeUndefined();
   });
 
-  it("should not be executed at all because there is no query", function() {
+  it("should not be executed at all because there is no query", function () {
     query.value = "";
     const result = searchAndHighlight(cy, "token", searchToken);
 
     // error message should not be displayed
-    expect(logList.innerHTML).not.toContain("token does not exist.");
+    expect(logList.textContent.trim()).toBe("");
     expect(result).toBeUndefined();
   });
 });
 
-describe("Ensuring correct nodes are highlighted in mutated graph", function () { 
+describe("Ensuring correct nodes are highlighted in mutated graph", function () {
   let cy;
   const green = "rgb(0,128,0)";
   const red = "rgb(255,0,0)";
@@ -739,9 +825,9 @@ describe("Clearing the logs", function () {
     <ul id="log-list">
         <li class="log-msg">hi </li>
       </ul>`;
-      const lst = document.getElementById('log-list');
-      clearLogs();
-      expect(lst.firstChild).toBe(null); 
+    const lst = document.getElementById('log-list');
+    clearLogs();
+    expect(lst.firstChild).toBe(null);
   })
 })
 
@@ -756,7 +842,7 @@ describe("Showing and hiding tooltips when checkbox is clicked", function () {
     <button id="reset"></button>
     <button id="search-button"></button>
     <button id="search-token-button"></button>`;
-    
+
 
     const nodeA = {};
     nodeA["data"] = {};
@@ -806,7 +892,7 @@ describe("Showing and hiding tooltips when checkbox is clicked", function () {
 
 describe("Checking binary search functions", function () {
   it("correctly returns next greater and smaller indices for an element in the list", function () {
-    const arr = [1,5,7,8,11];
+    const arr = [1, 5, 7, 8, 11];
     const prevLower = getClosestIndices(arr, 5).lower;
     const nextHigher = getClosestIndices(arr, 5).higher;
 
@@ -815,7 +901,7 @@ describe("Checking binary search functions", function () {
   });
 
   it("correctly returns next greater and smaller indices for an element not in the list", function () {
-    const arr = [1,5,7,8,11];
+    const arr = [1, 5, 7, 8, 11];
     const prevLower = getClosestIndices(arr, 6).lower;
     const nextHigher = getClosestIndices(arr, 6).higher;
 
@@ -824,7 +910,7 @@ describe("Checking binary search functions", function () {
   });
 
   it("correctly returns next greater and smaller indices for an element at the end of the list", function () {
-    const arr = [1,5,7,8,11];
+    const arr = [1, 5, 7, 8, 11];
     const prevLower = getClosestIndices(arr, 11).lower;
     const nextHigher = getClosestIndices(arr, 11).higher;
 
@@ -833,7 +919,7 @@ describe("Checking binary search functions", function () {
   });
 
   it("correctly returns next greater and smaller indices for an element at the start of the list", function () {
-    const arr = [1,5,7,8,11];
+    const arr = [1, 5, 7, 8, 11];
     const prevLower = getClosestIndices(arr, 1).lower;
     const nextHigher = getClosestIndices(arr, 1).higher;
 
@@ -842,7 +928,7 @@ describe("Checking binary search functions", function () {
   });
 
   it("correctly returns next greater and smaller indices for an element that is larger than all list elements", function () {
-    const arr = [1,5,7,8,11];
+    const arr = [1, 5, 7, 8, 11];
     const prevLower = getClosestIndices(arr, 12).lower;
     const nextHigher = getClosestIndices(arr, 12).higher;
 
@@ -851,7 +937,7 @@ describe("Checking binary search functions", function () {
   });
 
   it("correctly returns next greater and smaller indices for an element that is smaller than all list elements", function () {
-    const arr = [1,5,7,8,11];
+    const arr = [1, 5, 7, 8, 11];
     const prevLower = getClosestIndices(arr, 0).lower;
     const nextHigher = getClosestIndices(arr, 0).higher;
 
