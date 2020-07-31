@@ -184,7 +184,7 @@ abstract class DataGraph {
    * Applies a single mutation to the given data graph
    *
    * @param mut the mutation to apply to the graph. The mutation must be supplied in builder form so
-   *     that redundant information can be removed from it if necessary
+   *     that redundant information can be removed from it if necessary.
    * @return an empty string if there was no error, otherwise an error message. The method may also
    *     modify the mutation itself if it performs a duplicate action like adding an existing token
    */
@@ -328,36 +328,36 @@ abstract class DataGraph {
     List<String> tokenNames = tokenMut.getTokenNameList();
     // The existing list of tokens in the node
     List<String> existingTokens = node.tokenList();
-    // The modified list of tokens of the node
-    Set<String> tokenList = new HashSet<>();
-    tokenList.addAll(existingTokens);
+    // The modified set of tokens of the node
+    Set<String> tokenSet = new HashSet<>();
+    tokenSet.addAll(existingTokens);
 
     TokenMutation.Type tokenMutType = tokenMut.getType();
     if (tokenMutType == TokenMutation.Type.ADD_TOKEN) {
-      tokenList.addAll(tokenNames);
+      tokenSet.addAll(tokenNames);
 
-      if (tokenList.size() != existingTokens.size() + tokenNames.size()) {
+      if (tokenSet.size() != existingTokens.size() + tokenNames.size()) {
         // Remove tokens that this mutation adds that already exist in the node
         // we must reinstantiate tokenNames because the one retrieved from
         // the token mutation is unmodifiable
-        tokenNames = new ArrayList<>(tokenNames);
-        tokenNames.removeAll(existingTokens);
+        ArrayList<String> newTokenNames = new ArrayList<>(tokenNames);
+        newTokenNames.removeAll(existingTokens);
         tokenMut.clearTokenName();
-        tokenMut.addAllTokenName(tokenNames);
+        tokenMut.addAllTokenName(newTokenNames);
       }
       // Update the map
       for (String tokenName : tokenNames) {
         addNodeToToken(tokenName, node.name());
       }
     } else if (tokenMutType == TokenMutation.Type.DELETE_TOKEN) {
-      tokenList.removeAll(tokenNames);
+      tokenSet.removeAll(tokenNames);
 
-      if (tokenList.size() != existingTokens.size() - tokenNames.size()) {
+      if (tokenSet.size() != existingTokens.size() - tokenNames.size()) {
         // Remove tokens that this mutation deletes that don't exist in the node
-        tokenNames = new ArrayList<>(tokenNames);
-        tokenNames.removeIf(elem -> !(existingTokens.contains(elem)));
+        ArrayList<String> newTokenNames = new ArrayList<>(tokenNames);
+        newTokenNames.removeIf(elem -> !(existingTokens.contains(elem)));
         tokenMut.clearTokenName();
-        tokenMut.addAllTokenName(tokenNames);
+        tokenMut.addAllTokenName(newTokenNames);
       }
 
       // Update the map
@@ -368,7 +368,7 @@ abstract class DataGraph {
       // unrecognized mutation
       return null;
     }
-    return GraphNode.create(node.name(), new ArrayList<>(tokenList), node.metadata());
+    return GraphNode.create(node.name(), new ArrayList<>(tokenSet), node.metadata());
   }
 
   /**

@@ -61,7 +61,7 @@ public class DataServlet extends HttpServlet {
   private DataGraph originalDataGraph = null;
   private List<MultiMutation> mutList = null;
   // We store a builder so that we can modify the contained mutation objects
-  // to be non-redundant. For example if we find that a mutation adds duplicate
+  // to be non-redundant. For example, if we find that a mutation adds duplicate
   // tokens to a node we replace it with a trimmed version that doesn't add
   // duplicates. This is only possible if the mutation list is mutable.
   private MutationList.Builder mutListObj = null;

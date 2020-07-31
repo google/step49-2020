@@ -1,113 +1,113 @@
 mutation {
-mutation {
-  type: DELETE_EDGE
-  start_node: "E"
-  end_node: "F"
-}
-
-mutation {
-  type: DELETE_NODE
-  start_node: "F"
-}
-reason: "Deleting node F"
-}
-
-mutation {
-mutation {
-  type: ADD_NODE
-  start_node: "G"
-}
-
-mutation {
-  type: ADD_EDGE
-  start_node: "E"
-  end_node: "G"
-}
-reason: "Adding node G"
-}
-
-mutation {
-mutation {
-  type: ADD_NODE
-  start_node: "H"
-}
-
-mutation {
-  type: ADD_EDGE
-  start_node: "H"
-  end_node: "G"
-}
-reason: "Adding node H"
-}
-
-mutation {
-mutation {
-  type: ADD_EDGE
-  start_node: "D"
-  end_node: "G"
-}
-reason: "Adding edge DG"
-}
-mutation {
-mutation {
-  type: CHANGE_TOKEN
-  start_node: "B"
-  token_change {
-    type: ADD_TOKEN
-    token_name: "d.js"
-    token_name: "e.js"
-    token_name: "a.js"
+  mutation {
+    type: DELETE_EDGE
+    start_node: "E"
+    end_node: "F"
   }
-}
-mutation {
-  type: ADD_NODE
-  start_node: "I"
-}
-mutation {
-  type: CHANGE_TOKEN
-  start_node: "I"
-  token_change {
-    type: ADD_TOKEN
-    token_name: "d.js"
-    token_name: "f.js"
+  mutation {
+    type: DELETE_NODE
+    start_node: "F"
   }
+  reason: "Deleting node F"
 }
-reason: "Add d and f to node B and adding node I with tokens d and f"
-}
+
 mutation {
-mutation {
-  type: DELETE_EDGE
-  start_node: "A"
-  end_node: "C"
-}
-reason: "Removing edge AC"
-}
-mutation {
-mutation {
-  type: CHANGE_TOKEN
-  start_node: "B"
-  token_change {
-    type: DELETE_TOKEN
-    token_name: "d.js"
-    token_name: "x.js"
+  mutation {
+    type: ADD_NODE
+    start_node: "G"
   }
+
+  mutation {
+    type: ADD_EDGE
+    start_node: "E"
+    end_node: "G"
+  }
+  reason: "Adding node G"
 }
-reason: "Changing tokens of node B"
+
+mutation {
+  mutation {
+    type: ADD_NODE
+    start_node: "H"
+  }
+
+  mutation {
+    type: ADD_EDGE
+    start_node: "H"
+    end_node: "G"
+  }
+  reason: "Adding node H"
+}
+
+mutation {
+  mutation {
+    type: ADD_EDGE
+    start_node: "D"
+    end_node: "G"
+  }
+  reason: "Adding edge DG"
+}
+
+mutation {
+  mutation {
+    type: CHANGE_TOKEN
+    start_node: "B"
+    token_change {
+      type: ADD_TOKEN
+      token_name: "d.js"
+      token_name: "e.js"
+      token_name: "a.js"
+    }
+  }
+  mutation {
+    type: ADD_NODE
+    start_node: "I"
+  }
+  mutation {
+    type: CHANGE_TOKEN
+    start_node: "I"
+    token_change {
+      type: ADD_TOKEN
+      token_name: "d.js"
+      token_name: "f.js"
+    }
+  }
+  reason: "Add d and f to node B and adding node I with tokens d and f"
+}
+mutation {
+  mutation {
+    type: DELETE_EDGE
+    start_node: "A"
+    end_node: "C"
+  }
+  reason: "Removing edge AC"
+}
+mutation {
+  mutation {
+    type: CHANGE_TOKEN
+    start_node: "B"
+    token_change {
+      type: DELETE_TOKEN
+      token_name: "d.js"
+      token_name: "x.js"
+    }
+  }
+  reason: "Changing tokens of node B"
 }
 mutation {
   mutation {
   type: CHANGE_TOKEN
   start_node: "I"
-  token_change {
-    type: DELETE_TOKEN
-    token_name: "d.js"
-    token_name: "f.js"
-    token_name: "m.js"
+    token_change {
+      type: DELETE_TOKEN
+      token_name: "d.js"
+      token_name: "f.js"
+      token_name: "m.js"
+    }
   }
+  mutation {
+    type: DELETE_NODE
+    start_node: "I"
   }
-mutation {
-  type: DELETE_NODE
-  start_node: "I"
-}
-reason: "Delete node I"
+  reason: "Delete node I"
 }

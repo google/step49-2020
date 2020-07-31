@@ -110,11 +110,11 @@ public final class Utility {
    * @param original the original graph
    * @param curr the current (most recently-requested) graph (requires that original != curr)
    * @param mutationNum number of mutations to apply
-   * @param multiMutList multi-mutation list builder
+   * @param multiMutList multi-mutation list builder. This parameter may be modified by 
+   * replacing some mutations with their deduplicated versions.
    * @throws IllegalArgumentException if original and current graph refer to the same object
    * @return the resulting data graph, null if the mutation number was too small, and the final
-   *     graph if the mutation number was too big. May also modify multiMutList, replacing some
-   *     mutations with their deduplicated versions.
+   *     graph if the mutation number was too big. 
    */
   public static DataGraph getGraphAtMutationNumber(
       DataGraph original, DataGraph curr, int mutationNum, MutationList.Builder mutationsList)
@@ -132,7 +132,7 @@ public final class Utility {
     // If the requested graph is sequentially before the current graph but is closer to
     // the initial graph than to the current graph, go forward from the initial graph rather
     // than going back from the current graph
-    if (curr.numMutations() > mutationNum && (curr.numMutations() - mutationNum) > mutationNum) {
+    if (curr.numMutations() - mutationNum > mutationNum) {
       curr = original.getCopy();
     }
     if (curr.numMutations() <= mutationNum) { // going forward
