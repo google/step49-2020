@@ -363,6 +363,10 @@ function getGraphDisplay(graphNodes, graphEdges, mutList, reason, queriedNodes) 
 
   document.getElementById('clear-log').onclick = function () { clearLog() };
 
+  document.getElementById('highlight-number').onchange = function() { 
+    updateHighlightedToken(cy, document.getElementById('highlight-number').value); 
+  };
+
   // When a new graph is loaded, mutations are always shown by default
   const showMutButton = document.getElementById("show-mutations");
   showMutButton.checked = true;
@@ -709,6 +713,16 @@ function searchToken(cy, query) {
   }
 }
 
+function updateHighlightedToken(cy, num) {
+  const query = document.getElementById('token-search').value;
+  if (query) {
+    let nodesWithToken = searchToken(cy, query);
+    cy.fit(nodesWithToken[num], 50);
+    //document.getElementById('highlight-number').value = num;
+  }
+  
+}
+
 /**
  * Highlights collection of nodes/edges
  *
@@ -724,7 +738,8 @@ function highlightElements(cy, target) {
     node.toggleClass('non-highlighted', false);
   });
   cy.fit(target[0], 50);
-  document.getElementById('num-selected').innerText = "Number of nodes selected: " + target.length;
+  document.getElementById('num-selected').innerText = "out of " + target.length;
+  document.getElementById('highlight-number').max = target.length-1;
 
   // highlight adjacent edges
   target.connectedEdges().forEach(edge => {
@@ -755,7 +770,9 @@ function resetElements(cy) {
     edge.style('line-style', 'solid');
     edge.style('z-index', '1');
   });
-  document.getElementById('num-selected').innerText = "Number of nodes selected: 0";
+  document.getElementById('num-selected').innerText = "out of 0";
+  document.getElementById('highlight-number').value = 0;
+  document.getElementById('highlight-number').max = 0;
 }
 
 /**
