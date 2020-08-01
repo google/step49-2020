@@ -247,13 +247,13 @@ abstract class DataGraph {
           removeNodeFromToken(token, startName);
         }
 
+        Set<GraphNode> successors = graph.successors(startNode);
         roots.remove(startName);
         graph.removeNode(startNode); // This will remove all edges associated with startNode
         graphNodesMap.remove(startName);
 
         // Check whether any successor will have no in-edges after this node is removed
         // If so, make them roots
-        Set<GraphNode> successors = graph.successors(startNode);
         for (GraphNode succ : successors) {
           if (graph.inDegree(succ) == 0) {
             roots.add(succ.name());

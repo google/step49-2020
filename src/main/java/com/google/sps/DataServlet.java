@@ -235,13 +235,12 @@ public class DataServlet extends HttpServlet {
       queried.addAll(currDataGraph.tokenMap().get(tokenNameParam));
       queriedNext.addAll(currDataGraph.tokenMap().get(tokenNameParam));
     }
-
+    // This condition exists to prevent entry into this case when the user
+    // searches for a non-existent token and no node. In this case, queried
+    // is empty so using the below logic will return the whole graph. To avoid
+    // this, we initialize truncatedGraph to the empty graph and include this
+    // condition
     if (tokenNameParam.length() == 0 || queried.size() != 0) {
-      // This condition exists to prevent entry into this case when the user
-      // searches for a non-existent token and no node. In this case, queried
-      // is empty so using the below logic will return the whole graph. To avoid
-      // this, we initialize truncatedGraph to the empty graph and include this
-      // condition
       // Truncate the graph from the nodes that the client had searched for
       truncatedGraph = currDataGraph.getReachableNodes(queried, radius);
     }
@@ -252,7 +251,8 @@ public class DataServlet extends HttpServlet {
     if (queriedNext.isEmpty()) {
       truncatedGraphNext = GraphBuilder.undirected().build();
     } else {
-      // If queried and queried next contain the same nodes, then no reason to regenerate the graph
+      // If queried and queriedNext contain the same nodes, then there is no reason 
+      // to regenerate the graph
       truncatedGraphNext =
           queried.equals(queriedNext)
               ? truncatedGraph
@@ -266,8 +266,6 @@ public class DataServlet extends HttpServlet {
       filteredMutationIndices = defaultIndices;
       filteredDiff = diff;
     } else {
-      // Get the names of all the displayed nodes and find all indices of mutations
-      // that mutate any of them
       Set<String> truncatedGraphNodeNames = getNodeNamesInGraph(truncatedGraph);
       Set<String> truncatedGraphNodeNamesNext = getNodeNamesInGraph(truncatedGraphNext);
 
@@ -275,36 +273,53 @@ public class DataServlet extends HttpServlet {
       // or queried are mutated
       Set<Integer> mutationIndicesSet = new HashSet<>();
 
+      // Add all mutations relevant to on-screen nodes
       mutationIndicesSet.addAll(
           findRelevantMutations(truncatedGraphNodeNamesNext, mutationIndicesMap, mutList));
-      // Place in the map if needed
+
+      // Add all mutations relevant to the queried token, computing and caching it if it 
+      // hasn't been done already
       if (!tokenIndicesMap.containsKey(tokenNameParam)) {
         tokenIndicesMap.put(tokenNameParam, getMutationIndicesOfToken(tokenNameParam, mutList));
       }
       mutationIndicesSet.addAll(tokenIndicesMap.get(tokenNameParam));
+      
+      // Add all mutations relevant to the queried node names
       mutationIndicesSet.addAll(findRelevantMutations(nodeNames, mutationIndicesMap, mutList));
       filteredMutationIndices = new ArrayList<>(mutationIndicesSet);
       Collections.sort(filteredMutationIndices);
 
-      // Show mutations relevant to nodes that used to have the token but
-      // might not exist anymore and the queried nodes
+      // Show mutations relevant to nodes that are related to on-screen nodes, nodes that
+      // used to/still have the queried token and any queried nodes
       filteredDiff = filterMultiMutationByNodes(diff, Sets.union(truncatedGraphNodeNames, queried));
     }
+
+    /*
+     ***********************
+     * Error Handling
+     ***********************
+     */
+
     // We set the headers in the following 4 scenarios:
-    // The searched node is not in the graph and is never mutated
+    // truncatedGraph.nodes().size() == 0 means something was queried but wasn't found
+    // in the graph
+    // filteredMutationIndices.size() == 0 means the searched object is never mutated
     if (truncatedGraph.nodes().size() == 0 && filteredMutationIndices.size() == 0) {
       response.setHeader(
           "serverError",
           "The searched node/token does not exist anywhere in this graph or in mutations");
       return;
     }
-    // The searched node is not in the graph but is mutated at some past/future
-    // point. The diff conditions are included to prevent entry into this case
-    // when the searched node is deleted for example. The diff being non-empty
-    // means that there is some mutation pertaining to the searched node to show
+    // truncatedGraph.nodes().size() == 0 means something was queried but wasn't found
+    // in the graph
+    // filteredMutationIndices.size() != 0 means the searched object is mutated at some 
+    // point
+    // filteredDiff == null || filteredDiff.getMutationList().size() == 0 means that none
+    // of the searched objects are mutated here. This exists to prevent this message from 
+    // being emitted when the searched object is deleted in this graph so it doesn't exist 
+    // but is still mutated
     if (truncatedGraph.nodes().size() == 0
         && filteredMutationIndices.size() != 0
-        && filteredMutationIndices.indexOf(mutationNumber) == -1
         && (filteredDiff == null || filteredDiff.getMutationList().size() == 0)) {
       response.setHeader(
           "serverMessage",
@@ -312,11 +327,15 @@ public class DataServlet extends HttpServlet {
               + " is mutated at some other step. Please click next or previous to navigate to a"
               + " graph where this node exists.");
     }
-    // The searched node exists but is not mutated in the current graph
+    // truncatedGraph.nodes().size() != 0 means the queried object was found in this graph
+    // !(mutationNumber == -1 && nodeNames.size() == 0 && tokenNameParam.length() == 0) 
+    // is included to avoid emitting this message when we are on the initial graph with
+    // no node names or tokens searched because -1 is never a valid mutation index
+    // filteredMutationIndices.indexOf(mutationNumber) == -1 means that the searched object
+    // is not mutated in this graph
     if (truncatedGraph.nodes().size() != 0
         && !(mutationNumber == -1 && nodeNames.size() == 0 && tokenNameParam.length() == 0)
-        && filteredMutationIndices.indexOf(mutationNumber) == -1
-        && (filteredDiff == null || filteredDiff.getMutationList().size() == 0)) {
+        && filteredMutationIndices.indexOf(mutationNumber) == -1) {
       response.setHeader(
           "serverMessage",
           "The searched node/token exists in this graph. However, it is not mutated in this"
@@ -324,8 +343,11 @@ public class DataServlet extends HttpServlet {
               + " mutated!");
     }
 
-    // There is a diff between the previously-displayed graph and the current graph but
-    // no mutations in it only mutate on-screen nodes
+    // filteredMutationIndices.indexOf(mutationNumber) != -1 means some queried objects were
+    // mutated in this graph
+    // filteredDiff != null ensures that this message only shows when there is an actual diff
+    // filteredDiff.getMutationList().size() == 0 means that none of the mutations in the diff
+    // pertained solely to on-screen nodes
     if (filteredMutationIndices.indexOf(mutationNumber) != -1
         && filteredDiff != null
         && filteredDiff.getMutationList().size() == 0) {
@@ -335,6 +357,12 @@ public class DataServlet extends HttpServlet {
               + " radius), limit the display of the mutations. Please try increasing your radius"
               + " to view the mutation.");
     }
+
+    /*
+     ***********************
+     * Sending Response
+     ***********************
+     */
 
     response.setContentType("application/json");
     String graphJson =
@@ -365,7 +393,7 @@ public class DataServlet extends HttpServlet {
   /**
    * Private function to intialize the mutation list.
    *
-   * @param mutationInput InputStream to initialize variable over
+   * @param mutationInput InputStream to initialize mutation list variable over
    * @throws IOException if something goes wrong during the reading
    */
   private void initializeMutationVariables(InputStream mutationInput) throws IOException {
