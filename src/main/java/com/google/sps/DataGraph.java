@@ -33,9 +33,8 @@ import java.util.List;
 import static com.google.sps.Utility.protoNodeToGraphNode;
 
 /**
- * This file contains the class we used to represent the parsed graph we read
- * from the input file as well as additional information about the graph needed
- * to quickly compute requested information
+ * This file contains the class we used to represent the parsed graph we read from the input file as
+ * well as additional information about the graph needed to quickly compute requested information
  */
 @AutoValue
 abstract class DataGraph {
@@ -46,25 +45,32 @@ abstract class DataGraph {
    * @return the empty data graph with these attributes
    */
   public static DataGraph create() {
-    return new AutoValue_DataGraph(/* graph = */ GraphBuilder.directed().build(),
-        /* graphNodesMap = */ new HashMap<String, GraphNode>(), /* roots = */ new HashSet<String>(),
-        /* numMutations = */ -1, /* tokenMap = */ new HashMap<String, Set<String>>());
+    return new AutoValue_DataGraph(
+        /* graph = */ GraphBuilder.directed().build(),
+        /* graphNodesMap = */ new HashMap<String, GraphNode>(),
+        /* roots = */ new HashSet<String>(),
+        /* numMutations = */ -1,
+        /* tokenMap = */ new HashMap<String, Set<String>>());
   }
 
   /**
    * Create a new data graph with the given attributes
    *
-   * @param graph         the guava graph
+   * @param graph the guava graph
    * @param graphNodesMap the map from node name to node
-   * @param roots         a set of roots (nodes with no in-edges) of the graph
-   * @param numMutations  the number of mutations applied to the initial graph to
-   *                      get this graph or -1 if no mutations have been applied
-   * @param tokenMap      a map from token name to the names of all nodes in the
-   *                      graph that contain the given token
+   * @param roots a set of roots (nodes with no in-edges) of the graph
+   * @param numMutations the number of mutations applied to the initial graph to get this graph or
+   *     -1 if no mutations have been applied
+   * @param tokenMap a map from token name to the names of all nodes in the graph that contain the
+   *     given token
    * @return the data graph with these attributes
    */
-  static DataGraph create(MutableGraph<GraphNode> graph, HashMap<String, GraphNode> graphNodesMap,
-      HashSet<String> roots, int numMutations, HashMap<String, Set<String>> tokenMap) {
+  static DataGraph create(
+      MutableGraph<GraphNode> graph,
+      HashMap<String, GraphNode> graphNodesMap,
+      HashSet<String> roots,
+      int numMutations,
+      HashMap<String, Set<String>> tokenMap) {
     return new AutoValue_DataGraph(graph, graphNodesMap, roots, numMutations, tokenMap);
   }
 
@@ -92,8 +98,8 @@ abstract class DataGraph {
   /**
    * Getter for the number of mutations
    *
-   * @return the the number of mutations applied to the initial graph to get this
-   *         graph or -1 if no mutations have been applied
+   * @return the the number of mutations applied to the initial graph to get this graph or -1 if no
+   *     mutations have been applied
    */
   abstract int numMutations();
 
@@ -107,8 +113,7 @@ abstract class DataGraph {
   /**
    * Return a shallow copy of the given data graph
    *
-   * @return a shallow copy of the given data graph containing shallow copies of
-   *         its attributes
+   * @return a shallow copy of the given data graph containing shallow copies of its attributes
    */
   public DataGraph getCopy() {
     MutableGraph<GraphNode> graph = this.graph();
@@ -130,17 +135,16 @@ abstract class DataGraph {
     }
     HashSet<String> copyRoots = new HashSet<>();
     copyRoots.addAll(roots);
-    return DataGraph.create(Graphs.copyOf(graph), graphNodesMapCopy, copyRoots, mutationNum, tokenMapCopy);
+    return DataGraph.create(
+        Graphs.copyOf(graph), graphNodesMapCopy, copyRoots, mutationNum, tokenMapCopy);
   }
 
   /**
-   * Takes in a map from node name to proto-parsed node object. Populates this
-   * data graph with information from the parsed graph
+   * Takes in a map from node name to proto-parsed node object. Populates this data graph with
+   * information from the parsed graph
    *
-   * @param protoNodesMap map from node name to proto Node object parsed from
-   *                      input
-   * @return false if an error occurred because the graph was not acyclic, true
-   *         otherwise
+   * @param protoNodesMap map from node name to proto Node object parsed from input
+   * @return false if an error occurred because the graph was not acyclic, true otherwise
    */
   boolean graphFromProtoNodes(Map<String, Node> protoNodesMap) {
     MutableGraph<GraphNode> graph = this.graph();
@@ -187,12 +191,10 @@ abstract class DataGraph {
   /**
    * Applies a single mutation to the given data graph
    *
-   * @param mut the mutation to apply to the graph. The mutation must be supplied
-   *            in builder form so that redundant information can be removed from
-   *            it if necessary.
-   * @return an empty string if there was no error, otherwise an error message.
-   *         The method may also modify the mutation itself if it performs a
-   *         duplicate action like adding an existing token.
+   * @param mut the mutation to apply to the graph. The mutation must be supplied in builder form so
+   *     that redundant information can be removed from it if necessary.
+   * @return an empty string if there was no error, otherwise an error message. The method may also
+   *     modify the mutation itself if it performs a duplicate action like adding an existing token.
    */
   public String mutateGraph(Mutation.Builder mut) {
     MutableGraph<GraphNode> graph = this.graph();
@@ -209,104 +211,112 @@ abstract class DataGraph {
     GraphNode endNode = graphNodesMap.get(endName);
 
     switch (mut.getType()) {
-      case ADD_NODE: {
-        // Check whether node to be added is a duplicate
-        if (graphNodesMap.containsKey(startName)) {
-          return "Add node: Adding a duplicate node " + startName + "\n";
-        }
-
-        // New lone node is a root
-        roots.add(startName);
-        // Create a new node with the given name and add it to the graph and the map
-        GraphNode newGraphNode = GraphNode.create(startName, new ArrayList<>(), Struct.newBuilder().build());
-        graph.addNode(newGraphNode);
-        graphNodesMap.put(startName, newGraphNode);
-        break;
-      }
-      case ADD_EDGE: {
-        // Check nodes exist before adding an edge
-        if (startNode == null) {
-          return "Add edge: Start node " + startName + " doesn't exist\n";
-        }
-        if (endNode == null) {
-          return "Add edge: End node " + endName + " doesn't exist\n";
-        }
-
-        // The target cannot be a root since it has at least one in-edge
-        roots.remove(endName);
-        graph.putEdge(startNode, endNode);
-        break;
-      }
-      case DELETE_NODE: {
-        if (startNode == null) { // Check node exists before removing
-          return "Delete node: Deleting a non-existent node " + startName + "\n";
-        }
-
-        // Remove the node from all of the occurrences in the tokenMap
-        for (String token : startNode.tokenList()) {
-          removeNodeFromToken(token, startName);
-        }
-
-        Set<GraphNode> successors = graph.successors(startNode);
-        roots.remove(startName);
-        graph.removeNode(startNode); // This will remove all edges associated with startNode
-        graphNodesMap.remove(startName);
-
-        // Check whether any successor will have no in-edges after this node is removed
-        // If so, make them roots
-        for (GraphNode succ : successors) {
-          if (graph.inDegree(succ) == 0) {
-            roots.add(succ.name());
+      case ADD_NODE:
+        {
+          // Check whether node to be added is a duplicate
+          if (graphNodesMap.containsKey(startName)) {
+            return "Add node: Adding a duplicate node " + startName + "\n";
           }
-        }
 
-        break;
-      }
-      case DELETE_EDGE: {
-        if (startNode == null) {
-          return "Delete edge: Start node " + startName + " doesn't exist\n";
+          // New lone node is a root
+          roots.add(startName);
+          // Create a new node with the given name and add it to the graph and the map
+          GraphNode newGraphNode =
+              GraphNode.create(startName, new ArrayList<>(), Struct.newBuilder().build());
+          graph.addNode(newGraphNode);
+          graphNodesMap.put(startName, newGraphNode);
+          break;
         }
-        if (endNode == null) {
-          return "Delete edge: End node " + endName + " doesn't exist\n";
-        }
+      case ADD_EDGE:
+        {
+          // Check nodes exist before adding an edge
+          if (startNode == null) {
+            return "Add edge: Start node " + startName + " doesn't exist\n";
+          }
+          if (endNode == null) {
+            return "Add edge: End node " + endName + " doesn't exist\n";
+          }
 
-        graph.removeEdge(startNode, endNode);
-        // If the target now has no in-edges, it becomes a root
-        if (graph.inDegree(endNode) == 0) {
-          roots.add(endName);
+          // The target cannot be a root since it has at least one in-edge
+          roots.remove(endName);
+          graph.putEdge(startNode, endNode);
+          break;
         }
-        break;
-      }
-      case CHANGE_TOKEN: {
-        if (startNode == null) {
-          return "Change node: Changing a non-existent node " + startName + "\n";
-        }
-        // Modify the list of tokens of the node as per the mutation. In the process,
-        // deduplicate the token mutation by removing extra tokens that it adds
-        // or non-existent tokens that it deletes
-        TokenMutation.Builder tokenMut = mut.getTokenChange().toBuilder();
-        GraphNode newNode = changeNodeToken(startNode, tokenMut);
-        mut.setTokenChange(tokenMut);
+      case DELETE_NODE:
+        {
+          if (startNode == null) { // Check node exists before removing
+            return "Delete node: Deleting a non-existent node " + startName + "\n";
+          }
 
-        if (newNode == null) {
-          return "Change node: Unrecognized token mutation " + mut.getTokenChange().getType() + "\n";
-        }
+          // Remove the node from all of the occurrences in the tokenMap
+          for (String token : startNode.tokenList()) {
+            removeNodeFromToken(token, startName);
+          }
 
-        graphNodesMap.put(startName, newNode);
+          Set<GraphNode> successors = graph.successors(startNode);
+          roots.remove(startName);
+          graph.removeNode(startNode); // This will remove all edges associated with startNode
+          graphNodesMap.remove(startName);
 
-        Set<GraphNode> successors = graph.successors(startNode);
-        Set<GraphNode> predecessors = graph.predecessors(startNode);
-        graph.removeNode(startNode);
-        graph.addNode(newNode);
+          // Check whether any successor will have no in-edges after this node is removed
+          // If so, make them roots
+          for (GraphNode succ : successors) {
+            if (graph.inDegree(succ) == 0) {
+              roots.add(succ.name());
+            }
+          }
 
-        for (GraphNode succ : successors) {
-          graph.putEdge(newNode, succ);
+          break;
         }
-        for (GraphNode pred : predecessors) {
-          graph.putEdge(pred, newNode);
+      case DELETE_EDGE:
+        {
+          if (startNode == null) {
+            return "Delete edge: Start node " + startName + " doesn't exist\n";
+          }
+          if (endNode == null) {
+            return "Delete edge: End node " + endName + " doesn't exist\n";
+          }
+
+          graph.removeEdge(startNode, endNode);
+          // If the target now has no in-edges, it becomes a root
+          if (graph.inDegree(endNode) == 0) {
+            roots.add(endName);
+          }
+          break;
         }
-        break;
-      }
+      case CHANGE_TOKEN:
+        {
+          if (startNode == null) {
+            return "Change node: Changing a non-existent node " + startName + "\n";
+          }
+          // Modify the list of tokens of the node as per the mutation. In the process,
+          // deduplicate the token mutation by removing extra tokens that it adds
+          // or non-existent tokens that it deletes
+          TokenMutation.Builder tokenMut = mut.getTokenChange().toBuilder();
+          GraphNode newNode = changeNodeToken(startNode, tokenMut);
+          mut.setTokenChange(tokenMut);
+
+          if (newNode == null) {
+            return "Change node: Unrecognized token mutation "
+                + mut.getTokenChange().getType()
+                + "\n";
+          }
+
+          graphNodesMap.put(startName, newNode);
+
+          Set<GraphNode> successors = graph.successors(startNode);
+          Set<GraphNode> predecessors = graph.predecessors(startNode);
+          graph.removeNode(startNode);
+          graph.addNode(newNode);
+
+          for (GraphNode succ : successors) {
+            graph.putEdge(newNode, succ);
+          }
+          for (GraphNode pred : predecessors) {
+            graph.putEdge(pred, newNode);
+          }
+          break;
+        }
       default:
         // unrecognized mutation type
         return "Unrecognized mutation type: " + mut.getType() + "\n";
@@ -315,16 +325,13 @@ abstract class DataGraph {
   }
 
   /**
-   * Modifies the list of tokens of this node to either add or remove tokens
-   * contained in tokenMut
+   * Modifies the list of tokens of this node to either add or remove tokens contained in tokenMut
    *
-   * @param node     the node whose token list should be modified
-   * @param tokenMut the mutation that should be applied to the token list. The
-   *                 mutation should be passed in builder form so that it can be
-   *                 deduplicated if necessary.
-   * @return the new GraphNode object, or null if it's an unrecognized mutation.
-   *         The method may also modify the mutation itself if it performs a
-   *         duplicate action like adding an existing token.
+   * @param node the node whose token list should be modified
+   * @param tokenMut the mutation that should be applied to the token list. The mutation should be
+   *     passed in builder form so that it can be deduplicated if necessary.
+   * @return the new GraphNode object, or null if it's an unrecognized mutation. The method may also
+   *     modify the mutation itself if it performs a duplicate action like adding an existing token.
    */
   private GraphNode changeNodeToken(GraphNode node, TokenMutation.Builder tokenMut) {
 
@@ -379,7 +386,7 @@ abstract class DataGraph {
    * Adds a given node to token's set of nodes in the tokenMap
    *
    * @param tokenName the token name (key in the map)
-   * @param nodeName  the node to add to the tokenName's set
+   * @param nodeName the node to add to the tokenName's set
    */
   private void addNodeToToken(String tokenName, String nodeName) {
     Set<String> nodesWithToken = this.tokenMap().getOrDefault(tokenName, new HashSet<>());
@@ -391,7 +398,7 @@ abstract class DataGraph {
    * Removes a node from the token's set of nodes in the tokenMap
    *
    * @param tokenName the token name (key in the map)
-   * @param nodeName  the node to remove from the tokenName's set
+   * @param nodeName the node to remove from the tokenName's set
    */
   private void removeNodeFromToken(String tokenName, String nodeName) {
     if (this.tokenMap().containsKey(tokenName)) {
@@ -404,20 +411,18 @@ abstract class DataGraph {
   }
 
   /**
-   * Returns a MutableGraph of nodes that are at most radius from a given nodes.
-   * Here, we only consider children of children and parents of parents. If a node
-   * doesn't exist in the graph, we skip it. If the radius is less than 0 or none
-   * of the nodes specified aren't present, return an empty graph. If the initial
-   * set of nodes is empty, use the set of roots of the graph as starting points
+   * Returns a MutableGraph of nodes that are at most radius from a given nodes. Here, we only
+   * consider children of children and parents of parents. If a node doesn't exist in the graph, we
+   * skip it. If the radius is less than 0 or none of the nodes specified aren't present, return an
+   * empty graph. If the initial set of nodes is empty, use the set of roots of the graph as
+   * starting points
    *
-   * @param names  the names of the nodes whose descendants and ancestors within
-   *               radius distance and all associated edges should be included in
-   *               the graph
+   * @param names the names of the nodes whose descendants and ancestors within radius distance and
+   *     all associated edges should be included in the graph
    * @param radius the distance from the node to search for parents and children
-   * @return a graph comprised of only nodes and edges within a certain distance
-   *         from the specified nodes. Empty if radius is less than 0 or if none
-   *         of the nodes are found or names is null. Returns a graph with a depth
-   *         of at most radius starting from the roots if names is empty.
+   * @return a graph comprised of only nodes and edges within a certain distance from the specified
+   *     nodes. Empty if radius is less than 0 or if none of the nodes are found or names is null.
+   *     Returns a graph with a depth of at most radius starting from the roots if names is empty.
    */
   public MutableGraph<GraphNode> getReachableNodes(Collection<String> names, int radius) {
     if (radius < 0 || names == null) {
@@ -429,12 +434,17 @@ abstract class DataGraph {
     HashSet<GraphNode> nextLayerParents = new HashSet<GraphNode>();
 
     if (names.size() == 0) {
-      List<GraphNode> rootNodes = this.roots().stream().map(rootName -> this.graphNodesMap().get(rootName))
-          .collect(Collectors.toList());
+      List<GraphNode> rootNodes =
+          this.roots().stream()
+              .map(rootName -> this.graphNodesMap().get(rootName))
+              .collect(Collectors.toList());
       nextLayerChildren.addAll(rootNodes);
     } else {
-      Set<GraphNode> nodesToAdd = names.stream().filter(name -> graphNodesMap.containsKey(name))
-          .map(name -> graphNodesMap.get(name)).collect(Collectors.toSet());
+      Set<GraphNode> nodesToAdd =
+          names.stream()
+              .filter(name -> graphNodesMap.containsKey(name))
+              .map(name -> graphNodesMap.get(name))
+              .collect(Collectors.toSet());
       nextLayerChildren.addAll(nodesToAdd);
       nextLayerParents.addAll(nodesToAdd);
     }
@@ -468,21 +478,23 @@ abstract class DataGraph {
   }
 
   /**
-   * Helper function that gets the next layer of nodes based on what's visited, a
-   * queue, and whether we're looking for children
+   * Helper function that gets the next layer of nodes based on what's visited, a queue, and whether
+   * we're looking for children
    *
-   * @param layer   the layer of nodes to visit
+   * @param layer the layer of nodes to visit
    * @param visited A Hashset of visited nodes
-   * @param isChild whether we're looking for children. True means we look for the
-   *                children, and False means we look for parents.
+   * @param isChild whether we're looking for children. True means we look for the children, and
+   *     False means we look for parents.
    * @return the nodes relevant to the next layer
    */
-  private HashSet<GraphNode> getNextLayer(HashSet<GraphNode> layer, HashSet<GraphNode> visited, boolean isChild) {
+  private HashSet<GraphNode> getNextLayer(
+      HashSet<GraphNode> layer, HashSet<GraphNode> visited, boolean isChild) {
     HashSet<GraphNode> nextLayer = new HashSet<>();
     for (GraphNode curr : layer) {
       if (!visited.contains(curr)) {
         visited.add(curr);
-        Set<GraphNode> adjacentNodes = isChild ? this.graph().successors(curr) : this.graph().predecessors(curr);
+        Set<GraphNode> adjacentNodes =
+            isChild ? this.graph().successors(curr) : this.graph().predecessors(curr);
         for (GraphNode node : adjacentNodes) {
           if (!visited.contains(node)) {
             nextLayer.add(node);

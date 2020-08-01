@@ -61,7 +61,7 @@ public class DataServlet extends HttpServlet {
   private DataGraph originalDataGraph = null;
   // A data graph that represents the most recently requested graph
   private DataGraph currDataGraph = null;
-  // A list of mutations to apply to the original data graph as parsed from the 
+  // A list of mutations to apply to the original data graph as parsed from the
   // mutations proto file
   private List<MultiMutation> mutList = null;
   // We store a builder so that we can modify the contained mutation objects
@@ -84,7 +84,7 @@ public class DataServlet extends HttpServlet {
    */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    // Used to detect whether various operations are performed successfully, and inform the 
+    // Used to detect whether various operations are performed successfully, and inform the
     // user if not.
     boolean success = true;
 
@@ -141,7 +141,8 @@ public class DataServlet extends HttpServlet {
       response.setHeader("serverError", "Improper radius parameter, cannot generate graph");
       return;
     } else if (mutationNumParam == null) {
-      response.setHeader("serverError", "Improper mutation number parameter, cannot generate graph");
+      response.setHeader(
+          "serverError", "Improper mutation number parameter, cannot generate graph");
       return;
     }
     // If nodeNamesParam or tokenNameParam are null, we should just set them to empty and
@@ -158,7 +159,7 @@ public class DataServlet extends HttpServlet {
     // Truncated version of graph to return to the client
     MutableGraph<GraphNode> truncatedGraph = GraphBuilder.directed().build();
 
-    // A list containing the indices of mutations that any nodes displayed on 
+    // A list containing the indices of mutations that any nodes displayed on
     // screen as well as the searched nodes and any nodes containing the searched
     // token.
     List<Integer> filteredMutationIndices = new ArrayList<>();
@@ -251,7 +252,7 @@ public class DataServlet extends HttpServlet {
     if (queriedNext.isEmpty()) {
       truncatedGraphNext = GraphBuilder.undirected().build();
     } else {
-      // If queried and queriedNext contain the same nodes, then there is no reason 
+      // If queried and queriedNext contain the same nodes, then there is no reason
       // to regenerate the graph
       truncatedGraphNext =
           queried.equals(queriedNext)
@@ -277,13 +278,13 @@ public class DataServlet extends HttpServlet {
       mutationIndicesSet.addAll(
           findRelevantMutations(truncatedGraphNodeNamesNext, mutationIndicesMap, mutList));
 
-      // Add all mutations relevant to the queried token, computing and caching it if it 
+      // Add all mutations relevant to the queried token, computing and caching it if it
       // hasn't been done already
       if (!tokenIndicesMap.containsKey(tokenNameParam)) {
         tokenIndicesMap.put(tokenNameParam, getMutationIndicesOfToken(tokenNameParam, mutList));
       }
       mutationIndicesSet.addAll(tokenIndicesMap.get(tokenNameParam));
-      
+
       // Add all mutations relevant to the queried node names
       mutationIndicesSet.addAll(findRelevantMutations(nodeNames, mutationIndicesMap, mutList));
       filteredMutationIndices = new ArrayList<>(mutationIndicesSet);
@@ -312,11 +313,11 @@ public class DataServlet extends HttpServlet {
     }
     // truncatedGraph.nodes().size() == 0 means something was queried but wasn't found
     // in the graph
-    // filteredMutationIndices.size() != 0 means the searched object is mutated at some 
+    // filteredMutationIndices.size() != 0 means the searched object is mutated at some
     // point
     // filteredDiff == null || filteredDiff.getMutationList().size() == 0 means that none
-    // of the searched objects are mutated here. This exists to prevent this message from 
-    // being emitted when the searched object is deleted in this graph so it doesn't exist 
+    // of the searched objects are mutated here. This exists to prevent this message from
+    // being emitted when the searched object is deleted in this graph so it doesn't exist
     // but is still mutated
     if (truncatedGraph.nodes().size() == 0
         && filteredMutationIndices.size() != 0
@@ -328,7 +329,7 @@ public class DataServlet extends HttpServlet {
               + " graph where this node exists.");
     }
     // truncatedGraph.nodes().size() != 0 means the queried object was found in this graph
-    // !(mutationNumber == -1 && nodeNames.size() == 0 && tokenNameParam.length() == 0) 
+    // !(mutationNumber == -1 && nodeNames.size() == 0 && tokenNameParam.length() == 0)
     // is included to avoid emitting this message when we are on the initial graph with
     // no node names or tokens searched because -1 is never a valid mutation index
     // filteredMutationIndices.indexOf(mutationNumber) == -1 means that the searched object
