@@ -363,7 +363,7 @@ function getGraphDisplay(graphNodes, graphEdges, mutList, reason, queriedNodes) 
   }
   document.getElementById('reset').onclick = function () { resetElements(cy, true) };
 
-  document.getElementById('search-button').onclick = function () { searchAndHighlight(cy, "node", searchNode) };
+  document.getElementById('search-node-button').onclick = function () { searchAndHighlight(cy, "node", searchNode) };
 
   document.getElementById('search-token-button').onclick = function () { searchAndHighlight(cy, "token", searchToken) };
 

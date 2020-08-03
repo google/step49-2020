@@ -450,7 +450,7 @@ describe("Node search", function () {
       <h4 class="search-title">Zoom In</h4>
         <label>Zoom on Node in Graph: </label>
         <input type="text" id="node-search" placeholder="Node Name"></input>
-        <button id="search-button">Find Node</button>
+        <button id="search-node-button">Find Node</button>
 
         <label>Zoom on Token in Graph: </label>
         <input type="text" id="token-search" placeholder="Token Name"></input>
@@ -568,7 +568,7 @@ describe("Token search", function () {
         <h4 class="search-title">Zoom In</h4>
           <label>Zoom on Node in Graph: </label>
           <input type="text" id="node-search" placeholder="Node Name"></input>
-          <button id="search-button">Find Node</button>
+          <button id="search-node-button">Find Node</button>
 
           <label>Zoom on Token in Graph: </label>
           <input type="text" id="token-search" placeholder="Token Name"></input>
@@ -835,12 +835,11 @@ describe("Showing and hiding tooltips when checkbox is clicked", function () {
   it("correctly shows/hides tooltips when checkbox is checked/unchecked", function () {
     document.body.innerHTML = `
     <div id="graph"></div>
-    <button id="search-button">Search</button>
+    <button id="search-node-button">Search</button>
     <label id="search-error"></label>
     <input type="checkbox" id="show-mutations"></input>
     <button id="clear-log">Clear Log</button>
     <button id="reset"></button>
-    <button id="search-button"></button>
     <button id="search-token-button"></button>
     <input type="number" id="highlight-number">`;
 
