@@ -367,9 +367,17 @@ function getGraphDisplay(graphNodes, graphEdges, mutList, reason, queriedNodes) 
 
   document.getElementById('search-token-button').onclick = function () { searchAndHighlight(cy, "token", searchToken) };
 
-  document.getElementById('highlight-number').onchange = function() { 
-    updateHighlightedToken(cy, document.getElementById('highlight-number').value); 
-  };  
+  // document.getElementById('highlight-number').onchange = function() { 
+  //   updateHighlightedToken(cy, document.getElementById('highlight-number').value); 
+  // };
+
+  // document.getElementById('prevnode').onclick = function () { 
+  //   updateHighlightedToken(cy, document.getElementById('highlight-number').value - 1);
+  // };
+
+  // document.getElementById('nextnode').onclick = function () { 
+  //   updateHighlightedToken(cy, document.getElementById('highlight-number').value + 1);
+  // };
 
   // When a new graph is loaded, mutations are always shown by default
   const showMutButton = document.getElementById("show-mutations");
@@ -721,10 +729,17 @@ function searchToken(cy, query) {
     document.getElementById('highlight-number').onchange = function () {
       updateHighlightedToken(cy, target, document.getElementById('highlight-number').value - 1);
     };
+    document.getElementById('prevnode').onclick = function () {
+      updateHighlightedToken(cy, target, document.getElementById('highlight-number').value - 2);
+    };
+
+    document.getElementById('nextnode').onclick = function () {
+      // parseInt needed because it does not infer type when subtraction is not used
+      updateHighlightedToken(cy, target, parseInt(document.getElementById('highlight-number').value));
+    };
     return target[0];
   }
 }
-
 
 /**
  * Zoom/highlights node based on queried token and index
