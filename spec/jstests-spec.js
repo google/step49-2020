@@ -1,6 +1,6 @@
 import { colorScheme, opacityScheme, tippySize, borderScheme } from '../src/main/webapp/constants.js';
 import {
-  initializeNumMutations, setMutationIndexList, setCurrMutationNum, setCurrMutationIndex,
+  setNumMutations, setMutationIndexList, setCurrMutationNum, setCurrMutationIndex,
   initializeTippy, generateGraph, getUrl, navigateGraph, currMutationNum, currMutationIndex,
   numMutations, updateButtons, searchAndHighlight, highlightDiff, initializeReasonTooltip,
   getGraphDisplay, getClosestIndices, initializeSlider, resetMutationSlider, mutationNumSlider,
@@ -228,7 +228,7 @@ describe("Pressing next and previous buttons associated with a graph", function 
 
   it("correctly updates mutation tracking variables and button properties on click", function () {
     document.body.appendChild(numDisplay);
-    initializeNumMutations(3);
+    setNumMutations(3);
     setCurrMutationNum(-1);
     setCurrMutationIndex(-1);
     // Relevant indices are different from actual indices!
@@ -310,7 +310,7 @@ describe("Pressing next and previous buttons associated with a graph", function 
 
   it("correctly doesn't change anything when there aren't any mutations", function () {
     document.body.appendChild(numDisplay);
-    initializeNumMutations(-1);
+    setNumMutations(-1);
     setCurrMutationNum(10);
 
     // Nothing changes with a negative numMutations
@@ -326,7 +326,7 @@ describe("Pressing next and previous buttons associated with a graph", function 
     setCurrMutationIndex(.5);
     setCurrMutationNum(0);
     setMutationIndexList([0, 1, 3]);
-    initializeNumMutations(3);
+    setNumMutations(3);
     navigateGraph(1);
     expect(currMutationIndex).toBe(1);
     expect(currMutationNum).toBe(1);
@@ -337,7 +337,7 @@ describe("Pressing next and previous buttons associated with a graph", function 
     setCurrMutationIndex(.5);
     setCurrMutationNum(0);
     setMutationIndexList([0, 1, 3]);
-    initializeNumMutations(3);
+    setNumMutations(3);
     navigateGraph(-1);
     expect(currMutationIndex).toBe(0);
     expect(currMutationNum).toBe(0);
@@ -979,7 +979,7 @@ describe("Testing slider functionality", function () {
 
   it("correctly sets up the slider when the mutation index list is empty", function () {
     setMutationIndexList([]);
-    initializeNumMutations(0);
+    setNumMutations(0);
     setCurrMutationNum(-1);
     setCurrMutationIndex(-1);
 
@@ -997,7 +997,7 @@ describe("Testing slider functionality", function () {
   it("correctly sets up the slider when the mutation index list is non-empty", function () {
     // Array from 0 to 109
     setMutationIndexList(Array(110).keys());
-    initializeNumMutations(110);
+    setNumMutations(110);
     setCurrMutationNum(2);
     setCurrMutationIndex(2);
 
@@ -1020,7 +1020,7 @@ describe("Testing slider functionality", function () {
   });
 
   it("correctly integrates slider with next and previous buttons", function () {
-    initializeNumMutations(3);
+    setNumMutations(3);
     setCurrMutationNum(1);
     setCurrMutationIndex(-0.5);
     // Relevant indices are different from actual indices!
