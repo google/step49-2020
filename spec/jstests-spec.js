@@ -564,25 +564,25 @@ describe("Token search", function () {
   beforeEach(function () {
     document.body.innerHTML =
       `<div id="cy"></div>
-    <div id="zoom-box" class="input-child">
-      <h4 class="search-title">Zoom In</h4>
-        <label>Zoom on Node in Graph: </label>
-        <input type="text" id="node-search" placeholder="Node Name"></input>
-        <button id="search-button">Find Node</button>
+      <div id="zoom-box" class="input-child">
+        <h4 class="search-title">Zoom In</h4>
+          <label>Zoom on Node in Graph: </label>
+          <input type="text" id="node-search" placeholder="Node Name"></input>
+          <button id="search-button">Find Node</button>
 
-        <label>Zoom on Token in Graph: </label>
-        <input type="text" id="token-search" placeholder="Token Name"></input>
-        <button id="search-token-button">Find Token</button>
-      <div>
-        <label for="highlight-number">Highlighted Token: </label>
-        <input type="number" id="highlight-number" min="0" value="0" max="0" disabled=true>
-        <label id="num-selected">out of 0</label>
-        <button id="reset" class="reset">Reset Zoom</button>
+          <label>Zoom on Token in Graph: </label>
+          <input type="text" id="token-search" placeholder="Token Name"></input>
+          <button id="search-token-button">Find Token</button>
+        <div>
+          <label for="highlight-number">Highlighted Token: </label>
+          <input type="number" id="highlight-number" min="0" value="0" max="0" disabled=true>
+          <label id="num-selected">out of 0</label>
+          <button id="reset" class="reset">Reset Zoom</button>
+        </div>
       </div>
-    </div>
-    <ul id="log-list">
-      <li class="log-msg"></li>
-    </ul>`;
+      <ul id="log-list">
+        <li class="log-msg"></li>
+      </ul>`;
     cy = cytoscape({
       elements: [
       ],
@@ -1130,42 +1130,4 @@ describe("Testing graph input functionality", function () {
     document.getElementById("graph-number").onchange();
     expect(graphNumberInput.value).toBe("0");
   });
-});
-
-describe("Testing clear log functionality", function () {
-  let logList;
-  let clearLogButton;
-
-  beforeEach(function () {
-    document.body.innerHTML =
-      `<div class="graph-content-column" id="graph-content-logs">
-          <button id="clear-log">Clear Log</button>
-          <ul id="log-list">
-            <li class="log-msg"></li>
-        </ul>
-      </div>`;
-    logList = document.getElementById("log-list");
-    clearLogButton = document.getElementById("clear-log");
-    clearLogButton.onclick = function () { clearLogs() };
-  });
-
-  it("clears the logs when they contain messages", function () {
-    const newMsg1 = document.createElement("li");
-    newMsg1.innerText = "Sample log text 1";
-    logList.appendChild(newMsg1);
-
-    const newMsg2 = document.createElement("li");
-    newMsg2.innerText = "Sample log text 2";
-    logList.appendChild(newMsg2);
-
-    clearLogButton.click();
-    expect(logList.innerText).toBe("");
-  });
-
-  it("clears the logs when they are empty", function () {
-    expect(logList.innerText).toBe("");
-    clearLogButton.click();
-    expect(logList.innerText).toBe("");
-  });
-
 });

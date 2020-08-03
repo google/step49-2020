@@ -300,7 +300,6 @@ function getGraphDisplay(graphNodes, graphEdges, mutList, reason, queriedNodes) 
           width: '50px',
           height: '50px',
           'background-color': colorScheme["unmodifiedNodeColor"],
-          'label': '',
           'color': colorScheme["labelColor"],
           'font-size': '20px',
           'text-halign': 'center',
@@ -320,7 +319,7 @@ function getGraphDisplay(graphNodes, graphEdges, mutList, reason, queriedNodes) 
       {
         selector: '.highlighted-node',
         style: {
-          'border-width': 4,
+          'border-width': borderScheme['queriedBorder'],
         }
       },
       {
@@ -563,7 +562,6 @@ function initializeReasonTooltip(obj, reason) {
   const dummyDomEle = document.createElement('div');
 
   obj.reasonTip = tippy(dummyDomEle, {
-    theme: 'tomato',
     trigger: 'manual',
     lazy: false,
     onCreate: instance => { instance.popperInstance.reference = tipPosition; },
@@ -721,7 +719,6 @@ function searchToken(cy, query) {
     document.getElementById('highlight-number').max = target.length;
     document.getElementById('highlight-number').disabled = false;
     document.getElementById('highlight-number').onchange = function () {
-      console.log("Here");
       updateHighlightedToken(cy, target, document.getElementById('highlight-number').value - 1);
     };
     return target[0];
@@ -730,7 +727,7 @@ function searchToken(cy, query) {
 
 
 /**
- * Searches and highlights/zooms a graph for specified token
+ * Zoom/highlights node based on queried token and index
  *
  * @param cy the graph to search through
  * @param nodesWithToken the list of nodes that contain specified token
