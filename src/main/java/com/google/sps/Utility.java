@@ -37,9 +37,7 @@ import com.proto.MutationProtos.TokenMutation;
 
 import org.json.JSONObject;
 
-/**
- * This file contains utility functions used for various tasks in the servlet
- */
+/** This file contains utility functions used for various tasks in the servlet */
 public final class Utility {
 
   private Utility() {
@@ -108,7 +106,7 @@ public final class Utility {
   }
 
   /**
-   * Returns the graph at the given mutation number, null if the requested number is less than -1. 
+   * Returns the graph at the given mutation number, null if the requested number is less than -1.
    * If the user requests a number greater than the total number of mutations, we return the final
    * graph.
    *
@@ -179,8 +177,8 @@ public final class Utility {
   }
 
   /**
-   * Returns the last multi-mutation (list of mutations) that needs to be applied to get
-   * from the graph at currIndex to the graph at nextIndex as long as nextIndex > currIndex
+   * Returns the last multi-mutation (list of mutations) that needs to be applied to get from the
+   * graph at currIndex to the graph at nextIndex as long as nextIndex > currIndex
    *
    * @param multiMutList the list of multi-mutations that are to be applied to the initial graph
    * @param index the index of the last-applied multimutation

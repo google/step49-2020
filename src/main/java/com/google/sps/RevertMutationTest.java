@@ -30,10 +30,8 @@ import static com.google.sps.Utility.revertMutation;
 import static com.google.sps.Utility.revertMultiMutation;
 
 /**
- * This file tests the following functions: 
- * - Utility.revertTokenChangeMutation
- * - Utility.revertMutation
- * - Utility.revertMultiMutation
+ * This file tests the following functions: - Utility.revertTokenChangeMutation -
+ * Utility.revertMutation - Utility.revertMultiMutation
  */
 @RunWith(JUnit4.class)
 public class RevertMutationTest {

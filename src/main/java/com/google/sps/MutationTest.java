@@ -36,10 +36,7 @@ import org.junit.runners.JUnit4;
 
 import static com.google.sps.Utility.protoNodeToGraphNode;
 
-/**
- * This file tests the following functions: 
- * - mutateGraph in DataGraph.java
- */
+/** This file tests the following functions: - mutateGraph in DataGraph.java */
 @RunWith(JUnit4.class)
 public final class MutationTest {
 

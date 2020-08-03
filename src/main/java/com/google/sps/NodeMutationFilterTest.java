@@ -33,9 +33,8 @@ import static com.google.sps.Utility.getMutationIndicesOfNode;
 import static com.google.sps.Utility.findRelevantMutations;
 
 /**
- * This file tests the following functions: 
- * - Utility.getMutationIndicesOfNode
- * - Utility.findRelevantMutations
+ * This file tests the following functions: - Utility.getMutationIndicesOfNode -
+ * Utility.findRelevantMutations
  */
 @RunWith(JUnit4.class)
 public class NodeMutationFilterTest {
@@ -181,7 +180,7 @@ public class NodeMutationFilterTest {
   }
 
   /**
-   * Getting mutation indices of multiple nodes returns the union of all their individual indices 
+   * Getting mutation indices of multiple nodes returns the union of all their individual indices
    * without duplicates
    */
   @Test

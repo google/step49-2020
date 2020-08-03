@@ -37,11 +37,8 @@ import static com.google.sps.Utility.getNodeNamesInGraph;
 import static com.google.sps.Utility.protoNodeToGraphNode;
 
 /**
- * This file tests the following functions:
- * - Utility.protoNodeToGraphNode
- * - graphFromProtoNode in DataGraph.java
- * - getCopy in DataGraph.java
- * - Utility.getNodeNamesInGraph
+ * This file tests the following functions: - Utility.protoNodeToGraphNode - graphFromProtoNode in
+ * DataGraph.java - getCopy in DataGraph.java - Utility.getNodeNamesInGraph
  */
 @RunWith(JUnit4.class)
 public final class GraphGenerationTest {

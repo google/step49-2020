@@ -36,10 +36,7 @@ import org.junit.runners.JUnit4;
 import static com.google.sps.Utility.getGraphAtMutationNumber;
 import static com.google.sps.Utility.protoNodeToGraphNode;
 
-/**
- * This file tests the following functions:
- * - Utility.getGraphAtMutationNumber
- */
+/** This file tests the following functions: - Utility.getGraphAtMutationNumber */
 @RunWith(JUnit4.class)
 public class GetGraphAtMutationNumberTest {
 

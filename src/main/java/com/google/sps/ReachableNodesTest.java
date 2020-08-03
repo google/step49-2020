@@ -19,10 +19,7 @@ import org.junit.runners.JUnit4;
 
 import static com.google.sps.Utility.protoNodeToGraphNode;
 
-/**
- * This file tests the following functions: 
- * - getReachableNodes in DataGraph.java
- */
+/** This file tests the following functions: - getReachableNodes in DataGraph.java */
 @RunWith(JUnit4.class)
 public class ReachableNodesTest {
   // Proto nodes to construct graph with

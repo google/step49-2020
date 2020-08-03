@@ -6,7 +6,7 @@ import java.util.List;
 
 /*
  * A class that stores all necessary internal data about a graph node, for example its name,
- * list of tokens (files, AST tokens etc.), and metadata. An object of this type does not 
+ * list of tokens (files, AST tokens etc.), and metadata. An object of this type does not
  * contain dependency information since this is already indicated by the edges of the graph
  * this is a node of.
  */
