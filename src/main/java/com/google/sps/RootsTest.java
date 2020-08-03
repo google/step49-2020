@@ -26,6 +26,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+
+/**
+ * This file tests the following functions: 
+ * - graphFromProtoNodes in DataGraph.java
+ * - mutateGraph in DataGraph.java
+ */
 @RunWith(JUnit4.class)
 public class RootsTest {
 

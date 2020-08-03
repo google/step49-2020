@@ -36,7 +36,10 @@ import org.junit.runners.JUnit4;
 
 import static com.google.sps.Utility.protoNodeToGraphNode;
 
-/** */
+/**
+ * This file tests the following functions: 
+ * - mutateGraph in DataGraph.java
+ */
 @RunWith(JUnit4.class)
 public final class MutationTest {
 
@@ -44,25 +47,16 @@ public final class MutationTest {
   Builder nodeA = Node.newBuilder().setName("A");
   Builder nodeB = Node.newBuilder().setName("B");
   Builder nodeC = Node.newBuilder().setName("C");
-  Builder nodeD = Node.newBuilder().setName("D");
-  Builder nodeE = Node.newBuilder().setName("E");
-  Builder nodeF = Node.newBuilder().setName("F");
 
   GraphNode gNodeA;
   GraphNode gNodeB;
   GraphNode gNodeC;
-  GraphNode gNodeD;
-  GraphNode gNodeE;
-  GraphNode gNodeF;
 
   @Before
   public void setUp() {
     gNodeA = protoNodeToGraphNode(nodeA.build());
     gNodeB = protoNodeToGraphNode(nodeB.build());
     gNodeC = protoNodeToGraphNode(nodeC.build());
-    gNodeD = protoNodeToGraphNode(nodeD.build());
-    gNodeE = protoNodeToGraphNode(nodeE.build());
-    gNodeF = protoNodeToGraphNode(nodeF.build());
   }
 
   /*

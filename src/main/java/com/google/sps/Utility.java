@@ -37,6 +37,9 @@ import com.proto.MutationProtos.TokenMutation;
 
 import org.json.JSONObject;
 
+/**
+ * This file contains utility functions used for various tasks in the servlet
+ */
 public final class Utility {
 
   private Utility() {
@@ -47,7 +50,7 @@ public final class Utility {
    * Converts a proto node object into a graph node object that does not store the names of the
    * child nodes but may store additional information.
    *
-   * @param thisNode the input data Node object
+   * @param thisNode the input Node object
    * @return a useful node used to construct the Guava Graph
    */
   public static GraphNode protoNodeToGraphNode(Node thisNode) {
@@ -59,7 +62,9 @@ public final class Utility {
 
   /**
    * Converts a Guava graph into a String encoding of a JSON Object. The object contains nodes and
-   * edges of the graph.
+   * edges of the graph as well as indices of mutations that mutate graph nodes, a list of the
+   * mutations that were applied in the last step to get from the old graph to this graph, the total
+   * length of the mutation list and a list of queriedNodes to highlight.
    *
    * @param graph the graph to convert into a JSON String
    * @param mutationIndices the indices in the entire mutation list that mutate the relevant nodes
@@ -103,13 +108,13 @@ public final class Utility {
   }
 
   /**
-   * Returns the graph at the given mutation number null if the requested number is less than -1. If
-   * the user requests a number greater than the total number of mutations, we return the final
+   * Returns the graph at the given mutation number, null if the requested number is less than -1. 
+   * If the user requests a number greater than the total number of mutations, we return the final
    * graph.
    *
    * @param original the original graph
    * @param curr the current (most recently-requested) graph (requires that original != curr)
-   * @param mutationNum number of mutations to apply
+   * @param mutationNum the index of the last mutation to apply
    * @param multiMutList multi-mutation list builder. This parameter may be modified by replacing
    *     some mutations with their deduplicated versions.
    * @throws IllegalArgumentException if original and current graph refer to the same object
@@ -159,7 +164,7 @@ public final class Utility {
       // The last mutation to revert is the one after the last one to apply
       for (int i = curr.numMutations(); i > mutationNum; i--) {
         // Mutate graph operates in place
-        MultiMutation multiMut = Utility.revertMultiMutation(multiMutList.get(i));
+        MultiMutation multiMut = revertMultiMutation(multiMutList.get(i));
         List<Mutation> mutations = multiMut.getMutationList();
         for (Mutation mut : mutations) {
           String error = curr.mutateGraph(mut.toBuilder());
@@ -174,11 +179,11 @@ public final class Utility {
   }
 
   /**
-   * Returns a multi-mutation (list of mutations) that need to be applied to get from the graph at
-   * currIndex to the graph at nextIndex as long as nextIndex = currIndex + 1
+   * Returns the last multi-mutation (list of mutations) that needs to be applied to get
+   * from the graph at currIndex to the graph at nextIndex as long as nextIndex > currIndex
    *
    * @param multiMutList the list of multi-mutations that are to be applied to the initial graph
-   * @param index the index in the above list at which the multimutation to apply is
+   * @param index the index of the last-applied multimutation
    * @return a multimutation with all the changes to apply to the current graph to get the next
    *     graph or null if the provided indices are out of bounds or non-consecutive
    */
@@ -223,7 +228,7 @@ public final class Utility {
    *
    * @param tokenName the token name to search for
    * @param origList the original list of mutations
-   * @return a set of indices, empty if tokenName is null or if token is not changed
+   * @return a set of indices, empty if tokenName is null or empty
    */
   public static Set<Integer> getMutationIndicesOfToken(
       String tokenName, List<MultiMutation> origList) {

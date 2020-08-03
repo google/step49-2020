@@ -35,8 +35,7 @@ import static com.google.sps.Utility.graphToJson;
 import static com.google.sps.Utility.protoNodeToGraphNode;
 
 /**
- * Since we don't manually build the JSON, we can just check all of the fields in the JSON are
- * present.
+ * This file tests the following functions: - Utility.graphToJson
  */
 @RunWith(JUnit4.class)
 public final class JsonTest {
@@ -71,7 +70,7 @@ public final class JsonTest {
 
   /*
    * Tests that a graph with both nodes and edges is correctly converted to a JSON
-   * string
+   * string with all the expected fields
    */
   @Test
   public void nodesAndEdges() {
@@ -79,7 +78,6 @@ public final class JsonTest {
     nodeA.addChildren("C");
     nodeA.addToken("1");
     nodeA.addToken("2");
-
     nodeC.addToken("3");
 
     gNodeA = protoNodeToGraphNode(nodeA.build());
@@ -95,13 +93,8 @@ public final class JsonTest {
     graph.putEdge(gNodeA, gNodeB);
     graph.putEdge(gNodeA, gNodeC);
 
-    String result =
-        graphToJson(
-            graph,
-            new ArrayList<Integer>(),
-            MultiMutation.newBuilder().setReason("test").build(),
-            0,
-            new HashSet<String>());
+    String result = graphToJson(graph, new ArrayList<Integer>(), MultiMutation.newBuilder().setReason("test").build(),
+        0, new HashSet<String>());
     JSONObject jsonObject = new JSONObject(result);
 
     Assert.assertEquals(jsonObject.length(), 7);

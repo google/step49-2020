@@ -19,6 +19,10 @@ import org.junit.runners.JUnit4;
 
 import static com.google.sps.Utility.protoNodeToGraphNode;
 
+/**
+ * This file tests the following functions: 
+ * - getReachableNodes in DataGraph.java
+ */
 @RunWith(JUnit4.class)
 public class ReachableNodesTest {
   // Proto nodes to construct graph with
@@ -168,7 +172,7 @@ public class ReachableNodesTest {
     Assert.assertEquals(2, graphEdges.size());
   }
 
-  /** Radius is greater than the distance of any reachable node */
+  /** Radius is greater than the distance of any reachable node returns whole graph */
   @Test
   public void requestedGreaterThanMaxDepth() {
     nodeA.addChildren("B");
@@ -392,7 +396,7 @@ public class ReachableNodesTest {
     Assert.assertEquals(2, graphEdges.size());
   }
 
-  /** All nodes searched for don't exist in the graph */
+  /** All nodes searched for don't exist in the graph returns an empty graph */
   @Test
   public void nonExistentNodesOnly() {
     nodeA.addChildren("B");
