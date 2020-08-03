@@ -26,6 +26,7 @@ import tippy, { sticky } from 'tippy.js';
 import 'tippy.js/dist/tippy.css';
 import 'tippy.js/dist/backdrop.css';
 import 'tippy.js/animations/shift-away.css';
+
 import { colorScheme, opacityScheme, borderScheme } from './constants.js';
 import "./style.scss";
 
@@ -130,6 +131,8 @@ async function generateGraph() {
   const nodes = JSON.parse(jsonResponse.nodes);
   const edges = JSON.parse(jsonResponse.edges);
 
+  const queriedNodes = JSON.parse(jsonResponse.queriedNodes);
+
   // Set all logs to be black
   const allLogs = document.querySelectorAll('.log-msg');
   for (let i = 0; i < allLogs.length; i++) {
@@ -142,7 +145,6 @@ async function generateGraph() {
   mutationIndexList = JSON.parse(jsonResponse.mutationIndices);
   numMutations = mutationIndexList.length;
   maxNumMutations = jsonResponse.totalMutNumber;
-  const queriedNodes = JSON.parse(jsonResponse.queriedNodes);
 
   if (!nodes || !edges || !Array.isArray(nodes) || !Array.isArray(edges)) {
     displayError("Malformed graph received from server - edges or nodes are empty");
@@ -217,8 +219,11 @@ function disableInputs() {
  */
 function getUrl() {
   const depthElem = document.getElementById('num-layers');
-  const nodeName = document.getElementById('node-name-filter') ? document.getElementById('node-name-filter').value || "" : "";
+  const nodeNames = document.getElementById('node-name-filter') ? document.getElementById('node-name-filter').value || "" : "";
   const tokenName = document.getElementById('token-name-filter') ? document.getElementById('token-name-filter').value || "" : "";
+  // Takes care of "all the whitespace characters (space, tab, no-break space, etc.) 
+  // and all the line terminator characters (LF, CR, etc.)" acc to documentation
+  const nodeNamesArray = JSON.stringify(nodeNames.split(",").map(item => item.trim()).filter(item => item.length > 0));
 
   let selectedDepth = 0;
   if (depthElem === null) {
@@ -237,7 +242,7 @@ function getUrl() {
       selectedDepth = 20;
     }
   }
-  const url = `/data?depth=${selectedDepth}&mutationNum=${currMutationNum}&nodeName=${nodeName}&tokenName=${tokenName}`;
+  const url = `/data?depth=${selectedDepth}&mutationNum=${currMutationNum}&nodeNames=${nodeNamesArray}&tokenName=${tokenName}`;
   return url;
 }
 

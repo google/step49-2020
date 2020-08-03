@@ -16,8 +16,8 @@
   <div id="search-box">
     <label for="layers">Radius from filtered node(s) (0-20, default is 3):</label>
     <input type="number" id="num-layers" name="layers" min="0" max="20" value="3">
-    <label for="search-name">Name of node to filter for</label>
-    <input type="text" id="node-name-filter" name="search-name" placeholder="Node Name"></input>
+    <label for="search-name">Name of node(s) to filter for (If you enter multiple, please separate with commas!) </label>
+    <input type="text" id="node-name-filter" name="search-name" placeholder="nodeName1,nodeName2"></input>
     <label for="token-name">Name of token to filter for</label>
     <input type="text" id="token-name-filter" name="token-name" placeholder="Token Name"></input>
     <button onclick="graph.generateGraph()">Get Graph</button>

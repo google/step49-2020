@@ -21,6 +21,7 @@ import com.proto.GraphProtos.Node;
 import com.proto.GraphProtos.Node.Builder;
 import com.proto.MutationProtos.MultiMutation;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -97,7 +98,7 @@ public final class JsonTest {
             new ArrayList<Integer>(),
             MultiMutation.newBuilder().setReason("test").build(),
             0,
-            new ArrayList<String>());
+            new HashSet<String>());
     JSONObject jsonObject = new JSONObject(result);
 
     Assert.assertEquals(jsonObject.length(), 7);
