@@ -35,9 +35,8 @@ import static com.google.sps.Utility.getMultiMutationAtIndex;
 import static com.google.sps.Utility.filterMultiMutationByNodes;
 
 /**
- * This file tests the following functions:
- * - Utility.getMultiMutationAtIndex
- * - Utility.filterMultiMutationByNodes
+ * This file tests the following functions: - Utility.getMultiMutationAtIndex -
+ * Utility.filterMultiMutationByNodes
  */
 @RunWith(JUnit4.class)
 public class MutationDiffTest {

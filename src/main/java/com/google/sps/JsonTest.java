@@ -34,9 +34,7 @@ import org.junit.runners.JUnit4;
 import static com.google.sps.Utility.graphToJson;
 import static com.google.sps.Utility.protoNodeToGraphNode;
 
-/**
- * This file tests the following functions: - Utility.graphToJson
- */
+/** This file tests the following functions: - Utility.graphToJson */
 @RunWith(JUnit4.class)
 public final class JsonTest {
 
@@ -93,8 +91,13 @@ public final class JsonTest {
     graph.putEdge(gNodeA, gNodeB);
     graph.putEdge(gNodeA, gNodeC);
 
-    String result = graphToJson(graph, new ArrayList<Integer>(), MultiMutation.newBuilder().setReason("test").build(),
-        0, new HashSet<String>());
+    String result =
+        graphToJson(
+            graph,
+            new ArrayList<Integer>(),
+            MultiMutation.newBuilder().setReason("test").build(),
+            0,
+            new HashSet<String>());
     JSONObject jsonObject = new JSONObject(result);
 
     Assert.assertEquals(jsonObject.length(), 7);
