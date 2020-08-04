@@ -60,6 +60,15 @@ mutation {
     }
   }
   mutation {
+    type: CHANGE_TOKEN
+    start_node: "B"
+    token_change {
+      type: ADD_TOKEN
+      token_name: "m.js"
+      token_name: "n.js"
+    }
+  }
+  mutation {
     type: ADD_NODE
     start_node: "I"
   }
@@ -74,6 +83,7 @@ mutation {
   }
   reason: "Add d and f to node B and adding node I with tokens d and f"
 }
+
 mutation {
   mutation {
     type: DELETE_EDGE
@@ -82,6 +92,7 @@ mutation {
   }
   reason: "Removing edge AC"
 }
+
 mutation {
   mutation {
     type: CHANGE_TOKEN
@@ -94,6 +105,7 @@ mutation {
   }
   reason: "Changing tokens of node B"
 }
+
 mutation {
   mutation {
   type: CHANGE_TOKEN

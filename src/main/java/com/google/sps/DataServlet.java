@@ -313,60 +313,42 @@ public class DataServlet extends HttpServlet {
     /*
      ***********************
      * Error Handling
+     * We set the headers in the following 4 scenarios:
      ***********************
      */
 
-    // We set the headers in the following 4 scenarios:
-    // truncatedGraph.nodes().size() == 0 means something was queried but wasn't found
-    // in the graph
-    // filteredMutationIndices.size() == 0 means the searched object is never mutated
-    if (truncatedGraph.nodes().size() == 0 && filteredMutationIndices.size() == 0) {
+    if (truncatedGraph.nodes().size() == 0 // something was queried but wasn't found in the graph
+        && filteredMutationIndices.size() == 0) { // and is never mutated
       response.setHeader(
           "serverError",
           "The searched node/token does not exist anywhere in this graph or in mutations");
       return;
     }
-    // truncatedGraph.nodes().size() == 0 means something was queried but wasn't found
-    // in the graph
-    // filteredMutationIndices.size() != 0 means the searched object is mutated at some
-    // point
-    // filteredDiff == null || filteredDiff.getMutationList().size() == 0 means that none
-    // of the searched objects are mutated here. This exists to prevent this message from
-    // being emitted when the searched object is deleted in this graph so it doesn't exist
-    // but is still mutated
-    if (truncatedGraph.nodes().size() == 0
-        && filteredMutationIndices.size() != 0
-        && (filteredDiff == null || filteredDiff.getMutationList().size() == 0)) {
+    if (truncatedGraph.nodes().size() == 0 // something was queried but wasn't found in the graph
+        && filteredMutationIndices.size() != 0 // and is mutated at some point
+        && (filteredDiff == null || filteredDiff.getMutationList().size() == 0)) { // but not here
       response.setHeader(
           "serverMessage",
           "The searched node/token does not exist in this graph, so nothing is shown. However, it"
               + " is mutated at some other step. Please click next or previous to navigate to a"
               + " graph where this node exists.");
     }
-    // truncatedGraph.nodes().size() != 0 means the queried object was found in this graph
-    // !(mutationNumber == -1 && nodeNames.size() == 0 && tokenNameParam.length() == 0)
-    // is included to avoid emitting this message when we are on the initial graph with
-    // no node names or tokens searched because -1 is never a valid mutation index
-    // filteredMutationIndices.indexOf(mutationNumber) == -1 means that the searched object
-    // is not mutated in this graph
-    if (truncatedGraph.nodes().size() != 0
+    // The second condition is included to avoid emitting this message when we are on the
+    // initial graph with no node names or tokens searched because -1 is never a valid mutation
+    // index
+    if (truncatedGraph.nodes().size() != 0 // the queried object was found in this graph
         && !(mutationNumber == -1 && nodeNames.size() == 0 && tokenNameParam.length() == 0)
-        && filteredMutationIndices.indexOf(mutationNumber) == -1) {
+        && filteredMutationIndices.indexOf(mutationNumber) == -1) { // but not mutated here
       response.setHeader(
           "serverMessage",
           "The searched node/token exists in this graph. However, it is not mutated in this"
               + " graph. Please click next or previous if you wish to see where it was"
               + " mutated!");
     }
-
-    // filteredMutationIndices.indexOf(mutationNumber) != -1 means some queried objects were
-    // mutated in this graph
-    // filteredDiff != null ensures that this message only shows when there is an actual diff
-    // filteredDiff.getMutationList().size() == 0 means that none of the mutations in the diff
     // pertained solely to on-screen nodes
-    if (filteredMutationIndices.indexOf(mutationNumber) != -1
-        && filteredDiff != null
-        && filteredDiff.getMutationList().size() == 0) {
+    if (filteredMutationIndices.indexOf(mutationNumber) != -1 // relevant objects mutated here
+        && filteredDiff != null // there is some diff to show
+        && filteredDiff.getMutationList().size() == 0) { // but doesn't affect only onscreen nodes
       response.setHeader(
           "serverMessage",
           "The desired set of nodes is mutated in this graph but your other parameters (for eg."
@@ -380,6 +362,7 @@ public class DataServlet extends HttpServlet {
      ***********************
      */
 
+    response.setHeader("Set-Cookie", "HttpOnly;Secure;SameSite=Strict");
     response.setContentType("application/json");
     String graphJson =
         graphToJson(
