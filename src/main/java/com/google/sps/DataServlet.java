@@ -318,7 +318,7 @@ public class DataServlet extends HttpServlet {
               + " is mutated at some other step. Please click next or previous to navigate to a"
               + " graph where this node exists.");
     }
-    // The second condition is included to avoid emitting this message when we are on the 
+    // The second condition is included to avoid emitting this message when we are on the
     // initial graph with no node names or tokens searched because -1 is never a valid mutation
     // index
     if (truncatedGraph.nodes().size() != 0 // the queried object was found in this graph
@@ -333,7 +333,7 @@ public class DataServlet extends HttpServlet {
     // pertained solely to on-screen nodes
     if (filteredMutationIndices.indexOf(mutationNumber) != -1 // relevant objects mutated here
         && filteredDiff != null // there is some diff to show
-        && filteredDiff.getMutationList().size() == 0) { // but doesn't affect only onscreen nodes 
+        && filteredDiff.getMutationList().size() == 0) { // but doesn't affect only onscreen nodes
       response.setHeader(
           "serverMessage",
           "The desired set of nodes is mutated in this graph but your other parameters (for eg."
@@ -349,7 +349,7 @@ public class DataServlet extends HttpServlet {
 
     response.setHeader("Set-Cookie", "HttpOnly;Secure;SameSite=Strict");
     response.setContentType("application/json");
-    String graphJson = 
+    String graphJson =
         graphToJson(
             truncatedGraph, filteredMutationIndices, filteredDiff, mutList.size(), queriedNext);
     response.getWriter().println(graphJson);
