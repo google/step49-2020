@@ -644,9 +644,13 @@ describe("Token search", function () {
     expect(firstNode.hasClass("highlighted-node")).toBe(true);
     expect(firstNode.hasClass("background-node")).toBe(false);
 
-    const otherNode = cy.$id("B");
-    expect(otherNode.hasClass("highlighted-node")).toBe(false);
-    expect(otherNode.hasClass("background-node")).toBe(true);
+    const secondNode = cy.$id("B");
+    expect(secondNode.hasClass("highlighted-node")).toBe(false);
+    expect(secondNode.hasClass("background-node")).toBe(true);
+
+    const thirdNode = cy.$id("C");
+    expect(thirdNode.hasClass("highlighted-node")).toBe(false);
+    expect(thirdNode.hasClass("background-node")).toBe(true);
 
     const edgeAC = cy.edges()[0];
     const edgeCB = cy.edges()[1];
@@ -672,6 +676,10 @@ describe("Token search", function () {
     const secondNode = result[1];
     expect(secondNode.hasClass("highlighted-node")).toBe(true);
     expect(secondNode.hasClass("background-node")).toBe(false);
+
+    const thirdNode = cy.$id("C");
+    expect(thirdNode.hasClass("highlighted-node")).toBe(false);
+    expect(thirdNode.hasClass("background-node")).toBe(true);
 
     const edgeAC = cy.$id("edgeAC");
     const edgeCB = cy.$id("edgeCB");
@@ -734,6 +742,10 @@ describe("Token search", function () {
     const secondNode = cy.$id("B");
     expect(secondNode.hasClass("highlighted-node")).toBe(false);
     expect(secondNode.hasClass("background-node")).toBe(false);
+    
+    const thirdNode = cy.$id("C");
+    expect(thirdNode.hasClass("highlighted-node")).toBe(false);
+    expect(thirdNode.hasClass("background-node")).toBe(false);
 
     const edgeAC = cy.edges()[0];
     const edgeCB = cy.edges()[1];
@@ -757,6 +769,10 @@ describe("Token search", function () {
     const secondNode = cy.$id("B");
     expect(secondNode.hasClass("highlighted-node")).toBe(false);
     expect(secondNode.hasClass("background-node")).toBe(false);
+
+    const thirdNode = cy.$id("C");
+    expect(thirdNode.hasClass("highlighted-node")).toBe(false);
+    expect(thirdNode.hasClass("background-node")).toBe(false);
 
     const edgeAC = cy.edges()[0];
     const edgeCB = cy.edges()[1];
