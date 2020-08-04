@@ -437,6 +437,17 @@ describe("Check correct url params", function () {
     expect(constructedUrl.has("tokenName")).toBe(true);
     expect(constructedUrl.get("tokenName")).toBe("1");
   })
+
+  it("passes trimmed tokenName when tokenName has extra whitespaces at the end", function () {
+    tokenName.value = "          1     \n";
+    document.body.appendChild(tokenName);
+
+    const requestString = getUrl();
+    const requestParams = requestString.substring(requestString.indexOf("?"));
+    const constructedUrl = new URLSearchParams(requestParams);
+    expect(constructedUrl.has("tokenName")).toBe(true);
+    expect(constructedUrl.get("tokenName")).toBe("1");
+  })
 });
 
 describe("Node search", function () {
@@ -446,11 +457,12 @@ describe("Node search", function () {
 
   beforeEach(function () {
     document.body.innerHTML = `<div id="cy"></div>
+    <button id="gen-graph" onclick="graph.generateGraph()">Get Graph</button>
     <div id="zoom-box" class="input-child">
       <h4 class="search-title">Zoom In</h4>
         <label>Zoom on Node in Graph: </label>
         <input type="text" id="node-search" placeholder="Node Name"></input>
-        <button id="search-button">Find Node</button>
+        <button id="search-node-button">Find Node</button>
 
         <label>Zoom on Token in Graph: </label>
         <input type="text" id="token-search" placeholder="Token Name"></input>
@@ -459,6 +471,8 @@ describe("Node search", function () {
         <label for="highlight-number">Highlighted Token: </label>
         <input type="number" id="highlight-number" min="0" value="0" max="0" disabled=true>
         <label id="num-selected">out of 0</label>
+        <button id="prevnode" class="material-icons" disabled=true>navigate_before</button>
+        <button id="nextnode" class="material-icons" disabled=true>navigate_next</button>
         <button id="reset" class="reset">Reset Zoom</button>
       </div>
     </div>
@@ -542,7 +556,7 @@ describe("Node search", function () {
     const result = searchAndHighlight(cy, "node", searchNode);
 
     // should display error message
-    expect(logList.textContent.trim()).toBe("node does not exist.");
+    expect(logList.textContent.trim()).toBe("Node does not exist.");
     expect(result).toBeUndefined();
   });
 
@@ -564,25 +578,28 @@ describe("Token search", function () {
   beforeEach(function () {
     document.body.innerHTML =
       `<div id="cy"></div>
-    <div id="zoom-box" class="input-child">
-      <h4 class="search-title">Zoom In</h4>
-        <label>Zoom on Node in Graph: </label>
-        <input type="text" id="node-search" placeholder="Node Name"></input>
-        <button id="search-button">Find Node</button>
+      <button id="gen-graph" onclick="graph.generateGraph()">Get Graph</button>
+      <div id="zoom-box" class="input-child">
+        <h4 class="search-title">Zoom In</h4>
+          <label>Zoom on Node in Graph: </label>
+          <input type="text" id="node-search" placeholder="Node Name"></input>
+          <button id="search-node-button">Find Node</button>
 
-        <label>Zoom on Token in Graph: </label>
-        <input type="text" id="token-search" placeholder="Token Name"></input>
-        <button id="search-token-button">Find Token</button>
-      <div>
-        <label for="highlight-number">Highlighted Token: </label>
-        <input type="number" id="highlight-number" min="0" value="0" max="0" disabled=true>
-        <label id="num-selected">out of 0</label>
-        <button id="reset" class="reset">Reset Zoom</button>
+          <label>Zoom on Token in Graph: </label>
+          <input type="text" id="token-search" placeholder="Token Name"></input>
+          <button id="search-token-button">Find Token</button>
+        <div>
+          <label for="highlight-number">Highlighted Token: </label>
+          <input type="number" id="highlight-number" min="0" value="0" max="0" disabled=true>
+          <label id="num-selected">out of 0</label>
+          <button id="prevnode" class="material-icons" disabled=true>navigate_before</button>
+          <button id="nextnode" class="material-icons" disabled=true>navigate_next</button>
+          <button id="reset" class="reset">Reset Zoom</button>
+        </div>
       </div>
-    </div>
-    <ul id="log-list">
-      <li class="log-msg"></li>
-    </ul>`;
+      <ul id="log-list">
+        <li class="log-msg"></li>
+      </ul>`;
     cy = cytoscape({
       elements: [
       ],
@@ -632,24 +649,57 @@ describe("Token search", function () {
     expect(highlightNumber.max).toBe("2");
     expect(highlightNumber.value).toBe("1");
 
+    const prevButton = document.getElementById("prevnode");
+    const nextButton = document.getElementById("nextnode");
+    expect(prevButton.disabled).toBe(true);
+    expect(nextButton.disabled).toBe(false);
+
     highlightNumber.value = "4";
     highlightNumber.dispatchEvent(new Event("change"));
     expect(highlightNumber.value).toBe("2");
+    expect(prevButton.disabled).toBe(false);
+    expect(nextButton.disabled).toBe(true);
 
     expect(otherNode.hasClass("highlighted-node")).toBe(true);
     expect(otherNode.hasClass("non-highlighted-node")).toBe(false);
 
     expect(result.hasClass("highlighted-node")).toBe(false);
     expect(result.hasClass("non-highlighted-node")).toBe(true);
+
+    prevButton.click();
+    expect(otherNode.hasClass("highlighted-node")).toBe(false);
+    expect(otherNode.hasClass("non-highlighted-node")).toBe(true);
+
+    expect(result.hasClass("highlighted-node")).toBe(true);
+    expect(result.hasClass("non-highlighted-node")).toBe(false);
+    expect(prevButton.disabled).toBe(true);
+    expect(nextButton.disabled).toBe(false);
+
+    nextButton.click();
+    expect(otherNode.hasClass("highlighted-node")).toBe(true);
+    expect(otherNode.hasClass("non-highlighted-node")).toBe(false);
+
+    expect(result.hasClass("highlighted-node")).toBe(false);
+    expect(result.hasClass("non-highlighted-node")).toBe(true);
+    expect(prevButton.disabled).toBe(false);
+    expect(nextButton.disabled).toBe(true);
+
   });
 
   it("should be unsuccessful because token does not exist", function () {
     query.value = "fake_file.js";
     const result = searchAndHighlight(cy, "token", searchToken);
+    expect(result).toBeUndefined();
 
     // error message should be displayed
-    expect(logList.textContent.trim()).toBe("token does not exist.");
-    expect(result).toBeUndefined();
+    const mostRecentErr = logList.lastChild;
+    expect(mostRecentErr.textContent.trim()).toBe("Token does not exist.");
+    expect(mostRecentErr.classList).toContain("recent-log-text");
+
+    query.value = "fake_file1.js";
+    searchAndHighlight(cy, "token", searchToken);
+    expect(mostRecentErr.textContent.trim()).toBe("Token does not exist.");
+    expect(mostRecentErr.classList).not.toContain("recent-log-text");
   });
 
   it("should not be executed at all because there is no query", function () {
@@ -835,13 +885,14 @@ describe("Showing and hiding tooltips when checkbox is clicked", function () {
   it("correctly shows/hides tooltips when checkbox is checked/unchecked", function () {
     document.body.innerHTML = `
     <div id="graph"></div>
-    <button id="search-button">Search</button>
+    <button id="search-node-button">Search</button>
     <label id="search-error"></label>
     <input type="checkbox" id="show-mutations"></input>
     <button id="clear-log">Clear Log</button>
     <button id="reset"></button>
-    <button id="search-button"></button>
-    <button id="search-token-button"></button>`;
+    <button id="search-token-button"></button>
+    <input type="number" id="highlight-number">
+    <button id="gen-graph" onclick="graph.generateGraph()">Get Graph</button>`;
 
 
     const nodeA = {};
@@ -973,6 +1024,7 @@ describe("Testing slider functionality", function () {
       <input type="number" id="graph-number"  min="0" max="0" value="0">
       <p id="total-mutation-number-text">out of 0</p>
     </div>
+    <button id="gen-graph" onclick="graph.generateGraph()">Get Graph</button>
     `;
     initializeSlider();
   });
@@ -1077,6 +1129,7 @@ describe("Testing graph input functionality", function () {
         <p id="graph-number-text">Graph </p>
         <input type="number" id="graph-number"  min="0" max="0" value="0">
         <p id="total-mutation-number-text">out of 0</p>
+        <button id="gen-graph" onclick="graph.generateGraph()">Get Graph</button>
       </div>`;
     graphNumberInput = document.getElementById("graph-number");
     graphNumberInput.onchange = readGraphNumberInput;
@@ -1129,42 +1182,4 @@ describe("Testing graph input functionality", function () {
     document.getElementById("graph-number").onchange();
     expect(graphNumberInput.value).toBe("0");
   });
-});
-
-describe("Testing clear log functionality", function () {
-  let logList;
-  let clearLogButton;
-
-  beforeEach(function () {
-    document.body.innerHTML =
-      `<div class="graph-content-column" id="graph-content-logs">
-          <button id="clear-log">Clear Log</button>
-          <ul id="log-list">
-            <li class="log-msg"></li>
-        </ul>
-      </div>`;
-    logList = document.getElementById("log-list");
-    clearLogButton = document.getElementById("clear-log");
-    clearLogButton.onclick = function () { clearLogs() };
-  });
-
-  it("clears the logs when they contain messages", function () {
-    const newMsg1 = document.createElement("li");
-    newMsg1.innerText = "Sample log text 1";
-    logList.appendChild(newMsg1);
-
-    const newMsg2 = document.createElement("li");
-    newMsg2.innerText = "Sample log text 2";
-    logList.appendChild(newMsg2);
-
-    clearLogButton.click();
-    expect(logList.innerText).toBe("");
-  });
-
-  it("clears the logs when they are empty", function () {
-    expect(logList.innerText).toBe("");
-    clearLogButton.click();
-    expect(logList.innerText).toBe("");
-  });
-
 });

@@ -347,8 +347,9 @@ public class DataServlet extends HttpServlet {
      ***********************
      */
 
+    response.setHeader("Set-Cookie", "HttpOnly;Secure;SameSite=Strict");
     response.setContentType("application/json");
-    String graphJson =
+    String graphJson = 
         graphToJson(
             truncatedGraph, filteredMutationIndices, filteredDiff, mutList.size(), queriedNext);
     response.getWriter().println(graphJson);

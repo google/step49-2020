@@ -170,7 +170,7 @@ body {
 }
 
 .reset {
-  width: 150px;
+  width: 160px;
 }
 
 #input-boxes {
@@ -194,4 +194,12 @@ body {
 
 input {
   padding: 5px;
+}
+
+.deletedtoken {
+  color: red;
+}
+
+.addedtoken {
+  color: green;
 }

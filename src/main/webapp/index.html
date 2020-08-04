@@ -23,7 +23,7 @@
       <input type="text" id="node-name-filter" name="search-name" placeholder="nodeName1,nodeName2"></input>
       <label for="token-name">Name of token to filter for</label>
       <input type="text" id="token-name-filter" name="token-name" placeholder="Token Name"></input>
-      <button onclick="graph.generateGraph()">Get Graph</button>
+      <button id="gen-graph" onclick="graph.generateGraph()">Get Graph</button>
       
       <div id="num-mutation-display">
         <p id="graph-number-text">Graph </p>
@@ -37,7 +37,7 @@
       <h4 class="search-title">Zoom In</h4>
         <label>Zoom on Node in Graph: </label>
         <input type="text" id="node-search" placeholder="Node Name"></input>
-        <button id="search-button">Find Node</button>
+        <button id="search-node-button">Find Node</button>
 
         <label>Zoom on Token in Graph: </label>
         <input type="text" id="token-search" placeholder="Token Name"></input>
@@ -46,6 +46,8 @@
         <label for="highlight-number">Highlighted Token: </label>
         <input type="number" id="highlight-number" min="0" value="0" max="0" disabled=true>
         <label id="num-selected">out of 0</label>
+        <button id="prevnode" class="material-icons" disabled=true>navigate_before</button>
+        <button id="nextnode" class="material-icons" disabled=true>navigate_next</button>
         <button id="reset" class="reset">Reset Zoom Effects</button>
       </div>
     </div>
