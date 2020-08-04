@@ -134,10 +134,7 @@ async function generateGraph() {
   const queriedNodes = JSON.parse(jsonResponse.queriedNodes);
 
   // Set all logs to be black
-  const allLogs = document.querySelectorAll('.log-msg');
-  for (let i = 0; i < allLogs.length; i++) {
-    allLogs[i].classList.remove('recent-log-text');
-  }
+  resetRecentLogs();
 
   const mutList = jsonResponse["mutationDiff"].length === 0 ? null : JSON.parse(jsonResponse["mutationDiff"]);
   const reason = jsonResponse["reason"];
@@ -195,6 +192,7 @@ async function generateGraph() {
   updateGraphNumInput();
   resetMutationSlider();
 
+  document.getElementById("gen-graph").disabled = false;
   mutationNumSlider.disabled = false;
   document.getElementById("graph-number").disabled = false;
 }
@@ -204,6 +202,7 @@ async function generateGraph() {
  * is being generated
  */
 function disableInputs() {
+  document.getElementById("gen-graph").disabled = true;
   const prevBtn = document.getElementById("prevbutton");
   const nextBtn = document.getElementById("nextbutton");
   prevBtn.disabled = true;
@@ -220,7 +219,7 @@ function disableInputs() {
 function getUrl() {
   const depthElem = document.getElementById('num-layers');
   const nodeNames = document.getElementById('node-name-filter') ? document.getElementById('node-name-filter').value || "" : "";
-  const tokenName = document.getElementById('token-name-filter') ? document.getElementById('token-name-filter').value || "" : "";
+  const tokenName = (document.getElementById('token-name-filter') ? document.getElementById('token-name-filter').value || "" : "").trim();
   // Takes care of "all the whitespace characters (space, tab, no-break space, etc.) 
   // and all the line terminator characters (LF, CR, etc.)" acc to documentation
   const nodeNamesArray = JSON.stringify(nodeNames.split(",").map(item => item.trim()).filter(item => item.length > 0));
@@ -534,6 +533,10 @@ function highlightDiff(cy, mutList, reason = "") {
     }
     if (modifiedObj.length !== 0) {
       initializeReasonTooltip(modifiedObj, reason);
+      if (type === 5) {
+        const tokenMut = mutation["tokenChange_"];
+        indicateChangedTokens(modifiedObj, tokenMut);
+      }
     }
   });
   return {
@@ -543,6 +546,57 @@ function highlightDiff(cy, mutList, reason = "") {
     addedEdges,
     modifiedNodes
   };
+}
+
+function indicateChangedTokens(node, tokenMut) {
+  const type = tokenMut["type_"] || -1;
+  const tokens = tokenMut["tokenName_"];
+
+  if(!type || !tokens) {
+
+  }
+
+  let tipContent = node.tip.popperChildren.content.firstChild;
+  switch (type) {
+    case 1:
+      let addedList = tipContent.querySelector(`#${node.data().id}-added`);
+      if (!addedList) {
+        let addedListText = document.createElement("p");
+        addedListText.innerText = "Added Tokens:";
+        addedList = document.createElement("ul");
+        addedList.id = `${node.data().id}-added`;
+        addedList.className = "tokenlist";
+        tipContent.insertBefore(addedListText, tipContent.children[2]);
+        tipContent.insertBefore(addedList, tipContent.children[3]);
+      }
+      tokens.forEach(token => {
+        let thisTokenItem = document.createElement("li");
+        thisTokenItem.className = "addedtoken";
+        thisTokenItem.innerText = token;
+        addedList.appendChild(thisTokenItem);
+      });
+      break;
+    case 2:
+      let deletedList = tipContent.querySelector(`#${node.data().id}-deleted`);
+      if (!deletedList) {
+        let deletedListText = document.createElement("p");
+        deletedListText.innerText = "Deleted Tokens:";
+        deletedList = document.createElement("ul");
+        deletedList.id = `${node.data().id}-deleted`;
+        deletedList.className = "tokenlist";
+        tipContent.insertBefore(deletedListText, tipContent.children[2]);
+        tipContent.insertBefore(deletedList, tipContent.children[3]);
+      }
+      tokens.forEach(token => {
+        let thisTokenItem = document.createElement("li");
+        thisTokenItem.className = "deletedtoken";
+        thisTokenItem.innerText = token;
+        deletedList.appendChild(thisTokenItem);
+      });
+      break;
+    default:
+      break;
+  }
 }
 
 /**
@@ -670,7 +724,7 @@ function searchAndHighlight(cy, type, searchFunction) {
     if (result) {
       highlightElements(cy, result);
     } else {
-      addToLogs(type + " does not exist.");
+      addToLogs(type === "node" ? "Node does not exist." : "Token does not exist.");
     }
   }
   return result;
@@ -696,7 +750,7 @@ function searchNode(cy, query) {
  *
  * @param cy the graph to search through
  * @param query the name of the token to search for
- * @returns the first node that contains token
+ * @returns a node containing the token or undefined if there are none
  */
 function searchToken(cy, query) {
   let target = cy.collection();
@@ -717,11 +771,16 @@ function searchToken(cy, query) {
     document.getElementById('highlight-number').onchange = function () {
       updateHighlightedToken(cy, target, document.getElementById('highlight-number').value - 1);
     };
-    document.getElementById('prevnode').onclick = function () {
+
+    const prevNodeButton = document.getElementById('prevnode');
+    prevNodeButton.disabled = true;
+    prevNodeButton.onclick = function () {
       updateHighlightedToken(cy, target, document.getElementById('highlight-number').value - 2);
     };
 
-    document.getElementById('nextnode').onclick = function () {
+    const nextNodeButton = document.getElementById('nextnode');
+    nextNodeButton.disabled = (target.length == 1);
+    nextNodeButton.onclick = function () {
       // parseInt needed because it does not infer type when subtraction is not used
       updateHighlightedToken(cy, target, parseInt(document.getElementById('highlight-number').value));
     };
@@ -730,19 +789,24 @@ function searchToken(cy, query) {
 }
 
 /**
- * Zoom/highlights node based on queried token and index
+ * Zoom/highlights node at given index in array
  *
  * @param cy the graph to search through
  * @param nodesWithToken the list of nodes that contain specified token
- * @param num the target index of the list of nodes that contain token
- * @returns the result of the search.
+ * @param num the target index
  */
 function updateHighlightedToken(cy, nodesWithToken, num) {
-  if (num < 0) {
+  if (num <= 0) {
     num = 0;
+    document.getElementById('prevnode').disabled = true;
+  } else {
+    document.getElementById('prevnode').disabled = false;
   }
-  if (num > nodesWithToken.length - 1) {
+  if (num >= nodesWithToken.length - 1) {
     num = nodesWithToken.length - 1;
+    document.getElementById('nextnode').disabled = true;
+  } else {
+    document.getElementById('nextnode').disabled = false;
   }
   nodesWithToken.toggleClass('highlighted-node', false);
   highlightElements(cy, nodesWithToken[num]);
@@ -792,14 +856,20 @@ function resetElements(cy, resetInputs) {
     });
   });
 
-  if(resetInputs === true) {
+  // Set all logs to be black
+  resetRecentLogs();
+
+  if (resetInputs === true) {
     document.getElementById("node-search").value = '';
     document.getElementById("token-search").value = '';
-    document.getElementById('num-selected').innerText = "out of 0";
-    document.getElementById('highlight-number').value = 0;
-    document.getElementById('highlight-number').max = 0;
-    document.getElementById('highlight-number').disabled = true;
   }
+  document.getElementById('num-selected').innerText = "out of 0";
+  document.getElementById('highlight-number').value = 0;
+  document.getElementById('highlight-number').max = 0;
+  document.getElementById('highlight-number').disabled = true;
+  document.getElementById('prevnode').disabled = true;
+  document.getElementById('nextnode').disabled = true;
+
   cy.fit();
 }
 
@@ -811,6 +881,7 @@ function initializeTippy(node) {
 
   // a dummy element must be passed as tippy only accepts a dom element as the target
   const dummyDomEle = document.createElement('div');
+  dummyDomEle.className = "anchor";
 
   node.tip = tippy(dummyDomEle, {
     trigger: 'manual',
@@ -1052,5 +1123,15 @@ function clearLogs() {
   const ul = document.getElementById("log-list");
   while (ul.firstChild) {
     ul.removeChild(ul.firstChild);
+  }
+}
+
+/**
+ * Remove highlighting from all messages in the log panel
+ */
+function resetRecentLogs() {
+  const allLogs = document.querySelectorAll('.log-msg');
+  for (let i = 0; i < allLogs.length; i++) {
+    allLogs[i].classList.remove('recent-log-text');
   }
 }

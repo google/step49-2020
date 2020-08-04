@@ -309,6 +309,7 @@ public class DataServlet extends HttpServlet {
               + " radius), limit the display of the mutations. Please try increasing your radius"
               + " to view the mutation.");
     }
+    response.setHeader("Set-Cookie", "HttpOnly;Secure;SameSite=Strict");
     graphJson =
         graphToJson(
             truncatedGraph, filteredMutationIndices, filteredDiff, mutList.size(), queriedNext);
