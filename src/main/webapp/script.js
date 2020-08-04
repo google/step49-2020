@@ -36,7 +36,7 @@ export {
   numMutations, updateButtons, searchAndHighlight, highlightDiff, initializeReasonTooltip, 
   getGraphDisplay, getClosestIndices, initializeSlider, resetMutationSlider, mutationNumSlider, 
   setMutationSliderValue, readGraphNumberInput, updateGraphNumInput, setMaxNumMutations, 
-  searchNode, searchToken
+  searchNode, searchToken, clearLogs
 };
 
 
@@ -981,4 +981,14 @@ function readGraphNumberInput() {
     graphNumberInput.value = 0;
   }
   currMutationNum = graphNumberInput.value - 1;
+}
+
+/**
+ * Clear the log panel on the right side
+ */
+function clearLogs() {
+  const ul = document.getElementById("log-list");
+  while(ul.firstChild) {
+    ul.removeChild(ul.firstChild);
+  }
 }
