@@ -193,6 +193,8 @@ async function generateGraph() {
     });
   });
   getGraphDisplay(graphNodes, graphEdges, mutList, reason, queriedNodes);
+
+  // Update next/prev buttons, update the graph number, and make sure the slider is updated with the latest graph
   updateButtons();
   updateGraphNumInput();
   resetMutationSlider();
