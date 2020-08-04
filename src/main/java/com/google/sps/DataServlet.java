@@ -128,6 +128,7 @@ public class DataServlet extends HttpServlet {
     String mutationParam = request.getParameter("mutationNum");
     String nodeNamesParam = request.getParameter("nodeNames");
     String tokenParam = request.getParameter("tokenName");
+    String restrictParam = request.getParameter("restrict");
 
     if (depthParam == null) {
       String error = "Improper depth parameter, cannot generate graph";
@@ -148,6 +149,11 @@ public class DataServlet extends HttpServlet {
     }
     int depthNumber = Integer.parseInt(depthParam);
     int mutationNumber = Integer.parseInt(mutationParam);
+
+    if (restrictParam == null) {
+      restrictParam = "false";
+    }
+    boolean restrictBool = Boolean.parseBoolean(restrictParam);
 
     // Truncated version of graph to return to the client
     MutableGraph<GraphNode> truncatedGraph;
@@ -250,15 +256,24 @@ public class DataServlet extends HttpServlet {
       // or queried are mutated
       Set<Integer> mutationIndicesSet = new HashSet<>();
 
-      mutationIndicesSet.addAll(
+      // If we don't restrict, then find the indicies of the mutations of all the nodes in the graph
+      if (!restrictBool) {
+        mutationIndicesSet.addAll(
           findRelevantMutations(truncatedGraphNodeNamesNext, mutationIndicesMap, mutList));
-      // Place in the map if needed
+      }
+      // Place the token, indices association in the map if needed
       if (!tokenIndicesMap.containsKey(tokenParam)) {
         tokenIndicesMap.put(tokenParam, getMutationIndicesOfToken(tokenParam, mutList));
       }
+
+      // Add the mutations associated with the searched token and the searched node into the map
       mutationIndicesSet.addAll(tokenIndicesMap.get(tokenParam));
       mutationIndicesSet.addAll(findRelevantMutations(nodeNames, mutationIndicesMap, mutList));
+
+      // Originally used a set because didn't want duplicates. Convert into ArrayList for order
       filteredMutationIndices = new ArrayList<>(mutationIndicesSet);
+
+      // Sort the map in ascending order
       Collections.sort(filteredMutationIndices);
 
       // Show mutations relevant to nodes that used to have the token but
