@@ -36,7 +36,7 @@ export {
   numMutations, updateButtons, searchAndHighlight, highlightDiff, initializeReasonTooltip,
   getGraphDisplay, getClosestIndices, initializeSlider, resetMutationSlider, mutationNumSlider,
   setMutationSliderValue, readGraphNumberInput, updateGraphNumInput, setMaxNumMutations,
-  searchNode, searchToken, clearLogs
+  searchNode, searchToken, clearLogs, resetRecentLogs
 };
 
 
@@ -268,6 +268,26 @@ function addToLogs(msg) {
 }
 
 /**
+ * Clear the log panel on the right side
+ */
+function clearLogs() {
+  const ul = document.getElementById("log-list");
+  while (ul.firstChild) {
+    ul.removeChild(ul.firstChild);
+  }
+}
+
+/**
+ * Remove highlighting from all messages in the log panel
+ */
+function resetRecentLogs() {
+  const allLogs = document.querySelectorAll('.log-msg');
+  for (let i = 0; i < allLogs.length; i++) {
+    allLogs[i].classList.remove('recent-log-text');
+  }
+}
+
+/**
  * Takes an error message and creates a text element on the page to display this message
  */
 function displayError(errorMsg) {
@@ -331,9 +351,9 @@ function getGraphDisplay(graphNodes, graphEdges, mutList, reason, queriedNodes) 
         }
       },
       {
-        selector: '.non-highlighted-node',
+        selector: '.background-node',
         style: {
-          'opacity': opacityScheme["deletedObjectOpacity"]
+          'opacity': opacityScheme["translucentObjectOpacity"]
         }
       },
       {
@@ -374,18 +394,6 @@ function getGraphDisplay(graphNodes, graphEdges, mutList, reason, queriedNodes) 
   document.getElementById('search-node-button').onclick = function () { searchAndHighlight(cy, "node", searchNode) };
 
   document.getElementById('search-token-button').onclick = function () { searchAndHighlight(cy, "token", searchToken) };
-
-  // document.getElementById('highlight-number').onchange = function() { 
-  //   updateHighlightedToken(cy, document.getElementById('highlight-number').value); 
-  // };
-
-  // document.getElementById('prevnode').onclick = function () { 
-  //   updateHighlightedToken(cy, document.getElementById('highlight-number').value - 1);
-  // };
-
-  // document.getElementById('nextnode').onclick = function () { 
-  //   updateHighlightedToken(cy, document.getElementById('highlight-number').value + 1);
-  // };
 
   // When a new graph is loaded, mutations are always shown by default
   const showMutButton = document.getElementById("show-mutations");
@@ -505,7 +513,7 @@ function highlightDiff(cy, mutList, reason = "") {
         }
         modifiedObj = cy.$id(startNode);
         modifiedObj.style('background-color', colorScheme["deletedObjectColor"]);
-        modifiedObj.style('opacity', opacityScheme["deletedObjectOpacity"]);
+        modifiedObj.style('opacity', opacityScheme["translucentObjectOpacity"]);
         deletedNodes = deletedNodes.union(modifiedObj);
         break;
       case 4:
@@ -538,7 +546,7 @@ function highlightDiff(cy, mutList, reason = "") {
         modifiedObj = cy.$id(`edge${startNode}${endNode}`);
         modifiedObj.style('line-color', colorScheme["deletedObjectColor"]);
         modifiedObj.style('target-arrow-color', colorScheme["deletedObjectColor"]);
-        modifiedObj.style('opacity', opacityScheme["deletedObjectOpacity"]);
+        modifiedObj.style('opacity', opacityScheme["translucentObjectOpacity"]);
         deletedEdges = deletedEdges.union(modifiedObj);
         break;
       case 5:
@@ -554,9 +562,12 @@ function highlightDiff(cy, mutList, reason = "") {
     }
     if (modifiedObj.length !== 0) {
       initializeReasonTooltip(modifiedObj, reason);
+      // If the mutation is a change token mutation, also highlight the changed tokens in the tippy
       if (type === 5) {
         const tokenMut = mutation["tokenChange_"];
-        indicateChangedTokens(modifiedObj, tokenMut);
+        if (tokenMut) {
+          indicateChangedTokens(modifiedObj, tokenMut);
+        }
       }
     }
   });
@@ -569,27 +580,40 @@ function highlightDiff(cy, mutList, reason = "") {
   };
 }
 
+/**
+ * Highlights the change in tokens of the given node based on the token mutation. If 
+ * tokens are added to the node, it adds them to the tippy in green. If tokens are deleted,
+ * it adds them to the tippy in red.
+ * @param node whose tokens have changed
+ * @param tokenMut the mutation made to the tokens of the node
+ */
 function indicateChangedTokens(node, tokenMut) {
   const type = tokenMut["type_"] || -1;
   const tokens = tokenMut["tokenName_"];
 
-  if(!type || !tokens) {
-
+  if (!type || !tokens || !node.tip) {
+    return;
   }
 
+  // Get the div that contains the tooltip content
   let tipContent = node.tip.popperChildren.content.firstChild;
   switch (type) {
     case 1:
+      // add tokens
+      // If this node already has an "Added Token" list, get it
       let addedList = tipContent.querySelector(`#${node.data().id}-added`);
+      // Otherwise initialize it
       if (!addedList) {
         let addedListText = document.createElement("p");
         addedListText.innerText = "Added Tokens:";
         addedList = document.createElement("ul");
         addedList.id = `${node.data().id}-added`;
         addedList.className = "tokenlist";
+        // Insert this text and list after the close button and node name
         tipContent.insertBefore(addedListText, tipContent.children[2]);
         tipContent.insertBefore(addedList, tipContent.children[3]);
       }
+      // Add these tokens to the added token list
       tokens.forEach(token => {
         let thisTokenItem = document.createElement("li");
         thisTokenItem.className = "addedtoken";
@@ -598,16 +622,21 @@ function indicateChangedTokens(node, tokenMut) {
       });
       break;
     case 2:
+      // delete tokens
+      // If this node already has a "Deleted Token" list, get it
       let deletedList = tipContent.querySelector(`#${node.data().id}-deleted`);
+      // Otherwise initialize it
       if (!deletedList) {
         let deletedListText = document.createElement("p");
         deletedListText.innerText = "Deleted Tokens:";
         deletedList = document.createElement("ul");
         deletedList.id = `${node.data().id}-deleted`;
         deletedList.className = "tokenlist";
+        // Insert this text and list after the close button and node name
         tipContent.insertBefore(deletedListText, tipContent.children[2]);
         tipContent.insertBefore(deletedList, tipContent.children[3]);
       }
+      // Add these tokens to the deleted token list
       tokens.forEach(token => {
         let thisTokenItem = document.createElement("li");
         thisTokenItem.className = "deletedtoken";
@@ -732,7 +761,7 @@ function hideDiffs(cy, elems, deletedNodes, deletedEdges, addedNodes, addedEdges
  * @returns the result of the search.
  */
 function searchAndHighlight(cy, type, searchFunction) {
-  const query = document.getElementById(type + '-search').value;
+  const query = document.getElementById(type + '-search').value.trim();
   resetElements(cy, query === "");
   let result;
   if (query !== "") {
@@ -812,20 +841,33 @@ function searchToken(cy, query) {
  * @param num the target index
  */
 function updateHighlightedToken(cy, nodesWithToken, num) {
+  // Prevent the user from navigating to a node before the first node
+  // Also, if we are at the first node, disable the previous button
+  // so the user can't go back
   if (num <= 0) {
     num = 0;
     document.getElementById('prevnode').disabled = true;
   } else {
     document.getElementById('prevnode').disabled = false;
   }
+  // Prevent the user from navigating to a node after the last node
+  // Also, if we are at the last node, disable the next button
+  // so the user can't go forward
   if (num >= nodesWithToken.length - 1) {
     num = nodesWithToken.length - 1;
     document.getElementById('nextnode').disabled = true;
   } else {
     document.getElementById('nextnode').disabled = false;
   }
+
+  // Remove highlight from all nodes and associated edges
   nodesWithToken.toggleClass('highlighted-node', false);
+  nodesWithToken.connectedEdges().forEach(edge => {
+    edge.toggleClass('highlighted-edge', false);
+  });
+  // And just highlight the specified node
   highlightElements(cy, nodesWithToken[num]);
+  // Reset the number of the highlighted node if the value provided was out of bounds
   document.getElementById('highlight-number').value = num + 1;
 }
 
@@ -837,17 +879,17 @@ function updateHighlightedToken(cy, nodesWithToken, num) {
  */
 function highlightElements(cy, target) {
   cy.batch(() => {
-    cy.nodes().forEach(node => node.toggleClass('non-highlighted-node', true));
+    cy.nodes().forEach(node => node.toggleClass('background-node', true));
 
     // highlight desired nodes
     target.forEach(node => {
-      node.toggleClass('non-highlighted-node', false);
+      node.toggleClass('background-node', false);
       node.toggleClass('highlighted-node', true);
     });
 
     // highlight adjacent edges
     target.connectedEdges().forEach(edge => {
-      edge.toggleClass('highlighted-edge', 'true');
+      edge.toggleClass('highlighted-edge', true);
     });
   });
   cy.fit(target[0], 50);
@@ -857,13 +899,14 @@ function highlightElements(cy, target) {
  * Resets collection of nodes/edges to default state
  *
  * @param cy the graph that contains nodes/edges
+ * @param resetInputs boolean to decide whether to reset input fields or not
  */
 function resetElements(cy, resetInputs) {
   cy.batch(() => {
     // reset node borders and opacity
     cy.nodes().forEach(node => {
       node.toggleClass('highlighted-node', false);
-      node.toggleClass('non-highlighted-node', false);
+      node.toggleClass('background-node', false);
     });
 
     cy.edges().forEach(edge => {
@@ -874,12 +917,13 @@ function resetElements(cy, resetInputs) {
   // Set all logs to be black
   resetRecentLogs();
 
-  if (resetInputs === true) {
+  if (resetInputs) {
     document.getElementById("node-search").value = '';
     document.getElementById("token-search").value = '';
   }
   document.getElementById('num-selected').innerText = "out of 0";
   document.getElementById('highlight-number').value = 0;
+  document.getElementById('highlight-number').min = 0;
   document.getElementById('highlight-number').max = 0;
   document.getElementById('highlight-number').disabled = true;
   document.getElementById('prevnode').disabled = true;
@@ -896,7 +940,6 @@ function initializeTippy(node) {
 
   // a dummy element must be passed as tippy only accepts a dom element as the target
   const dummyDomEle = document.createElement('div');
-  dummyDomEle.className = "anchor";
 
   node.tip = tippy(dummyDomEle, {
     trigger: 'manual',
@@ -1129,24 +1172,4 @@ function readGraphNumberInput() {
     graphNumberInput.value = 0;
   }
   currMutationNum = graphNumberInput.value - 1;
-}
-
-/**
- * Clear the log panel on the right side
- */
-function clearLogs() {
-  const ul = document.getElementById("log-list");
-  while (ul.firstChild) {
-    ul.removeChild(ul.firstChild);
-  }
-}
-
-/**
- * Remove highlighting from all messages in the log panel
- */
-function resetRecentLogs() {
-  const allLogs = document.querySelectorAll('.log-msg');
-  for (let i = 0; i < allLogs.length; i++) {
-    allLogs[i].classList.remove('recent-log-text');
-  }
 }

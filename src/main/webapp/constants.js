@@ -15,12 +15,12 @@ const colorScheme = {
 
 // Sets the opacity constants for different types of objects in the graph
 const opacityScheme = {
-  "deletedObjectOpacity": 0.25
+  "translucentObjectOpacity": 0.25
 };
 
 // Sets the tippy popup size
 const tippySize = {
-  "width": 450
+  "width": "450px"
 };
 
 // Sets the border width constants for different types of objects in the graph

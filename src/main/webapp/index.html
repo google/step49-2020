@@ -28,7 +28,6 @@
         <input type="checkbox" id="limit-mutations" name="limit-mutations">
       </span>
       <button id="gen-graph" onclick="graph.generateGraph()">Get Graph</button>
-      
       <!-- Displaying the current mutation number -->
       <div id="num-mutation-display">
         <p id="graph-number-text">Graph </p>
@@ -40,13 +39,13 @@
     <!-- Box for zooming in -->
     <div id="zoom-box" class="input-child">
       <h4 class="search-title">Zoom In</h4>
-        <label>Zoom on Node in Graph: </label>
-        <input type="text" id="node-search" placeholder="Node Name"></input>
-        <button id="search-node-button">Find Node</button>
+      <label>Zoom on Node in Graph: </label>
+      <input type="text" id="node-search" placeholder="Node Name"></input>
+      <button id="search-node-button">Find Node</button>
 
-        <label>Zoom on Token in Graph: </label>
-        <input type="text" id="token-search" placeholder="Token Name"></input>
-        <button id="search-token-button">Find Token</button>
+      <label>Zoom on Token in Graph: </label>
+      <input type="text" id="token-search" placeholder="Token Name"></input>
+      <button id="search-token-button">Find Token</button>
       <div>
         <label for="highlight-number">Highlighted Token: </label>
         <input type="number" id="highlight-number" min="0" value="0" max="0" disabled=true>
@@ -97,17 +96,16 @@
       </div>
     </div>
     <!-- COLUMN 2: includes messages -->
-    
     <div class="graph-content-column" id="graph-content-logs">
       <button id="clear-log-btn" onclick="graph.clearLogs()">Clear Logs</button>
       <div id="graph-content-logs-inner">
-      <ul id="log-list">
-        <li class="log-msg">Welcome to our application! Here you'll see a log of messages pertaining to the graph on the left. Enjoy! :)
-        </li>
-      </ul>
+        <ul id="log-list">
+          <li class="log-msg">Welcome to our application! Here you'll see a log of messages pertaining to the graph on
+            the left. Enjoy! :)
+          </li>
+        </ul>
       </div>
     </div>
-    
   </div>
 </body>
 </html>
