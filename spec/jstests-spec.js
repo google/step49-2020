@@ -644,7 +644,7 @@ describe("Token search", function () {
 
     const edgeAC = cy.edges()[0];
     const edgeCB = cy.edges()[1];
-    
+
     expect(edgeAC.hasClass("highlighted-edge")).toBe(true);
     expect(edgeCB.hasClass("highlighted-edge")).toBe(false);
   });
@@ -665,7 +665,7 @@ describe("Token search", function () {
 
     const edgeAC = cy.$id("edgeAC");
     const edgeCB = cy.$id("edgeCB");
-    
+
     expect(edgeAC.hasClass("highlighted-edge")).toBe(true);
     expect(edgeCB.hasClass("highlighted-edge")).toBe(false);
 

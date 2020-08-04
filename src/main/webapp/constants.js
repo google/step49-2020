@@ -9,11 +9,11 @@ const colorScheme = {
 };
 // Sets the opacity constants for different types of objects in the graph
 const opacityScheme = {
-  "deletedObjectOpacity": 0.25
+  "translucentObjectOpacity": 0.25
 };
 
 const tippySize = {
-  "width": 450
+  "width": "450px"
 };
 
 const borderScheme = {

@@ -344,7 +344,7 @@ function getGraphDisplay(graphNodes, graphEdges, mutList, reason, queriedNodes) 
       {
         selector: '.background-node',
         style: {
-          'opacity': opacityScheme["deletedObjectOpacity"]
+          'opacity': opacityScheme["translucentObjectOpacity"]
         }
       },
       {
@@ -504,7 +504,7 @@ function highlightDiff(cy, mutList, reason = "") {
         }
         modifiedObj = cy.$id(startNode);
         modifiedObj.style('background-color', colorScheme["deletedObjectColor"]);
-        modifiedObj.style('opacity', opacityScheme["deletedObjectOpacity"]);
+        modifiedObj.style('opacity', opacityScheme["translucentObjectOpacity"]);
         deletedNodes = deletedNodes.union(modifiedObj);
         break;
       case 4:
@@ -537,7 +537,7 @@ function highlightDiff(cy, mutList, reason = "") {
         modifiedObj = cy.$id(`edge${startNode}${endNode}`);
         modifiedObj.style('line-color', colorScheme["deletedObjectColor"]);
         modifiedObj.style('target-arrow-color', colorScheme["deletedObjectColor"]);
-        modifiedObj.style('opacity', opacityScheme["deletedObjectOpacity"]);
+        modifiedObj.style('opacity', opacityScheme["translucentObjectOpacity"]);
         deletedEdges = deletedEdges.union(modifiedObj);
         break;
       case 5:
@@ -582,7 +582,7 @@ function indicateChangedTokens(node, tokenMut) {
   const type = tokenMut["type_"] || -1;
   const tokens = tokenMut["tokenName_"];
 
-  if(!type || !tokens || !node.tip) {
+  if (!type || !tokens || !node.tip) {
     return;
   }
 
@@ -913,12 +913,13 @@ function resetElements(cy, resetInputs) {
   // Set all logs to be black
   resetRecentLogs();
 
-  if (resetInputs === true) {
+  if (resetInputs) {
     document.getElementById("node-search").value = '';
     document.getElementById("token-search").value = '';
   }
   document.getElementById('num-selected').innerText = "out of 0";
   document.getElementById('highlight-number').value = 0;
+  document.getElementById('highlight-number').min = 0;
   document.getElementById('highlight-number').max = 0;
   document.getElementById('highlight-number').disabled = true;
   document.getElementById('prevnode').disabled = true;
@@ -935,7 +936,6 @@ function initializeTippy(node) {
 
   // a dummy element must be passed as tippy only accepts a dom element as the target
   const dummyDomEle = document.createElement('div');
-  dummyDomEle.className = "anchor";
 
   node.tip = tippy(dummyDomEle, {
     trigger: 'manual',
