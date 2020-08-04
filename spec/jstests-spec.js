@@ -633,10 +633,16 @@ describe("Token search", function () {
   it("should be successful because the token exists in one node", function () {
     query.value = "a.js";
     const result = searchAndHighlight(cy, "token", searchToken);
+
     // error message should not be displayed
-    expect(result.id()).toBe("A");
-    expect(result.hasClass("highlighted-node")).toBe(true);
-    expect(result.hasClass("background-node")).toBe(false);
+    expect(logList.textContent.trim()).toBe("");
+    expect(result).not.toBeUndefined();
+    expect(result.length).toBe(1);
+
+    const firstNode = result[0];
+    expect(firstNode.id()).toBe("A");
+    expect(firstNode.hasClass("highlighted-node")).toBe(true);
+    expect(firstNode.hasClass("background-node")).toBe(false);
 
     const otherNode = cy.$id("B");
     expect(otherNode.hasClass("highlighted-node")).toBe(false);
@@ -655,19 +661,23 @@ describe("Token search", function () {
 
     // error message should not be displayed
     expect(logList.textContent.trim()).toBe("");
+    expect(result).not.toBeUndefined();
+    expect(result.length).toBe(2);
+
+    const firstNode = result[0];
     expect(result.id()).toBe("A");
     expect(result.hasClass("highlighted-node")).toBe(true);
     expect(result.hasClass("background-node")).toBe(false);
 
-    const otherNode = cy.$id("B");
-    expect(otherNode.hasClass("highlighted-node")).toBe(false);
-    expect(otherNode.hasClass("background-node")).toBe(true);
+    const secondNode = result[1];
+    expect(secondNode.hasClass("highlighted-node")).toBe(true);
+    expect(secondNode.hasClass("background-node")).toBe(false);
 
     const edgeAC = cy.$id("edgeAC");
     const edgeCB = cy.$id("edgeCB");
 
     expect(edgeAC.hasClass("highlighted-edge")).toBe(true);
-    expect(edgeCB.hasClass("highlighted-edge")).toBe(false);
+    expect(edgeCB.hasClass("highlighted-edge")).toBe(true);
 
     const highlightNumber = document.getElementById("highlight-number");
     expect(highlightNumber.min).toBe("1");
@@ -685,41 +695,21 @@ describe("Token search", function () {
     expect(prevButton.disabled).toBe(false);
     expect(nextButton.disabled).toBe(true);
 
-    expect(otherNode.hasClass("highlighted-node")).toBe(true);
-    expect(otherNode.hasClass("background-node")).toBe(false);
-
-    expect(result.hasClass("highlighted-node")).toBe(false);
-    expect(result.hasClass("background-node")).toBe(true);
-
-    expect(edgeAC.hasClass("highlighted-edge")).toBe(false);
-    expect(edgeCB.hasClass("highlighted-edge")).toBe(true);
-
     prevButton.click();
-    expect(otherNode.hasClass("highlighted-node")).toBe(false);
-    expect(otherNode.hasClass("background-node")).toBe(true);
-
-    expect(result.hasClass("highlighted-node")).toBe(true);
-    expect(result.hasClass("background-node")).toBe(false);
-
-    expect(edgeAC.hasClass("highlighted-edge")).toBe(true);
-    expect(edgeCB.hasClass("highlighted-edge")).toBe(false);
-
+    expect(highlightNumber.value).toBe("1");
     expect(prevButton.disabled).toBe(true);
     expect(nextButton.disabled).toBe(false);
 
+    prevButton.click();
+    expect(highlightNumber.value).toBe("1");
+
     nextButton.click();
-    expect(otherNode.hasClass("highlighted-node")).toBe(true);
-    expect(otherNode.hasClass("background-node")).toBe(false);
-
-    expect(result.hasClass("highlighted-node")).toBe(false);
-    expect(result.hasClass("background-node")).toBe(true);
-
-    expect(edgeAC.hasClass("highlighted-edge")).toBe(false);
-    expect(edgeCB.hasClass("highlighted-edge")).toBe(true);
-
+    expect(highlightNumber.value).toBe("2");
     expect(prevButton.disabled).toBe(false);
     expect(nextButton.disabled).toBe(true);
 
+    nextButton.click();
+    expect(highlightNumber.value).toBe("2");
   });
 
   it("should be unsuccessful because token does not exist", function () {
@@ -734,7 +724,7 @@ describe("Token search", function () {
 
     query.value = "fake_file1.js";
     searchAndHighlight(cy, "token", searchToken);
-    expect(mostRecentErr.textContent.trim()).toBe("Token does not exist.");
+    // The old most recent error should now be black
     expect(mostRecentErr.classList).not.toContain("recent-log-text");
 
     const firstNode = cy.$id("A");

@@ -791,7 +791,7 @@ function searchNode(cy, query) {
  *
  * @param cy the graph to search through
  * @param query the name of the token to search for
- * @returns a node containing the token or undefined if there are none
+ * @returns a list of nodes containing the token or undefined if there are none
  */
 function searchToken(cy, query) {
   let target = cy.collection();
@@ -825,12 +825,12 @@ function searchToken(cy, query) {
       // parseInt needed because it does not infer type when subtraction is not used
       updateHighlightedToken(cy, target, parseInt(document.getElementById('highlight-number').value));
     };
-    return target[0];
+    return target;
   }
 }
 
 /**
- * Zoom/highlights node at given index in array
+ * Zoom in on node at given index in array
  *
  * @param cy the graph to search through
  * @param nodesWithToken the list of nodes that contain specified token
@@ -855,16 +855,10 @@ function updateHighlightedToken(cy, nodesWithToken, num) {
   } else {
     document.getElementById('nextnode').disabled = false;
   }
-
-  // Remove highlight from all nodes and associated edges
-  nodesWithToken.toggleClass('highlighted-node', false);
-  nodesWithToken.connectedEdges().forEach(edge => {
-    edge.toggleClass('highlighted-edge', false);
-  });
-  // And just highlight the specified node
-  highlightElements(cy, nodesWithToken[num]);
-  // Reset the number of the highlighted node if the value provided was out of bounds
   document.getElementById('highlight-number').value = num + 1;
+
+  // Zoom in on node
+  cy.fit(nodesWithToken[num], 50);
 }
 
 /**
