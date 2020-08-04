@@ -227,6 +227,8 @@ function getUrl() {
 
   let selectedDepth = 0;
   const depthElem = document.getElementById('num-layers');
+
+  // Make sure depth element is not null and within the bounds before sending to the server
   if (depthElem === null) {
     selectedDepth = 3;
   }
@@ -243,9 +245,11 @@ function getUrl() {
       selectedDepth = 20;
     }
   }
-
+  // Token name to filter for: if element isn't found then send empty string
   const tokenName = document.getElementById('token-name-filter') ? document.getElementById('token-name-filter').value || "" : "";
-  const url = `/data?depth=${selectedDepth}&mutationNum=${currMutationNum}&nodeNames=${nodeNamesArray}&tokenName=${tokenName}`;
+  // Boolean that represents whether we should restrict the mutations to those just of the in screen nodes
+  const restrict = document.getElementById("limit-mutations") ? document.getElementById("limit-mutations").checked : false;
+  const url = `/data?depth=${selectedDepth}&mutationNum=${currMutationNum}&nodeNames=${nodeNamesArray}&tokenName=${tokenName}&restrict=${restrict}`;
   return url;
 }
 
@@ -715,7 +719,6 @@ function searchToken(cy, query) {
     document.getElementById('highlight-number').max = target.length;
     document.getElementById('highlight-number').disabled = false;
     document.getElementById('highlight-number').onchange = function () {
-      console.log("Here");
       updateHighlightedToken(cy, target, document.getElementById('highlight-number').value - 1);
     };
     return target[0];
