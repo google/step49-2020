@@ -562,8 +562,8 @@ describe("Token search", function () {
   let cy;
 
   beforeEach(function () {
-    document.body.innerHTML =
-      `<div id="cy"></div>
+    document.body.innerHTML = `
+      <div id="cy"></div>
       <div id="zoom-box" class="input-child">
         <h4 class="search-title">Zoom In</h4>
           <label>Zoom on Node in Graph: </label>

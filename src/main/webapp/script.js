@@ -323,7 +323,7 @@ function getGraphDisplay(graphNodes, graphEdges, mutList, reason, queriedNodes) 
         }
       },
       {
-        selector: '.non-highlighted-node',
+        selector: '.background-node',
         style: {
           'opacity': opacityScheme["deletedObjectOpacity"]
         }
@@ -366,18 +366,6 @@ function getGraphDisplay(graphNodes, graphEdges, mutList, reason, queriedNodes) 
   document.getElementById('search-node-button').onclick = function () { searchAndHighlight(cy, "node", searchNode) };
 
   document.getElementById('search-token-button').onclick = function () { searchAndHighlight(cy, "token", searchToken) };
-
-  // document.getElementById('highlight-number').onchange = function() { 
-  //   updateHighlightedToken(cy, document.getElementById('highlight-number').value); 
-  // };
-
-  // document.getElementById('prevnode').onclick = function () { 
-  //   updateHighlightedToken(cy, document.getElementById('highlight-number').value - 1);
-  // };
-
-  // document.getElementById('nextnode').onclick = function () { 
-  //   updateHighlightedToken(cy, document.getElementById('highlight-number').value + 1);
-  // };
 
   // When a new graph is loaded, mutations are always shown by default
   const showMutButton = document.getElementById("show-mutations");
@@ -674,7 +662,7 @@ function hideDiffs(cy, elems, deletedNodes, deletedEdges, addedNodes, addedEdges
  * @returns the result of the search.
  */
 function searchAndHighlight(cy, type, searchFunction) {
-  const query = document.getElementById(type + '-search').value;
+  const query = document.getElementById(type + '-search').value.trim();
   resetElements(cy, query === "");
   let result;
   if (query !== "") {
@@ -708,7 +696,7 @@ function searchNode(cy, query) {
  *
  * @param cy the graph to search through
  * @param query the name of the token to search for
- * @returns the result of the search.
+ * @returns the first node that contains token
  */
 function searchToken(cy, query) {
   let target = cy.collection();
@@ -769,11 +757,11 @@ function updateHighlightedToken(cy, nodesWithToken, num) {
  */
 function highlightElements(cy, target) {
   cy.batch(() => {
-    cy.nodes().forEach(node => node.toggleClass('non-highlighted-node', true));
+    cy.nodes().forEach(node => node.toggleClass('background-node', true));
 
     // highlight desired nodes
     target.forEach(node => {
-      node.toggleClass('non-highlighted-node', false);
+      node.toggleClass('background-node', false);
       node.toggleClass('highlighted-node', true);
     });
 
@@ -789,13 +777,14 @@ function highlightElements(cy, target) {
  * Resets collection of nodes/edges to default state
  *
  * @param cy the graph that contains nodes/edges
+ * @param resetInputs boolean to decide whether to reset input fields or not
  */
 function resetElements(cy, resetInputs) {
   cy.batch(() => {
     // reset node borders and opacity
     cy.nodes().forEach(node => {
       node.toggleClass('highlighted-node', false);
-      node.toggleClass('non-highlighted-node', false);
+      node.toggleClass('background-node', false);
     });
 
     cy.edges().forEach(edge => {
