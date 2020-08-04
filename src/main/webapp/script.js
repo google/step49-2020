@@ -856,8 +856,11 @@ function updateHighlightedToken(cy, nodesWithToken, num) {
     document.getElementById('nextnode').disabled = false;
   }
 
-  // Remove highlight from all nodes
+  // Remove highlight from all nodes and associated edges
   nodesWithToken.toggleClass('highlighted-node', false);
+  nodesWithToken.connectedEdges().forEach(edge => {
+    edge.toggleClass('highlighted-edge', false);
+  });
   // And just highlight the specified node
   highlightElements(cy, nodesWithToken[num]);
   // Reset the number of the highlighted node if the value provided was out of bounds
@@ -882,7 +885,7 @@ function highlightElements(cy, target) {
 
     // highlight adjacent edges
     target.connectedEdges().forEach(edge => {
-      edge.toggleClass('highlighted-edge', 'true');
+      edge.toggleClass('highlighted-edge', true);
     });
   });
   cy.fit(target[0], 50);

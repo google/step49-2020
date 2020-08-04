@@ -436,7 +436,7 @@ describe("Check correct url params", function () {
     const constructedUrl = new URLSearchParams(requestParams);
     expect(constructedUrl.has("tokenName")).toBe(true);
     expect(constructedUrl.get("tokenName")).toBe("1");
-  })
+  });
 
   it("passes trimmed tokenName when tokenName has extra whitespaces at the end", function () {
     tokenName.value = "          1     \n";
@@ -447,7 +447,7 @@ describe("Check correct url params", function () {
     const constructedUrl = new URLSearchParams(requestParams);
     expect(constructedUrl.has("tokenName")).toBe(true);
     expect(constructedUrl.get("tokenName")).toBe("1");
-  })
+  });
 });
 
 describe("Node search", function () {
@@ -511,6 +511,7 @@ describe("Node search", function () {
     expect(otherNode.hasClass("highlighted-node")).toBe(false);
     expect(otherNode.hasClass("background-node")).toBe(true);
 
+    // Highlight edges adjacent to highlighted node
     const edge = cy.$id("edgeAB");
     expect(edge.hasClass("highlighted-edge")).toBe(true);
   });
@@ -530,6 +531,9 @@ describe("Node search", function () {
     const secondNode = cy.$id("B");
     expect(secondNode.hasClass("highlighted-node")).toBe(false);
     expect(secondNode.hasClass("background-node")).toBe(false);
+
+    const edge = cy.$id("edgeAB");
+    expect(edge.hasClass("highlighted-edge")).toBe(false);
   });
 
   it("should not execute at all because there is no query", function () {
@@ -547,6 +551,9 @@ describe("Node search", function () {
     const secondNode = cy.$id("B");
     expect(secondNode.hasClass("highlighted-node")).toBe(false);
     expect(secondNode.hasClass("background-node")).toBe(false);
+
+    const edge = cy.$id("edgeAB");
+    expect(edge.hasClass("highlighted-edge")).toBe(false);
   });
 });
 
@@ -597,6 +604,28 @@ describe("Token search", function () {
     nodeWithToken2["data"]["tokens"] = ["b.js"];
     cy.add(nodeWithToken2);
 
+    const nodeWithToken3 = {};
+    nodeWithToken3["data"] = {};
+    nodeWithToken3["data"]["id"] = "C";
+    nodeWithToken3["data"]["tokens"] = [];
+    cy.add(nodeWithToken3);
+
+    const edgeAC = {};
+    edgeAC["group"] = "edges";
+    edgeAC["data"] = {};
+    edgeAC["data"]["id"] = "edgeAC"
+    edgeAC["data"]["source"] = "A";
+    edgeAC["data"]["target"] = "C";
+    cy.add(edgeAC);
+
+    const edgeCB = {};
+    edgeAC["group"] = "edges";
+    edgeCB["data"] = {};
+    edgeCB["data"]["id"] = "edgeCB"
+    edgeCB["data"]["source"] = "C";
+    edgeCB["data"]["target"] = "B";
+    cy.add(edgeCB);
+
     logList = document.getElementById("log-list");
     query = document.getElementById("token-search");
   });
@@ -612,6 +641,12 @@ describe("Token search", function () {
     const otherNode = cy.$id("B");
     expect(otherNode.hasClass("highlighted-node")).toBe(false);
     expect(otherNode.hasClass("background-node")).toBe(true);
+
+    const edgeAC = cy.edges()[0];
+    const edgeCB = cy.edges()[1];
+    
+    expect(edgeAC.hasClass("highlighted-edge")).toBe(true);
+    expect(edgeCB.hasClass("highlighted-edge")).toBe(false);
   });
 
   it("should be successful with finding token in multiples nodes", function () {
@@ -627,6 +662,12 @@ describe("Token search", function () {
     const otherNode = cy.$id("B");
     expect(otherNode.hasClass("highlighted-node")).toBe(false);
     expect(otherNode.hasClass("background-node")).toBe(true);
+
+    const edgeAC = cy.$id("edgeAC");
+    const edgeCB = cy.$id("edgeCB");
+    
+    expect(edgeAC.hasClass("highlighted-edge")).toBe(true);
+    expect(edgeCB.hasClass("highlighted-edge")).toBe(false);
 
     const highlightNumber = document.getElementById("highlight-number");
     expect(highlightNumber.min).toBe("1");
@@ -650,12 +691,19 @@ describe("Token search", function () {
     expect(result.hasClass("highlighted-node")).toBe(false);
     expect(result.hasClass("background-node")).toBe(true);
 
+    expect(edgeAC.hasClass("highlighted-edge")).toBe(false);
+    expect(edgeCB.hasClass("highlighted-edge")).toBe(true);
+
     prevButton.click();
     expect(otherNode.hasClass("highlighted-node")).toBe(false);
     expect(otherNode.hasClass("background-node")).toBe(true);
 
     expect(result.hasClass("highlighted-node")).toBe(true);
     expect(result.hasClass("background-node")).toBe(false);
+
+    expect(edgeAC.hasClass("highlighted-edge")).toBe(true);
+    expect(edgeCB.hasClass("highlighted-edge")).toBe(false);
+
     expect(prevButton.disabled).toBe(true);
     expect(nextButton.disabled).toBe(false);
 
@@ -665,6 +713,10 @@ describe("Token search", function () {
 
     expect(result.hasClass("highlighted-node")).toBe(false);
     expect(result.hasClass("background-node")).toBe(true);
+
+    expect(edgeAC.hasClass("highlighted-edge")).toBe(false);
+    expect(edgeCB.hasClass("highlighted-edge")).toBe(true);
+
     expect(prevButton.disabled).toBe(false);
     expect(nextButton.disabled).toBe(true);
 
@@ -684,6 +736,20 @@ describe("Token search", function () {
     searchAndHighlight(cy, "token", searchToken);
     expect(mostRecentErr.textContent.trim()).toBe("Token does not exist.");
     expect(mostRecentErr.classList).not.toContain("recent-log-text");
+
+    const firstNode = cy.$id("A");
+    expect(firstNode.hasClass("highlighted-node")).toBe(false);
+    expect(firstNode.hasClass("background-node")).toBe(false);
+
+    const secondNode = cy.$id("B");
+    expect(secondNode.hasClass("highlighted-node")).toBe(false);
+    expect(secondNode.hasClass("background-node")).toBe(false);
+
+    const edgeAC = cy.edges()[0];
+    const edgeCB = cy.edges()[1];
+
+    expect(edgeAC.hasClass("highlighted-edge")).toBe(false);
+    expect(edgeCB.hasClass("highlighted-edge")).toBe(false);
   });
 
   it("should not be executed at all because there is no query", function () {
@@ -701,6 +767,12 @@ describe("Token search", function () {
     const secondNode = cy.$id("B");
     expect(secondNode.hasClass("highlighted-node")).toBe(false);
     expect(secondNode.hasClass("background-node")).toBe(false);
+
+    const edgeAC = cy.edges()[0];
+    const edgeCB = cy.edges()[1];
+
+    expect(edgeAC.hasClass("highlighted-edge")).toBe(false);
+    expect(edgeCB.hasClass("highlighted-edge")).toBe(false);
   });
 });
 
@@ -813,8 +885,8 @@ describe("Ensuring correct nodes are highlighted in mutated graph", function () 
       "type_": 5,
       "startNode_": "A",
       "tokenChange_": {
-        "type_" : 1,
-        "tokenName_" : ["a.js", "b.js"],
+        "type_": 1,
+        "tokenName_": ["a.js", "b.js"],
       }
     };
     const mutList = [];
@@ -824,12 +896,11 @@ describe("Ensuring correct nodes are highlighted in mutated graph", function () 
     highlightDiff(cy, mutList);
 
     const addedList = node.tip.popperChildren.content.firstChild.querySelector("#A-added");
-    console.log(node.tip.popperChildren.content.firstChild);
     expect(addedList).not.toBeUndefined();
 
     const children = addedList.children;
     expect(children.length).toBe(2);
-    
+
     const firstChild = children[0];
     expect(firstChild.textContent).toBe("a.js");
     expect(firstChild.classList).toContain("addedtoken");
@@ -844,8 +915,8 @@ describe("Ensuring correct nodes are highlighted in mutated graph", function () 
       "type_": 5,
       "startNode_": "A",
       "tokenChange_": {
-        "type_" : 2,
-        "tokenName_" : ["a.js", "b.js"],
+        "type_": 2,
+        "tokenName_": ["a.js", "b.js"],
       }
     };
     const mutList = [];
@@ -854,13 +925,12 @@ describe("Ensuring correct nodes are highlighted in mutated graph", function () 
     initializeTippy(node);
     highlightDiff(cy, mutList);
 
-    const addedList = node.tip.popperChildren.content.firstChild.querySelector("#A-added");
-    console.log(node.tip.popperChildren.content.firstChild);
-    expect(addedList).not.toBeUndefined();
+    const deletedList = node.tip.popperChildren.content.firstChild.querySelector("#A-deleted");
+    expect(deletedList).not.toBeUndefined();
 
-    const children = addedList.children;
+    const children = deletedList.children;
     expect(children.length).toBe(2);
-    
+
     const firstChild = children[0];
     expect(firstChild.textContent).toBe("a.js");
     expect(firstChild.classList).toContain("deletedtoken");
