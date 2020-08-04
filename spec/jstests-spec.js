@@ -5,7 +5,7 @@ import {
   numMutations, updateButtons, searchAndHighlight, highlightDiff, initializeReasonTooltip,
   getGraphDisplay, getClosestIndices, initializeSlider, resetMutationSlider, mutationNumSlider,
   setMutationSliderValue, readGraphNumberInput, updateGraphNumInput, setMaxNumMutations,
-  searchNode, searchToken, clearLogs
+  searchNode, searchToken, clearLogs, resetRecentLogs
 }
   from "../src/main/webapp/script.js";
 
@@ -491,49 +491,6 @@ describe("Node search", function () {
             target: "B"
           }
         }],
-      style: [
-        {
-          selector: 'node',
-          style: {
-            width: '50px',
-            height: '50px',
-            'background-color': colorScheme["unmodifiedNodeColor"],
-            'label': '',
-            'color': colorScheme["labelColor"],
-            'font-size': '20px',
-            'text-halign': 'center',
-            'text-valign': 'center',
-          }
-        },
-        {
-          selector: 'edge',
-          style: {
-            'width': 3,
-            'line-color': colorScheme["unmodifiedEdgeColor"],
-            'target-arrow-color': colorScheme["unmodifiedEdgeColor"],
-            'target-arrow-shape': 'triangle',
-            'curve-style': 'bezier'
-          },
-        },
-        {
-          selector: '.highlighted-node',
-          style: {
-            'border-width': 4,
-          }
-        },
-        {
-          selector: '.non-highlighted-node',
-          style: {
-            'opacity': opacityScheme["deletedObjectOpacity"]
-          }
-        },
-        {
-          selector: '.highlighted-edge',
-          style: {
-            'line-style': 'dashed',
-            'z-index': '2'
-          }
-        }],
       container: document.getElementById("cy"),
     });
 
@@ -548,7 +505,14 @@ describe("Node search", function () {
     expect(logList.textContent.trim()).toBe("");
     expect(result.id()).toBe("A");
     expect(result.hasClass("highlighted-node")).toBe(true);
-    expect(result.hasClass("non-highlighted-node")).toBe(false);
+    expect(result.hasClass("background-node")).toBe(false);
+
+    const otherNode = cy.$id("B");
+    expect(otherNode.hasClass("highlighted-node")).toBe(false);
+    expect(otherNode.hasClass("background-node")).toBe(true);
+
+    const edge = cy.$id("edgeAB");
+    expect(edge.hasClass("highlighted-edge")).toBe(true);
   });
 
   it("should be unsuccessful because node does not exist", function () {
@@ -558,6 +522,14 @@ describe("Node search", function () {
     // should display error message
     expect(logList.textContent.trim()).toBe("Node does not exist.");
     expect(result).toBeUndefined();
+
+    const firstNode = cy.$id("A");
+    expect(firstNode.hasClass("highlighted-node")).toBe(false);
+    expect(firstNode.hasClass("background-node")).toBe(false);
+
+    const secondNode = cy.$id("B");
+    expect(secondNode.hasClass("highlighted-node")).toBe(false);
+    expect(secondNode.hasClass("background-node")).toBe(false);
   });
 
   it("should not execute at all because there is no query", function () {
@@ -567,6 +539,14 @@ describe("Node search", function () {
     // should not display error message
     expect(logList.textContent.trim()).toBe("");
     expect(result).toBeUndefined();
+
+    const firstNode = cy.$id("A");
+    expect(firstNode.hasClass("highlighted-node")).toBe(false);
+    expect(firstNode.hasClass("background-node")).toBe(false);
+
+    const secondNode = cy.$id("B");
+    expect(secondNode.hasClass("highlighted-node")).toBe(false);
+    expect(secondNode.hasClass("background-node")).toBe(false);
   });
 });
 
@@ -627,7 +607,11 @@ describe("Token search", function () {
     // error message should not be displayed
     expect(result.id()).toBe("A");
     expect(result.hasClass("highlighted-node")).toBe(true);
-    expect(result.hasClass("non-highlighted-node")).toBe(false);
+    expect(result.hasClass("background-node")).toBe(false);
+
+    const otherNode = cy.$id("B");
+    expect(otherNode.hasClass("highlighted-node")).toBe(false);
+    expect(otherNode.hasClass("background-node")).toBe(true);
   });
 
   it("should be successful with finding token in multiples nodes", function () {
@@ -638,11 +622,11 @@ describe("Token search", function () {
     expect(logList.textContent.trim()).toBe("");
     expect(result.id()).toBe("A");
     expect(result.hasClass("highlighted-node")).toBe(true);
-    expect(result.hasClass("non-highlighted-node")).toBe(false);
+    expect(result.hasClass("background-node")).toBe(false);
 
     const otherNode = cy.$id("B");
     expect(otherNode.hasClass("highlighted-node")).toBe(false);
-    expect(otherNode.hasClass("non-highlighted-node")).toBe(true);
+    expect(otherNode.hasClass("background-node")).toBe(true);
 
     const highlightNumber = document.getElementById("highlight-number");
     expect(highlightNumber.min).toBe("1");
@@ -661,26 +645,26 @@ describe("Token search", function () {
     expect(nextButton.disabled).toBe(true);
 
     expect(otherNode.hasClass("highlighted-node")).toBe(true);
-    expect(otherNode.hasClass("non-highlighted-node")).toBe(false);
+    expect(otherNode.hasClass("background-node")).toBe(false);
 
     expect(result.hasClass("highlighted-node")).toBe(false);
-    expect(result.hasClass("non-highlighted-node")).toBe(true);
+    expect(result.hasClass("background-node")).toBe(true);
 
     prevButton.click();
     expect(otherNode.hasClass("highlighted-node")).toBe(false);
-    expect(otherNode.hasClass("non-highlighted-node")).toBe(true);
+    expect(otherNode.hasClass("background-node")).toBe(true);
 
     expect(result.hasClass("highlighted-node")).toBe(true);
-    expect(result.hasClass("non-highlighted-node")).toBe(false);
+    expect(result.hasClass("background-node")).toBe(false);
     expect(prevButton.disabled).toBe(true);
     expect(nextButton.disabled).toBe(false);
 
     nextButton.click();
     expect(otherNode.hasClass("highlighted-node")).toBe(true);
-    expect(otherNode.hasClass("non-highlighted-node")).toBe(false);
+    expect(otherNode.hasClass("background-node")).toBe(false);
 
     expect(result.hasClass("highlighted-node")).toBe(false);
-    expect(result.hasClass("non-highlighted-node")).toBe(true);
+    expect(result.hasClass("background-node")).toBe(true);
     expect(prevButton.disabled).toBe(false);
     expect(nextButton.disabled).toBe(true);
 
@@ -709,6 +693,14 @@ describe("Token search", function () {
     // error message should not be displayed
     expect(logList.textContent.trim()).toBe("");
     expect(result).toBeUndefined();
+
+    const firstNode = cy.$id("A");
+    expect(firstNode.hasClass("highlighted-node")).toBe(false);
+    expect(firstNode.hasClass("background-node")).toBe(false);
+
+    const secondNode = cy.$id("B");
+    expect(secondNode.hasClass("highlighted-node")).toBe(false);
+    expect(secondNode.hasClass("background-node")).toBe(false);
   });
 });
 
@@ -807,13 +799,75 @@ describe("Ensuring correct nodes are highlighted in mutated graph", function () 
   it("highlights a changed node in yellow", function () {
     const mutObj = {
       "type_": 5,
-      "startNode_": "A",
+      "startNode_": "A"
     };
     const mutList = [];
     mutList.push(mutObj);
     highlightDiff(cy, mutList);
 
     expect(cy.$id("A").style("background-color")).toBe(yellow);
+  });
+
+  it("highlights added tokens of a changed node", function () {
+    const mutObj = {
+      "type_": 5,
+      "startNode_": "A",
+      "tokenChange_": {
+        "type_" : 1,
+        "tokenName_" : ["a.js", "b.js"],
+      }
+    };
+    const mutList = [];
+    mutList.push(mutObj);
+    const node = cy.nodes()[0];
+    initializeTippy(node);
+    highlightDiff(cy, mutList);
+
+    const addedList = node.tip.popperChildren.content.firstChild.querySelector("#A-added");
+    console.log(node.tip.popperChildren.content.firstChild);
+    expect(addedList).not.toBeUndefined();
+
+    const children = addedList.children;
+    expect(children.length).toBe(2);
+    
+    const firstChild = children[0];
+    expect(firstChild.textContent).toBe("a.js");
+    expect(firstChild.classList).toContain("addedtoken");
+
+    const secondChild = children[1];
+    expect(secondChild.textContent).toBe("b.js");
+    expect(secondChild.classList).toContain("addedtoken");
+  });
+
+  it("highlights deleted tokens of a changed node", function () {
+    const mutObj = {
+      "type_": 5,
+      "startNode_": "A",
+      "tokenChange_": {
+        "type_" : 2,
+        "tokenName_" : ["a.js", "b.js"],
+      }
+    };
+    const mutList = [];
+    mutList.push(mutObj);
+    const node = cy.nodes()[0];
+    initializeTippy(node);
+    highlightDiff(cy, mutList);
+
+    const addedList = node.tip.popperChildren.content.firstChild.querySelector("#A-added");
+    console.log(node.tip.popperChildren.content.firstChild);
+    expect(addedList).not.toBeUndefined();
+
+    const children = addedList.children;
+    expect(children.length).toBe(2);
+    
+    const firstChild = children[0];
+    expect(firstChild.textContent).toBe("a.js");
+    expect(firstChild.classList).toContain("deletedtoken");
+
+    const secondChild = children[1];
+    expect(secondChild.textContent).toBe("b.js");
+    expect(secondChild.classList).toContain("deletedtoken");
   });
 });
 
@@ -869,7 +923,7 @@ describe("Initializing mutation reason tooltips", function () {
 });
 
 /** Clearing the logs works properly */
-describe("Clearing the logs", function () {
+describe("Clearing and resetting the logs", function () {
   it("correctly clears the log list", function () {
     document.body.innerHTML = `
       <ul id="log-list">
@@ -878,6 +932,23 @@ describe("Clearing the logs", function () {
     const lst = document.getElementById('log-list');
     clearLogs();
     expect(lst.firstChild).toBe(null);
+  });
+
+  it("correctly resets the log list", function () {
+    document.body.innerHTML = `
+      <ul id="log-list">
+        <li class="log-msg recent-log-text">hi </li>
+        <li class="log-msg recent-log-text">there </li>
+      </ul>`;
+    const lst = document.getElementById('log-list');
+    resetRecentLogs();
+
+    expect(lst.children.length).toBe(2);
+    const children = lst.children;
+    expect(children[0].classList).toContain("log-msg");
+    expect(children[0].classList).not.toContain("recent-log-text");
+    expect(children[1].classList).toContain("log-msg");
+    expect(children[1].classList).not.toContain("recent-log-text");
   })
 })
 
