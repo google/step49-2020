@@ -71,12 +71,12 @@ public class DataServlet extends HttpServlet {
   private MutationList.Builder mutListObj = null;
   // A list containing all integers from 0 to mutList.size() - 1
   List<Integer> defaultIndices = new ArrayList<>();
-  
+
   // A map from each node name to a list of indices in mutList where
   // that node is mutated. In addition, the empty string is mapped
   // to the list [0, mutList.size() - 1].
   HashMap<String, List<Integer>> mutationIndicesMap = new HashMap<>();
-  
+
   // A map from each encountered token name to a list of indices in mutList
   // where that token is mutated (either added or deleted from a node).
   HashMap<String, Set<Integer>> tokenIndicesMap = new HashMap<>();
@@ -159,7 +159,8 @@ public class DataServlet extends HttpServlet {
     int radius = Integer.parseInt(radiusParam);
     int mutationNumber = Integer.parseInt(mutationNumParam);
 
-    // If the restriction paramter is null, we set it to false by default (box not checked by default)
+    // If the restriction paramter is null, we set it to false by default (box not checked by
+    // default)
     if (restrictParam == null) {
       restrictParam = "false";
     }
@@ -283,7 +284,8 @@ public class DataServlet extends HttpServlet {
       // or queried are mutated
       Set<Integer> mutationIndicesSet = new HashSet<>();
 
-      // If we don't limit mutations to just the nodes searched, we add all mutations relevant to on-screen nodes
+      // If we don't limit mutations to just the nodes searched, we add all mutations relevant to
+      // on-screen nodes
       if (!restrictBool) {
         mutationIndicesSet.addAll(
             findRelevantMutations(truncatedGraphNodeNamesNext, mutationIndicesMap, mutList));
@@ -294,7 +296,7 @@ public class DataServlet extends HttpServlet {
       if (!tokenIndicesMap.containsKey(tokenNameParam)) {
         tokenIndicesMap.put(tokenNameParam, getMutationIndicesOfToken(tokenNameParam, mutList));
       }
-      
+
       // Add all mutations relevant to the queried node names
       mutationIndicesSet.addAll(tokenIndicesMap.get(tokenNameParam));
       mutationIndicesSet.addAll(findRelevantMutations(nodeNames, mutationIndicesMap, mutList));
