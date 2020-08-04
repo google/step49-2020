@@ -439,6 +439,27 @@ describe("Check correct url params", function () {
   })
 });
 
+describe("Checkbox in getURL", function() { 
+  it("passes checked value correctly", function() {
+    document.body.innerHTML = `<input type="checkbox" id="limit-mutations"></input>`
+    let limitMutCheckbox = document.getElementById("limit-mutations");
+    expect(limitMutCheckbox.checked).toBe(false);
+
+    let requestString = getUrl();
+    let requestParams = requestString.substring(requestString.indexOf("?"));
+    let constructedUrl = new URLSearchParams(requestParams);
+    expect(constructedUrl.has("restrict")).toBe(true);
+    expect(constructedUrl.get("restrict")).toBe("false");
+
+    limitMutCheckbox.click();
+    requestString = getUrl();
+    requestParams = requestString.substring(requestString.indexOf("?"));
+    constructedUrl = new URLSearchParams(requestParams);
+    expect(constructedUrl.has("restrict")).toBe(true);
+    expect(constructedUrl.get("restrict")).toBe("true");
+  })
+})
+
 describe("Node search", function () {
   let cy;
   let logList;
