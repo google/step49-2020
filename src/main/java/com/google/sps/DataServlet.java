@@ -259,7 +259,7 @@ public class DataServlet extends HttpServlet {
       // If we don't restrict, then find the indicies of the mutations of all the nodes in the graph
       if (!restrictBool) {
         mutationIndicesSet.addAll(
-          findRelevantMutations(truncatedGraphNodeNamesNext, mutationIndicesMap, mutList));
+            findRelevantMutations(truncatedGraphNodeNamesNext, mutationIndicesMap, mutList));
       }
       // Place the token, indices association in the map if needed
       if (!tokenIndicesMap.containsKey(tokenParam)) {
