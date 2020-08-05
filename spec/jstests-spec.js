@@ -118,8 +118,7 @@ describe("Checking that depth in fetch url is correct", function () {
     expect(constructedUrl.has("depth")).toBe(true);
     expect(constructedUrl.get("depth")).toBe("20");
   });
-})
-
+});
 
 describe("Initializing tooltips", function () {
   it("initializes the tooltip of a node with tokens as a list of tokens", function () {
@@ -1058,7 +1057,6 @@ describe("Showing and hiding tooltips when checkbox is clicked", function () {
     <input type="number" id="highlight-number">
     <button id="gen-graph" onclick="graph.generateGraph()">Get Graph</button>`;
 
-
     const nodeA = {};
     nodeA["data"] = {};
     nodeA["data"]["id"] = "A";
@@ -1250,7 +1248,6 @@ describe("Testing slider functionality", function () {
     nextButton.onclick = () => { navigateGraph(1); updateButtons(); };
     document.body.appendChild(prevButton);
     document.body.appendChild(nextButton);
-
 
     // snapped to the nearest integer
     expect(mutationNumSlider.value).toBe(0);
