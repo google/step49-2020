@@ -657,6 +657,11 @@ describe("Token search", function () {
 
     expect(edgeAC.hasClass("highlighted-edge")).toBe(true);
     expect(edgeCB.hasClass("highlighted-edge")).toBe(false);
+
+    const prevButton = document.getElementById("prevnode");
+    const nextButton = document.getElementById("nextnode");
+    expect(prevButton.style.display).toBe("none");
+    expect(nextButton.style.display).toBe("none");
   });
 
   it("should be successful with finding token in multiples nodes", function () {
@@ -669,9 +674,9 @@ describe("Token search", function () {
     expect(result.length).toBe(2);
 
     const firstNode = result[0];
-    expect(result.id()).toBe("A");
-    expect(result.hasClass("highlighted-node")).toBe(true);
-    expect(result.hasClass("background-node")).toBe(false);
+    expect(firstNode.id()).toBe("A");
+    expect(firstNode.hasClass("highlighted-node")).toBe(true);
+    expect(firstNode.hasClass("background-node")).toBe(false);
 
     const secondNode = result[1];
     expect(secondNode.hasClass("highlighted-node")).toBe(true);
@@ -694,6 +699,8 @@ describe("Token search", function () {
 
     const prevButton = document.getElementById("prevnode");
     const nextButton = document.getElementById("nextnode");
+    expect(prevButton.style.display).toBe("inline");
+    expect(nextButton.style.display).toBe("inline");
     expect(prevButton.disabled).toBe(true);
     expect(nextButton.disabled).toBe(false);
 
@@ -752,6 +759,11 @@ describe("Token search", function () {
 
     expect(edgeAC.hasClass("highlighted-edge")).toBe(false);
     expect(edgeCB.hasClass("highlighted-edge")).toBe(false);
+
+    const prevButton = document.getElementById("prevnode");
+    const nextButton = document.getElementById("nextnode");
+    expect(prevButton.style.display).toBe("none");
+    expect(nextButton.style.display).toBe("none");
   });
 
   it("should not be executed at all because there is no query", function () {
@@ -779,6 +791,11 @@ describe("Token search", function () {
 
     expect(edgeAC.hasClass("highlighted-edge")).toBe(false);
     expect(edgeCB.hasClass("highlighted-edge")).toBe(false);
+
+    const prevButton = document.getElementById("prevnode");
+    const nextButton = document.getElementById("nextnode");
+    expect(prevButton.style.display).toBe("none");
+    expect(nextButton.style.display).toBe("none");
   });
 });
 

@@ -601,7 +601,7 @@ function indicateChangedTokens(node, tokenMut) {
     case 1:
       // add tokens
       // If this node already has an "Added Token" list, get it
-      let addedList = tipContent.querySelector(`#${node.data().id}-added`);
+      let addedList = tipContent.querySelector(`#${CSS.escape(node.data().id)}-added`);
       // Otherwise initialize it
       if (!addedList) {
         let addedListText = document.createElement("p");
@@ -624,7 +624,7 @@ function indicateChangedTokens(node, tokenMut) {
     case 2:
       // delete tokens
       // If this node already has a "Deleted Token" list, get it
-      let deletedList = tipContent.querySelector(`#${node.data().id}-deleted`);
+      let deletedList = tipContent.querySelector(`#${CSS.escape(node.data().id)}-deleted`);
       // Otherwise initialize it
       if (!deletedList) {
         let deletedListText = document.createElement("p");
@@ -823,20 +823,16 @@ function searchToken(cy, query) {
     };
 
     const prevNodeButton = document.getElementById('prevnode');
-    //prevNodeButton.disabled = true;
-    prevNodeButton.style.display = "none";
     prevNodeButton.onclick = function () {
       updateHighlightedToken(cy, target, document.getElementById('highlight-number').value - 2);
     };
 
     const nextNodeButton = document.getElementById('nextnode');
-    //nextNodeButton.disabled = true;
-    if (target.length <= 1) {
-      nextNodeButton.style.display = "none";
-    } else {
+    if (target.length > 1) {
       nextNodeButton.style.display = defaultButton["display"];
       prevNodeButton.style.display = defaultButton["display"];
     }
+    prevNodeButton.disabled = true;
     nextNodeButton.disabled = (target.length == 1);
     nextNodeButton.onclick = function () {
       // parseInt needed because it does not infer type when subtraction is not used
@@ -936,9 +932,7 @@ function resetElements(cy, resetInputs) {
   document.getElementById('highlight-number').min = 0;
   document.getElementById('highlight-number').max = 0;
   document.getElementById('highlight-number').disabled = true;
-  //document.getElementById('prevnode').disabled = true;
   document.getElementById('prevnode').style.display = "none";
-  //document.getElementById('nextnode').disabled = true;
   document.getElementById('nextnode').style.display = "none";
 
   cy.fit();
