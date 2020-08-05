@@ -20,9 +20,14 @@ const borderScheme = {
   "queriedBorder": "5px"
 }
 
+const defaultButton = {
+  "display": "inline"
+}
+
 module.exports = {
   colorScheme, 
   opacityScheme,
   tippySize,
   borderScheme,
+  defaultButton,
 }

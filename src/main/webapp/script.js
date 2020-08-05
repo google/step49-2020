@@ -27,7 +27,7 @@ import 'tippy.js/dist/tippy.css';
 import 'tippy.js/dist/backdrop.css';
 import 'tippy.js/animations/shift-away.css';
 
-import { colorScheme, opacityScheme, tippySize, borderScheme } from './constants.js';
+import { colorScheme, opacityScheme, tippySize, borderScheme, defaultButton } from './constants.js';
 import "./style.scss";
 
 export {
@@ -773,12 +773,20 @@ function searchToken(cy, query) {
     };
 
     const prevNodeButton = document.getElementById('prevnode');
-    prevNodeButton.disabled = true;
+    //prevNodeButton.disabled = true;
+    prevNodeButton.style.display = "none";
     prevNodeButton.onclick = function () {
       updateHighlightedToken(cy, target, document.getElementById('highlight-number').value - 2);
     };
 
     const nextNodeButton = document.getElementById('nextnode');
+    //nextNodeButton.disabled = true;
+    if (target.length <= 1) {
+      nextNodeButton.style.display = "none";
+    } else {
+      nextNodeButton.style.display = defaultButton["display"];
+      prevNodeButton.style.display = defaultButton["display"];
+    }
     nextNodeButton.disabled = (target.length == 1);
     nextNodeButton.onclick = function () {
       // parseInt needed because it does not infer type when subtraction is not used
@@ -799,14 +807,17 @@ function updateHighlightedToken(cy, nodesWithToken, num) {
   if (num <= 0) {
     num = 0;
     document.getElementById('prevnode').disabled = true;
+    
   } else {
     document.getElementById('prevnode').disabled = false;
+    document.getElementById('prevnode').style.display = defaultButton["display"];
   }
   if (num >= nodesWithToken.length - 1) {
     num = nodesWithToken.length - 1;
     document.getElementById('nextnode').disabled = true;
   } else {
     document.getElementById('nextnode').disabled = false;
+    document.getElementById('nextnode').style.display = defaultButton["display"];
   }
   nodesWithToken.toggleClass('highlighted-node', false);
   highlightElements(cy, nodesWithToken[num]);
@@ -867,8 +878,10 @@ function resetElements(cy, resetInputs) {
   document.getElementById('highlight-number').value = 0;
   document.getElementById('highlight-number').max = 0;
   document.getElementById('highlight-number').disabled = true;
-  document.getElementById('prevnode').disabled = true;
-  document.getElementById('nextnode').disabled = true;
+  //document.getElementById('prevnode').disabled = true;
+  document.getElementById('prevnode').style.display = "none";
+  //document.getElementById('nextnode').disabled = true;
+  document.getElementById('nextnode').style.display = "none";
 
   cy.fit();
 }
