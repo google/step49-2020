@@ -43,15 +43,15 @@
       <input type="text" id="node-search" placeholder="Node Name"></input>
       <button id="search-node-button">Find Node</button>
 
-      <label>Zoom on Token in Graph: </label>
+      <label>Zoom on Token in Graph: (cannot be used simultaneously with above)</label>
       <input type="text" id="token-search" placeholder="Token Name"></input>
       <button id="search-token-button">Find Token</button>
       <div>
-        <label for="highlight-number">Highlighted Token: </label>
+        <label for="highlight-number">Node: </label>
         <input type="number" id="highlight-number" min="0" value="0" max="0" disabled=true>
         <label id="num-selected">out of 0</label>
-        <button id="prevnode" class="material-icons" disabled=true>navigate_before</button>
-        <button id="nextnode" class="material-icons" disabled=true>navigate_next</button>
+        <button id="prevnode" class="material-icons nodebutton" disabled=true>navigate_before</button>
+        <button id="nextnode" class="material-icons nodebutton" disabled=true>navigate_next</button>
         <button id="reset" class="reset">Reset Zoom Effects</button>
       </div>
     </div>

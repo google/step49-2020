@@ -10,6 +10,8 @@
   --box-bg: #ddf3f5;
   --dark-gray: #5d5b6a;
   --disabled-txt: #999;
+  --added: green;
+  --deleted: red;
 }
 
 h2,
@@ -171,6 +173,7 @@ body {
 
 .reset {
   width: 160px;
+  display: block;
 }
 
 #input-boxes {
@@ -197,9 +200,13 @@ input {
 }
 
 .deletedtoken {
-  color: red;
+  color: var(--deleted);
 }
 
 .addedtoken {
-  color: green;
+  color: var(--added);
+}
+
+.nodebutton {
+  display: none;
 }

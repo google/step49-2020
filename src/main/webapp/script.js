@@ -27,7 +27,7 @@ import 'tippy.js/dist/tippy.css';
 import 'tippy.js/dist/backdrop.css';
 import 'tippy.js/animations/shift-away.css';
 
-import { colorScheme, opacityScheme, tippySize, borderScheme } from './constants.js';
+import { colorScheme, opacityScheme, tippySize, borderScheme, defaultButton } from './constants.js';
 import "./style.scss";
 
 export {
@@ -125,6 +125,7 @@ async function generateGraph() {
   // Error on server side
   if (serverErrorStatus !== null) {
     displayError(serverErrorStatus);
+    enableInputs();
     return;
   }
 
@@ -147,12 +148,14 @@ async function generateGraph() {
 
   if (!nodes || !edges || !Array.isArray(nodes) || !Array.isArray(edges)) {
     displayError("Malformed graph received from server - edges or nodes are empty");
+    enableInputs();
     return;
   }
 
   // There aren't any nodes in this graph, and there aren't any mutations pertaining to the filtered node
   if (nodes.length === 0 && numMutations === 0 && mutList.length == 0) {
     displayError("This node does not exist in any stage of the graph!");
+    enableInputs();
     return;
   } else if (response.headers.get("serverMessage")) {
     // This happens if the graph doesn't contain the searched node or 
@@ -195,10 +198,7 @@ async function generateGraph() {
   updateButtons();
   updateGraphNumInput();
   resetMutationSlider();
-
-  document.getElementById("gen-graph").disabled = false;
-  mutationNumSlider.disabled = false;
-  document.getElementById("graph-number").disabled = false;
+  enableInputs();
 }
 
 /**
@@ -214,6 +214,15 @@ function disableInputs() {
   mutationNumSlider.disabled = true;
   const graphNumInput = document.getElementById("graph-number");
   graphNumInput.disabled = true;
+}
+
+/**
+ * Re-enables inputs once graph has been generated
+ */
+function enableInputs() {
+  document.getElementById("gen-graph").disabled = false;
+  mutationNumSlider.disabled = false;
+  document.getElementById("graph-number").disabled = false;
 }
 
 /**
@@ -601,7 +610,7 @@ function indicateChangedTokens(node, tokenMut) {
     case 1:
       // add tokens
       // If this node already has an "Added Token" list, get it
-      let addedList = tipContent.querySelector(`#${node.data().id}-added`);
+      let addedList = tipContent.querySelector(`#${CSS.escape(node.data().id)}-added`);
       // Otherwise initialize it
       if (!addedList) {
         let addedListText = document.createElement("p");
@@ -624,7 +633,7 @@ function indicateChangedTokens(node, tokenMut) {
     case 2:
       // delete tokens
       // If this node already has a "Deleted Token" list, get it
-      let deletedList = tipContent.querySelector(`#${node.data().id}-deleted`);
+      let deletedList = tipContent.querySelector(`#${CSS.escape(node.data().id)}-deleted`);
       // Otherwise initialize it
       if (!deletedList) {
         let deletedListText = document.createElement("p");
@@ -795,7 +804,7 @@ function searchNode(cy, query) {
  *
  * @param cy the graph to search through
  * @param query the name of the token to search for
- * @returns a node containing the token or undefined if there are none
+ * @returns a list of nodes containing the token or undefined if there are none
  */
 function searchToken(cy, query) {
   let target = cy.collection();
@@ -818,23 +827,27 @@ function searchToken(cy, query) {
     };
 
     const prevNodeButton = document.getElementById('prevnode');
-    prevNodeButton.disabled = true;
     prevNodeButton.onclick = function () {
       updateHighlightedToken(cy, target, document.getElementById('highlight-number').value - 2);
     };
 
     const nextNodeButton = document.getElementById('nextnode');
+    if (target.length > 1) {
+      nextNodeButton.style.display = defaultButton["display"];
+      prevNodeButton.style.display = defaultButton["display"];
+    }
+    prevNodeButton.disabled = true;
     nextNodeButton.disabled = (target.length == 1);
     nextNodeButton.onclick = function () {
       // parseInt needed because it does not infer type when subtraction is not used
       updateHighlightedToken(cy, target, parseInt(document.getElementById('highlight-number').value));
     };
-    return target[0];
+    return target;
   }
 }
 
 /**
- * Zoom/highlights node at given index in array
+ * Zoom in on node at given index in array
  *
  * @param cy the graph to search through
  * @param nodesWithToken the list of nodes that contain specified token
@@ -847,8 +860,10 @@ function updateHighlightedToken(cy, nodesWithToken, num) {
   if (num <= 0) {
     num = 0;
     document.getElementById('prevnode').disabled = true;
+    
   } else {
     document.getElementById('prevnode').disabled = false;
+    document.getElementById('prevnode').style.display = defaultButton["display"];
   }
   // Prevent the user from navigating to a node after the last node
   // Also, if we are at the last node, disable the next button
@@ -858,17 +873,12 @@ function updateHighlightedToken(cy, nodesWithToken, num) {
     document.getElementById('nextnode').disabled = true;
   } else {
     document.getElementById('nextnode').disabled = false;
+    document.getElementById('nextnode').style.display = defaultButton["display"];
   }
-
-  // Remove highlight from all nodes and associated edges
-  nodesWithToken.toggleClass('highlighted-node', false);
-  nodesWithToken.connectedEdges().forEach(edge => {
-    edge.toggleClass('highlighted-edge', false);
-  });
-  // And just highlight the specified node
-  highlightElements(cy, nodesWithToken[num]);
-  // Reset the number of the highlighted node if the value provided was out of bounds
   document.getElementById('highlight-number').value = num + 1;
+
+  // Zoom in on node
+  cy.fit(nodesWithToken[num], 50);
 }
 
 /**
@@ -926,8 +936,8 @@ function resetElements(cy, resetInputs) {
   document.getElementById('highlight-number').min = 0;
   document.getElementById('highlight-number').max = 0;
   document.getElementById('highlight-number').disabled = true;
-  document.getElementById('prevnode').disabled = true;
-  document.getElementById('nextnode').disabled = true;
+  document.getElementById('prevnode').style.display = "none";
+  document.getElementById('nextnode').style.display = "none";
 
   cy.fit();
 }
