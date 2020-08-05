@@ -468,8 +468,8 @@ describe("Checkbox in getURL", function() {
     constructedUrl = new URLSearchParams(requestParams);
     expect(constructedUrl.has("restrict")).toBe(true);
     expect(constructedUrl.get("restrict")).toBe("true");
-  })
-})
+  });
+});
 
 describe("Node search", function () {
   let cy;
