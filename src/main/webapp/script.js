@@ -123,6 +123,7 @@ async function generateGraph() {
   // Error on server side
   if (serverErrorStatus !== null) {
     displayError(serverErrorStatus);
+    enableInputs();
     return;
   }
 
@@ -145,12 +146,14 @@ async function generateGraph() {
 
   if (!nodes || !edges || !Array.isArray(nodes) || !Array.isArray(edges)) {
     displayError("Malformed graph received from server - edges or nodes are empty");
+    enableInputs();
     return;
   }
 
   // There aren't any nodes in this graph, and there aren't any mutations pertaining to the filtered node
   if (nodes.length === 0 && numMutations === 0 && mutList.length == 0) {
     displayError("This node does not exist in any stage of the graph!");
+    enableInputs();
     return;
   } else if (response.headers.get("serverMessage")) {
     // This happens if the graph doesn't contain the searched node or 
@@ -191,10 +194,7 @@ async function generateGraph() {
   updateButtons();
   updateGraphNumInput();
   resetMutationSlider();
-
-  document.getElementById("gen-graph").disabled = false;
-  mutationNumSlider.disabled = false;
-  document.getElementById("graph-number").disabled = false;
+  enableInputs();
 }
 
 /**
@@ -210,6 +210,15 @@ function disableInputs() {
   mutationNumSlider.disabled = true;
   const graphNumInput = document.getElementById("graph-number");
   graphNumInput.disabled = true;
+}
+
+/**
+ * Re-enables inputs once graph has been generated
+ */
+function enableInputs() {
+  document.getElementById("gen-graph").disabled = false;
+  mutationNumSlider.disabled = false;
+  document.getElementById("graph-number").disabled = false;
 }
 
 /**
