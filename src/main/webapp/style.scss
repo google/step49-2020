@@ -10,6 +10,7 @@
   --box-bg: #ddf3f5;
   --dark-gray: #5d5b6a;
   --disabled-txt: #999;
+  --added: green;
 }
 
 h2,
@@ -202,7 +203,7 @@ input {
 }
 
 .addedtoken {
-  color: green;
+  color: var(--added);
 }
 
 .nodebutton {
