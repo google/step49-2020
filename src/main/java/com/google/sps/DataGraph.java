@@ -32,6 +32,10 @@ import java.util.List;
 
 import static com.google.sps.Utility.protoNodeToGraphNode;
 
+/**
+ * This file contains the class we used to represent the parsed graph we read from the input file as
+ * well as additional information about the graph needed to quickly compute requested information
+ */
 @AutoValue
 abstract class DataGraph {
 
@@ -57,6 +61,8 @@ abstract class DataGraph {
    * @param roots a set of roots (nodes with no in-edges) of the graph
    * @param numMutations the number of mutations applied to the initial graph to get this graph or
    *     -1 if no mutations have been applied
+   * @param tokenMap a map from token name to the names of all nodes in the graph that contain the
+   *     given token
    * @return the data graph with these attributes
    */
   static DataGraph create(
@@ -100,7 +106,7 @@ abstract class DataGraph {
   /**
    * Getter for the token map
    *
-   * @return A map from token name to names of nodes with the token
+   * @return A map from token name to names of nodes containing the token
    */
   abstract HashMap<String, Set<String>> tokenMap();
 
@@ -114,29 +120,31 @@ abstract class DataGraph {
     HashMap<String, GraphNode> graphNodesMap = this.graphNodesMap();
     HashSet<String> roots = this.roots();
     int mutationNum = this.numMutations();
+    HashMap<String, Set<String>> tokenMap = this.tokenMap();
 
-    HashMap<String, GraphNode> copyMap = new HashMap<>();
+    HashMap<String, GraphNode> graphNodesMapCopy = new HashMap<>();
     for (String key : graphNodesMap.keySet()) {
-      copyMap.put(key, graphNodesMap.get(key));
+      graphNodesMapCopy.put(key, graphNodesMap.get(key));
     }
 
-    HashMap<String, Set<String>> tokenCopyMap = new HashMap<>();
-    for (String key : this.tokenMap().keySet()) {
+    HashMap<String, Set<String>> tokenMapCopy = new HashMap<>();
+    for (String key : tokenMap.keySet()) {
       Set<String> nodesWithToken = new HashSet<>();
-      nodesWithToken.addAll(this.tokenMap().get(key));
-      tokenCopyMap.put(key, nodesWithToken);
+      nodesWithToken.addAll(tokenMap.get(key));
+      tokenMapCopy.put(key, nodesWithToken);
     }
     HashSet<String> copyRoots = new HashSet<>();
     copyRoots.addAll(roots);
-    return DataGraph.create(Graphs.copyOf(graph), copyMap, copyRoots, mutationNum, tokenCopyMap);
+    return DataGraph.create(
+        Graphs.copyOf(graph), graphNodesMapCopy, copyRoots, mutationNum, tokenMapCopy);
   }
 
   /**
-   * Takes in a map from node name to proto-parsed node object. Populates data graph with
+   * Takes in a map from node name to proto-parsed node object. Populates this data graph with
    * information from the parsed graph
    *
    * @param protoNodesMap map from node name to proto Node object parsed from input
-   * @return false if an error occurred, true otherwise
+   * @return false if an error occurred because the graph was not acyclic, true otherwise
    */
   boolean graphFromProtoNodes(Map<String, Node> protoNodesMap) {
     MutableGraph<GraphNode> graph = this.graph();
@@ -183,13 +191,16 @@ abstract class DataGraph {
   /**
    * Applies a single mutation to the given data graph
    *
-   * @param mut the mutation to apply to the graph
-   * @return an empty string if there was no error, otherwise an error message
+   * @param mut the mutation to apply to the graph. The mutation must be supplied in builder form so
+   *     that redundant information can be removed from it if necessary.
+   * @return an empty string if there was no error, otherwise an error message. The method may also
+   *     modify the mutation itself if it performs a duplicate action like adding an existing token.
    */
-  public String mutateGraph(Mutation mut) {
+  public String mutateGraph(Mutation.Builder mut) {
     MutableGraph<GraphNode> graph = this.graph();
     HashMap<String, GraphNode> graphNodesMap = this.graphNodesMap();
     HashSet<String> roots = this.roots();
+
     // Nodes affected by the mutation
     // second node only applicable for adding an edge and removing an edge
     String startName = mut.getStartNode();
@@ -206,6 +217,7 @@ abstract class DataGraph {
           if (graphNodesMap.containsKey(startName)) {
             return "Add node: Adding a duplicate node " + startName + "\n";
           }
+
           // New lone node is a root
           roots.add(startName);
           // Create a new node with the given name and add it to the graph and the map
@@ -225,9 +237,35 @@ abstract class DataGraph {
             return "Add edge: End node " + endName + " doesn't exist\n";
           }
 
-          // The target cannot be a root since it has an in-edge
+          // The target cannot be a root since it has at least one in-edge
           roots.remove(endName);
           graph.putEdge(startNode, endNode);
+          break;
+        }
+      case DELETE_NODE:
+        {
+          if (startNode == null) { // Check node exists before removing
+            return "Delete node: Deleting a non-existent node " + startName + "\n";
+          }
+
+          // Remove the node from all of the occurrences in the tokenMap
+          for (String token : startNode.tokenList()) {
+            removeNodeFromToken(token, startName);
+          }
+
+          Set<GraphNode> successors = graph.successors(startNode);
+          roots.remove(startName);
+          graph.removeNode(startNode); // This will remove all edges associated with startNode
+          graphNodesMap.remove(startName);
+
+          // Check whether any successor will have no in-edges after this node is removed
+          // If so, make them roots
+          for (GraphNode succ : successors) {
+            if (graph.inDegree(succ) == 0) {
+              roots.add(succ.name());
+            }
+          }
+
           break;
         }
       case DELETE_EDGE:
@@ -246,38 +284,17 @@ abstract class DataGraph {
           }
           break;
         }
-      case DELETE_NODE:
-        {
-          if (startNode == null) { // Check node exists before removing
-            return "Delete node: Deleting a non-existent node " + startName + "\n";
-          }
-          // Remove the node from all of the occurrences in the tokenMap
-          for (String token : startNode.tokenList()) {
-            removeNodeFromToken(token, startName);
-          }
-
-          Set<GraphNode> successors = graph.successors(startNode);
-
-          roots.remove(startName);
-          graph.removeNode(startNode); // This will remove all edges associated with startNode
-          graphNodesMap.remove(startName);
-
-          // Check whether any successor will have no in-edges after this node is removed
-          // If so, make them roots
-          for (GraphNode succ : successors) {
-            if (graph.inDegree(succ) == 0) {
-              roots.add(succ.name());
-            }
-          }
-
-          break;
-        }
       case CHANGE_TOKEN:
         {
           if (startNode == null) {
             return "Change node: Changing a non-existent node " + startName + "\n";
           }
-          GraphNode newNode = changeNodeToken(startNode, mut.getTokenChange());
+          // Modify the list of tokens of the node as per the mutation. In the process,
+          // deduplicate the token mutation by removing extra tokens that it adds
+          // or non-existent tokens that it deletes
+          TokenMutation.Builder tokenMut = mut.getTokenChange().toBuilder();
+          GraphNode newNode = changeNodeToken(startNode, tokenMut);
+          mut.setTokenChange(tokenMut);
 
           if (newNode == null) {
             return "Change node: Unrecognized token mutation "
@@ -290,8 +307,8 @@ abstract class DataGraph {
           Set<GraphNode> successors = graph.successors(startNode);
           Set<GraphNode> predecessors = graph.predecessors(startNode);
           graph.removeNode(startNode);
-
           graph.addNode(newNode);
+
           for (GraphNode succ : successors) {
             graph.putEdge(newNode, succ);
           }
@@ -302,7 +319,7 @@ abstract class DataGraph {
         }
       default:
         // unrecognized mutation type
-        return "Unrecognized mutation  " + mut.getType() + "\n";
+        return "Unrecognized mutation type: " + mut.getType() + "\n";
     }
     return "";
   }
@@ -311,27 +328,49 @@ abstract class DataGraph {
    * Modifies the list of tokens of this node to either add or remove tokens contained in tokenMut
    *
    * @param node the node whose token list should be modified
-   * @param tokenMut the mutation that should be applied to the token list
-   * @return the new GraphNode object, or null if it's an unrecognized mutation
+   * @param tokenMut the mutation that should be applied to the token list. The mutation should be
+   *     passed in builder form so that it can be deduplicated if necessary.
+   * @return the new GraphNode object, or null if it's an unrecognized mutation. The method may also
+   *     modify the mutation itself if it performs a duplicate action like adding an existing token.
    */
-  private GraphNode changeNodeToken(GraphNode node, TokenMutation tokenMut) {
+  private GraphNode changeNodeToken(GraphNode node, TokenMutation.Builder tokenMut) {
 
     // List of tokens to add/remove from the existing list
     List<String> tokenNames = tokenMut.getTokenNameList();
     // The existing list of tokens in the node
-    List<String> tokenList = new ArrayList<>();
-    tokenList.addAll(node.tokenList());
+    List<String> existingTokens = node.tokenList();
+    // The modified set of tokens of the node
+    Set<String> tokenSet = new HashSet<>();
+    tokenSet.addAll(existingTokens);
 
     TokenMutation.Type tokenMutType = tokenMut.getType();
     if (tokenMutType == TokenMutation.Type.ADD_TOKEN) {
-      tokenList.addAll(tokenNames);
+      tokenSet.addAll(tokenNames);
 
+      if (tokenSet.size() != existingTokens.size() + tokenNames.size()) {
+        // Remove tokens that this mutation adds that already exist in the node
+        // we must reinstantiate tokenNames because the one retrieved from
+        // the token mutation is unmodifiable
+        ArrayList<String> newTokenNames = new ArrayList<>(tokenNames);
+        newTokenNames.removeAll(existingTokens);
+        tokenMut.clearTokenName();
+        tokenMut.addAllTokenName(newTokenNames);
+      }
       // Update the map
       for (String tokenName : tokenNames) {
         addNodeToToken(tokenName, node.name());
       }
     } else if (tokenMutType == TokenMutation.Type.DELETE_TOKEN) {
-      tokenList.removeAll(tokenNames);
+      tokenSet.removeAll(tokenNames);
+
+      if (tokenSet.size() != existingTokens.size() - tokenNames.size()) {
+        // Remove tokens that this mutation deletes that don't exist in the node
+        ArrayList<String> newTokenNames = new ArrayList<>(tokenNames);
+        newTokenNames.removeIf(elem -> !(existingTokens.contains(elem)));
+        tokenMut.clearTokenName();
+        tokenMut.addAllTokenName(newTokenNames);
+      }
+
       // Update the map
       for (String tokenName : tokenNames) {
         removeNodeFromToken(tokenName, node.name());
@@ -340,7 +379,7 @@ abstract class DataGraph {
       // unrecognized mutation
       return null;
     }
-    return GraphNode.create(node.name(), tokenList, node.metadata());
+    return GraphNode.create(node.name(), new ArrayList<>(tokenSet), node.metadata());
   }
 
   /**
@@ -372,66 +411,18 @@ abstract class DataGraph {
   }
 
   /**
-   * Function for calculating nodes reachable from roots of this graph within at most maxDepth steps
+   * Returns a MutableGraph of nodes that are at most radius from a given nodes. Here, we only
+   * consider children of children and parents of parents. If a node doesn't exist in the graph, we
+   * skip it. If the radius is less than 0 or none of the nodes specified aren't present, return an
+   * empty graph. If the initial set of nodes is empty, use the set of roots of the graph as
+   * starting points
    *
-   * @param maxDepth the maximum depth of a node from a root
-   * @return a graph with nodes only a certain distance from a root
-   */
-  public MutableGraph<GraphNode> getGraphWithMaxDepth(int maxDepth) {
-    if (maxDepth < 0) {
-      return GraphBuilder.directed().build(); // If max depth below 0, then return an emtpy graph
-    }
-
-    MutableGraph<GraphNode> graph = this.graph();
-    HashMap<String, GraphNode> graphNodesMap = this.graphNodesMap();
-    HashSet<String> roots = this.roots();
-    Map<GraphNode, Boolean> visited = new HashMap<>();
-
-    for (String rootName : roots) {
-      GraphNode rootNode = graphNodesMap.get(rootName);
-      dfsVisit(rootNode, visited, maxDepth);
-    }
-    MutableGraph<GraphNode> graphToReturn = Graphs.inducedSubgraph(graph, visited.keySet());
-
-    return graphToReturn;
-  }
-
-  /**
-   * Helper function for performing a depth-first traversal of the graph starting at node and adding
-   * all those nodes to visited which are within depthRemaining steps from the node
-   *
-   * @param gn the GraphNode to start at
-   * @param visited a map that records whether nodes have been visited
-   * @param depthRemaining the number of layers left to explore, decreases by one with each
-   *     recursive call on a child
-   */
-  private void dfsVisit(GraphNode gn, Map<GraphNode, Boolean> visited, int depthRemaining) {
-    MutableGraph<GraphNode> graph = this.graph();
-    if (depthRemaining >= 0) {
-      visited.put(gn, true);
-      for (GraphNode child : graph.successors(gn)) {
-        if (!visited.containsKey(child)) {
-          // Visit the child and indicate the increase in depth
-          dfsVisit(child, visited, depthRemaining - 1);
-        }
-      }
-    }
-  }
-
-  /**
-   * Returns a MutableGraph from given nodes that are at most a certain radius from a given nodes.
-   * If the radius is less than 0 or the nodes specified aren't present, return an empty graph.
-   *
-   * <p>Here, we only consider children of children and parents of parents. If a node doesn't exist
-   * in the graph, we skip it. If all the nodes in the collection don't exist in the graph, we
-   * return an empty graph.
-   *
-   * @param names the names of the nodes whose descendants within radius distance and all associated
-   *     edges should be included in the graph
+   * @param names the names of the nodes whose descendants and ancestors within radius distance and
+   *     all associated edges should be included in the graph
    * @param radius the distance from the node to search for parents and children
    * @return a graph comprised of only nodes and edges within a certain distance from the specified
-   *     node. Empty if radius is less than 0 or if the node isn't found. Returns a graph with a
-   *     depth of at most the radius when names is empty.
+   *     nodes. Empty if radius is less than 0 or if none of the nodes are found or names is null.
+   *     Returns a graph with a depth of at most radius starting from the roots if names is empty.
    */
   public MutableGraph<GraphNode> getReachableNodes(Collection<String> names, int radius) {
     if (radius < 0 || names == null) {
@@ -448,15 +439,15 @@ abstract class DataGraph {
               .map(rootName -> this.graphNodesMap().get(rootName))
               .collect(Collectors.toList());
       nextLayerChildren.addAll(rootNodes);
+    } else {
+      Set<GraphNode> nodesToAdd =
+          names.stream()
+              .filter(name -> graphNodesMap.containsKey(name))
+              .map(name -> graphNodesMap.get(name))
+              .collect(Collectors.toSet());
+      nextLayerChildren.addAll(nodesToAdd);
+      nextLayerParents.addAll(nodesToAdd);
     }
-
-    Set<GraphNode> nodesToAdd =
-        names.stream()
-            .filter(name -> graphNodesMap.containsKey(name))
-            .map(name -> graphNodesMap.get(name))
-            .collect(Collectors.toSet());
-    nextLayerChildren.addAll(nodesToAdd);
-    nextLayerParents.addAll(nodesToAdd);
 
     // None of the other nodes were found, so return empty
     if (nextLayerChildren.isEmpty()) {
@@ -464,10 +455,6 @@ abstract class DataGraph {
     }
 
     MutableGraph<GraphNode> graph = this.graph();
-
-    // HashSet should have expected O(1) lookup, changed from HashMap for space
-    // Two different sets are needed because of cases where a node is both a parent
-    // and a child
     HashSet<GraphNode> visitedChildren = new HashSet<>();
     HashSet<GraphNode> visitedParents = new HashSet<>();
 
@@ -504,7 +491,6 @@ abstract class DataGraph {
       HashSet<GraphNode> layer, HashSet<GraphNode> visited, boolean isChild) {
     HashSet<GraphNode> nextLayer = new HashSet<>();
     for (GraphNode curr : layer) {
-
       if (!visited.contains(curr)) {
         visited.add(curr);
         Set<GraphNode> adjacentNodes =

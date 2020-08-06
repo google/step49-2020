@@ -34,6 +34,10 @@ import static com.google.sps.Utility.protoNodeToGraphNode;
 import static com.google.sps.Utility.getMultiMutationAtIndex;
 import static com.google.sps.Utility.filterMultiMutationByNodes;
 
+/**
+ * This file tests the following functions: - Utility.getMultiMutationAtIndex -
+ * Utility.filterMultiMutationByNodes
+ */
 @RunWith(JUnit4.class)
 public class MutationDiffTest {
 
@@ -472,9 +476,7 @@ public class MutationDiffTest {
   }
 
   /*
-   * Tests that a filter correctly removes irrelevant mutations from a
-   * multimutation that occur after, but keep mutations of the node before
-   * its deletiong
+   * Tests that a filter correctly keeps mutations of the node before its deletion
    */
   @Test
   public void filterMultiMutDeletedNodePreviousKept() {

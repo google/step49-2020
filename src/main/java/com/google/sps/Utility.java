@@ -32,9 +32,12 @@ import com.google.protobuf.Struct;
 import com.proto.GraphProtos.Node;
 import com.proto.MutationProtos.MultiMutation;
 import com.proto.MutationProtos.Mutation;
+import com.proto.MutationProtos.MutationList;
+import com.proto.MutationProtos.TokenMutation;
 
 import org.json.JSONObject;
 
+/** This file contains utility functions used for various tasks in the servlet */
 public final class Utility {
 
   private Utility() {
@@ -45,7 +48,7 @@ public final class Utility {
    * Converts a proto node object into a graph node object that does not store the names of the
    * child nodes but may store additional information.
    *
-   * @param thisNode the input data Node object
+   * @param thisNode the input Node object
    * @return a useful node used to construct the Guava Graph
    */
   public static GraphNode protoNodeToGraphNode(Node thisNode) {
@@ -57,7 +60,9 @@ public final class Utility {
 
   /**
    * Converts a Guava graph into a String encoding of a JSON Object. The object contains nodes and
-   * edges of the graph.
+   * edges of the graph as well as indices of mutations that mutate graph nodes, a list of the
+   * mutations that were applied in the last step to get from the old graph to this graph, the total
+   * length of the mutation list and a list of queriedNodes to highlight.
    *
    * @param graph the graph to convert into a JSON String
    * @param mutationIndices the indices in the entire mutation list that mutate the relevant nodes
@@ -101,36 +106,66 @@ public final class Utility {
   }
 
   /**
-   * Returns the graph at the given mutation number null if the requested number is less than -1. If
-   * the user requests a number greater than the total number of mutations, we return the final
+   * Returns the graph at the given mutation number, null if the requested number is less than -1.
+   * If the user requests a number greater than the total number of mutations, we return the final
    * graph.
    *
    * @param original the original graph
    * @param curr the current (most recently-requested) graph (requires that original != curr)
-   * @param mutationNum number of mutations to apply
-   * @param multiMutList multi-mutation list
+   * @param mutationNum the index of the last mutation to apply
+   * @param multiMutList multi-mutation list builder. This parameter may be modified by replacing
+   *     some mutations with their deduplicated versions.
    * @throws IllegalArgumentException if original and current graph refer to the same object
    * @return the resulting data graph, null if the mutation number was too small, and the final
-   *     graph if the mutation number was too big
+   *     graph if the mutation number was too big.
    */
   public static DataGraph getGraphAtMutationNumber(
-      DataGraph original, DataGraph curr, int mutationNum, List<MultiMutation> multiMutList)
+      DataGraph original, DataGraph curr, int mutationNum, MutationList.Builder mutationsList)
       throws IllegalArgumentException {
     Preconditions.checkArgument(
         original != curr, "The current graph and the original graph refer to the same object");
+
+    List<MultiMutation> multiMutList = mutationsList.getMutationList();
 
     if (mutationNum < -1) {
       return null;
     } else if (mutationNum > multiMutList.size()) {
       mutationNum = multiMutList.size() - 1;
     }
+    // If the requested graph is sequentially before the current graph but is closer to
+    // the initial graph than to the current graph, go forward from the initial graph rather
+    // than going back from the current graph
+    if (curr.numMutations() - mutationNum > mutationNum) {
+      curr = original.getCopy();
+    }
     if (curr.numMutations() <= mutationNum) { // going forward
       for (int i = curr.numMutations() + 1; i <= mutationNum; i++) {
         // Mutate graph operates in place
         MultiMutation multiMut = multiMutList.get(i);
         List<Mutation> mutations = multiMut.getMutationList();
+        // Use this to store the multi mutation without any redundant mutation
+        // information (for eg. duplicate tokens to add)
+        MultiMutation.Builder trimmedMultiMut = MultiMutation.newBuilder();
         for (Mutation mut : mutations) {
-          String error = curr.mutateGraph(mut);
+          Mutation.Builder currMut = mut.toBuilder();
+          String error = curr.mutateGraph(currMut);
+          if (error.length() != 0) {
+            throw new IllegalArgumentException(error);
+          }
+          trimmedMultiMut.addMutation(currMut.build());
+        }
+        mutationsList.setMutation(i, trimmedMultiMut.setReason(multiMut.getReason()));
+      }
+      return DataGraph.create(
+          curr.graph(), curr.graphNodesMap(), curr.roots(), mutationNum, curr.tokenMap());
+    } else {
+      // The last mutation to revert is the one after the last one to apply
+      for (int i = curr.numMutations(); i > mutationNum; i--) {
+        // Mutate graph operates in place
+        MultiMutation multiMut = revertMultiMutation(multiMutList.get(i));
+        List<Mutation> mutations = multiMut.getMutationList();
+        for (Mutation mut : mutations) {
+          String error = curr.mutateGraph(mut.toBuilder());
           if (error.length() != 0) {
             throw new IllegalArgumentException(error);
           }
@@ -138,34 +173,15 @@ public final class Utility {
       }
       return DataGraph.create(
           curr.graph(), curr.graphNodesMap(), curr.roots(), mutationNum, curr.tokenMap());
-    } else {
-      // Create a copy of the original graph and start from the original graph
-      DataGraph originalCopy = original.getCopy();
-      for (int i = 0; i <= mutationNum; i++) {
-        MultiMutation multiMut = multiMutList.get(i);
-        List<Mutation> mutations = multiMut.getMutationList();
-        for (Mutation mut : mutations) {
-          String error = originalCopy.mutateGraph(mut);
-          if (error.length() != 0) {
-            throw new IllegalArgumentException(error);
-          }
-        }
-      }
-      return DataGraph.create(
-          originalCopy.graph(),
-          originalCopy.graphNodesMap(),
-          originalCopy.roots(),
-          mutationNum,
-          originalCopy.tokenMap());
     }
   }
 
   /**
-   * Returns a multi-mutation (list of mutations) that need to be applied to get from the graph at
-   * currIndex to the graph at nextIndex as long as nextIndex = currIndex + 1
+   * Returns the last multi-mutation (list of mutations) that needs to be applied to get from the
+   * graph at currIndex to the graph at nextIndex as long as nextIndex > currIndex
    *
    * @param multiMutList the list of multi-mutations that are to be applied to the initial graph
-   * @param index the index in the above list at which the multimutation to apply is
+   * @param index the index of the last-applied multimutation
    * @return a multimutation with all the changes to apply to the current graph to get the next
    *     graph or null if the provided indices are out of bounds or non-consecutive
    */
@@ -210,7 +226,7 @@ public final class Utility {
    *
    * @param tokenName the token name to search for
    * @param origList the original list of mutations
-   * @return a set of indices, empty if tokenName is null or if token is not changed
+   * @return a set of indices, empty if tokenName is null or empty
    */
   public static Set<Integer> getMutationIndicesOfToken(
       String tokenName, List<MultiMutation> origList) {
@@ -301,5 +317,93 @@ public final class Utility {
       relevantIndices.addAll(mutationIndicesMap.get(nodeName));
     }
     return relevantIndices;
+  }
+
+  /**
+   * Returns a multi-mutation which undoes the changes caused by the passed multi- mutation in the
+   * opposite order to which they are made
+   *
+   * @param multiMut the multi-mutation to reverse
+   * @return the reverted multi-mutation
+   */
+  public static MultiMutation revertMultiMutation(MultiMutation multiMut) {
+    MultiMutation.Builder result = MultiMutation.newBuilder().setReason(multiMut.getReason());
+    List<Mutation> mutations = multiMut.getMutationList();
+    List<Mutation> revertedMutations = new ArrayList<>();
+    for (int i = mutations.size() - 1; i >= 0; i--) {
+      revertedMutations.add(revertMutation(mutations.get(i)));
+    }
+    return result.addAllMutation(revertedMutations).build();
+  }
+
+  /**
+   * Returns a mutation which undoes the changes caused by the passed mutation. For example,
+   * reverting an add edge deletes the edge.
+   *
+   * @param mut the mutation to reverse
+   * @return the reverted mutation
+   */
+  public static Mutation revertMutation(Mutation mut) {
+    Mutation.Builder result = Mutation.newBuilder(mut);
+    switch (mut.getType()) {
+      case ADD_NODE:
+        {
+          result.setType(Mutation.Type.DELETE_NODE);
+          break;
+        }
+      case DELETE_NODE:
+        {
+          result.setType(Mutation.Type.ADD_NODE);
+          break;
+        }
+      case ADD_EDGE:
+        {
+          result.setType(Mutation.Type.DELETE_EDGE);
+          break;
+        }
+      case DELETE_EDGE:
+        {
+          result.setType(Mutation.Type.ADD_EDGE);
+          break;
+        }
+      case CHANGE_TOKEN:
+        {
+          result.setTokenChange(revertTokenChangeMutation(result.getTokenChange()));
+          break;
+        }
+      default:
+        {
+          break;
+        }
+    }
+    return result.build();
+  }
+
+  /**
+   * Returns a token mutation which undoes the changes caused by the passed token mutation. For
+   * example, reverting an add token deletes the token.
+   *
+   * @param tokenMut the token mutation to reverse
+   * @return the reverted token mutation
+   */
+  public static TokenMutation revertTokenChangeMutation(TokenMutation tokenMut) {
+    TokenMutation.Builder result = TokenMutation.newBuilder(tokenMut);
+    switch (tokenMut.getType()) {
+      case ADD_TOKEN:
+        {
+          result.setType(TokenMutation.Type.DELETE_TOKEN);
+          break;
+        }
+      case DELETE_TOKEN:
+        {
+          result.setType(TokenMutation.Type.ADD_TOKEN);
+          break;
+        }
+      default:
+        {
+          break;
+        }
+    }
+    return result.build();
   }
 }

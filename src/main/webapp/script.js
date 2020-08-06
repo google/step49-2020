@@ -13,7 +13,7 @@
 // limitations under the License.
 
 /**
- * Submits a fetch request to the /data url. Upon receiving a JSON encoding of the
+ * This file submits a fetch request to the /data url. Upon receiving a JSON encoding of the
  * nodes and edges of the graph, renders the graph in a container on the page using
  * the cytoscape.js library
  */
@@ -31,7 +31,7 @@ import { colorScheme, opacityScheme, tippySize, borderScheme, defaultButton } fr
 import "./style.scss";
 
 export {
-  initializeNumMutations, setMutationIndexList, setCurrMutationNum, setCurrMutationIndex,
+  setNumMutations, setMutationIndexList, setCurrMutationNum, setCurrMutationIndex,
   initializeTippy, generateGraph, getUrl, navigateGraph, currMutationNum, currMutationIndex,
   numMutations, updateButtons, searchAndHighlight, highlightDiff, initializeReasonTooltip,
   getGraphDisplay, getClosestIndices, initializeSlider, resetMutationSlider, mutationNumSlider,
@@ -61,17 +61,19 @@ let numMutations = 0;
 // (for ex, if a node was searched and the node was modified in the 1st, 4th, and 
 // 5th indices, this would be [1,4,5])
 let mutationIndexList = [];
-// An object representing a slider whose value can be changed by the user to 
-// modify currMutationIndex
-let mutationNumSlider;
+
 // The maximum number of mutations that can be applied to the initial graph
 // ie. the length of the mutations list
 let maxNumMutations = 0;
 
+// An object representing a slider whose value can be changed by the user to 
+// modify currMutationIndex
+let mutationNumSlider;
+
 /**
- * Initializes the number of mutations
+ * Sets the number of mutations
  */
-function initializeNumMutations(num) {
+function setNumMutations(num) {
   numMutations = num;
 }
 
@@ -226,19 +228,18 @@ function enableInputs() {
  * Ensures that the depth is an integer between 0 and 20
  */
 function getUrl() {
-  const depthElem = document.getElementById('num-layers');
   const nodeNames = document.getElementById('node-name-filter') ? document.getElementById('node-name-filter').value || "" : "";
-  const tokenName = (document.getElementById('token-name-filter') ? document.getElementById('token-name-filter').value || "" : "").trim();
   // Takes care of "all the whitespace characters (space, tab, no-break space, etc.) 
   // and all the line terminator characters (LF, CR, etc.)" acc to documentation
   const nodeNamesArray = JSON.stringify(nodeNames.split(",").map(item => item.trim()).filter(item => item.length > 0));
 
   let selectedDepth = 0;
+  const depthElem = document.getElementById('num-layers');
   if (depthElem === null) {
     selectedDepth = 3;
   }
   else {
-    selectedDepth = depthElem.value
+    selectedDepth = depthElem.value;
     if (selectedDepth.length === 0) {
       selectedDepth = 3;
     } else if (!Number.isInteger(selectedDepth)) {
@@ -250,6 +251,8 @@ function getUrl() {
       selectedDepth = 20;
     }
   }
+
+  const tokenName = (document.getElementById('token-name-filter') ? document.getElementById('token-name-filter').value || "" : "").trim();
   const url = `/data?depth=${selectedDepth}&mutationNum=${currMutationNum}&nodeNames=${nodeNamesArray}&tokenName=${tokenName}`;
   return url;
 }
@@ -692,11 +695,6 @@ function showDiffs(cy, elems, deletedNodes, deletedEdges, addedNodes, addedEdges
   cy.add(deletedNodes);
   cy.add(deletedEdges);
 
-  // Color "deleted" nodes and edges in red 
-  deletedNodes.style("background-color", colorScheme["deletedObjectColor"]);
-  deletedEdges.style("line-color", colorScheme["deletedObjectColor"]);
-  deletedEdges.style("target-arrow-color", colorScheme["deletedObjectColor"]);
-
   // Color "added" nodes and edges in green
   addedNodes.style("background-color", colorScheme["addedObjectColor"]);
   addedEdges.style("line-color", colorScheme["addedObjectColor"]);
@@ -963,7 +961,7 @@ function initializeTippy(node) {
 }
 
 /**
- * Takes in a node and returns an HTML element containing the element's
+ * Takes in a node and returns an HTML element containing the element's name and
  * tokens formatted into an HTML unordered list with a close button if
  * the node has tokens and a message indicating so if it doesn't.
  */
@@ -1052,7 +1050,7 @@ function navigateGraph(amount) {
  * Updates next and previous buttons of the graph to prevent user
  * from clicking previous for the initial graph and next for the 
  * final graph
- * Assumes currGraphNum is between 0 and numMutations
+ * Assumes currGraphNum is between -1 and numMutations
  */
 function updateButtons() {
   // The use of <= and >= as opposed to === is for safety

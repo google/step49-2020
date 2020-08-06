@@ -32,7 +32,10 @@ import org.junit.runners.JUnit4;
 import static com.google.sps.Utility.getMutationIndicesOfNode;
 import static com.google.sps.Utility.findRelevantMutations;
 
-/** Test for functions within Utility that are used to filter graphs across nodes */
+/**
+ * This file tests the following functions: - Utility.getMutationIndicesOfNode -
+ * Utility.findRelevantMutations
+ */
 @RunWith(JUnit4.class)
 public class NodeMutationFilterTest {
 
@@ -157,8 +160,7 @@ public class NodeMutationFilterTest {
 
   // TESTING findRelevantMutations
   /**
-   * Getting mutation indices of multiple nodes returns the union of all their individual indices in
-   * sorted order
+   * Getting mutation indices of multiple nodes returns the union of all their individual indices
    */
   @Test
   public void getMutationsOfMultiple() {
@@ -178,8 +180,8 @@ public class NodeMutationFilterTest {
   }
 
   /**
-   * Getting mutation indices of multiple nodes returns the union of all their individual indices in
-   * sorted order without duplicates
+   * Getting mutation indices of multiple nodes returns the union of all their individual indices
+   * without duplicates
    */
   @Test
   public void getMutationsOfMultipleNoDuplicates() {

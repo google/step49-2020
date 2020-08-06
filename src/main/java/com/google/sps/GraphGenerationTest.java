@@ -35,7 +35,11 @@ import org.junit.runners.JUnit4;
 
 import static com.google.sps.Utility.getNodeNamesInGraph;
 import static com.google.sps.Utility.protoNodeToGraphNode;
-/** */
+
+/**
+ * This file tests the following functions: - Utility.protoNodeToGraphNode - graphFromProtoNode in
+ * DataGraph.java - getCopy in DataGraph.java - Utility.getNodeNamesInGraph
+ */
 @RunWith(JUnit4.class)
 public final class GraphGenerationTest {
   // Proto nodes to construct graph with
@@ -44,14 +48,12 @@ public final class GraphGenerationTest {
   Builder nodeC = Node.newBuilder().setName("C");
   Builder nodeD = Node.newBuilder().setName("D");
   Builder nodeE = Node.newBuilder().setName("E");
-  Builder nodeF = Node.newBuilder().setName("F");
 
   GraphNode gNodeA;
   GraphNode gNodeB;
   GraphNode gNodeC;
   GraphNode gNodeD;
   GraphNode gNodeE;
-  GraphNode gNodeF;
 
   @Before
   public void setUp() {
@@ -60,7 +62,6 @@ public final class GraphGenerationTest {
     gNodeC = protoNodeToGraphNode(nodeC.build());
     gNodeD = protoNodeToGraphNode(nodeD.build());
     gNodeE = protoNodeToGraphNode(nodeE.build());
-    gNodeF = protoNodeToGraphNode(nodeF.build());
   }
 
   /*
@@ -240,6 +241,20 @@ public final class GraphGenerationTest {
       GraphNode nodeInOrig = nodeMapOrig.get(nodeName);
       GraphNode nodeInCopy = nodeMapCopy.get(nodeName);
       Assert.assertSame(nodeInOrig, nodeInCopy);
+    }
+
+    Assert.assertEquals(dataGraph.numMutations(), dataGraphCopy.numMutations());
+
+    HashMap<String, Set<String>> tokenMapOrig = dataGraph.tokenMap();
+    HashMap<String, Set<String>> tokenMapCopy = dataGraphCopy.tokenMap();
+
+    Assert.assertEquals(tokenMapOrig, tokenMapCopy);
+    Assert.assertFalse(tokenMapOrig == tokenMapCopy);
+    for (String tokenName : tokenMapOrig.keySet()) {
+      Set<String> nodeListOrig = tokenMapOrig.get(tokenName);
+      Set<String> nodeListCopy = tokenMapCopy.get(tokenName);
+      Assert.assertEquals(nodeListOrig, nodeListCopy);
+      Assert.assertFalse(nodeListOrig == nodeListCopy);
     }
   }
 

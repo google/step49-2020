@@ -57,23 +57,26 @@ import static com.google.sps.Utility.graphToJson;
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
 
-  private DataGraph currDataGraph = null;
+  // A data graph containing the information parsed from the input proto file
   private DataGraph originalDataGraph = null;
+  // A data graph that represents the most recently requested graph
+  private DataGraph currDataGraph = null;
+  // A list of mutations to apply to the original data graph as parsed from the
+  // mutations proto file
   private List<MultiMutation> mutList = null;
-
-  // A list containing the indices of mutations that mutate the node we are
-  // currently filtering by. It is initialized to all indices since we start
-  // out not filtering by anything.
-  List<Integer> filteredMutationIndices = new ArrayList<>();
-
+  // We store a builder so that we can modify the contained mutation objects
+  // to be non-redundant. For example, if we find that a mutation adds duplicate
+  // tokens to a node we replace it with a trimmed version that doesn't add
+  // duplicates. This is only possible if the mutation list is mutable.
+  private MutationList.Builder mutListObj = null;
   // A list containing all integers from 0 to mutList.size() - 1
   List<Integer> defaultIndices = new ArrayList<>();
-
   // A map from each node name to a list of indices in mutList where
   // that node is mutated. In addition, the empty string is mapped
   // to the list [0, mutList.size() - 1].
   HashMap<String, List<Integer>> mutationIndicesMap = new HashMap<>();
-
+  // A map from each encountered token name to a list of indices in mutList
+  // where that token is mutated (either added or deleted from a node).
   HashMap<String, Set<Integer>> tokenIndicesMap = new HashMap<>();
 
   /*
@@ -81,6 +84,8 @@ public class DataServlet extends HttpServlet {
    */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    // Used to detect whether various operations are performed successfully, and inform the
+    // user if not.
     boolean success = true;
 
     /*
@@ -88,7 +93,8 @@ public class DataServlet extends HttpServlet {
      * Initialize Graph Variables
      *********************************
      */
-    if (currDataGraph == null && originalDataGraph == null) {
+
+    if (originalDataGraph == null && currDataGraph == null) {
       success =
           initializeGraphVariables(
               getServletContext().getResourceAsStream("/WEB-INF/initial_graph.textproto"));
@@ -97,6 +103,7 @@ public class DataServlet extends HttpServlet {
             "serverError", "Failed to parse input graph into Guava graph - not a DAG!");
         return;
       }
+      // The most-recently requested graph always starts out as the initial graph
       currDataGraph = originalDataGraph.getCopy();
     } else if (currDataGraph == null || originalDataGraph == null) {
       response.setHeader("serverError", "Invalid input");
@@ -108,11 +115,12 @@ public class DataServlet extends HttpServlet {
      * Initialize Mutation List Variables
      *************************************
      */
-    if (mutList == null) {
+    if (mutListObj == null) {
       initializeMutationVariables(
           getServletContext().getResourceAsStream("/WEB-INF/mutations.textproto"));
       // Populate the list of all possible mutation indices
       defaultIndices = IntStream.range(0, mutList.size()).boxed().collect(Collectors.toList());
+      // TODO: do we need this?
       // and store this as the list of relevant indices for filtering by empty string
       // (= not filtering)
       mutationIndicesMap.put("", defaultIndices);
@@ -123,55 +131,59 @@ public class DataServlet extends HttpServlet {
      * Read Request Parameters
      *************************************
      */
-
-    String depthParam = request.getParameter("depth");
-    String mutationParam = request.getParameter("mutationNum");
+    // TODO: change depth to radius
+    String radiusParam = request.getParameter("depth");
+    String mutationNumParam = request.getParameter("mutationNum");
     String nodeNamesParam = request.getParameter("nodeNames");
-    String tokenParam = request.getParameter("tokenName");
+    String tokenNameParam = request.getParameter("tokenName");
 
-    if (depthParam == null) {
-      String error = "Improper depth parameter, cannot generate graph";
-      response.setHeader("serverError", error);
+    if (radiusParam == null) {
+      response.setHeader("serverError", "Improper radius parameter, cannot generate graph");
       return;
-    } else if (mutationParam == null) {
-      String error = "Improper mutation number parameter, cannot generate graph";
-      response.setHeader("serverError", error);
+    } else if (mutationNumParam == null) {
+      response.setHeader(
+          "serverError", "Improper mutation number parameter, cannot generate graph");
       return;
     }
-    // If nodeNamesParam or tokenParam are null, we should just set them to empty and
+    // If nodeNamesParam or tokenNameParam are null, we should just set them to empty and
     // not error out
     if (nodeNamesParam == null) {
       nodeNamesParam = "";
     }
-    if (tokenParam == null) {
-      tokenParam = "";
+    if (tokenNameParam == null) {
+      tokenNameParam = "";
     }
-    int depthNumber = Integer.parseInt(depthParam);
-    int mutationNumber = Integer.parseInt(mutationParam);
+    int radius = Integer.parseInt(radiusParam);
+    int mutationNumber = Integer.parseInt(mutationNumParam);
 
     // Truncated version of graph to return to the client
-    MutableGraph<GraphNode> truncatedGraph;
+    MutableGraph<GraphNode> truncatedGraph = GraphBuilder.directed().build();
+
+    // A list containing the indices of mutations that any nodes displayed on
+    // screen as well as the searched nodes and any nodes containing the searched
+    // token.
+    List<Integer> filteredMutationIndices = new ArrayList<>();
 
     // The list of mutations that need to be applied to the nodes in currDataGraph
-    // to get the requested graph, filtered to only contain changes pertaining
-    // to nodes in the truncated graph or the filtered node (null if the graph
-    // requested is before the current graph in the sequence of mutations)
+    // to get the requested graph (null if the graph requested is before the current
+    // graph in the sequence of mutations)
     MultiMutation diff = null;
+    // The above diff variable filtered to only contain changes relevant to nodes on-screen,
+    // the filtered nodes and nodes containing the filtered token.
     MultiMutation filteredDiff = null;
 
-    response.setContentType("application/json");
-    String graphJson;
-
     /*
-     *************************************************
-     * Filtering Graph and Mutations By Searched Node
-     *************************************************
+     *************************************************************
+     * Filtering Graph and Mutations By Searched Nodes and Tokens
+     *************************************************************
      */
 
     // Get the diff if we are going forward in the list of mutations
     if (mutationNumber > currDataGraph.numMutations()) {
       diff = getMultiMutationAtIndex(mutList, mutationNumber);
     }
+
+    // Stores the list of node names queried by the user
     List<String> nodeNames = new ArrayList<>();
     try {
       JsonArray nodeNameArr = JsonParser.parseString(nodeNamesParam).getAsJsonArray();
@@ -184,42 +196,55 @@ public class DataServlet extends HttpServlet {
     } catch (JsonSyntaxException e) {
       response.setHeader("serverError", "The node names received do not form a valid JSON string");
     } catch (IllegalStateException e) {
-      response.setHeader("serverError", "The node names received do not form a valid JSON string");
+      response.setHeader("serverError", "The node names received do not form a valid JSON array");
     }
 
-    // A list of "roots" to return nodes at most depth radius from
+    // A list of "roots" to return nodes at most "radius" distance from for the current graph
+    // This differs from queriedNext below in that some queried nodes may be deleted or
+    // cease to contain the queried token in the requested graph, so we include them in queried
+    // just to show their mutations for a single step but exclude them from queried next so
+    // their mutations (which are now irrelevant) are not shown.
     HashSet<String> queried = new HashSet<>();
-
-    // roots to calculate the mutations from
+    // A list of "roots" to return nodes at most "radius" distance from for the next graph
     HashSet<String> queriedNext = new HashSet<>();
-    // We start by adding the node name if it was searched for
+
+    // We start by adding any queried node names
+    // The reason we add them to queriedNext is to handle the case where a node in the list
+    // doesn't exist now but is added in the future.
     if (nodeNames.size() > 0) {
       queried.addAll(nodeNames);
       queriedNext.addAll(nodeNames);
     }
 
-    // Show mutations relevant to nodes that contain the token in the current graph
-    if (currDataGraph.tokenMap().containsKey(tokenParam)) {
-      queried.addAll(currDataGraph.tokenMap().get(tokenParam));
+    // We show mutations relevant to nodes that contain the token in the current graph
+    if (currDataGraph.tokenMap().containsKey(tokenNameParam)) {
+      queried.addAll(currDataGraph.tokenMap().get(tokenNameParam));
     }
 
     // Get the graph at the requested mutation number
     try {
       currDataGraph =
-          getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutList);
+          getGraphAtMutationNumber(originalDataGraph, currDataGraph, mutationNumber, mutListObj);
     } catch (IllegalArgumentException e) {
       response.setHeader("serverError", e.getMessage());
       return;
     }
 
-    // Show mutations relevant to nodes that contain the token in the new graph
-    if (currDataGraph.tokenMap().containsKey(tokenParam)) {
-      queried.addAll(currDataGraph.tokenMap().get(tokenParam));
-      queriedNext.addAll(currDataGraph.tokenMap().get(tokenParam));
+    // We also show mutations relevant to nodes that contain the token in the new graph
+    // Mutations relevant to these nodes should be shown
+    if (currDataGraph.tokenMap().containsKey(tokenNameParam)) {
+      queried.addAll(currDataGraph.tokenMap().get(tokenNameParam));
+      queriedNext.addAll(currDataGraph.tokenMap().get(tokenNameParam));
     }
-
-    // Truncate the graph from the nodes & tokens that the client had searched for
-    truncatedGraph = currDataGraph.getReachableNodes(queried, depthNumber);
+    // This condition exists to prevent entry into this case when the user
+    // searches for a non-existent token and no node. In this case, queried
+    // is empty so using the below logic will return the whole graph. To avoid
+    // this, we initialize truncatedGraph to the empty graph and include this
+    // condition
+    if (tokenNameParam.length() == 0 || queried.size() != 0) {
+      // Truncate the graph from the nodes that the client had searched for
+      truncatedGraph = currDataGraph.getReachableNodes(queried, radius);
+    }
 
     // The next graph to display to the client
     MutableGraph<GraphNode> truncatedGraphNext;
@@ -227,22 +252,21 @@ public class DataServlet extends HttpServlet {
     if (queriedNext.isEmpty()) {
       truncatedGraphNext = GraphBuilder.undirected().build();
     } else {
-      // If queried and queried next contain the same nodes, then no reason to regenerate the graph
+      // If queried and queriedNext contain the same nodes, then there is no reason
+      // to regenerate the graph
       truncatedGraphNext =
           queried.equals(queriedNext)
               ? truncatedGraph
-              : currDataGraph.getReachableNodes(queriedNext, depthNumber);
+              : currDataGraph.getReachableNodes(queriedNext, radius);
     }
 
     // If we are not filtering the graph or limiting its depth, show all mutations of all nodes
     if (nodeNames.size() == 0
-        && tokenParam.length() == 0
+        && tokenNameParam.length() == 0
         && truncatedGraph.equals(currDataGraph.graph())) {
       filteredMutationIndices = defaultIndices;
       filteredDiff = diff;
     } else {
-      // Get the names of all the displayed nodes and find all indices of mutations
-      // that mutate any of them
       Set<String> truncatedGraphNodeNames = getNodeNamesInGraph(truncatedGraph);
       Set<String> truncatedGraphNodeNamesNext = getNodeNamesInGraph(truncatedGraphNext);
 
@@ -250,67 +274,82 @@ public class DataServlet extends HttpServlet {
       // or queried are mutated
       Set<Integer> mutationIndicesSet = new HashSet<>();
 
+      // Add all mutations relevant to on-screen nodes
       mutationIndicesSet.addAll(
           findRelevantMutations(truncatedGraphNodeNamesNext, mutationIndicesMap, mutList));
-      // Place in the map if needed
-      if (!tokenIndicesMap.containsKey(tokenParam)) {
-        tokenIndicesMap.put(tokenParam, getMutationIndicesOfToken(tokenParam, mutList));
+
+      // Add all mutations relevant to the queried token, computing and caching it if it
+      // hasn't been done already
+      if (!tokenIndicesMap.containsKey(tokenNameParam)) {
+        tokenIndicesMap.put(tokenNameParam, getMutationIndicesOfToken(tokenNameParam, mutList));
       }
-      mutationIndicesSet.addAll(tokenIndicesMap.get(tokenParam));
+      mutationIndicesSet.addAll(tokenIndicesMap.get(tokenNameParam));
+
+      // Add all mutations relevant to the queried node names
       mutationIndicesSet.addAll(findRelevantMutations(nodeNames, mutationIndicesMap, mutList));
       filteredMutationIndices = new ArrayList<>(mutationIndicesSet);
       Collections.sort(filteredMutationIndices);
 
-      // Show mutations relevant to nodes that used to have the token but
-      // might not exist anymore and the queried nodes
+      // Show mutations relevant to nodes that are related to on-screen nodes, nodes that
+      // used to/still have the queried token and any queried nodes
       filteredDiff = filterMultiMutationByNodes(diff, Sets.union(truncatedGraphNodeNames, queried));
     }
-    // We set the headers in the following 4 scenarios:
-    // The searched node is not in the graph and is never mutated
-    if (truncatedGraph.nodes().size() == 0 && filteredMutationIndices.size() == 0) {
+
+    /*
+     ***********************
+     * Error Handling
+     * We set the headers in the following 4 scenarios:
+     ***********************
+     */
+
+    if (truncatedGraph.nodes().size() == 0 // something was queried but wasn't found in the graph
+        && filteredMutationIndices.size() == 0) { // and is never mutated
       response.setHeader(
-          "serverError", "The searched node does not exist anywhere in this graph or in mutations");
+          "serverError",
+          "The searched node/token does not exist anywhere in this graph or in mutations");
       return;
     }
-    // The searched node is not in the graph but is mutated at some past/future
-    // point. The diff conditions are included to prevent entry into this case
-    // when the searched node is deleted for example. The diff being non-empty
-    // means that there is some mutation pertaining to the searched node to show
-    if (truncatedGraph.nodes().size() == 0
-        && filteredMutationIndices.size() != 0
-        && filteredMutationIndices.indexOf(mutationNumber) == -1
-        && (filteredDiff == null || filteredDiff.getMutationList().size() == 0)) {
+    if (truncatedGraph.nodes().size() == 0 // something was queried but wasn't found in the graph
+        && filteredMutationIndices.size() != 0 // and is mutated at some point
+        && (filteredDiff == null || filteredDiff.getMutationList().size() == 0)) { // but not here
       response.setHeader(
           "serverMessage",
           "The searched node/token does not exist in this graph, so nothing is shown. However, it"
               + " is mutated at some other step. Please click next or previous to navigate to a"
               + " graph where this node exists.");
     }
-    // The searched node exists but is not mutated in the current graph
-    if (truncatedGraph.nodes().size() != 0
-        && !(mutationNumber == -1 && nodeNames.size() == 0 && tokenParam.length() == 0)
-        && filteredMutationIndices.indexOf(mutationNumber) == -1
-        && (filteredDiff == null || filteredDiff.getMutationList().size() == 0)) {
+    // The second condition is included to avoid emitting this message when we are on the
+    // initial graph with no node names or tokens searched because -1 is never a valid mutation
+    // index
+    if (truncatedGraph.nodes().size() != 0 // the queried object was found in this graph
+        && !(mutationNumber == -1 && nodeNames.size() == 0 && tokenNameParam.length() == 0)
+        && filteredMutationIndices.indexOf(mutationNumber) == -1) { // but not mutated here
       response.setHeader(
           "serverMessage",
           "The searched node/token exists in this graph. However, it is not mutated in this"
               + " graph. Please click next or previous if you wish to see where it was"
               + " mutated!");
     }
-
-    // There is a diff between the previously-displayed graph and the current graph but
-    // no mutations in it only mutate on-screen nodes
-    if (filteredMutationIndices.indexOf(mutationNumber) != -1
-        && filteredDiff != null
-        && filteredDiff.getMutationList().size() == 0) {
+    // pertained solely to on-screen nodes
+    if (filteredMutationIndices.indexOf(mutationNumber) != -1 // relevant objects mutated here
+        && filteredDiff != null // there is some diff to show
+        && filteredDiff.getMutationList().size() == 0) { // but doesn't affect only onscreen nodes
       response.setHeader(
           "serverMessage",
           "The desired set of nodes is mutated in this graph but your other parameters (for eg."
               + " radius), limit the display of the mutations. Please try increasing your radius"
               + " to view the mutation.");
     }
+
+    /*
+     ***********************
+     * Sending Response
+     ***********************
+     */
+
     response.setHeader("Set-Cookie", "HttpOnly;Secure;SameSite=Strict");
-    graphJson =
+    response.setContentType("application/json");
+    String graphJson =
         graphToJson(
             truncatedGraph, filteredMutationIndices, filteredDiff, mutList.size(), queriedNext);
     response.getWriter().println(graphJson);
@@ -338,13 +377,13 @@ public class DataServlet extends HttpServlet {
   /**
    * Private function to intialize the mutation list.
    *
-   * @param mutationInput InputStream to initialize variable over
+   * @param mutationInput InputStream to initialize mutation list variable over
    * @throws IOException if something goes wrong during the reading
    */
   private void initializeMutationVariables(InputStream mutationInput) throws IOException {
     InputStreamReader mutReader = new InputStreamReader(mutationInput);
-    MutationList.Builder mutBuilder = MutationList.newBuilder();
-    TextFormat.merge(mutReader, mutBuilder);
-    mutList = mutBuilder.build().getMutationList();
+    mutListObj = MutationList.newBuilder();
+    TextFormat.merge(mutReader, mutListObj);
+    mutList = mutListObj.getMutationList();
   }
 }
