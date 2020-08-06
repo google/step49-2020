@@ -23,8 +23,7 @@
       <input type="text" id="node-name-filter" name="search-name" placeholder="nodeName1,nodeName2"></input>
       <label for="token-name">Name of token to filter for</label>
       <input type="text" id="token-name-filter" name="token-name" placeholder="Token Name"></input>
-      <button onclick="graph.generateGraph()">Get Graph</button>
-      
+      <button id="gen-graph" onclick="graph.generateGraph()">Get Graph</button>
       <div id="num-mutation-display">
         <p id="graph-number-text">Graph </p>
         <input type="number" id="graph-number" min="0" max="0" value="0"
@@ -35,18 +34,21 @@
     <!-- Box for zooming in -->
     <div id="zoom-box" class="input-child">
       <h4 class="search-title">Zoom In</h4>
-        <label>Zoom on Node in Graph: </label>
-        <input type="text" id="node-search" placeholder="Node Name"></input>
-        <button id="search-button">Find Node</button>
-        <label id="node-error" class="error-text"></label>
+      <label>Zoom in on Node in Graph: </label>
+      <input type="text" id="node-search" placeholder="Node Name"></input>
+      <button id="search-node-button">Find Node</button>
 
-        <label>Zoom on Token in Graph: </label>
-        <input type="text" id="token-search" placeholder="Token Name"></input>
-        <button id="search-token-button">Find Token</button>
-        <label id="token-error" class="error-text"></label>
-  
-      <button id="reset" class="reset">Reset Zoom Effects</button>
-      <label id="num-selected"></label>
+      <label>Zoom in on Token in Graph: (cannot be used simultaneously with above)</label>
+      <input type="text" id="token-search" placeholder="Token Name"></input>
+      <button id="search-token-button">Find Token</button>
+      <div>
+        <label for="highlight-number">Node: </label>
+        <input type="number" id="highlight-number" min="0" value="0" max="0" disabled=true>
+        <label id="num-selected">out of 0</label>
+        <button id="prevnode" class="material-icons nodebutton" disabled=true>navigate_before</button>
+        <button id="nextnode" class="material-icons nodebutton" disabled=true>navigate_next</button>
+        <button id="reset" class="reset">Reset Zoom Effects</button>
+      </div>
     </div>
   </div>
 
@@ -92,10 +94,11 @@
     <div class="graph-content-column" id="graph-content-logs">
       <button id="clear-log-btn" onclick="graph.clearLogs()">Clear Logs</button>
       <div id="graph-content-logs-inner">
-      <ul id="log-list">
-        <li class="log-msg">Welcome to our application! Here you'll see a log of messages pertaining to the graph on the left. Enjoy! :)
-        </li>
-      </ul>
+        <ul id="log-list">
+          <li class="log-msg">Welcome to our application! Here you'll see a log of messages pertaining to the graph on
+            the left. Enjoy! :)
+          </li>
+        </ul>
       </div>
     </div>
   </div>

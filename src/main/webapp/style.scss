@@ -1,18 +1,20 @@
 @use "@material/slider";
-@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,700;1,400&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,700;1,400&display=swap");
 @include slider.core-styles;
 
 /* Define color scheme of page */
 :root {
-  --error: red; 
-  --gray: #D3D3D3; 
-  --btn-color: #B590CA;
-  --box-bg: #DDF3F5;
-  --dark-gray: #5D5B6A;
+  --errorordeleted: red;
+  --gray: #d3d3d3;
+  --btn-color: #b590ca;
+  --box-bg: #ddf3f5;
+  --dark-gray: #5d5b6a;
   --disabled-txt: #999;
+  --added: green;
 }
 
-h2, h4 {
+h2,
+h4 {
   margin: 0 auto;
 }
 
@@ -42,14 +44,15 @@ button:hover:enabled {
   cursor: pointer;
 }
 
-button:disabled, button[disabled] {
+button:disabled,
+button[disabled] {
   color: var(--disabled-txt);
 }
 
 body {
   margin: 50px;
   font-size: 20px;
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
 }
 
 #graph {
@@ -67,7 +70,7 @@ body {
 }
 
 #errortext {
-  color: var(--error);
+  color: var(--errorordeleted);
   font-size: 25px;
 }
 
@@ -75,9 +78,9 @@ body {
   overflow-y: auto;
   overflow-x: auto;
   white-space: nowrap;
-  width: 400px;
   height: 200px;
   font-size: 30px;
+  padding: 20px;
 }
 
 .tokenlist {
@@ -86,10 +89,16 @@ body {
 }
 
 .close-button {
-  float: right;
+  position: fixed;
+  left: 110%;
 }
 
-#buttondiv, #buttontext, #show-mutations, #show-mutation-text, #slider, #slider-text {
+#buttondiv,
+#buttontext,
+#show-mutations,
+#show-mutation-text,
+#slider,
+#slider-text {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -146,21 +155,24 @@ body {
   border-radius: 10px;
 }
 
-#graph-number-text, #graph-number, #total-mutation-number-text {
+#graph-number-text,
+#graph-number,
+#total-mutation-number-text {
   margin: 5px;
   display: inline;
 }
 
 .recent-log-text {
-  color: var(--error);
+  color: var(--errorordeleted);
 }
 
 .error-text {
-  color: var(--error);
+  color: var(--errorordeleted);
 }
 
 .reset {
-  width: 150px;
+  width: 160px;
+  display: block;
 }
 
 #input-boxes {
@@ -177,6 +189,23 @@ body {
   margin: 15px;
 }
 
+.clear-log {
+  position: absolute;
+  bottom: 0;
+}
+
 input {
   padding: 5px;
+}
+
+.deletedtoken {
+  color: var(--errorordeleted);
+}
+
+.addedtoken {
+  color: var(--added);
+}
+
+.nodebutton {
+  display: none;
 }

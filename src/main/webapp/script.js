@@ -27,16 +27,16 @@ import 'tippy.js/dist/tippy.css';
 import 'tippy.js/dist/backdrop.css';
 import 'tippy.js/animations/shift-away.css';
 
-import { colorScheme, opacityScheme, borderScheme } from './constants.js';
+import { colorScheme, opacityScheme, tippySize, borderScheme, defaultButton } from './constants.js';
 import "./style.scss";
 
 export {
   initializeNumMutations, setMutationIndexList, setCurrMutationNum, setCurrMutationIndex,
   initializeTippy, generateGraph, getUrl, navigateGraph, currMutationNum, currMutationIndex,
-  numMutations, updateButtons, searchAndHighlight, highlightDiff, initializeReasonTooltip, 
-  getGraphDisplay, getClosestIndices, initializeSlider, resetMutationSlider, mutationNumSlider, 
-  setMutationSliderValue, readGraphNumberInput, updateGraphNumInput, setMaxNumMutations, 
-  searchNode, searchToken, clearLogs
+  numMutations, updateButtons, searchAndHighlight, highlightDiff, initializeReasonTooltip,
+  getGraphDisplay, getClosestIndices, initializeSlider, resetMutationSlider, mutationNumSlider,
+  setMutationSliderValue, readGraphNumberInput, updateGraphNumInput, setMaxNumMutations,
+  searchNode, searchToken, clearLogs, resetRecentLogs
 };
 
 
@@ -123,6 +123,7 @@ async function generateGraph() {
   // Error on server side
   if (serverErrorStatus !== null) {
     displayError(serverErrorStatus);
+    enableInputs();
     return;
   }
 
@@ -134,10 +135,7 @@ async function generateGraph() {
   const queriedNodes = JSON.parse(jsonResponse.queriedNodes);
 
   // Set all logs to be black
-  const allLogs = document.querySelectorAll('.log-msg');
-  for (let i = 0; i < allLogs.length; i++) {
-    allLogs[i].classList.remove('recent-log-text');
-  }
+  resetRecentLogs();
 
   const mutList = jsonResponse["mutationDiff"].length === 0 ? null : JSON.parse(jsonResponse["mutationDiff"]);
   const reason = jsonResponse["reason"];
@@ -148,12 +146,14 @@ async function generateGraph() {
 
   if (!nodes || !edges || !Array.isArray(nodes) || !Array.isArray(edges)) {
     displayError("Malformed graph received from server - edges or nodes are empty");
+    enableInputs();
     return;
   }
 
   // There aren't any nodes in this graph, and there aren't any mutations pertaining to the filtered node
   if (nodes.length === 0 && numMutations === 0 && mutList.length == 0) {
     displayError("This node does not exist in any stage of the graph!");
+    enableInputs();
     return;
   } else if (response.headers.get("serverMessage")) {
     // This happens if the graph doesn't contain the searched node or 
@@ -194,9 +194,7 @@ async function generateGraph() {
   updateButtons();
   updateGraphNumInput();
   resetMutationSlider();
-
-  mutationNumSlider.disabled = false;
-  document.getElementById("graph-number").disabled = false;
+  enableInputs();
 }
 
 /**
@@ -204,6 +202,7 @@ async function generateGraph() {
  * is being generated
  */
 function disableInputs() {
+  document.getElementById("gen-graph").disabled = true;
   const prevBtn = document.getElementById("prevbutton");
   const nextBtn = document.getElementById("nextbutton");
   prevBtn.disabled = true;
@@ -214,13 +213,22 @@ function disableInputs() {
 }
 
 /**
+ * Re-enables inputs once graph has been generated
+ */
+function enableInputs() {
+  document.getElementById("gen-graph").disabled = false;
+  mutationNumSlider.disabled = false;
+  document.getElementById("graph-number").disabled = false;
+}
+
+/**
  * Returns the url string given the user input
  * Ensures that the depth is an integer between 0 and 20
  */
 function getUrl() {
   const depthElem = document.getElementById('num-layers');
   const nodeNames = document.getElementById('node-name-filter') ? document.getElementById('node-name-filter').value || "" : "";
-  const tokenName = document.getElementById('token-name-filter') ? document.getElementById('token-name-filter').value || "" : "";
+  const tokenName = (document.getElementById('token-name-filter') ? document.getElementById('token-name-filter').value || "" : "").trim();
   // Takes care of "all the whitespace characters (space, tab, no-break space, etc.) 
   // and all the line terminator characters (LF, CR, etc.)" acc to documentation
   const nodeNamesArray = JSON.stringify(nodeNames.split(",").map(item => item.trim()).filter(item => item.length > 0));
@@ -258,6 +266,27 @@ function addToLogs(msg) {
   logsList.appendChild(newMsg);
   newMsg.classList.add("recent-log-text");
 }
+
+/**
+ * Clear the log panel on the right side
+ */
+function clearLogs() {
+  const ul = document.getElementById("log-list");
+  while (ul.firstChild) {
+    ul.removeChild(ul.firstChild);
+  }
+}
+
+/**
+ * Remove highlighting from all messages in the log panel
+ */
+function resetRecentLogs() {
+  const allLogs = document.querySelectorAll('.log-msg');
+  for (let i = 0; i < allLogs.length; i++) {
+    allLogs[i].classList.remove('recent-log-text');
+  }
+}
+
 /**
  * Takes an error message and creates a text element on the page to display this message
  */
@@ -299,7 +328,6 @@ function getGraphDisplay(graphNodes, graphEdges, mutList, reason, queriedNodes) 
           width: '50px',
           height: '50px',
           'background-color': colorScheme["unmodifiedNodeColor"],
-          'label': 'data(id)',
           'color': colorScheme["labelColor"],
           'font-size': '20px',
           'text-halign': 'center',
@@ -317,9 +345,22 @@ function getGraphDisplay(graphNodes, graphEdges, mutList, reason, queriedNodes) 
         },
       },
       {
-        selector: '.non-highlighted',
+        selector: '.highlighted-node',
         style: {
-          'opacity': opacityScheme["deletedObjectOpacity"]
+          'border-width': borderScheme['queriedBorder'],
+        }
+      },
+      {
+        selector: '.background-node',
+        style: {
+          'opacity': opacityScheme["translucentObjectOpacity"]
+        }
+      },
+      {
+        selector: '.highlighted-edge',
+        style: {
+          'line-style': 'dashed',
+          'z-index': '2'
         }
       }],
     layout: {
@@ -348,11 +389,11 @@ function getGraphDisplay(graphNodes, graphEdges, mutList, reason, queriedNodes) 
       cy.$id(nodeName).style('border-width', borderScheme['queriedBorder']);
     })
   }
-  document.getElementById('reset').onclick = function(){ resetElements(cy) };
+  document.getElementById('reset').onclick = function () { resetElements(cy, true) };
 
-  document.getElementById('search-button').onclick = function() { searchAndHighlight(cy, "node", searchNode) };
+  document.getElementById('search-node-button').onclick = function () { searchAndHighlight(cy, "node", searchNode) };
 
-  document.getElementById('search-token-button').onclick = function() { searchAndHighlight(cy, "token", searchToken) };
+  document.getElementById('search-token-button').onclick = function () { searchAndHighlight(cy, "token", searchToken) };
 
   // When a new graph is loaded, mutations are always shown by default
   const showMutButton = document.getElementById("show-mutations");
@@ -472,7 +513,7 @@ function highlightDiff(cy, mutList, reason = "") {
         }
         modifiedObj = cy.$id(startNode);
         modifiedObj.style('background-color', colorScheme["deletedObjectColor"]);
-        modifiedObj.style('opacity', opacityScheme["deletedObjectOpacity"]);
+        modifiedObj.style('opacity', opacityScheme["translucentObjectOpacity"]);
         deletedNodes = deletedNodes.union(modifiedObj);
         break;
       case 4:
@@ -505,7 +546,7 @@ function highlightDiff(cy, mutList, reason = "") {
         modifiedObj = cy.$id(`edge${startNode}${endNode}`);
         modifiedObj.style('line-color', colorScheme["deletedObjectColor"]);
         modifiedObj.style('target-arrow-color', colorScheme["deletedObjectColor"]);
-        modifiedObj.style('opacity', opacityScheme["deletedObjectOpacity"]);
+        modifiedObj.style('opacity', opacityScheme["translucentObjectOpacity"]);
         deletedEdges = deletedEdges.union(modifiedObj);
         break;
       case 5:
@@ -521,6 +562,13 @@ function highlightDiff(cy, mutList, reason = "") {
     }
     if (modifiedObj.length !== 0) {
       initializeReasonTooltip(modifiedObj, reason);
+      // If the mutation is a change token mutation, also highlight the changed tokens in the tippy
+      if (type === 5) {
+        const tokenMut = mutation["tokenChange_"];
+        if (tokenMut) {
+          indicateChangedTokens(modifiedObj, tokenMut);
+        }
+      }
     }
   });
   return {
@@ -530,6 +578,75 @@ function highlightDiff(cy, mutList, reason = "") {
     addedEdges,
     modifiedNodes
   };
+}
+
+/**
+ * Highlights the change in tokens of the given node based on the token mutation. If 
+ * tokens are added to the node, it adds them to the tippy in green. If tokens are deleted,
+ * it adds them to the tippy in red.
+ * @param node whose tokens have changed
+ * @param tokenMut the mutation made to the tokens of the node
+ */
+function indicateChangedTokens(node, tokenMut) {
+  const type = tokenMut["type_"] || -1;
+  const tokens = tokenMut["tokenName_"];
+
+  if (!type || !tokens || !node.tip) {
+    return;
+  }
+
+  // Get the div that contains the tooltip content
+  let tipContent = node.tip.popperChildren.content.firstChild;
+  switch (type) {
+    case 1:
+      // add tokens
+      // If this node already has an "Added Token" list, get it
+      let addedList = tipContent.querySelector(`#${CSS.escape(node.data().id)}-added`);
+      // Otherwise initialize it
+      if (!addedList) {
+        let addedListText = document.createElement("p");
+        addedListText.innerText = "Added Tokens:";
+        addedList = document.createElement("ul");
+        addedList.id = `${node.data().id}-added`;
+        addedList.className = "tokenlist";
+        // Insert this text and list after the close button and node name
+        tipContent.insertBefore(addedListText, tipContent.children[2]);
+        tipContent.insertBefore(addedList, tipContent.children[3]);
+      }
+      // Add these tokens to the added token list
+      tokens.forEach(token => {
+        let thisTokenItem = document.createElement("li");
+        thisTokenItem.className = "addedtoken";
+        thisTokenItem.innerText = token;
+        addedList.appendChild(thisTokenItem);
+      });
+      break;
+    case 2:
+      // delete tokens
+      // If this node already has a "Deleted Token" list, get it
+      let deletedList = tipContent.querySelector(`#${CSS.escape(node.data().id)}-deleted`);
+      // Otherwise initialize it
+      if (!deletedList) {
+        let deletedListText = document.createElement("p");
+        deletedListText.innerText = "Deleted Tokens:";
+        deletedList = document.createElement("ul");
+        deletedList.id = `${node.data().id}-deleted`;
+        deletedList.className = "tokenlist";
+        // Insert this text and list after the close button and node name
+        tipContent.insertBefore(deletedListText, tipContent.children[2]);
+        tipContent.insertBefore(deletedList, tipContent.children[3]);
+      }
+      // Add these tokens to the deleted token list
+      tokens.forEach(token => {
+        let thisTokenItem = document.createElement("li");
+        thisTokenItem.className = "deletedtoken";
+        thisTokenItem.innerText = token;
+        deletedList.appendChild(thisTokenItem);
+      });
+      break;
+    default:
+      break;
+  }
 }
 
 /**
@@ -649,19 +766,17 @@ function hideDiffs(cy, elems, deletedNodes, deletedEdges, addedNodes, addedEdges
  * @returns the result of the search.
  */
 function searchAndHighlight(cy, type, searchFunction) {
-  resetElements(cy);
-  let errorText = "";
-  const query = document.getElementById(type + '-search').value;
+  const query = document.getElementById(type + '-search').value.trim();
+  resetElements(cy, query === "");
   let result;
   if (query !== "") {
     result = searchFunction(cy, query);
     if (result) {
       highlightElements(cy, result);
     } else {
-      errorText = type + " does not exist.";
+      addToLogs(type === "node" ? "Node does not exist." : "Token does not exist.");
     }
   }
-  document.getElementById(type + '-error').innerText = errorText;
   return result;
 }
 
@@ -685,7 +800,7 @@ function searchNode(cy, query) {
  *
  * @param cy the graph to search through
  * @param query the name of the token to search for
- * @returns the result of the search.
+ * @returns a list of nodes containing the token or undefined if there are none
  */
 function searchToken(cy, query) {
   let target = cy.collection();
@@ -696,9 +811,70 @@ function searchToken(cy, query) {
       target = target.add(node);
     }
   });
+
   if (target.length > 0) {
+    document.getElementById('num-selected').innerText = "out of " + target.length;
+    document.getElementById('highlight-number').min = 1;
+    document.getElementById('highlight-number').value = 1;
+    document.getElementById('highlight-number').max = target.length;
+    document.getElementById('highlight-number').disabled = false;
+    document.getElementById('highlight-number').onchange = function () {
+      updateHighlightedToken(cy, target, document.getElementById('highlight-number').value - 1);
+    };
+
+    const prevNodeButton = document.getElementById('prevnode');
+    prevNodeButton.onclick = function () {
+      updateHighlightedToken(cy, target, document.getElementById('highlight-number').value - 2);
+    };
+
+    const nextNodeButton = document.getElementById('nextnode');
+    if (target.length > 1) {
+      nextNodeButton.style.display = defaultButton["display"];
+      prevNodeButton.style.display = defaultButton["display"];
+    }
+    prevNodeButton.disabled = true;
+    nextNodeButton.disabled = (target.length == 1);
+    nextNodeButton.onclick = function () {
+      // parseInt needed because it does not infer type when subtraction is not used
+      updateHighlightedToken(cy, target, parseInt(document.getElementById('highlight-number').value));
+    };
     return target;
   }
+}
+
+/**
+ * Zoom in on node at given index in array
+ *
+ * @param cy the graph to search through
+ * @param nodesWithToken the list of nodes that contain specified token
+ * @param num the target index
+ */
+function updateHighlightedToken(cy, nodesWithToken, num) {
+  // Prevent the user from navigating to a node before the first node
+  // Also, if we are at the first node, disable the previous button
+  // so the user can't go back
+  if (num <= 0) {
+    num = 0;
+    document.getElementById('prevnode').disabled = true;
+    
+  } else {
+    document.getElementById('prevnode').disabled = false;
+    document.getElementById('prevnode').style.display = defaultButton["display"];
+  }
+  // Prevent the user from navigating to a node after the last node
+  // Also, if we are at the last node, disable the next button
+  // so the user can't go forward
+  if (num >= nodesWithToken.length - 1) {
+    num = nodesWithToken.length - 1;
+    document.getElementById('nextnode').disabled = true;
+  } else {
+    document.getElementById('nextnode').disabled = false;
+    document.getElementById('nextnode').style.display = defaultButton["display"];
+  }
+  document.getElementById('highlight-number').value = num + 1;
+
+  // Zoom in on node
+  cy.fit(nodesWithToken[num], 50);
 }
 
 /**
@@ -708,46 +884,58 @@ function searchToken(cy, query) {
  * @param target collection of nodes to highlight
  */
 function highlightElements(cy, target) {
-  cy.nodes().forEach(node => node.toggleClass('non-highlighted', true));
+  cy.batch(() => {
+    cy.nodes().forEach(node => node.toggleClass('background-node', true));
 
-  // highlight desired nodes
-  target.forEach(node => {
-    node.style('border-width', '4px');
-    node.toggleClass('non-highlighted', false);
+    // highlight desired nodes
+    target.forEach(node => {
+      node.toggleClass('background-node', false);
+      node.toggleClass('highlighted-node', true);
+    });
+
+    // highlight adjacent edges
+    target.connectedEdges().forEach(edge => {
+      edge.toggleClass('highlighted-edge', true);
+    });
   });
   cy.fit(target[0], 50);
-  document.getElementById('num-selected').innerText = "Number of nodes selected: " + target.length;
-
-  // highlight adjacent edges
-  target.connectedEdges().forEach(edge => {
-    edge.style('line-style', 'dashed');
-    edge.style('z-index', '2');
-  });
 }
 
 /**
  * Resets collection of nodes/edges to default state
  *
  * @param cy the graph that contains nodes/edges
+ * @param resetInputs boolean to decide whether to reset input fields or not
  */
-function resetElements(cy) {
-  // reset node borders and opacity
-  cy.nodes().forEach(node => {
-    node.style('border-width', '0px');
-    // only change opacity of nodes that were changed
-    // because of highlighting (leave nodes changed due to
-    // mutation alone)
-    if (node.hasClass('non-highlighted')) {
-      node.toggleClass('non-highlighted', false);
-    }
+function resetElements(cy, resetInputs) {
+  cy.batch(() => {
+    // reset node borders and opacity
+    cy.nodes().forEach(node => {
+      node.toggleClass('highlighted-node', false);
+      node.toggleClass('background-node', false);
+    });
+
+    cy.edges().forEach(edge => {
+      edge.toggleClass('highlighted-edge', false);
+    });
   });
 
-  // reset edge style
-  cy.edges().forEach(edge => {
-    edge.style('line-style', 'solid');
-    edge.style('z-index', '1');
-  });
-  document.getElementById('num-selected').innerText = "Number of nodes selected: 0";
+  // Set all logs to be black
+  resetRecentLogs();
+
+  if (resetInputs) {
+    document.getElementById("node-search").value = '';
+    document.getElementById("token-search").value = '';
+  }
+  document.getElementById('num-selected').innerText = "out of 0";
+  document.getElementById('highlight-number').value = 0;
+  document.getElementById('highlight-number').min = 0;
+  document.getElementById('highlight-number').max = 0;
+  document.getElementById('highlight-number').disabled = true;
+  document.getElementById('prevnode').style.display = "none";
+  document.getElementById('nextnode').style.display = "none";
+
+  cy.fit();
 }
 
 /**
@@ -769,7 +957,8 @@ function initializeTippy(node) {
     appendTo: document.body,
     // the tooltip  adheres to the node if the graph is zoomed in on
     sticky: true,
-    plugins: [sticky]
+    plugins: [sticky],
+    maxWidth: tippySize["width"],
   });
 }
 
@@ -789,6 +978,14 @@ function getTooltipContent(node) {
     node.tip.hide();
   }, false);
   content.appendChild(closeButton);
+
+  const nodeId = document.createElement("p");
+  nodeId.innerText = `Node Name: \n${node.data().id}`;
+  content.appendChild(nodeId);
+
+  const tokenLabel = document.createElement("p");
+  tokenLabel.innerText = "Tokens:";
+  content.appendChild(tokenLabel);
 
   const nodeTokens = node.data("tokens");
   if (!nodeTokens || nodeTokens.length === 0) {
@@ -870,7 +1067,7 @@ function updateButtons() {
     document.getElementById("nextbutton").disabled = false;
   }
 }
- 
+
 /**
  * Get an object with the index of the element that's immediately smaller 
  * and immediately greater than the element
@@ -884,10 +1081,10 @@ function updateButtons() {
  * in indicesList
  */
 function getClosestIndices(indicesList, element) {
-  let start = 0; 
+  let start = 0;
   let end = indicesList.length - 1;
 
-  let toReturn = {lower: -1, higher: -1};
+  let toReturn = { lower: -1, higher: -1 };
   let indexHigher = -1;
   while (start <= end) {
     let mid = Math.floor((start + end) / 2);
@@ -981,14 +1178,4 @@ function readGraphNumberInput() {
     graphNumberInput.value = 0;
   }
   currMutationNum = graphNumberInput.value - 1;
-}
-
-/**
- * Clear the log panel on the right side
- */
-function clearLogs() {
-  const ul = document.getElementById("log-list");
-  while(ul.firstChild) {
-    ul.removeChild(ul.firstChild);
-  }
 }
