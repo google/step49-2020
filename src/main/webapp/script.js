@@ -193,6 +193,8 @@ async function generateGraph() {
     });
   });
   getGraphDisplay(graphNodes, graphEdges, mutList, reason, queriedNodes);
+
+  // Update next/prev buttons, update the graph number, and make sure the slider is updated with the latest graph
   updateButtons();
   updateGraphNumInput();
   resetMutationSlider();
@@ -235,6 +237,8 @@ function getUrl() {
 
   let selectedDepth = 0;
   const depthElem = document.getElementById('num-layers');
+
+  // Make sure depth element is not null and within the bounds before sending to the server
   if (depthElem === null) {
     selectedDepth = 3;
   }
@@ -253,7 +257,9 @@ function getUrl() {
   }
 
   const tokenName = (document.getElementById('token-name-filter') ? document.getElementById('token-name-filter').value || "" : "").trim();
-  const url = `/data?depth=${selectedDepth}&mutationNum=${currMutationNum}&nodeNames=${nodeNamesArray}&tokenName=${tokenName}`;
+  // Boolean that represents whether we should restrict the mutations to those just of the in screen nodes
+  const restrict = document.getElementById("limit-mutations") ? document.getElementById("limit-mutations").checked : false;
+  const url = `/data?depth=${selectedDepth}&mutationNum=${currMutationNum}&nodeNames=${nodeNamesArray}&tokenName=${tokenName}&restrict=${restrict}`;
   return url;
 }
 
