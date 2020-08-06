@@ -4,14 +4,13 @@
 
 /* Define color scheme of page */
 :root {
-  --error: red;
+  --errorordeleted: red;
   --gray: #d3d3d3;
   --btn-color: #b590ca;
   --box-bg: #ddf3f5;
   --dark-gray: #5d5b6a;
   --disabled-txt: #999;
   --added: green;
-  --deleted: red;
 }
 
 h2,
@@ -72,7 +71,7 @@ body {
 }
 
 #errortext {
-  color: var(--error);
+  color: var(--errorordeleted);
   font-size: 25px;
 }
 
@@ -165,11 +164,11 @@ body {
 }
 
 .recent-log-text {
-  color: var(--error);
+  color: var(--errorordeleted);
 }
 
 .error-text {
-  color: var(--error);
+  color: var(--errorordeleted);
 }
 
 .reset {
@@ -201,7 +200,7 @@ input {
 }
 
 .deletedtoken {
-  color: var(--deleted);
+  color: var(--errorordeleted);
 }
 
 .addedtoken {
